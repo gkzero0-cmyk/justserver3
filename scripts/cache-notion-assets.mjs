@@ -85,6 +85,9 @@ function collectPlainText(recordMap) {
       if (
         text &&
         !/^https?:\/\//i.test(text) &&
+        !/^attachment:/i.test(text) &&
+        !/\.(png|jpe?g|webp|gif|svg|avif|bmp)$/i.test(text) &&
+        !/^\d+(?:\.\d+)?\s*(?:B|KB|KiB|MB|MiB|GB|GiB)$/i.test(text) &&
         !/^[0-9a-f-]{32,36}$/i.test(text) &&
         !['id', 'parent_id', 'space_id'].includes(key)
       ) {
