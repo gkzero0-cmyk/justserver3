@@ -75,6 +75,62 @@ function getBlockTitle(block) {
     .trim()
 }
 
+function collectPlainText(recordMap) {
+  const values = []
+  const seen = new WeakSet()
+
+  function visit(value, key = '') {
+    if (typeof value === 'string') {
+      const text = value.trim()
+      if (
+        text &&
+        !/^https?:\/\//i.test(text) &&
+        !/^[0-9a-f-]{32,36}$/i.test(text) &&
+        !['id', 'parent_id', 'space_id'].includes(key)
+      ) {
+        values.push(text)
+      }
+      return
+    }
+
+    if (!value || typeof value !== 'object') return
+    if (seen.has(value)) return
+    seen.add(value)
+
+    if (Array.isArray(value)) {
+      for (const item of value) visit(item, key)
+      return
+    }
+
+    for (const [childKey, item] of Object.entries(value)) {
+      if (
+        ['format', 'permissions', 'created_by_table', 'last_edited_by_table'].includes(
+          childKey
+        )
+      ) {
+        continue
+      }
+      visit(item, childKey)
+    }
+  }
+
+  for (const block of blocks(recordMap)) {
+    visit(block.properties || {})
+  }
+
+  return [...new Set(values)]
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 18000)
+}
+
+function toIsoDate(value) {
+  if (!value) return null
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? null : date.toISOString()
+}
+
 function getPageMeta(recordMap, pageId) {
   const normalized = normalizeId(pageId)
 
@@ -94,7 +150,9 @@ function getPageMeta(recordMap, pageId) {
       title: '제목 없는 페이지',
       parentId: null,
       icon: null,
-      cover: null
+      cover: null,
+      lastEdited: null,
+      searchText: collectPlainText(recordMap)
     }
   }
 
@@ -103,7 +161,9 @@ function getPageMeta(recordMap, pageId) {
     title: getBlockTitle(pageBlock) || '제목 없는 페이지',
     parentId: pageBlock.parent_id ? normalizeId(pageBlock.parent_id) : null,
     icon: pageBlock.format?.page_icon || null,
-    cover: pageBlock.format?.page_cover || null
+    cover: pageBlock.format?.page_cover || null,
+    lastEdited: toIsoDate(pageBlock.last_edited_time),
+    searchText: collectPlainText(recordMap)
   }
 }
 
@@ -299,7 +359,11 @@ async function removeStaleFiles(activeFilenames) {
 
   for (const entry of entries) {
     if (!entry.isFile()) continue
-    if (entry.name === 'manifest.json' || entry.name === 'index.json') continue
+    if (
+      entry.name === 'manifest.json' ||
+      entry.name === 'display-manifest.json' ||
+      entry.name === 'index.json'
+    ) continue
     if (activeFilenames.has(entry.name)) continue
 
     await fs.unlink(path.join(OUT_DIR, entry.name))
