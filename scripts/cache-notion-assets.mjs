@@ -267,6 +267,14 @@ async function crawlPages() {
   return results
 }
 
+async function readExistingManifest() {
+  try {
+    return JSON.parse(await fs.readFile(MANIFEST_PATH, 'utf8'))
+  } catch {
+    return {}
+  }
+}
+
 async function removeStaleFiles(activeFilenames) {
   const entries = await fs.readdir(OUT_DIR, { withFileTypes: true })
 
@@ -300,12 +308,33 @@ async function main() {
     }
   }
 
+  const existingManifest = await readExistingManifest()
   const manifest = {}
   const activeFilenames = new Set()
   let downloaded = 0
+  let reused = 0
   let failed = 0
 
   for (const [key, sourceUrl] of sourceUrls) {
+    const existingPublicPath = existingManifest[key]
+
+    if (
+      typeof existingPublicPath === 'string' &&
+      existingPublicPath.startsWith('/notion-assets/')
+    ) {
+      const existingFilename = path.basename(existingPublicPath)
+
+      try {
+        await fs.access(path.join(OUT_DIR, existingFilename))
+        manifest[key] = existingPublicPath
+        activeFilenames.add(existingFilename)
+        reused += 1
+        continue
+      } catch {
+        // Missing local file: fall through and download it again.
+      }
+    }
+
     try {
       const asset = await downloadImage(sourceUrl, key)
       manifest[key] = asset.publicPath
@@ -349,7 +378,7 @@ async function main() {
   await removeStaleFiles(activeFilenames)
 
   console.log(
-    `[assets] complete: ${pages.length} pages, ${downloaded} images cached, ${failed} skipped`
+    `[assets] complete: ${pages.length} pages, ${downloaded} downloaded, ${reused} reused, ${failed} skipped`
   )
 }
 
