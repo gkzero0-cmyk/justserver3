@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 
 import { readNotionIndex } from '@/lib/notion-index'
-import { getSiteUrl } from '@/lib/site-url'
+import { getSiteUrl } from '@/lib/url-utils'
 
 export const dynamic = 'force-static'
 
