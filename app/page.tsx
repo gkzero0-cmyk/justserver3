@@ -26,6 +26,7 @@ export default async function HomePage() {
       title={title}
       assetCount={Object.keys(imageManifest).length}
       pageCount={notionIndex.pages.length || 1}
+      pages={notionIndex.pages.map(({ pageId, title }) => ({ pageId, title }))}
     >
       <WikiDirectory pages={directoryPages} />
 
