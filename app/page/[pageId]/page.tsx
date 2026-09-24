@@ -4,6 +4,7 @@ import { NotionDocument } from '@/components/notion-document'
 import { WikiShell } from '@/components/wiki-shell'
 import { getNotionPage, notionPublicUrl } from '@/lib/notion'
 import { readNotionAssetManifest } from '@/lib/notion-assets'
+import { readNotionIndex } from '@/lib/notion-index'
 
 export const revalidate = 300
 
@@ -15,6 +16,7 @@ export default async function NotionSubPage({
   const { pageId } = await params
   const recordMap = await getNotionPage(pageId)
   const imageManifest = readNotionAssetManifest()
+  const notionIndex = readNotionIndex()
   const title = getPageTitle(recordMap) || '서버 위키'
 
   return (
@@ -22,6 +24,7 @@ export default async function NotionSubPage({
       sourceUrl={notionPublicUrl(pageId)}
       title={title}
       assetCount={Object.keys(imageManifest).length}
+      pageCount={notionIndex.pages.length || 1}
     >
       <section className="document-card">
         <NotionDocument
