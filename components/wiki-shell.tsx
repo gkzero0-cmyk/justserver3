@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { withBasePath } from '@/lib/base-path'
 
@@ -13,6 +13,7 @@ type TocItem = {
 type WikiPageLink = {
   pageId: string
   title: string
+  searchText?: string
 }
 
 function sectionIcon(text: string) {
@@ -51,6 +52,7 @@ export function WikiShell({
   const [toc, setToc] = useState<TocItem[]>([])
   const [query, setQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -84,9 +86,38 @@ export function WikiShell({
 
   const filteredPages = useMemo(() => {
     const keyword = query.trim().toLowerCase()
-    if (!keyword) return pages.slice(0, 8)
+
+    if (!keyword) {
+      return pages.slice(0, 8).map((page) => ({ ...page, snippet: '' }))
+    }
+
     return pages
-      .filter((page) => page.title.toLowerCase().includes(keyword))
+      .map((page) => {
+        const title = page.title.toLowerCase()
+        const body = (page.searchText ?? '').toLowerCase()
+        const titleMatch = title.includes(keyword)
+        const bodyIndex = body.indexOf(keyword)
+
+        if (!titleMatch && bodyIndex < 0) return null
+
+        let snippet = ''
+        if (bodyIndex >= 0 && page.searchText) {
+          const start = Math.max(0, bodyIndex - 48)
+          const end = Math.min(page.searchText.length, bodyIndex + keyword.length + 72)
+          snippet = `${start > 0 ? '…' : ''}${page.searchText
+            .slice(start, end)
+            .trim()}${end < page.searchText.length ? '…' : ''}`
+        }
+
+        return { ...page, snippet }
+      })
+      .filter(
+        (
+          page
+        ): page is WikiPageLink & {
+          snippet: string
+        } => Boolean(page)
+      )
       .slice(0, 12)
   }, [pages, query])
 
@@ -94,6 +125,33 @@ export function WikiShell({
     const primary = toc.filter((item) => item.level <= 2)
     return (primary.length ? primary : toc).slice(0, 9)
   }, [toc])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null
+      const isTyping =
+        target?.tagName === 'INPUT' ||
+        target?.tagName === 'TEXTAREA' ||
+        target?.isContentEditable
+
+      if (
+        (event.key === '/' && !isTyping) ||
+        ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k')
+      ) {
+        event.preventDefault()
+        setMenuOpen(true)
+        window.setTimeout(() => searchInputRef.current?.focus(), 30)
+      }
+
+      if (event.key === 'Escape') {
+        searchInputRef.current?.blur()
+        setQuery('')
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
 
   const goTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({
@@ -146,8 +204,10 @@ export function WikiShell({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="규칙, API, 강화 검색"
-            aria-label="목차 검색"
+            aria-label="전체 문서 및 목차 검색"
+            ref={searchInputRef}
           />
+          <kbd>⌘K</kbd>
         </label>
 
         <a className="sidebar-home" href={withBasePath("/")}>
@@ -166,7 +226,10 @@ export function WikiShell({
                   className="global-page-link"
                 >
                   <span>{sectionIcon(page.title)}</span>
-                  <span>{page.title}</span>
+                  <span className="global-page-copy">
+                    <strong>{page.title}</strong>
+                    {page.snippet && <small>{page.snippet}</small>}
+                  </span>
                 </a>
               ))}
             </div>
@@ -210,21 +273,17 @@ export function WikiShell({
       <main className="wiki-main">
         <section className="wiki-hero" aria-label="위키 안내">
           <div className="hero-badges">
-            <span className="hero-badge primary">
-              <span className="live-dot" />
-              LIVE GUIDE
-            </span>
+            <span className="hero-badge primary">공식 가이드</span>
+            <span className="hero-badge">🧭 뉴비 필독 가이드</span>
             <span className="hero-badge">📚 문서 {pageCount}개</span>
-            <span className="hero-badge">🖼️ 이미지 {assetCount}개 캐시</span>
-            <span className="hero-badge">🔄 Notion 자동 동기화</span>
           </div>
 
           <div className="hero-copy">
-            <p className="hero-kicker">SERVER GUIDE ARCHIVE</p>
+            <p className="hero-kicker">JUST SERVER · SURVIVAL WIKI</p>
             <h1>{title}</h1>
             <p>
-              필요한 정보를 빠르게 찾을 수 있도록 Notion 가이드를 위키 형태로 정리했습니다.
-              주요 항목을 선택하거나 왼쪽 목차에서 바로 이동할 수 있습니다.
+              서버 규칙부터 돈벌이, 콘텐츠, 장비 성장까지 필요한 정보를 빠르게 찾을 수 있습니다.
+              검색창에서 문서 제목뿐 아니라 본문 내용도 바로 검색할 수 있습니다.
             </p>
           </div>
 
