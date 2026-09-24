@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from 'next'
 import 'react-notion-x/src/styles.css'
 import './globals.css'
+import { getSiteUrl } from '@/lib/site-url'
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: '그냥서버 : 적자생존 공식 위키',
     template: '%s | 그냥서버 : 적자생존 공식 위키'
