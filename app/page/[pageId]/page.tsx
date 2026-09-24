@@ -2,6 +2,7 @@ import { getPageTitle } from 'notion-utils'
 
 import { NotionDocument } from '@/components/notion-document'
 import { WikiShell } from '@/components/wiki-shell'
+import { WikiPageNavigation } from '@/components/wiki-page-navigation'
 import { getNotionPage, notionPublicUrl } from '@/lib/notion'
 import { readNotionAssetManifest } from '@/lib/notion-assets'
 import { readNotionIndex } from '@/lib/notion-index'
@@ -30,7 +31,11 @@ export default async function NotionSubPage({
   const navigationPages = notionIndex.pages.filter(
     (page) => page.pageId.replaceAll('-', '') !== rootId
   )
-  const title = getPageTitle(recordMap) || '서버 위키'
+  const currentPage =
+    navigationPages.find(
+      (page) => page.pageId.replaceAll('-', '') === pageId.replaceAll('-', '')
+    ) ?? null
+  const title = getPageTitle(recordMap) || currentPage?.title || '서버 위키'
 
   return (
     <WikiShell
@@ -38,14 +43,20 @@ export default async function NotionSubPage({
       title={title}
       assetCount={Object.keys(imageManifest).length}
       pageCount={notionIndex.pages.length || 1}
-      pages={navigationPages.map(({ pageId, title }) => ({ pageId, title }))}
+      pages={navigationPages.map(({ pageId, title, searchText }) => ({
+        pageId,
+        title,
+        searchText
+      }))}
     >
+      <WikiPageNavigation current={currentPage} pages={navigationPages} />
       <section className="document-card">
         <NotionDocument
           recordMap={recordMap}
           imageManifest={imageManifest}
         />
       </section>
+      <WikiPageNavigation current={currentPage} pages={navigationPages} />
     </WikiShell>
   )
 }
