@@ -199,6 +199,10 @@ async function crawlPages() {
         `[notion] page ${visited.size}: ${pageId} (${collectAssetUrls(recordMap).length} URL candidates)`
       )
       console.log(`[notion] block types: ${blockTypeSummary(recordMap)}`)
+      if (visited.size === 1) {
+        const firstEntry = Object.values(recordMap?.block || {})[0]
+        console.log('[notion-debug] first block:', JSON.stringify(firstEntry).slice(0, 5000))
+      }
     } catch (error) {
       console.warn(
         `[notion] failed to load page ${pageId}: ${error?.message || error}`
