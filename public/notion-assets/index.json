@@ -1,97 +1,97 @@
 {
   "rootPageId": "3dad57d6a55c80469f3de9730cb88975",
-  "generatedAt": "2026-09-24T21:19:57.034Z",
+  "generatedAt": "2026-09-24T21:20:36.774Z",
   "pages": [
     {
       "pageId": "3dad57d6a55c80469f3de9730cb88975",
       "title": "그냥서버 : 적자생존 공식 위키",
       "parentId": "50ed57d6a55c81caa4c70003467685a7",
-      "icon": "attachment:131ead3e-1bd4-40bd-9765-7a69d5d1a4ca:cvdvd.png",
-      "cover": "attachment:be9d0639-cd5b-424d-b680-27e70e075551:23031786686873061.png"
+      "icon": "/notion-assets/b79e50258a6125a68a088afa182d1a77.png",
+      "cover": "/notion-assets/ac7d9673d2769f7f5df3c29c70de7060.png"
     },
     {
       "pageId": "3dad57d6a55c802a99dcf9704ef883f3",
       "title": "스토리",
       "parentId": "3dad57d6a55c809b9ae1f2a7ac478586",
-      "icon": "attachment:66976e70-e149-4391-8e7f-86585cb04c52:cvdvd.png",
-      "cover": "attachment:79efb0a8-9319-460b-92ae-38a44bbe7771:2차.png"
+      "icon": "/notion-assets/ba8924cf282b59bc3a918acc59bafea5.png",
+      "cover": "/notion-assets/743faadc6d5ac7117269acd4eb6c9f0d.png"
     },
     {
       "pageId": "3dad57d6a55c802aa11adaed7c2c98ff",
       "title": "서버규칙",
       "parentId": "3dad57d6a55c809b9ae1f2a7ac478586",
-      "icon": "attachment:450efcad-428d-46ec-be42-52332e31354e:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(6).png",
-      "cover": "attachment:3709b298-acd9-4abb-b0b1-66c33b8822e0:31101789513895395.png"
+      "icon": "/notion-assets/be9f14303955b249c4ecef787fb49088.png",
+      "cover": "/notion-assets/996a8b85aff4747b210bc681fc03b488.png"
     },
     {
       "pageId": "3e0d57d6a55c80199479ddd73ea6ace4",
       "title": "패치노트",
       "parentId": "3dad57d6a55c809b9ae1f2a7ac478586",
-      "icon": "attachment:e169e22c-32b2-4d26-b615-e29c7f2754f7:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(9).png",
-      "cover": "attachment:58096206-422e-4642-9617-c005ba62336a:2.png"
+      "icon": "/notion-assets/295b98273a9bca319f73c2dc5fa9edf3.png",
+      "cover": "/notion-assets/67a6eaa56002e02afa77e07dd552a394.png"
     },
     {
       "pageId": "3dad57d6a55c80f28689c7bebde648fe",
       "title": "API",
       "parentId": "3dad57d6a55c809b9ae1f2a7ac478586",
-      "icon": "attachment:df52e64f-a5c4-4097-83a3-5f76738d5f06:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(8).png",
-      "cover": "attachment:b83fd94c-4c93-4f0c-9e9c-1d25542a19ec:1111111.png"
+      "icon": "/notion-assets/e83d6e8abaa34673fde6a05875c7e1ae.png",
+      "cover": "/notion-assets/caa9de778794c215bc08aaaeedcb7dc5.png"
     },
     {
       "pageId": "3e0d57d6a55c80e5af78cf3a2ef9ef7e",
       "title": "기초설정(뉴비필독)",
       "parentId": "3dad57d6a55c809b9ae1f2a7ac478586",
-      "icon": "attachment:901a21ad-507b-47c6-8b1c-d4ba5ddf6634:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(7).png",
-      "cover": "attachment:5457911a-7dd5-40be-ab21-8209a1e2927e:1111111.png"
+      "icon": "/notion-assets/b6fac7fd201954d90077b280ce04466e.png",
+      "cover": "/notion-assets/0264a943a17b7daab415aac207cc2d56.png"
     },
     {
       "pageId": "3dad57d6a55c807d8738ee94e33d7b13",
       "title": "채광",
       "parentId": "3dad57d6a55c80939818c63f79a2a772",
-      "icon": "attachment:0f0c13d1-9157-483c-96f9-62edd72a7316:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(3).png",
-      "cover": "attachment:8edab2c7-cd24-4030-929b-570a3bff7c15:2.png"
+      "icon": "/notion-assets/48869f59f6efa1aa0f42fc2dfea4b073.png",
+      "cover": "/notion-assets/a9a312eae9451de64591401811b935af.png"
     },
     {
       "pageId": "3dad57d6a55c80c0b4adc2aa5676076b",
       "title": "낚시",
       "parentId": "3dad57d6a55c80939818c63f79a2a772",
-      "icon": "attachment:de0c3e8f-097b-425a-bc3d-d821f3331876:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(5).png",
-      "cover": "attachment:6d8f1d22-5351-4e16-b284-0d777961268c:ChatGPT_Image_2026년_9월_20일_오전_05_46_51_(10).png"
+      "icon": "/notion-assets/7779b7f1d4fbb66376823932c602f960.png",
+      "cover": "/notion-assets/ba90318f77ec35e31448b258fdf4fd09.png"
     },
     {
       "pageId": "3e0d57d6a55c80449496e2d2e8c1d907",
       "title": "도축",
       "parentId": "3dad57d6a55c80939818c63f79a2a772",
-      "icon": "attachment:96701136-aa3f-4842-b708-dfd021a565ce:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(9).png",
-      "cover": "attachment:6cc7ca96-9888-4cdd-85a0-894e345c5b10:ChatGPT_Image_2026년_9월_20일_오전_05_46_51_(8).png"
+      "icon": "/notion-assets/0f2f60c191d60e69653c9b5f4c4cd667.png",
+      "cover": "/notion-assets/a202c3e296b3bd5ce62e875f3c5817a3.png"
     },
     {
       "pageId": "3e0d57d6a55c80918231cba5c2668bf9",
       "title": "사냥",
       "parentId": "3dad57d6a55c80939818c63f79a2a772",
-      "icon": "attachment:66175ca6-ed0b-41b6-beda-ed3298c056ff:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(9).png",
-      "cover": "attachment:97b84bbb-f768-43c1-b47a-eab3ac76fdc1:ChatGPT_Image_2026년_9월_20일_오전_05_46_51_(7).png"
+      "icon": "/notion-assets/ddcc58a73d624e256e69566e7a1475f6.png",
+      "cover": "/notion-assets/05e6d62860a1a25847bfa99b45f500e4.png"
     },
     {
       "pageId": "3e0d57d6a55c80c5a8afe20753a11db1",
       "title": "요리",
       "parentId": "3dad57d6a55c80939818c63f79a2a772",
-      "icon": "attachment:76d87344-80fe-44c2-80cb-a36ef8ccfc16:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(2).png",
-      "cover": "attachment:a65b5b7a-a09d-4cd0-b481-1086b2d21890:0b751a0d-f58b-4c0d-8435-d4db81544f27.png"
+      "icon": "/notion-assets/fee706f582ce5d8d1295fe8ca4567a23.png",
+      "cover": "/notion-assets/7f91b7a530983eb640fe8d21c7f0ce83.png"
     },
     {
       "pageId": "3e0d57d6a55c80689cfed899c1dc67f6",
       "title": "도감",
       "parentId": "3dad57d6a55c80939818c63f79a2a772",
-      "icon": "attachment:1f874173-8c80-4351-8852-8f2be1509ca0:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(10).png",
-      "cover": "attachment:94d4b35c-aabe-4fc5-9104-678f8fe5b120:ChatGPT_Image_2026년_9월_20일_오전_05_46_50_(3).png"
+      "icon": "/notion-assets/f25c92a9347d65885c1e3a77613e3869.png",
+      "cover": "/notion-assets/c73a23f752774755c00803d131595f31.png"
     },
     {
       "pageId": "3e0d57d6a55c80acb206ece6646c102a",
       "title": "파쿠르",
       "parentId": "3dad57d6a55c80939818c63f79a2a772",
-      "icon": "attachment:50b4750b-0265-44d1-9f83-c9c8f121c000:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(6).png",
-      "cover": "attachment:1505637b-ad76-4aea-8837-4ea516c3389f:ChatGPT_Image_2026년_9월_20일_오전_05_57_14_(9).png"
+      "icon": "/notion-assets/314adaf572cf975194c0989f5a42a782.png",
+      "cover": "/notion-assets/e89433b358a5d123ef93d5484f59ab8d.png"
     },
     {
       "pageId": "3e0d57d6a55c800a9fecf571a901c9bb",
@@ -118,8 +118,8 @@
       "pageId": "3e0d57d6a55c80f89a7df3aabc93ca53",
       "title": "땅 구매",
       "parentId": "3dad57d6a55c803eafacfe55e2da2c55",
-      "icon": "attachment:172e7519-f0e4-4f15-b2aa-787accb57cef:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(1).png",
-      "cover": "attachment:a89d7376-cac7-43e4-a34f-286892816076:ChatGPT_Image_2026년_9월_20일_오전_05_57_13_(3).png"
+      "icon": "/notion-assets/e090122a5039a5457898457de82d4d83.png",
+      "cover": "/notion-assets/8596312add0bc7f80a31ce2d8650abb8.png"
     },
     {
       "pageId": "3e0d57d6a55c80f4bd26e6c22516eb8a",
