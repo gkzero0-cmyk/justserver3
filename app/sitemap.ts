@@ -1,0 +1,21 @@
+import type { MetadataRoute } from 'next'
+
+import { readNotionIndex } from '@/lib/notion-index'
+import { getSiteUrl } from '@/lib/site-url'
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const siteUrl = getSiteUrl()
+  const index = readNotionIndex()
+
+  const pages: MetadataRoute.Sitemap = index.pages.map((page) => ({
+    url:
+      page.pageId === index.rootPageId
+        ? siteUrl
+        : `${siteUrl}/page/${page.pageId}`,
+    lastModified: index.generatedAt ? new Date(index.generatedAt) : new Date(),
+    changeFrequency: page.pageId === index.rootPageId ? 'daily' : 'weekly',
+    priority: page.pageId === index.rootPageId ? 1 : 0.8
+  }))
+
+  return pages
+}
