@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-import { getSiteUrl } from '@/lib/site-url'
+import { getSiteUrl } from '@/lib/url-utils'
 
 export const dynamic = 'force-static'
 
