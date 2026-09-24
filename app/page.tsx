@@ -9,8 +9,8 @@ import { readNotionIndex } from '@/lib/notion-index'
 
 export default async function HomePage() {
   const recordMap = await getNotionPage(ROOT_PAGE_ID)
-  const imageManifest = readNotionAssetManifest()
-  const notionIndex = readNotionIndex()
+  const imageManifest = await readNotionAssetManifest()
+  const notionIndex = await readNotionIndex()
   const title = getPageTitle(recordMap) || '서버 위키'
 
   const rootId = notionIndex.rootPageId.replaceAll('-', '')
