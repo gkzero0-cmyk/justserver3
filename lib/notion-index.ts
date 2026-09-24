@@ -15,13 +15,16 @@ export type NotionIndex = {
   pages: NotionIndexPage[]
 }
 
+const REMOTE_INDEX =
+  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/index.json'
+
 const EMPTY_INDEX: NotionIndex = {
   rootPageId: '3dad57d6a55c80469f3de9730cb88975',
   generatedAt: null,
   pages: []
 }
 
-export function readNotionIndex(): NotionIndex {
+function readLocalIndex(): NotionIndex {
   try {
     const indexPath = path.join(
       process.cwd(),
@@ -33,5 +36,17 @@ export function readNotionIndex(): NotionIndex {
     return JSON.parse(fs.readFileSync(indexPath, 'utf8')) as NotionIndex
   } catch {
     return EMPTY_INDEX
+  }
+}
+
+export async function readNotionIndex(): Promise<NotionIndex> {
+  try {
+    const response = await fetch(REMOTE_INDEX, {
+      next: { revalidate: 300 }
+    })
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    return (await response.json()) as NotionIndex
+  } catch {
+    return readLocalIndex()
   }
 }
