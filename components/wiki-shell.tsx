@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { withBasePath } from '@/lib/base-path'
+import { withBasePath } from '@/lib/url-utils'
 
 type TocItem = {
   id: string
