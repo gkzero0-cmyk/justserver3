@@ -55,17 +55,30 @@ function blocks(recordMap) {
 
 function collectPageIds(recordMap, currentPageId) {
   const ids = new Set()
+  const seen = new WeakSet()
 
-  for (const block of blocks(recordMap)) {
+  function visit(value) {
+    if (!value || typeof value !== 'object') return
+    if (seen.has(value)) return
+    seen.add(value)
+
     if (
-      (block.type === 'page' || block.type === 'collection_view_page') &&
-      block.id
+      (value.type === 'page' || value.type === 'collection_view_page') &&
+      value.id
     ) {
-      const id = String(block.id).replaceAll('-', '')
+      const id = String(value.id).replaceAll('-', '')
       if (id !== currentPageId) ids.add(id)
     }
+
+    if (Array.isArray(value)) {
+      for (const item of value) visit(item)
+      return
+    }
+
+    for (const item of Object.values(value)) visit(item)
   }
 
+  visit(recordMap)
   return [...ids]
 }
 
