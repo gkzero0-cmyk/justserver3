@@ -56,7 +56,6 @@ export default async function NotionSubPage({
           imageManifest={imageManifest}
         />
       </section>
-      <WikiPageNavigation current={currentPage} pages={navigationPages} />
     </WikiShell>
   )
 }
