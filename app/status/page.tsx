@@ -2,7 +2,7 @@ import { WikiShell } from '@/components/wiki-shell'
 import { readNotionAssetManifest } from '@/lib/notion-assets'
 import { readNotionIndex } from '@/lib/notion-index'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
-import { withBasePath } from '@/lib/base-path'
+import { withBasePath } from '@/lib/url-utils'
 
 export const revalidate = 300
 
