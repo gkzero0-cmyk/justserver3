@@ -30,7 +30,9 @@ export function NotionDocument({
       darkMode
       disableHeader
       mapPageUrl={(pageId) => `/page/${pageId}`}
-      mapImageUrl={(url) => imageManifest[imageKey(url)] ?? url}
+      mapImageUrl={(url) =>
+        url ? imageManifest[imageKey(url)] ?? url : ''
+      }
     />
   )
 }
