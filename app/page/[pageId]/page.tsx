@@ -26,6 +26,10 @@ export default async function NotionSubPage({
   const recordMap = await getNotionPage(pageId)
   const imageManifest = readNotionAssetManifest()
   const notionIndex = readNotionIndex()
+  const rootId = notionIndex.rootPageId.replaceAll('-', '')
+  const navigationPages = notionIndex.pages.filter(
+    (page) => page.pageId.replaceAll('-', '') !== rootId
+  )
   const title = getPageTitle(recordMap) || '서버 위키'
 
   return (
