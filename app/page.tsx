@@ -7,8 +7,6 @@ import { getNotionPage, notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
 import { readNotionAssetManifest } from '@/lib/notion-assets'
 import { readNotionIndex } from '@/lib/notion-index'
 
-export const revalidate = 300
-
 export default async function HomePage() {
   const recordMap = await getNotionPage(ROOT_PAGE_ID)
   const imageManifest = readNotionAssetManifest()
