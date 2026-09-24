@@ -1,5 +1,160 @@
 {
   "rootPageId": "3dad57d6a55c80469f3de9730cb88975",
-  "generatedAt": null,
-  "pages": []
+  "generatedAt": "2026-09-24T21:17:43.510Z",
+  "pages": [
+    {
+      "pageId": "3dad57d6a55c80469f3de9730cb88975",
+      "title": "그냥서버 : 적자생존 공식 위키",
+      "parentId": "50ed57d6a55c81caa4c70003467685a7",
+      "icon": "attachment:131ead3e-1bd4-40bd-9765-7a69d5d1a4ca:cvdvd.png",
+      "cover": "attachment:be9d0639-cd5b-424d-b680-27e70e075551:23031786686873061.png"
+    },
+    {
+      "pageId": "3dad57d6a55c802a99dcf9704ef883f3",
+      "title": "스토리",
+      "parentId": "3dad57d6a55c809b9ae1f2a7ac478586",
+      "icon": "attachment:66976e70-e149-4391-8e7f-86585cb04c52:cvdvd.png",
+      "cover": "attachment:79efb0a8-9319-460b-92ae-38a44bbe7771:2차.png"
+    },
+    {
+      "pageId": "3dad57d6a55c802aa11adaed7c2c98ff",
+      "title": "서버규칙",
+      "parentId": "3dad57d6a55c809b9ae1f2a7ac478586",
+      "icon": "attachment:450efcad-428d-46ec-be42-52332e31354e:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(6).png",
+      "cover": "attachment:3709b298-acd9-4abb-b0b1-66c33b8822e0:31101789513895395.png"
+    },
+    {
+      "pageId": "3e0d57d6a55c80199479ddd73ea6ace4",
+      "title": "패치노트",
+      "parentId": "3dad57d6a55c809b9ae1f2a7ac478586",
+      "icon": "attachment:e169e22c-32b2-4d26-b615-e29c7f2754f7:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(9).png",
+      "cover": "attachment:58096206-422e-4642-9617-c005ba62336a:2.png"
+    },
+    {
+      "pageId": "3dad57d6a55c80f28689c7bebde648fe",
+      "title": "API",
+      "parentId": "3dad57d6a55c809b9ae1f2a7ac478586",
+      "icon": "attachment:df52e64f-a5c4-4097-83a3-5f76738d5f06:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(8).png",
+      "cover": "attachment:b83fd94c-4c93-4f0c-9e9c-1d25542a19ec:1111111.png"
+    },
+    {
+      "pageId": "3e0d57d6a55c80e5af78cf3a2ef9ef7e",
+      "title": "기초설정(뉴비필독)",
+      "parentId": "3dad57d6a55c809b9ae1f2a7ac478586",
+      "icon": "attachment:901a21ad-507b-47c6-8b1c-d4ba5ddf6634:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(7).png",
+      "cover": "attachment:5457911a-7dd5-40be-ab21-8209a1e2927e:1111111.png"
+    },
+    {
+      "pageId": "3dad57d6a55c807d8738ee94e33d7b13",
+      "title": "채광",
+      "parentId": "3dad57d6a55c80939818c63f79a2a772",
+      "icon": "attachment:0f0c13d1-9157-483c-96f9-62edd72a7316:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(3).png",
+      "cover": "attachment:8edab2c7-cd24-4030-929b-570a3bff7c15:2.png"
+    },
+    {
+      "pageId": "3dad57d6a55c80c0b4adc2aa5676076b",
+      "title": "낚시",
+      "parentId": "3dad57d6a55c80939818c63f79a2a772",
+      "icon": "attachment:de0c3e8f-097b-425a-bc3d-d821f3331876:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(5).png",
+      "cover": "attachment:6d8f1d22-5351-4e16-b284-0d777961268c:ChatGPT_Image_2026년_9월_20일_오전_05_46_51_(10).png"
+    },
+    {
+      "pageId": "3e0d57d6a55c80449496e2d2e8c1d907",
+      "title": "도축",
+      "parentId": "3dad57d6a55c80939818c63f79a2a772",
+      "icon": "attachment:96701136-aa3f-4842-b708-dfd021a565ce:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(9).png",
+      "cover": "attachment:6cc7ca96-9888-4cdd-85a0-894e345c5b10:ChatGPT_Image_2026년_9월_20일_오전_05_46_51_(8).png"
+    },
+    {
+      "pageId": "3e0d57d6a55c80918231cba5c2668bf9",
+      "title": "사냥",
+      "parentId": "3dad57d6a55c80939818c63f79a2a772",
+      "icon": "attachment:66175ca6-ed0b-41b6-beda-ed3298c056ff:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(9).png",
+      "cover": "attachment:97b84bbb-f768-43c1-b47a-eab3ac76fdc1:ChatGPT_Image_2026년_9월_20일_오전_05_46_51_(7).png"
+    },
+    {
+      "pageId": "3e0d57d6a55c80c5a8afe20753a11db1",
+      "title": "요리",
+      "parentId": "3dad57d6a55c80939818c63f79a2a772",
+      "icon": "attachment:76d87344-80fe-44c2-80cb-a36ef8ccfc16:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(2).png",
+      "cover": "attachment:a65b5b7a-a09d-4cd0-b481-1086b2d21890:0b751a0d-f58b-4c0d-8435-d4db81544f27.png"
+    },
+    {
+      "pageId": "3e0d57d6a55c80689cfed899c1dc67f6",
+      "title": "도감",
+      "parentId": "3dad57d6a55c80939818c63f79a2a772",
+      "icon": "attachment:1f874173-8c80-4351-8852-8f2be1509ca0:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(10).png",
+      "cover": "attachment:94d4b35c-aabe-4fc5-9104-678f8fe5b120:ChatGPT_Image_2026년_9월_20일_오전_05_46_50_(3).png"
+    },
+    {
+      "pageId": "3e0d57d6a55c80acb206ece6646c102a",
+      "title": "파쿠르",
+      "parentId": "3dad57d6a55c80939818c63f79a2a772",
+      "icon": "attachment:50b4750b-0265-44d1-9f83-c9c8f121c000:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(6).png",
+      "cover": "attachment:1505637b-ad76-4aea-8837-4ea516c3389f:ChatGPT_Image_2026년_9월_20일_오전_05_57_14_(9).png"
+    },
+    {
+      "pageId": "3e0d57d6a55c800a9fecf571a901c9bb",
+      "title": "즉석복권",
+      "parentId": "3dad57d6a55c80939818c63f79a2a772",
+      "icon": null,
+      "cover": null
+    },
+    {
+      "pageId": "3e0d57d6a55c804dbcd3dff1fed6eb68",
+      "title": "경마장",
+      "parentId": "3dad57d6a55c80939818c63f79a2a772",
+      "icon": null,
+      "cover": null
+    },
+    {
+      "pageId": "3e0d57d6a55c80378750e502be28b30f",
+      "title": "카지노",
+      "parentId": "3dad57d6a55c80939818c63f79a2a772",
+      "icon": null,
+      "cover": null
+    },
+    {
+      "pageId": "3e0d57d6a55c80f89a7df3aabc93ca53",
+      "title": "땅 구매",
+      "parentId": "3dad57d6a55c803eafacfe55e2da2c55",
+      "icon": "attachment:172e7519-f0e4-4f15-b2aa-787accb57cef:ChatGPT_Image_2026년_9월_20일_오전_12_48_29_(1).png",
+      "cover": "attachment:a89d7376-cac7-43e4-a34f-286892816076:ChatGPT_Image_2026년_9월_20일_오전_05_57_13_(3).png"
+    },
+    {
+      "pageId": "3e0d57d6a55c80f4bd26e6c22516eb8a",
+      "title": "빚 갚기",
+      "parentId": "3dad57d6a55c803eafacfe55e2da2c55",
+      "icon": null,
+      "cover": null
+    },
+    {
+      "pageId": "3ddd57d6a55c80d1a126c09593be5d6e",
+      "title": "신용등급",
+      "parentId": "3dad57d6a55c803eafacfe55e2da2c55",
+      "icon": null,
+      "cover": null
+    },
+    {
+      "pageId": "3e0d57d6a55c8066b139d896b3c40081",
+      "title": "장비수리",
+      "parentId": "3dad57d6a55c803eafacfe55e2da2c55",
+      "icon": null,
+      "cover": null
+    },
+    {
+      "pageId": "3e0d57d6a55c80fc99eef96b991ea5df",
+      "title": "장비강화",
+      "parentId": "3dad57d6a55c803eafacfe55e2da2c55",
+      "icon": null,
+      "cover": null
+    },
+    {
+      "pageId": "3e0d57d6a55c80aa89daee3da173adf7",
+      "title": "많이 물어보는 것",
+      "parentId": "3dad57d6a55c803eafacfe55e2da2c55",
+      "icon": null,
+      "cover": null
+    }
+  ]
 }
