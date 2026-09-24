@@ -1,6 +1,6 @@
 import type { NotionIndexPage } from '@/lib/notion-index'
-import { withBasePath } from '@/lib/base-path'
-import { resolveCachedAsset } from '@/lib/asset-url'
+import { withBasePath } from '@/lib/url-utils'
+import { resolveCachedAsset } from '@/lib/url-utils'
 
 function iconForTitle(title: string) {
   const value = title.toLowerCase()
