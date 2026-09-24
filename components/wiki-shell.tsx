@@ -40,7 +40,8 @@ export function WikiShell({
   title,
   assetCount,
   pageCount,
-  pages
+  pages,
+  home = false
 }: {
   children: React.ReactNode
   sourceUrl: string
@@ -48,6 +49,7 @@ export function WikiShell({
   assetCount: number
   pageCount: number
   pages: WikiPageLink[]
+  home?: boolean
 }) {
   const [toc, setToc] = useState<TocItem[]>([])
   const [query, setQuery] = useState('')
@@ -271,19 +273,27 @@ export function WikiShell({
       )}
 
       <main className="wiki-main">
-        <section className="wiki-hero" aria-label="위키 안내">
-          <div className="hero-badges">
-            <span className="hero-badge primary">공식 가이드</span>
-            <span className="hero-badge">🧭 뉴비 필독 가이드</span>
-            <span className="hero-badge">📚 문서 {pageCount}개</span>
-          </div>
+        <section
+          className={`wiki-hero ${home ? 'is-home' : 'is-article'}`}
+          aria-label="위키 안내"
+        >
+          {home && (
+            <div className="hero-badges">
+              <span className="hero-badge primary">공식 가이드</span>
+              <span className="hero-badge">🧭 뉴비 필독 가이드</span>
+              <span className="hero-badge">📚 문서 {pageCount}개</span>
+            </div>
+          )}
 
           <div className="hero-copy">
-            <p className="hero-kicker">JUST SERVER · SURVIVAL WIKI</p>
+            <p className="hero-kicker">
+              {home ? 'JUST SERVER · SURVIVAL WIKI' : 'WIKI DOCUMENT'}
+            </p>
             <h1>{title}</h1>
             <p>
-              서버 규칙부터 돈벌이, 콘텐츠, 장비 성장까지 필요한 정보를 빠르게 찾을 수 있습니다.
-              검색창에서 문서 제목뿐 아니라 본문 내용도 바로 검색할 수 있습니다.
+              {home
+                ? '서버 규칙부터 돈벌이, 콘텐츠, 장비 성장까지 필요한 정보를 빠르게 찾을 수 있습니다. 검색창에서 문서 제목뿐 아니라 본문 내용도 바로 검색할 수 있습니다.'
+                : '왼쪽 검색과 목차를 이용해 필요한 내용을 빠르게 찾아보세요.'}
             </p>
           </div>
 
