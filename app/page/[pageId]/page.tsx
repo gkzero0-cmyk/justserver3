@@ -6,10 +6,10 @@ import { getNotionPage, notionPublicUrl } from '@/lib/notion'
 import { readNotionAssetManifest } from '@/lib/notion-assets'
 import { readNotionIndex } from '@/lib/notion-index'
 
-export const dynamicParams = false
+export const dynamicParams = true
 
-export function generateStaticParams() {
-  const notionIndex = readNotionIndex()
+export async function generateStaticParams() {
+  const notionIndex = await readNotionIndex()
   const rootId = notionIndex.rootPageId.replaceAll('-', '')
 
   return notionIndex.pages
@@ -24,8 +24,8 @@ export default async function NotionSubPage({
 }) {
   const { pageId } = await params
   const recordMap = await getNotionPage(pageId)
-  const imageManifest = readNotionAssetManifest()
-  const notionIndex = readNotionIndex()
+  const imageManifest = await readNotionAssetManifest()
+  const notionIndex = await readNotionIndex()
   const rootId = notionIndex.rootPageId.replaceAll('-', '')
   const navigationPages = notionIndex.pages.filter(
     (page) => page.pageId.replaceAll('-', '') !== rootId
