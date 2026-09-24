@@ -1103,3 +1103,59 @@ input {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+
+.not-found-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(158,232,111,.12), transparent 28rem),
+    var(--bg);
+}
+
+.not-found-card {
+  width: min(100%, 520px);
+  padding: 42px 30px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 22px;
+  background: rgba(17,22,31,.9);
+  box-shadow: 0 24px 80px rgba(0,0,0,.3);
+  text-align: center;
+}
+
+.not-found-card > span {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--accent);
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: -.04em;
+}
+
+.not-found-card h1 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: -.03em;
+}
+
+.not-found-card p {
+  margin: 14px auto 22px;
+  max-width: 390px;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 13px;
+}
+
+.not-found-card a {
+  display: inline-flex;
+  padding: 10px 15px;
+  border: 1px solid rgba(158,232,111,.24);
+  border-radius: 10px;
+  background: rgba(158,232,111,.08);
+  color: #d8ffc0;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
