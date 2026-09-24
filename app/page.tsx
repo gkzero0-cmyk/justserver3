@@ -16,10 +16,8 @@ export default async function HomePage() {
   const title = getPageTitle(recordMap) || '서버 위키'
 
   const rootId = notionIndex.rootPageId.replaceAll('-', '')
-  const topLevelPages = notionIndex.pages.filter(
-    (page) =>
-      page.pageId !== rootId &&
-      page.parentId?.replaceAll('-', '') === rootId
+  const directoryPages = notionIndex.pages.filter(
+    (page) => page.pageId !== rootId
   )
 
   return (
@@ -29,7 +27,7 @@ export default async function HomePage() {
       assetCount={Object.keys(imageManifest).length}
       pageCount={notionIndex.pages.length || 1}
     >
-      <WikiDirectory pages={topLevelPages} />
+      <WikiDirectory pages={directoryPages} />
 
       <section className="document-card">
         <NotionDocument
