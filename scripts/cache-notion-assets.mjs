@@ -13,6 +13,7 @@ const SOFT_FAIL = process.argv.includes('--soft-fail')
 const MAX_PAGES = Number(process.env.NOTION_ASSET_MAX_PAGES || 250)
 const OUT_DIR = path.join(process.cwd(), 'public', 'notion-assets')
 const MANIFEST_PATH = path.join(OUT_DIR, 'manifest.json')
+const INDEX_PATH = path.join(OUT_DIR, 'index.json')
 
 function canonicalUrl(value) {
   if (!value || typeof value !== 'string') return null
@@ -47,10 +48,63 @@ function getTextValue(value) {
   return null
 }
 
+function unwrapBlockEntry(entry) {
+  return entry?.value?.value ?? entry?.value ?? entry ?? null
+}
+
 function blocks(recordMap) {
   return Object.values(recordMap?.block || {})
-    .map((entry) => entry?.value)
+    .map(unwrapBlockEntry)
     .filter(Boolean)
+}
+
+function normalizeId(value) {
+  return String(value || '').replaceAll('-', '')
+}
+
+function getBlockTitle(block) {
+  const title = block?.properties?.title
+  if (!Array.isArray(title)) return ''
+
+  return title
+    .map((part) => {
+      if (!Array.isArray(part)) return ''
+      return typeof part[0] === 'string' ? part[0] : ''
+    })
+    .join('')
+    .trim()
+}
+
+function getPageMeta(recordMap, pageId) {
+  const normalized = normalizeId(pageId)
+
+  const pageBlock =
+    blocks(recordMap).find(
+      (block) =>
+        normalizeId(block?.id) === normalized &&
+        (block?.type === 'page' || block?.type === 'collection_view_page')
+    ) ||
+    blocks(recordMap).find(
+      (block) => block?.type === 'page' || block?.type === 'collection_view_page'
+    )
+
+  if (!pageBlock) {
+    return {
+      pageId: normalized,
+      title: '제목 없는 페이지',
+      parentId: null,
+      icon: null,
+      cover: null
+    }
+  }
+
+  return {
+    pageId: normalized,
+    title: getBlockTitle(pageBlock) || '제목 없는 페이지',
+    parentId: pageBlock.parent_id ? normalizeId(pageBlock.parent_id) : null,
+    icon: pageBlock.format?.page_icon || null,
+    cover: pageBlock.format?.page_cover || null
+  }
 }
 
 function collectPageIds(recordMap, currentPageId) {
@@ -189,7 +243,11 @@ async function crawlPages() {
 
     try {
       const recordMap = await notion.getPage(pageId)
-      results.push({ pageId, recordMap })
+      results.push({
+        pageId,
+        recordMap,
+        meta: getPageMeta(recordMap, pageId)
+      })
 
       for (const childPageId of collectPageIds(recordMap, pageId)) {
         if (!visited.has(childPageId)) queue.push(childPageId)
@@ -199,10 +257,6 @@ async function crawlPages() {
         `[notion] page ${visited.size}: ${pageId} (${collectAssetUrls(recordMap).length} URL candidates)`
       )
       console.log(`[notion] block types: ${blockTypeSummary(recordMap)}`)
-      if (visited.size === 1) {
-        const firstEntry = Object.values(recordMap?.block || {})[0]
-        console.log('[notion-debug] first block:', JSON.stringify(firstEntry).slice(0, 5000))
-      }
     } catch (error) {
       console.warn(
         `[notion] failed to load page ${pageId}: ${error?.message || error}`
@@ -218,7 +272,7 @@ async function removeStaleFiles(activeFilenames) {
 
   for (const entry of entries) {
     if (!entry.isFile()) continue
-    if (entry.name === 'manifest.json') continue
+    if (entry.name === 'manifest.json' || entry.name === 'index.json') continue
     if (activeFilenames.has(entry.name)) continue
 
     await fs.unlink(path.join(OUT_DIR, entry.name))
@@ -269,6 +323,26 @@ async function main() {
   await fs.writeFile(
     MANIFEST_PATH,
     JSON.stringify(manifest, null, 2) + '\n',
+    'utf8'
+  )
+
+  const pageIndex = pages.map(({ meta }) => ({
+    ...meta,
+    icon: meta.icon ? manifest[canonicalUrl(meta.icon)] || meta.icon : null,
+    cover: meta.cover ? manifest[canonicalUrl(meta.cover)] || meta.cover : null
+  }))
+
+  await fs.writeFile(
+    INDEX_PATH,
+    JSON.stringify(
+      {
+        rootPageId: ROOT_PAGE_ID,
+        generatedAt: new Date().toISOString(),
+        pages: pageIndex
+      },
+      null,
+      2
+    ) + '\n',
     'utf8'
   )
 
