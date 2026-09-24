@@ -19,5 +19,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: page.pageId === index.rootPageId ? 1 : 0.8
   }))
 
-  return pages
+  return [
+    ...pages,
+    {
+      url: `${siteUrl}/status`,
+      lastModified: index.generatedAt ? new Date(index.generatedAt) : new Date(),
+      changeFrequency: 'daily',
+      priority: 0.4
+    }
+  ]
 }
