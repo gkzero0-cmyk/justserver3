@@ -29,6 +29,7 @@ export default async function HomePage() {
         title,
         searchText
       }))}
+      home
     >
       <StarterGuide pages={directoryPages} />
       <WikiDirectory pages={directoryPages} />
