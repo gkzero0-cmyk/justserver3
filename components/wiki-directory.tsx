@@ -1,5 +1,6 @@
 import type { NotionIndexPage } from '@/lib/notion-index'
 import { withBasePath } from '@/lib/base-path'
+import { resolveCachedAsset } from '@/lib/asset-url'
 
 function iconForTitle(title: string) {
   const value = title.toLowerCase()
@@ -115,7 +116,7 @@ export function WikiDirectory({
             <div className="directory-grid">
               {group.pages.map((page) => {
                 const media = page.cover || page.icon
-                const resolvedMedia = media ? withBasePath(media) : null
+                const resolvedMedia = media ? resolveCachedAsset(media) : null
 
                 return (
                   <a
