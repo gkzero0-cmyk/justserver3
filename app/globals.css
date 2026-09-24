@@ -1473,3 +1473,34 @@ input {
     text-align: left;
   }
 }
+
+
+.wiki-hero.is-article {
+  padding-block: 24px;
+  background:
+    radial-gradient(circle at 90% 0%, rgba(158,232,111,.08), transparent 20rem),
+    rgba(15,20,28,.82);
+}
+
+.wiki-hero.is-article::after {
+  display: none;
+}
+
+.wiki-hero.is-article .hero-copy {
+  max-width: 820px;
+}
+
+.wiki-hero.is-article .hero-copy h1 {
+  font-size: clamp(26px, 4vw, 38px);
+}
+
+.wiki-hero.is-article .hero-copy > p:last-child {
+  margin-top: 9px;
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .wiki-hero.is-article {
+    padding: 20px 17px;
+  }
+}
