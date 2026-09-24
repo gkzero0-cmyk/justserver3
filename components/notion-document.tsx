@@ -3,6 +3,8 @@
 import { NotionRenderer } from 'react-notion-x'
 import type { ExtendedRecordMap } from 'notion-types'
 
+import { withBasePath } from '@/lib/base-path'
+
 type ImageManifest = Record<string, string>
 
 function imageKey(url: string) {
@@ -29,10 +31,12 @@ export function NotionDocument({
       fullPage={false}
       darkMode
       disableHeader
-      mapPageUrl={(pageId) => `/page/${pageId}`}
-      mapImageUrl={(url) =>
-        url ? imageManifest[imageKey(url)] ?? url : ''
-      }
+      mapPageUrl={(pageId) => withBasePath(`/page/${pageId}/`)}
+      mapImageUrl={(url) => {
+        if (!url) return ''
+        const cached = imageManifest[imageKey(url)]
+        return cached ? withBasePath(cached) : url
+      }}
     />
   )
 }
