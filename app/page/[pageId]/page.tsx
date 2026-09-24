@@ -35,7 +35,7 @@ export default async function NotionSubPage({
     navigationPages.find(
       (page) => page.pageId.replaceAll('-', '') === pageId.replaceAll('-', '')
     ) ?? null
-  const title = getPageTitle(recordMap) || currentPage?.title || '서버 위키'
+  const title = (getPageTitle(recordMap) || currentPage?.title || '서버 위키').trim()
 
   return (
     <WikiShell
