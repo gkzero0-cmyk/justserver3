@@ -1,5 +1,5 @@
 import type { NotionIndexPage } from '@/lib/notion-index'
-import { withBasePath } from '@/lib/base-path'
+import { withBasePath } from '@/lib/url-utils'
 
 const STEP_TITLES = [
   '서버규칙',
