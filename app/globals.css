@@ -1057,3 +1057,49 @@ input {
     height: 46px;
   }
 }
+
+
+.nav-section-label {
+  display: block;
+  padding: 8px 9px 5px;
+  color: #637083;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.global-page-list,
+.current-toc {
+  display: grid;
+  gap: 2px;
+}
+
+.global-page-list {
+  padding-bottom: 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,.055);
+}
+
+.global-page-link {
+  display: grid;
+  grid-template-columns: 22px minmax(0,1fr);
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #b8c3d2;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.global-page-link:hover {
+  background: rgba(158,232,111,.055);
+  color: var(--accent);
+}
+
+.global-page-link > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
