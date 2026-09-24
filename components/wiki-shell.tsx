@@ -212,10 +212,16 @@ export function WikiShell({
           <kbd>⌘K</kbd>
         </label>
 
-        <a className="sidebar-home" href={withBasePath("/")}>
-          <span>🏠</span>
-          위키 홈
-        </a>
+        <div className="sidebar-primary-links">
+          <a className="sidebar-home" href={withBasePath("/")}>
+            <span>🏠</span>
+            위키 홈
+          </a>
+          <a className="sidebar-home sidebar-status-link" href={withBasePath("/status/")}>
+            <span>●</span>
+            위키 상태
+          </a>
+        </div>
 
         <nav className="toc-list">
           {filteredPages.length > 0 && (
@@ -322,9 +328,12 @@ export function WikiShell({
             <strong>{title}</strong>
             <span>서버 규칙과 플레이 가이드를 한곳에서 확인하세요.</span>
           </div>
-          <a href={sourceUrl} target="_blank" rel="noreferrer">
-            원본 문서 보기 ↗
-          </a>
+          <nav className="footer-links">
+            <a href={withBasePath("/status/")}>위키 상태</a>
+            <a href={sourceUrl} target="_blank" rel="noreferrer">
+              원본 문서 보기 ↗
+            </a>
+          </nav>
         </footer>
       </main>
     </div>
