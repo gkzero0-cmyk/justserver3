@@ -8,12 +8,34 @@ type TocItem = {
   level: number
 }
 
+function sectionIcon(text: string) {
+  const value = text.toLowerCase()
+
+  if (value.includes('규칙') || value.includes('룰')) return '📜'
+  if (value.includes('api') || value.includes('후원')) return '💝'
+  if (value.includes('강화')) return '⚒️'
+  if (value.includes('광산') || value.includes('채광')) return '⛏️'
+  if (value.includes('가챠')) return '🎰'
+  if (value.includes('던전')) return '⚔️'
+  if (value.includes('패치') || value.includes('업데이트')) return '📝'
+  if (value.includes('참여') || value.includes('접속')) return '📢'
+  if (value.includes('도감')) return '📖'
+  if (value.includes('아이템')) return '🎁'
+  if (value.includes('안내') || value.includes('가이드')) return '🧭'
+
+  return '✦'
+}
+
 export function WikiShell({
   children,
-  sourceUrl
+  sourceUrl,
+  title,
+  assetCount
 }: {
   children: React.ReactNode
   sourceUrl: string
+  title: string
+  assetCount: number
 }) {
   const [toc, setToc] = useState<TocItem[]>([])
   const [query, setQuery] = useState('')
@@ -38,7 +60,7 @@ export function WikiShell({
         .filter((item): item is TocItem => Boolean(item))
 
       setToc(next)
-    }, 350)
+    }, 450)
 
     return () => window.clearTimeout(timer)
   }, [children])
@@ -48,6 +70,11 @@ export function WikiShell({
     if (!keyword) return toc
     return toc.filter((item) => item.text.toLowerCase().includes(keyword))
   }, [query, toc])
+
+  const quickLinks = useMemo(() => {
+    const primary = toc.filter((item) => item.level <= 2)
+    return (primary.length ? primary : toc).slice(0, 9)
+  }, [toc])
 
   const goTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({
@@ -68,14 +95,20 @@ export function WikiShell({
         >
           ☰
         </button>
+
         <a className="brand" href="/">
           <span className="brand-mark">W</span>
           <span>
-            <strong>서버 위키</strong>
-            <small>Notion Sync</small>
+            <strong>{title}</strong>
+            <small>SERVER WIKI · NOTION SYNC</small>
           </span>
         </a>
+
         <div className="top-actions">
+          <span className="sync-chip">
+            <span className="live-dot" />
+            자동 동기화
+          </span>
           <a href={sourceUrl} target="_blank" rel="noreferrer">
             원본 Notion ↗
           </a>
@@ -87,15 +120,22 @@ export function WikiShell({
           <strong>문서 탐색</strong>
           <span>{toc.length}개 항목</span>
         </div>
+
         <label className="wiki-search">
           <span>⌕</span>
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="목차 검색"
+            placeholder="규칙, API, 강화 검색"
             aria-label="목차 검색"
           />
         </label>
+
+        <a className="sidebar-home" href="/">
+          <span>🏠</span>
+          위키 홈
+        </a>
+
         <nav className="toc-list">
           {filtered.length ? (
             filtered.map((item) => (
@@ -105,16 +145,18 @@ export function WikiShell({
                 className={`toc-item level-${item.level}`}
                 onClick={() => goTo(item.id)}
               >
-                {item.text}
+                <span>{sectionIcon(item.text)}</span>
+                <span>{item.text}</span>
               </button>
             ))
           ) : (
             <p className="toc-empty">일치하는 항목이 없습니다.</p>
           )}
         </nav>
+
         <div className="sidebar-foot">
           <span className="live-dot" />
-          Notion 내용을 약 5분 주기로 갱신
+          Notion + 이미지 자산 자동 갱신
         </div>
       </aside>
 
@@ -127,7 +169,56 @@ export function WikiShell({
         />
       )}
 
-      <main className="wiki-main">{children}</main>
+      <main className="wiki-main">
+        <section className="wiki-hero" aria-label="위키 안내">
+          <div className="hero-badges">
+            <span className="hero-badge primary">
+              <span className="live-dot" />
+              LIVE GUIDE
+            </span>
+            <span className="hero-badge">🖼️ 이미지 {assetCount}개 캐시</span>
+            <span className="hero-badge">⚡ 약 5분 주기 문서 갱신</span>
+          </div>
+
+          <div className="hero-copy">
+            <p className="hero-kicker">SERVER GUIDE ARCHIVE</p>
+            <h1>{title}</h1>
+            <p>
+              필요한 정보를 빠르게 찾을 수 있도록 Notion 가이드를 위키 형태로 정리했습니다.
+              주요 항목을 선택하거나 왼쪽 목차에서 바로 이동할 수 있습니다.
+            </p>
+          </div>
+
+          {quickLinks.length > 0 && (
+            <div className="quick-nav" aria-label="주요 항목 바로가기">
+              {quickLinks.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="quick-nav-card"
+                  onClick={() => goTo(item.id)}
+                >
+                  <span className="quick-nav-icon">{sectionIcon(item.text)}</span>
+                  <span className="quick-nav-label">{item.text}</span>
+                  <span className="quick-nav-arrow">→</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {children}
+
+        <footer className="wiki-footer">
+          <div>
+            <strong>{title}</strong>
+            <span>Notion 원본과 이미지 자산을 자동 동기화합니다.</span>
+          </div>
+          <a href={sourceUrl} target="_blank" rel="noreferrer">
+            원본 문서 보기 ↗
+          </a>
+        </footer>
+      </main>
     </div>
   )
 }
