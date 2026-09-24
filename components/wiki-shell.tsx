@@ -216,7 +216,7 @@ export function WikiShell({
             </span>
             <span className="hero-badge">📚 문서 {pageCount}개</span>
             <span className="hero-badge">🖼️ 이미지 {assetCount}개 캐시</span>
-            <span className="hero-badge">⚡ 약 5분 주기 문서 갱신</span>
+            <span className="hero-badge">🔄 Notion 자동 동기화</span>
           </div>
 
           <div className="hero-copy">
