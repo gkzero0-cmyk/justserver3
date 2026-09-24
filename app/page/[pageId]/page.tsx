@@ -6,7 +6,16 @@ import { getNotionPage, notionPublicUrl } from '@/lib/notion'
 import { readNotionAssetManifest } from '@/lib/notion-assets'
 import { readNotionIndex } from '@/lib/notion-index'
 
-export const revalidate = 300
+export const dynamicParams = false
+
+export function generateStaticParams() {
+  const notionIndex = readNotionIndex()
+  const rootId = notionIndex.rootPageId.replaceAll('-', '')
+
+  return notionIndex.pages
+    .filter((page) => page.pageId.replaceAll('-', '') !== rootId)
+    .map((page) => ({ pageId: page.pageId }))
+}
 
 export default async function NotionSubPage({
   params
