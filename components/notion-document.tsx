@@ -3,8 +3,8 @@
 import { NotionRenderer } from 'react-notion-x'
 import type { ExtendedRecordMap } from 'notion-types'
 
-import { withBasePath } from '@/lib/base-path'
-import { resolveCachedAsset } from '@/lib/asset-url'
+import { withBasePath } from '@/lib/url-utils'
+import { resolveCachedAsset } from '@/lib/url-utils'
 
 type ImageManifest = Record<string, string>
 
