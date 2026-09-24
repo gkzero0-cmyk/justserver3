@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/cache-notion-assets.mjs'
+      - 'scripts/optimize-notion-assets.mjs'
       - 'lib/notion-assets.ts'
       - 'components/notion-document.tsx'
       - 'package.json'
@@ -33,10 +34,13 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install --ignore-scripts
+        run: npm install
 
       - name: Download Notion images
         run: npm run sync:notion-assets
+
+      - name: Optimize display images
+        run: npm run optimize:notion-assets
 
       - name: Commit refreshed assets
         run: |
