@@ -46,9 +46,11 @@ jobs:
           fi
 
       - name: Install dependencies
+        if: steps.pages-status.outputs.enabled == 'true'
         run: npm install --ignore-scripts
 
       - name: Build static wiki
+        if: steps.pages-status.outputs.enabled == 'true'
         run: npm run build
         env:
           GITHUB_PAGES: 'true'
@@ -56,6 +58,7 @@ jobs:
           NEXT_PUBLIC_SITE_URL: https://gkzero0-cmyk.github.io/justserver3
 
       - name: Upload Pages artifact
+        if: steps.pages-status.outputs.enabled == 'true'
         uses: actions/upload-pages-artifact@v4
         with:
           path: ./out
