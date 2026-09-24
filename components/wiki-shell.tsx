@@ -177,14 +177,14 @@ export function WikiShell({
           <span className="brand-mark">W</span>
           <span>
             <strong>{title}</strong>
-            <small>SERVER WIKI · NOTION SYNC</small>
+            <small>OFFICIAL SERVER GUIDE</small>
           </span>
         </a>
 
         <div className="top-actions">
           <span className="sync-chip">
             <span className="live-dot" />
-            자동 동기화
+            최신 가이드
           </span>
           <a href={sourceUrl} target="_blank" rel="noreferrer">
             원본 Notion ↗
@@ -257,7 +257,7 @@ export function WikiShell({
 
         <div className="sidebar-foot">
           <span className="live-dot" />
-          Notion + 이미지 자산 자동 갱신
+          공식 가이드 문서
         </div>
       </aside>
 
@@ -310,7 +310,7 @@ export function WikiShell({
         <footer className="wiki-footer">
           <div>
             <strong>{title}</strong>
-            <span>Notion 원본과 이미지 자산을 자동 동기화합니다.</span>
+            <span>서버 규칙과 플레이 가이드를 한곳에서 확인하세요.</span>
           </div>
           <a href={sourceUrl} target="_blank" rel="noreferrer">
             원본 문서 보기 ↗
