@@ -30,12 +30,14 @@ export function WikiShell({
   children,
   sourceUrl,
   title,
-  assetCount
+  assetCount,
+  pageCount
 }: {
   children: React.ReactNode
   sourceUrl: string
   title: string
   assetCount: number
+  pageCount: number
 }) {
   const [toc, setToc] = useState<TocItem[]>([])
   const [query, setQuery] = useState('')
@@ -176,6 +178,7 @@ export function WikiShell({
               <span className="live-dot" />
               LIVE GUIDE
             </span>
+            <span className="hero-badge">📚 문서 {pageCount}개</span>
             <span className="hero-badge">🖼️ 이미지 {assetCount}개 캐시</span>
             <span className="hero-badge">⚡ 약 5분 주기 문서 갱신</span>
           </div>
