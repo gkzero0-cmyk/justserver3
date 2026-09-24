@@ -4,6 +4,7 @@ import { NotionRenderer } from 'react-notion-x'
 import type { ExtendedRecordMap } from 'notion-types'
 
 import { withBasePath } from '@/lib/base-path'
+import { resolveCachedAsset } from '@/lib/asset-url'
 
 type ImageManifest = Record<string, string>
 
@@ -35,7 +36,7 @@ export function NotionDocument({
       mapImageUrl={(url) => {
         if (!url) return ''
         const cached = imageManifest[imageKey(url)]
-        return cached ? withBasePath(cached) : url
+        return cached ? resolveCachedAsset(cached) : url
       }}
     />
   )
