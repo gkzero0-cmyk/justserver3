@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import 'react-notion-x/src/styles.css'
 import './globals.css'
-import { getSiteUrl } from '@/lib/site-url'
+import { getSiteUrl } from '@/lib/url-utils'
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
