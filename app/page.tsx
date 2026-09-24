@@ -11,7 +11,7 @@ export default async function HomePage() {
   const recordMap = await getNotionPage(ROOT_PAGE_ID)
   const imageManifest = await readNotionAssetManifest()
   const notionIndex = await readNotionIndex()
-  const title = getPageTitle(recordMap) || '그냥서버 : 적자생존 공식 위키'
+  const title = (getPageTitle(recordMap) || '그냥서버 : 적자생존 공식 위키').trim()
 
   const rootId = notionIndex.rootPageId.replaceAll('-', '')
   const directoryPages = notionIndex.pages.filter(
