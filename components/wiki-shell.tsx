@@ -8,6 +8,11 @@ type TocItem = {
   level: number
 }
 
+type WikiPageLink = {
+  pageId: string
+  title: string
+}
+
 function sectionIcon(text: string) {
   const value = text.toLowerCase()
 
@@ -31,13 +36,15 @@ export function WikiShell({
   sourceUrl,
   title,
   assetCount,
-  pageCount
+  pageCount,
+  pages
 }: {
   children: React.ReactNode
   sourceUrl: string
   title: string
   assetCount: number
   pageCount: number
+  pages: WikiPageLink[]
 }) {
   const [toc, setToc] = useState<TocItem[]>([])
   const [query, setQuery] = useState('')
@@ -72,6 +79,14 @@ export function WikiShell({
     if (!keyword) return toc
     return toc.filter((item) => item.text.toLowerCase().includes(keyword))
   }, [query, toc])
+
+  const filteredPages = useMemo(() => {
+    const keyword = query.trim().toLowerCase()
+    if (!keyword) return pages.slice(0, 8)
+    return pages
+      .filter((page) => page.title.toLowerCase().includes(keyword))
+      .slice(0, 12)
+  }, [pages, query])
 
   const quickLinks = useMemo(() => {
     const primary = toc.filter((item) => item.level <= 2)
@@ -139,21 +154,40 @@ export function WikiShell({
         </a>
 
         <nav className="toc-list">
-          {filtered.length ? (
-            filtered.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className={`toc-item level-${item.level}`}
-                onClick={() => goTo(item.id)}
-              >
-                <span>{sectionIcon(item.text)}</span>
-                <span>{item.text}</span>
-              </button>
-            ))
-          ) : (
-            <p className="toc-empty">일치하는 항목이 없습니다.</p>
+          {filteredPages.length > 0 && (
+            <div className="global-page-list">
+              <span className="nav-section-label">전체 문서</span>
+              {filteredPages.map((page) => (
+                <a
+                  key={page.pageId}
+                  href={`/page/${page.pageId}`}
+                  className="global-page-link"
+                >
+                  <span>{sectionIcon(page.title)}</span>
+                  <span>{page.title}</span>
+                </a>
+              ))}
+            </div>
           )}
+
+          <div className="current-toc">
+            <span className="nav-section-label">현재 페이지</span>
+            {filtered.length ? (
+              filtered.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`toc-item level-${item.level}`}
+                  onClick={() => goTo(item.id)}
+                >
+                  <span>{sectionIcon(item.text)}</span>
+                  <span>{item.text}</span>
+                </button>
+              ))
+            ) : (
+              <p className="toc-empty">일치하는 목차가 없습니다.</p>
+            )}
+          </div>
         </nav>
 
         <div className="sidebar-foot">
