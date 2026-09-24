@@ -103,7 +103,7 @@ export function WikiDirectory({
 
       <div className="directory-groups">
         {grouped.map((group) => (
-          <section className="directory-group" key={group.key}>
+          <section className="directory-group" data-category={group.key} key={group.key}>
             <div className="directory-group-head">
               <span>{group.icon}</span>
               <div>
