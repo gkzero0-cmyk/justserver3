@@ -198,6 +198,25 @@ function fileHash(value) {
   return crypto.createHash('sha256').update(value).digest('hex').slice(0, 32)
 }
 
+function resolveIndexedAsset(value, manifest) {
+  if (!value || typeof value !== 'string') return null
+
+  const directKey = canonicalUrl(value)
+  if (directKey && manifest[directKey]) return manifest[directKey]
+
+  const attachmentMatch = value.match(/^attachment:([^:]+):/)
+  const attachmentId = attachmentMatch?.[1]
+
+  if (attachmentId) {
+    const sourceKey = Object.keys(manifest).find((key) =>
+      key.includes(`/${attachmentId}/`)
+    )
+    if (sourceKey) return manifest[sourceKey]
+  }
+
+  return null
+}
+
 async function downloadImage(sourceUrl, canonical) {
   const response = await fetch(sourceUrl, {
     redirect: 'follow',
@@ -357,8 +376,8 @@ async function main() {
 
   const pageIndex = pages.map(({ meta }) => ({
     ...meta,
-    icon: meta.icon ? manifest[canonicalUrl(meta.icon)] || meta.icon : null,
-    cover: meta.cover ? manifest[canonicalUrl(meta.cover)] || meta.cover : null
+    icon: resolveIndexedAsset(meta.icon, manifest),
+    cover: resolveIndexedAsset(meta.cover, manifest)
   }))
 
   await fs.writeFile(
