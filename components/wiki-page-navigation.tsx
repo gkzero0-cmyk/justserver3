@@ -42,10 +42,12 @@ function formatDate(value: string | null) {
 
 export function WikiPageNavigation({
   current,
-  pages
+  pages,
+  mode = 'context'
 }: {
   current: NotionIndexPage | null
   pages: NotionIndexPage[]
+  mode?: 'context' | 'siblings'
 }) {
   if (!current) return null
 
@@ -58,20 +60,9 @@ export function WikiPageNavigation({
   const category = categoryTitle(current.title)
   const updatedAt = formatDate(current.lastEdited)
 
-  return (
-    <>
-      <div className="page-context">
-        <nav className="breadcrumbs" aria-label="현재 위치">
-          <a href={withBasePath('/')}>위키 홈</a>
-          <span>›</span>
-          <span>{category}</span>
-          <span>›</span>
-          <strong>{current.title}</strong>
-        </nav>
-        {updatedAt && <span className="page-updated">최근 수정 {updatedAt}</span>}
-      </div>
-
-      <nav className="page-siblings" aria-label="이전 및 다음 문서">
+  if (mode === 'siblings') {
+    return (
+      <nav className="page-siblings page-siblings-bottom" aria-label="이전 및 다음 문서">
         {previous ? (
           <a href={withBasePath(`/page/${previous.pageId}/`)}>
             <small>← 이전 문서</small>
@@ -93,6 +84,19 @@ export function WikiPageNavigation({
           <span />
         )}
       </nav>
-    </>
+    )
+  }
+
+  return (
+    <div className="page-context">
+      <nav className="breadcrumbs" aria-label="현재 위치">
+        <a href={withBasePath('/')}>위키 홈</a>
+        <span>›</span>
+        <span>{category}</span>
+        <span>›</span>
+        <strong>{current.title}</strong>
+      </nav>
+      {updatedAt && <span className="page-updated">최근 수정 {updatedAt}</span>}
+    </div>
   )
 }
