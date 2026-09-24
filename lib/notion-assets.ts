@@ -3,7 +3,10 @@ import path from 'node:path'
 
 export type NotionAssetManifest = Record<string, string>
 
-export function readNotionAssetManifest(): NotionAssetManifest {
+const REMOTE_MANIFEST =
+  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/manifest.json'
+
+function readLocalManifest(): NotionAssetManifest {
   try {
     const manifestPath = path.join(
       process.cwd(),
@@ -17,5 +20,17 @@ export function readNotionAssetManifest(): NotionAssetManifest {
     ) as NotionAssetManifest
   } catch {
     return {}
+  }
+}
+
+export async function readNotionAssetManifest(): Promise<NotionAssetManifest> {
+  try {
+    const response = await fetch(REMOTE_MANIFEST, {
+      next: { revalidate: 300 }
+    })
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    return (await response.json()) as NotionAssetManifest
+  } catch {
+    return readLocalManifest()
   }
 }
