@@ -1,6 +1,33 @@
 import type { NotionIndexPage } from '@/lib/notion-index'
 import { withBasePath } from '@/lib/base-path'
-import { categoryForTitle, WIKI_CATEGORIES } from '@/lib/wiki-taxonomy'
+
+function categoryTitle(title: string) {
+  const value = title.toLowerCase()
+
+  if (
+    value.includes('스토리') ||
+    value.includes('규칙') ||
+    value.includes('패치') ||
+    value.includes('api') ||
+    value.includes('뉴비') ||
+    value.includes('기초')
+  ) {
+    return '시작하기'
+  }
+
+  if (
+    value.includes('땅') ||
+    value.includes('빚') ||
+    value.includes('신용') ||
+    value.includes('수리') ||
+    value.includes('강화') ||
+    value.includes('물어보는')
+  ) {
+    return '성장 · 경제'
+  }
+
+  return '주요 콘텐츠'
+}
 
 function formatDate(value: string | null) {
   if (!value) return null
@@ -28,7 +55,7 @@ export function WikiPageNavigation({
     currentIndex >= 0 && currentIndex < pages.length - 1
       ? pages[currentIndex + 1]
       : null
-  const category = WIKI_CATEGORIES[categoryForTitle(current.title)]
+  const category = categoryTitle(current.title)
   const updatedAt = formatDate(current.lastEdited)
 
   return (
@@ -37,7 +64,7 @@ export function WikiPageNavigation({
         <nav className="breadcrumbs" aria-label="현재 위치">
           <a href={withBasePath('/')}>위키 홈</a>
           <span>›</span>
-          <span>{category.title}</span>
+          <span>{category}</span>
           <span>›</span>
           <strong>{current.title}</strong>
         </nav>
