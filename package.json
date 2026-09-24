@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "sync:notion-assets": "node scripts/cache-notion-assets.mjs",
+    "prebuild": "node scripts/cache-notion-assets.mjs --soft-fail",
     "build": "next build",
     "start": "next start"
   },
