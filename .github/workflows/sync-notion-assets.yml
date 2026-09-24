@@ -40,13 +40,23 @@ jobs:
 
       - name: Commit refreshed assets
         run: |
+          rm -rf /tmp/notion-assets
+          cp -a public/notion-assets /tmp/notion-assets
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin main
+          git reset --hard origin/main
+
+          rm -rf public/notion-assets
+          mkdir -p public
+          cp -a /tmp/notion-assets public/notion-assets
+
           git add public/notion-assets
           if git diff --cached --quiet; then
             echo "No Notion asset changes."
           else
             git commit -m "Sync Notion image assets"
-            git pull --rebase origin main
             git push origin main
           fi
