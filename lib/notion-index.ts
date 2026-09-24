@@ -7,6 +7,8 @@ export type NotionIndexPage = {
   parentId: string | null
   icon: string | null
   cover: string | null
+  lastEdited: string | null
+  searchText: string
 }
 
 export type NotionIndex = {
