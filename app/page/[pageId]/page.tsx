@@ -7,8 +7,8 @@ import { WikiPageNavigation } from '@/components/wiki-page-navigation'
 import { getNotionPage, notionPublicUrl } from '@/lib/notion'
 import { readNotionAssetManifest } from '@/lib/notion-assets'
 import { readNotionIndex } from '@/lib/notion-index'
-import { resolveCachedAsset } from '@/lib/asset-url'
-import { getSiteUrl } from '@/lib/site-url'
+import { resolveCachedAsset } from '@/lib/url-utils'
+import { getSiteUrl } from '@/lib/url-utils'
 
 export const dynamicParams = true
 
