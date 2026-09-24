@@ -1504,3 +1504,258 @@ input {
     padding: 20px 17px;
   }
 }
+
+
+/* --- Status, category hierarchy and footer polish --- */
+.sidebar-primary-links {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.sidebar-primary-links .sidebar-home {
+  margin-top: 0;
+}
+
+.sidebar-status-link > span:first-child {
+  color: var(--accent);
+  font-size: 9px;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.directory-group {
+  --group-accent: rgba(158,232,111,.22);
+}
+
+.directory-group[data-category="start"] {
+  --group-accent: rgba(158,232,111,.26);
+}
+
+.directory-group[data-category="content"] {
+  --group-accent: rgba(111,181,232,.24);
+}
+
+.directory-group[data-category="growth"] {
+  --group-accent: rgba(232,181,111,.24);
+}
+
+.directory-group-head > span {
+  box-shadow: inset 0 0 0 1px var(--group-accent);
+}
+
+.directory-group .directory-card:hover {
+  border-color: var(--group-accent);
+}
+
+.directory-group::before {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 2px;
+  margin: 0 0 12px 44px;
+  border-radius: 99px;
+  background: var(--group-accent);
+}
+
+.status-dashboard {
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+}
+
+.status-summary,
+.status-grid,
+.status-recent {
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 18px;
+  background: rgba(15,20,28,.82);
+  box-shadow: 0 18px 54px rgba(0,0,0,.16);
+}
+
+.status-summary {
+  min-height: 94px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.status-summary > div {
+  display: grid;
+  grid-template-columns: 10px auto;
+  align-items: center;
+  column-gap: 9px;
+  row-gap: 3px;
+}
+
+.status-summary strong {
+  font-size: 14px;
+}
+
+.status-summary small {
+  grid-column: 2;
+  color: #7d8ba0;
+  font-size: 11px;
+}
+
+.status-summary time {
+  color: #7d8ba0;
+  font-size: 10px;
+}
+
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 14px rgba(158,232,111,.72);
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: hidden;
+}
+
+.status-grid article {
+  min-height: 124px;
+  padding: 18px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+}
+
+.status-grid article + article {
+  border-left: 1px solid rgba(255,255,255,.06);
+}
+
+.status-grid small {
+  color: #6f7e92;
+  font-size: 9px;
+  letter-spacing: .08em;
+}
+
+.status-grid strong {
+  font-size: 26px;
+  letter-spacing: -.04em;
+}
+
+.status-grid span {
+  color: #8795a9;
+  font-size: 10px;
+}
+
+.status-recent {
+  padding: 20px;
+}
+
+.status-section-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.status-section-head p {
+  margin: 0 0 4px;
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+
+.status-section-head h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.status-section-head a {
+  color: #8795a9;
+  text-decoration: none;
+  font-size: 10px;
+}
+
+.status-recent-list {
+  display: grid;
+}
+
+.status-recent-list a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 10px;
+  border-top: 1px solid rgba(255,255,255,.055);
+  color: inherit;
+  text-decoration: none;
+}
+
+.status-recent-list a:hover {
+  background: rgba(255,255,255,.02);
+}
+
+.status-recent-list strong {
+  font-size: 12px;
+}
+
+.status-recent-list span {
+  color: #718096;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.page-siblings-bottom {
+  margin-top: 0;
+  padding-top: 2px;
+}
+
+@media (max-width: 760px) {
+  .status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .status-grid article:nth-child(3) {
+    border-left: 0;
+    border-top: 1px solid rgba(255,255,255,.06);
+  }
+
+  .status-grid article:nth-child(4) {
+    border-top: 1px solid rgba(255,255,255,.06);
+  }
+}
+
+@media (max-width: 600px) {
+  .status-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .status-grid article + article,
+  .status-grid article:nth-child(3),
+  .status-grid article:nth-child(4) {
+    border-left: 0;
+    border-top: 1px solid rgba(255,255,255,.06);
+  }
+
+  .status-recent-list a {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+  }
+}
