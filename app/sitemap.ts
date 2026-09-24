@@ -5,9 +5,9 @@ import { getSiteUrl } from '@/lib/site-url'
 
 export const dynamic = 'force-static'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = getSiteUrl()
-  const index = readNotionIndex()
+  const index = await readNotionIndex()
 
   const pages: MetadataRoute.Sitemap = index.pages.map((page) => ({
     url:
