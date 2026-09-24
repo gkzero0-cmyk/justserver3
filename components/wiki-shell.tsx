@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 
+import { withBasePath } from '@/lib/base-path'
+
 type TocItem = {
   id: string
   text: string
@@ -113,7 +115,7 @@ export function WikiShell({
           ☰
         </button>
 
-        <a className="brand" href="/">
+        <a className="brand" href={withBasePath("/")}>
           <span className="brand-mark">W</span>
           <span>
             <strong>{title}</strong>
@@ -148,7 +150,7 @@ export function WikiShell({
           />
         </label>
 
-        <a className="sidebar-home" href="/">
+        <a className="sidebar-home" href={withBasePath("/")}>
           <span>🏠</span>
           위키 홈
         </a>
@@ -160,7 +162,7 @@ export function WikiShell({
               {filteredPages.map((page) => (
                 <a
                   key={page.pageId}
-                  href={`/page/${page.pageId}`}
+                  href={withBasePath(`/page/${page.pageId}/`)}
                   className="global-page-link"
                 >
                   <span>{sectionIcon(page.title)}</span>
