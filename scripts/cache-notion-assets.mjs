@@ -71,36 +71,42 @@ function collectPageIds(recordMap, currentPageId) {
 
 function collectAssetUrls(recordMap) {
   const urls = new Set()
+  const seen = new WeakSet()
 
-  for (const block of blocks(recordMap)) {
-    const format = block.format || {}
-    const properties = block.properties || {}
-
-    const candidates = []
-
-    if (block.type === 'image' || block.type === 'file') {
-      candidates.push(
-        format.display_source,
-        format.source,
-        getTextValue(properties.source)
-      )
+  function visit(value) {
+    if (typeof value === 'string') {
+      if (/^https?:\/\//i.test(value)) urls.add(value)
+      return
     }
 
-    candidates.push(
-      format.page_cover,
-      format.page_icon,
-      format.bookmark_cover,
-      format.bookmark_icon
-    )
+    if (!value || typeof value !== 'object') return
+    if (seen.has(value)) return
+    seen.add(value)
 
-    for (const candidate of candidates) {
-      if (typeof candidate !== 'string') continue
-      if (!/^https?:\/\//i.test(candidate)) continue
-      urls.add(candidate)
+    if (Array.isArray(value)) {
+      for (const item of value) visit(item)
+      return
     }
+
+    for (const item of Object.values(value)) visit(item)
   }
 
+  visit(recordMap)
   return [...urls]
+}
+
+function blockTypeSummary(recordMap) {
+  const counts = new Map()
+
+  for (const block of blocks(recordMap)) {
+    const type = block.type || 'unknown'
+    counts.set(type, (counts.get(type) || 0) + 1)
+  }
+
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([type, count]) => `${type}:${count}`)
+    .join(', ')
 }
 
 function extensionForContentType(contentType) {
@@ -177,8 +183,9 @@ async function crawlPages() {
       }
 
       console.log(
-        `[notion] page ${visited.size}: ${pageId} (${collectAssetUrls(recordMap).length} image candidates)`
+        `[notion] page ${visited.size}: ${pageId} (${collectAssetUrls(recordMap).length} URL candidates)`
       )
+      console.log(`[notion] block types: ${blockTypeSummary(recordMap)}`)
     } catch (error) {
       console.warn(
         `[notion] failed to load page ${pageId}: ${error?.message || error}`
