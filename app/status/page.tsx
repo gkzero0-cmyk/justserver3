@@ -2,8 +2,14 @@ import { WikiShell } from '@/components/wiki-shell'
 import { readNotionAssetManifest } from '@/lib/notion-assets'
 import { readNotionIndex } from '@/lib/notion-index'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
+import { withBasePath } from '@/lib/base-path'
 
 export const revalidate = 300
+
+export const metadata = {
+  title: '위키 상태',
+  description: '그냥서버 : 적자생존 공식 위키의 문서 및 이미지 동기화 상태입니다.'
+}
 
 function formatDate(value: string | null) {
   if (!value) return '확인되지 않음'
@@ -93,11 +99,11 @@ export default async function StatusPage() {
               <p>RECENT CHANGES</p>
               <h2>최근 수정 문서</h2>
             </div>
-            <a href="/">위키 홈 →</a>
+            <a href={withBasePath("/")}>위키 홈 →</a>
           </div>
           <div className="status-recent-list">
             {recentPages.map((page) => (
-              <a key={page.pageId} href={`/page/${page.pageId}/`}>
+              <a key={page.pageId} href={withBasePath(`/page/${page.pageId}/`)}>
                 <strong>{page.title}</strong>
                 <span>{formatDate(page.lastEdited)}</span>
               </a>
