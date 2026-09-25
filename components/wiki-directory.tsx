@@ -1,5 +1,9 @@
 import type { NotionIndexPage } from '@/lib/notion-index'
-import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
+import {
+  deriveOptimizedVariant,
+  resolveCachedAsset,
+  withBasePath
+} from '@/lib/url-utils'
 
 function iconForTitle(title: string) {
   const value = title.toLowerCase()
@@ -104,7 +108,12 @@ function assignUniqueMedia(pages: NotionIndexPage[]) {
   const used = new Set<string>()
   const mediaById = new Map<string, string | null>()
   for (const page of pages) {
-    const candidates = [page.thumbnailSmall, page.thumbnail].filter(isCardThumbnail)
+    const derivedSmall = deriveOptimizedVariant(page.thumbnail, 'thumb256')
+    const candidates = [
+      page.thumbnailSmall,
+      derivedSmall,
+      page.thumbnail
+    ].filter(isCardThumbnail)
     const media = candidates.find((value) => !used.has(mediaIdentity(value))) ?? null
     if (media) used.add(mediaIdentity(media))
     mediaById.set(page.pageId, media)
