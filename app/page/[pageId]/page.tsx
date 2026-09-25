@@ -7,6 +7,7 @@ import { WikiPageNavigation } from '@/components/wiki-page-navigation'
 import { getNotionPage, notionPublicUrl } from '@/lib/notion'
 import { readNotionAssetManifest, readNotionIndex, type NotionIndexPage } from '@/lib/notion-index'
 import {
+  deriveOptimizedVariant,
   getSiteUrl,
   resolveCachedAsset,
   withBasePath
@@ -271,7 +272,11 @@ export default async function NotionSubPage({
           </div>
           <div className="related-docs-grid">
             {related.map((page) => {
-              const image = [page.thumbnailSmall, page.thumbnail].find(
+              const image = [
+                page.thumbnailSmall,
+                deriveOptimizedVariant(page.thumbnail, 'thumb256'),
+                page.thumbnail
+              ].find(
                 (value) =>
                   value &&
                   (/\/optimized\/thumb256\//.test(value) ||
