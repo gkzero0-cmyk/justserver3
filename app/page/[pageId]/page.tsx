@@ -5,6 +5,7 @@ import { getPageTitle } from 'notion-utils'
 import { NotionDocument } from '@/components/notion-document'
 import { WikiShell } from '@/components/wiki-shell'
 import { WikiPageNavigation } from '@/components/wiki-page-navigation'
+import { WikiDocumentFeedback } from '@/components/wiki-document-feedback'
 import { getNotionPage, notionPublicUrl } from '@/lib/notion'
 import { readNotionAssetManifest, readNotionIndex, type NotionIndexPage } from '@/lib/notion-index'
 import {
@@ -299,6 +300,13 @@ export default async function NotionSubPage({
           imageManifest={imageManifest}
         />
       </section>
+
+      {currentPage && (
+        <WikiDocumentFeedback
+          pageId={currentPage.pageId}
+          title={currentPage.title}
+        />
+      )}
 
       {related.length > 0 && (
         <section className="related-docs" aria-labelledby="related-docs-title">
