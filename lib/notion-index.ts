@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { cache } from 'react'
 
 export type NotionIndexPage = {
   pageId: string
@@ -62,7 +63,7 @@ function readLocalIndex(): NotionIndex {
   }
 }
 
-export async function readNotionIndex(): Promise<NotionIndex> {
+async function readNotionIndexUncached(): Promise<NotionIndex> {
   try {
     const response = await fetch(REMOTE_INDEX, {
       headers: {
@@ -80,6 +81,7 @@ export async function readNotionIndex(): Promise<NotionIndex> {
   }
 }
 
+export const readNotionIndex = cache(readNotionIndexUncached)
 
 const REMOTE_MANIFEST =
   'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/display-manifest.json?v=20260925-4'
@@ -103,7 +105,7 @@ function readLocalManifest(): NotionAssetManifest {
   }
 }
 
-export async function readNotionAssetManifest(): Promise<NotionAssetManifest> {
+async function readNotionAssetManifestUncached(): Promise<NotionAssetManifest> {
   try {
     const response = await fetch(REMOTE_MANIFEST, {
       headers: {
@@ -134,3 +136,5 @@ export async function readNotionAssetManifest(): Promise<NotionAssetManifest> {
     return readLocalManifest()
   }
 }
+
+export const readNotionAssetManifest = cache(readNotionAssetManifestUncached)

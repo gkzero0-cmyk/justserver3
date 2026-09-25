@@ -43,6 +43,7 @@ const DESCRIPTION_BY_TITLE: Record<string, string> = {
 }
 
 const FEATURED = new Set(['서버규칙','기초설정(뉴비필독)','채광','빚 갚기','장비강화'])
+const PREFETCH_TITLES = new Set(['서버규칙', '기초설정(뉴비필독)', '채광'])
 
 const GROUPS = [
   { key: 'start', icon: '🧭', title: '시작하기', description: '처음 접속하기 전에 확인할 필수 안내' },
@@ -144,7 +145,7 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                   <Link
                     key={page.pageId}
                     href={withBasePath(`/page/${page.pageId}/`)}
-                    prefetch={false}
+                    prefetch={PREFETCH_TITLES.has(page.title)}
                     className={`directory-card ${featured ? 'is-featured' : ''} ${status === 'brief' ? 'is-brief' : ''}`}
                     data-status={status}
                   >
@@ -195,6 +196,7 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                         key={page.pageId}
                         href={withBasePath(`/page/${page.pageId}/`)}
                         prefetch={false}
+                        aria-label={`${page.title} — 작성 중인 문서`}
                         className="directory-card is-draft"
                         data-status="draft"
                       >
