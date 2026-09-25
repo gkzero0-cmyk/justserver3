@@ -10,6 +10,7 @@ import {
 } from '@/lib/wiki-content-health'
 import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
+import { buildWikiFeedbackUrl } from '@/lib/wiki-ux'
 
 export const revalidate = 300
 
@@ -324,6 +325,40 @@ export default async function StatusPage() {
                 </span>
               </Link>
             ))}
+          <div className="status-source-review">
+            <div>
+              <small>자료 검토 큐</small>
+              <strong>확인되지 않은 내용은 자동 게시하지 않습니다.</strong>
+              <span>
+                우선순위가 높은 문서부터 원본 Notion을 확인하고, 추가 자료가 필요하면 문서명이 미리 채워진 제보를 열 수 있습니다.
+              </span>
+            </div>
+            <div className="status-source-review-links">
+              {contentBacklog.slice(0, 6).map((item) => (
+                <span key={item.pageId}>
+                  <strong>{item.title}</strong>
+                  <a
+                    href={notionPublicUrl(item.pageId)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Notion 원문 ↗
+                  </a>
+                  <a
+                    href={buildWikiFeedbackUrl({
+                      pageId: item.pageId,
+                      title: item.title,
+                      kind: 'improve'
+                    })}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    자료 후보 제보 ↗
+                  </a>
+                </span>
+              ))}
+            </div>
+          </div>
           </div>
         </section>
 
