@@ -89,7 +89,11 @@ async function optimizeAsset(publicPath, { makeHero = false, makeLogo = false } 
       contentHash: null,
       display: publicPath,
       thumbnail: publicPath,
+      thumbnailSmall: publicPath,
       hero: makeHero ? publicPath : null,
+      hero768: makeHero ? publicPath : null,
+      hero1280: makeHero ? publicPath : null,
+      hero1600: makeHero ? publicPath : null,
       logo: makeLogo ? publicPath : null,
       sourceBytes: 0,
       displayBytes: 0,
@@ -106,7 +110,11 @@ async function optimizeAsset(publicPath, { makeHero = false, makeLogo = false } 
       contentHash: null,
       display: publicPath,
       thumbnail: publicPath,
+      thumbnailSmall: publicPath,
       hero: makeHero ? publicPath : null,
+      hero768: makeHero ? publicPath : null,
+      hero1280: makeHero ? publicPath : null,
+      hero1600: makeHero ? publicPath : null,
       logo: makeLogo ? publicPath : null,
       sourceBytes: 0,
       displayBytes: 0,
@@ -136,11 +144,42 @@ async function optimizeAsset(publicPath, { makeHero = false, makeLogo = false } 
     alphaQuality: 92,
     fallbackPublicPath: display.publicPath
   })
-  const hero = makeHero
+  const thumbnailSmall = await ensureVariant({
+    sourceBytes,
+    hash,
+    kind: 'thumb256',
+    width: 256,
+    quality: 80,
+    alphaQuality: 92,
+    fallbackPublicPath: thumbnail.publicPath
+  })
+  const hero768 = makeHero
     ? await ensureVariant({
         sourceBytes,
         hash,
-        kind: 'hero',
+        kind: 'hero768',
+        width: 768,
+        quality: 84,
+        alphaQuality: 94,
+        fallbackPublicPath: display.publicPath
+      })
+    : null
+  const hero1280 = makeHero
+    ? await ensureVariant({
+        sourceBytes,
+        hash,
+        kind: 'hero1280',
+        width: 1280,
+        quality: 85,
+        alphaQuality: 94,
+        fallbackPublicPath: display.publicPath
+      })
+    : null
+  const hero1600 = makeHero
+    ? await ensureVariant({
+        sourceBytes,
+        hash,
+        kind: 'hero1600',
         width: 1600,
         quality: 86,
         alphaQuality: 94,
@@ -185,7 +224,11 @@ async function optimizeAsset(publicPath, { makeHero = false, makeLogo = false } 
     contentHash: hash,
     display: display.publicPath,
     thumbnail: thumbnail.publicPath,
-    hero: hero?.publicPath ?? null,
+    thumbnailSmall: thumbnailSmall.publicPath,
+    hero: hero1600?.publicPath ?? null,
+    hero768: hero768?.publicPath ?? null,
+    hero1280: hero1280?.publicPath ?? null,
+    hero1600: hero1600?.publicPath ?? null,
     logo64: logo64?.publicPath ?? null,
     logo128: logo128?.publicPath ?? null,
     logo: logo?.publicPath ?? null,
@@ -195,7 +238,10 @@ async function optimizeAsset(publicPath, { makeHero = false, makeLogo = false } 
     active: [
       display.relative,
       thumbnail.relative,
-      hero?.relative,
+      thumbnailSmall.relative,
+      hero768?.relative,
+      hero1280?.relative,
+      hero1600?.relative,
       logo64?.relative,
       logo128?.relative,
       logo?.relative
@@ -290,8 +336,19 @@ async function main() {
         cover: coverVariants?.display || page.cover || null,
         thumbnail:
           coverVariants?.thumbnail || iconVariants?.thumbnail || null,
+        thumbnailSmall:
+          coverVariants?.thumbnailSmall || iconVariants?.thumbnailSmall || null,
         hero: isRoot
-          ? coverVariants?.hero || coverVariants?.display || page.cover || null
+          ? coverVariants?.hero1600 || coverVariants?.hero || coverVariants?.display || page.cover || null
+          : null,
+        hero768: isRoot
+          ? coverVariants?.hero768 || coverVariants?.hero1600 || coverVariants?.display || page.cover || null
+          : null,
+        hero1280: isRoot
+          ? coverVariants?.hero1280 || coverVariants?.hero1600 || coverVariants?.display || page.cover || null
+          : null,
+        hero1600: isRoot
+          ? coverVariants?.hero1600 || coverVariants?.display || page.cover || null
           : null,
         logo64: isRoot
           ? iconVariants?.logo64 || iconVariants?.logo || iconVariants?.display || page.icon || null

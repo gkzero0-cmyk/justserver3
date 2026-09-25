@@ -406,6 +406,21 @@ async function removeStaleFiles(activeFilenames) {
   }
 }
 
+function stablePageSnapshot(page) {
+  return {
+    pageId: page.pageId || null,
+    title: page.title || '',
+    parentId: page.parentId || null,
+    lastEdited: page.lastEdited || null,
+    searchText: page.searchText || '',
+    changeSummary: page.changeSummary || null
+  }
+}
+
+function sameJson(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right)
+}
+
 async function main() {
   await fs.mkdir(OUT_DIR, { recursive: true })
 
@@ -487,7 +502,14 @@ async function main() {
     }
   })
 
-  const generatedAt = new Date().toISOString()
+  const previousStablePages = (existingIndex.pages || []).map(stablePageSnapshot)
+  const nextStablePages = pageIndex.map(stablePageSnapshot)
+  const contentChanged = !sameJson(previousStablePages, nextStablePages)
+  const manifestChanged = !sameJson(existingManifest, manifest)
+  const generatedAt =
+    contentChanged || manifestChanged || !existingIndex.generatedAt
+      ? new Date().toISOString()
+      : existingIndex.generatedAt
 
   await fs.writeFile(
     INDEX_PATH,
