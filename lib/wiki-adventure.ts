@@ -355,3 +355,68 @@ export function weeklyWikiBoss(
     }
   }
 }
+
+
+export function nextAdventureAction(
+  story: Array<StoryChapter & { unlocked: boolean; complete: boolean }>,
+  buildPages: AdventurePage[],
+  readIds: string[],
+  allPages: AdventurePage[]
+) {
+  const read = new Set(readIds.map(normalizeId))
+  const activeChapter = story.find(
+    (chapter) => chapter.unlocked && !chapter.complete
+  )
+
+  const storyTarget =
+    activeChapter?.choices.find(
+      (page) => !read.has(normalizeId(page.pageId))
+    ) || activeChapter?.choices[0]
+
+  if (storyTarget) {
+    return {
+      kind: 'story' as const,
+      eyebrow: 'STORY NEXT',
+      title: storyTarget.title,
+      description: activeChapter?.title || '스토리 모드 이어하기',
+      page: storyTarget
+    }
+  }
+
+  const buildTarget = buildPages.find(
+    (page) => !read.has(normalizeId(page.pageId))
+  )
+  if (buildTarget) {
+    return {
+      kind: 'build' as const,
+      eyebrow: 'BUILD NEXT',
+      title: buildTarget.title,
+      description: '추천 생존 빌드의 다음 단계',
+      page: buildTarget
+    }
+  }
+
+  const unread = allPages.find(
+    (page) => !read.has(normalizeId(page.pageId))
+  )
+  if (unread) {
+    return {
+      kind: 'explore' as const,
+      eyebrow: 'EXPLORE NEXT',
+      title: unread.title,
+      description: '아직 완독하지 않은 가이드',
+      page: unread
+    }
+  }
+
+  const reread = allPages[0] || null
+  return reread
+    ? {
+        kind: 'reread' as const,
+        eyebrow: 'WEEKLY BOSS',
+        title: reread.title,
+        description: '다시 읽고 이번 주 보스에게 피해 주기',
+        page: reread
+      }
+    : null
+}
