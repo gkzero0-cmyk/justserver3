@@ -100,8 +100,47 @@ export function WikiNavigation({
               const groupPages = pages.filter(
                 (page) => categoryForPage(page) === group
               )
+              const readyPages = groupPages.filter(
+                (page) => page.status !== 'draft'
+              )
+              const draftPages = groupPages.filter(
+                (page) => page.status === 'draft'
+              )
 
               if (!groupPages.length) return null
+
+              const pageLink = (page: WikiNavigationPage, draft = false) => {
+                const current =
+                  Boolean(currentPageId) &&
+                  page.pageId.replaceAll('-', '') ===
+                    currentPageId!.replaceAll('-', '')
+
+                return (
+                  <Link
+                    key={page.pageId}
+                    href={withBasePath(`/page/${page.pageId}/`)}
+                    prefetch={!draft && PREFETCH_TITLES.has(page.title)}
+                    onClick={onCloseMenu}
+                    className={`global-page-link ${current ? 'is-current' : ''} ${draft ? 'is-draft' : ''}`}
+                    aria-current={current ? 'page' : undefined}
+                    aria-label={draft ? `${page.title} — 준비 중인 문서` : undefined}
+                    data-wiki-event="wiki_sidebar_navigate"
+                    data-wiki-section={group}
+                    data-wiki-target={page.title}
+                    data-wiki-status={page.status || 'unknown'}
+                  >
+                    <span className="sidebar-page-icon" aria-hidden="true">
+                      {iconForTitle(page.title)}
+                    </span>
+                    <span className="global-page-copy">
+                      <strong>{page.title}</strong>
+                      {draft && (
+                        <em className="sidebar-draft-badge">준비 중</em>
+                      )}
+                    </span>
+                  </Link>
+                )
+              }
 
               return (
                 <section
@@ -111,7 +150,7 @@ export function WikiNavigation({
                   <div className="sidebar-category-head sidebar-category-head-static">
                     <strong>{group}</strong>
                     <span className="sidebar-category-meta">
-                      <span>{groupPages.length}</span>
+                      <span>{readyPages.length}</span>
                     </span>
                   </div>
                   <button
@@ -122,51 +161,24 @@ export function WikiNavigation({
                   >
                     <strong>{group}</strong>
                     <span className="sidebar-category-meta">
-                      <span>{groupPages.length}</span>
+                      <span>{readyPages.length}</span>
                       <b aria-hidden="true">⌄</b>
                     </span>
                   </button>
                   <div className="sidebar-category-links">
-                    {groupPages.map((page) => {
-                      const current =
-                        Boolean(currentPageId) &&
-                        page.pageId.replaceAll('-', '') ===
-                          currentPageId!.replaceAll('-', '')
-
-                      return (
-                        <Link
-                          key={page.pageId}
-                          href={withBasePath(`/page/${page.pageId}/`)}
-                          prefetch={
-                            page.status !== 'draft' &&
-                            PREFETCH_TITLES.has(page.title)
-                          }
-                          onClick={onCloseMenu}
-                          className={`global-page-link ${current ? 'is-current' : ''} ${page.status === 'draft' ? 'is-draft' : ''}`}
-                          aria-current={current ? 'page' : undefined}
-                          aria-label={
-                            page.status === 'draft'
-                              ? `${page.title} — 준비 중인 문서`
-                              : undefined
-                          }
-                          data-wiki-event="wiki_sidebar_navigate"
-                          data-wiki-section={group}
-                          data-wiki-target={page.title}
-                          data-wiki-status={page.status || 'unknown'}
-                        >
-                          <span className="sidebar-page-icon" aria-hidden="true">
-                            {iconForTitle(page.title)}
-                          </span>
-                          <span className="global-page-copy">
-                            <strong>{page.title}</strong>
-                            {page.status === 'draft' && (
-                              <em className="sidebar-draft-badge">준비 중</em>
-                            )}
-                          </span>
-                        </Link>
-                      )
-                    })}
+                    {readyPages.map((page) => pageLink(page))}
                   </div>
+                  {draftPages.length > 0 && (
+                    <details className="sidebar-draft-group">
+                      <summary>
+                        <span>준비 중</span>
+                        <b>{draftPages.length}</b>
+                      </summary>
+                      <div className="sidebar-category-links is-draft-list">
+                        {draftPages.map((page) => pageLink(page, true))}
+                      </div>
+                    </details>
+                  )}
                 </section>
               )
             })}
