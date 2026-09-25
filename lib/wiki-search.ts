@@ -97,7 +97,7 @@ export function expandedWikiSearchTerms(keyword: string) {
 
 function priorityOf(page: WikiSearchPage) {
   const index = WIKI_SEARCH_PRIORITY.indexOf(page.title)
-  return index >= 0 ? index : 100
+  return index >= 0 ? index : 20
 }
 
 function statusRank(page: WikiSearchPage) {
@@ -177,11 +177,11 @@ export function buildWikiSearchResults(
           (titleExact
             ? 0
             : titleMatch
-              ? 8
+              ? 10
               : initialMatch
-                ? 14
-                : 20) +
-          priorityOf(page)
+                ? 16
+                : 22) +
+          (titleExact ? 0 : priorityOf(page))
       })
     }
 
@@ -201,7 +201,7 @@ export function buildWikiSearchResults(
       const headingExact = heading === keyword
       const score =
         statusPenalty +
-        (headingExact ? 4 : headingTerm ? 12 : 32) +
+        (headingExact ? 8 : headingTerm ? 18 : 36) +
         priorityOf(page)
 
       sectionMatches.push({
@@ -234,7 +234,7 @@ export function buildWikiSearchResults(
           snippet: snippetAround(searchText, bodyTerm),
           findTerm: bodyTerm,
           resultKey: `${page.pageId}:body`,
-          score: statusPenalty + 44 + priorityOf(page)
+          score: statusPenalty + 48 + priorityOf(page)
         })
       }
     }
