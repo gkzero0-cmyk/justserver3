@@ -1,7 +1,10 @@
 'use client'
 
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { categoryTitleForPage, iconForTitle } from '@/lib/wiki-taxonomy'
 import { withBasePath } from '@/lib/url-utils'
 
 type TocItem = {
@@ -24,62 +27,75 @@ const SEARCH_INDEX_URL = withBasePath(
 )
 
 function sectionIcon(text: string) {
-  const value = text.toLowerCase()
-
-  if (value.includes('스토리')) return '📖'
-  if (value.includes('규칙') || value.includes('룰')) return '📜'
-  if (value.includes('api') || value.includes('후원')) return '💝'
-  if (value.includes('뉴비') || value.includes('기초')) return '🧭'
-  if (value.includes('패치') || value.includes('업데이트')) return '📝'
-  if (value.includes('강화')) return '⚒️'
-  if (value.includes('수리')) return '🔧'
-  if (value.includes('광산') || value.includes('채광')) return '⛏️'
-  if (value.includes('낚시')) return '🎣'
-  if (value.includes('도축')) return '🥩'
-  if (value.includes('사냥')) return '⚔️'
-  if (value.includes('요리')) return '🍳'
-  if (value.includes('도감')) return '📚'
-  if (value.includes('파쿠르')) return '🏃'
-  if (value.includes('복권')) return '🎟️'
-  if (value.includes('경마')) return '🏇'
-  if (value.includes('카지노') || value.includes('가챠')) return '🎰'
-  if (value.includes('땅')) return '🏠'
-  if (value.includes('빚')) return '💸'
-  if (value.includes('신용')) return '💳'
-  if (value.includes('물어보는')) return '❓'
-  if (value.includes('참여') || value.includes('접속')) return '📢'
-  if (value.includes('아이템')) return '🎁'
-  if (value.includes('안내') || value.includes('가이드')) return '🧭'
-
-  return '✦'
+  return iconForTitle(text)
 }
 
 function categoryLabel(title: string) {
-  const value = title.toLowerCase()
+  return categoryTitleForPage(title)
+}
 
-  if (
-    value.includes('스토리') ||
-    value.includes('규칙') ||
-    value.includes('패치') ||
-    value.includes('api') ||
-    value.includes('뉴비') ||
-    value.includes('기초')
-  ) {
-    return '시작하기'
+const SEARCH_PRIORITY = [
+  '서버규칙',
+  '기초설정(뉴비필독)',
+  '채광',
+  '스토리',
+  'API',
+  '요리',
+  '사냥',
+  '땅 구매'
+]
+
+const SEARCH_ALIASES: Record<string, string[]> = {
+  초보: ['뉴비', '기초'],
+  뉴비: ['초보', '기초'],
+  돈: ['경제', '빚', '채광'],
+  돈벌이: ['채광', '경제'],
+  광질: ['채광'],
+  강화석: ['강화'],
+  장비: ['강화', '수리'],
+  룰: ['규칙'],
+  규정: ['규칙'],
+  질문: ['많이 물어보는 것', 'faq']
+}
+
+function isDraftSearchPage(page: SearchPage) {
+  const text = (page.searchText || '').replace(/\s+/g, ' ').trim()
+  return Boolean(text) && (
+    /위키\s*업데이트\s*예정|내용\s*추가\s*예정|작성\s*중/i.test(text) ||
+    text.length < 80
+  )
+}
+
+function editDistance(left: string, right: string) {
+  const a = [...left]
+  const b = [...right]
+  const row = Array.from({ length: b.length + 1 }, (_, index) => index)
+
+  for (let i = 1; i <= a.length; i += 1) {
+    let previous = row[0]
+    row[0] = i
+    for (let j = 1; j <= b.length; j += 1) {
+      const saved = row[j]
+      row[j] = Math.min(
+        row[j] + 1,
+        row[j - 1] + 1,
+        previous + (a[i - 1] === b[j - 1] ? 0 : 1)
+      )
+      previous = saved
+    }
   }
 
-  if (
-    value.includes('땅') ||
-    value.includes('빚') ||
-    value.includes('신용') ||
-    value.includes('수리') ||
-    value.includes('강화') ||
-    value.includes('물어보는')
-  ) {
-    return '성장 · 경제'
-  }
+  return row[b.length]
+}
 
-  return '주요 콘텐츠'
+function expandedSearchTerms(keyword: string) {
+  const terms = new Set([keyword])
+  for (const [alias, values] of Object.entries(SEARCH_ALIASES)) {
+    if (keyword.includes(alias) || alias.includes(keyword)) {
+      for (const value of values) terms.add(value.toLowerCase())
+    }
+  }
+  return [...terms].filter(Boolean)
 }
 
 function HighlightedText({
@@ -130,6 +146,7 @@ export function WikiShell({
   currentPageId?: string | null
   home?: boolean
 }) {
+  const router = useRouter()
   const [toc, setToc] = useState<TocItem[]>([])
   const [query, setQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
@@ -319,9 +336,23 @@ export function WikiShell({
     const source: SearchPage[] =
       searchPages ?? pages.map((page) => ({ ...page, searchText: '' }))
     const keyword = query.trim().toLowerCase()
+    const terms = expandedSearchTerms(keyword)
+
+    const priorityOf = (page: SearchPage) => {
+      const index = SEARCH_PRIORITY.indexOf(page.title)
+      return index >= 0 ? index : 100
+    }
 
     if (!keyword) {
-      return source.slice(0, 10).map((page) => ({ ...page, snippet: '' }))
+      return [...source]
+        .sort((a, b) => {
+          const draftDiff =
+            Number(isDraftSearchPage(a)) - Number(isDraftSearchPage(b))
+          if (draftDiff) return draftDiff
+          return priorityOf(a) - priorityOf(b)
+        })
+        .slice(0, 10)
+        .map((page) => ({ ...page, snippet: '' }))
     }
 
     return source
@@ -329,32 +360,53 @@ export function WikiShell({
         const title = page.title.toLowerCase()
         const searchText = page.searchText ?? ''
         const body = searchText.toLowerCase()
-        const titleMatch = title.includes(keyword)
-        const bodyIndex = body.indexOf(keyword)
+        const matchingTerm =
+          terms.find((term) => title.includes(term) || body.includes(term)) ||
+          null
+        const fuzzyTitleMatch =
+          keyword.length >= 3 &&
+          title
+            .split(/[\s()·:_-]+/)
+            .filter(Boolean)
+            .some(
+              (word) =>
+                Math.abs(word.length - keyword.length) <= 1 &&
+                editDistance(word, keyword) <= 1
+            )
 
-        if (!titleMatch && bodyIndex < 0) return null
+        if (!matchingTerm && !fuzzyTitleMatch) return null
 
+        const bodyIndex = matchingTerm ? body.indexOf(matchingTerm) : -1
         let snippet = ''
         if (bodyIndex >= 0 && searchText) {
           const start = Math.max(0, bodyIndex - 56)
           const end = Math.min(
             searchText.length,
-            bodyIndex + keyword.length + 88
+            bodyIndex + (matchingTerm?.length || keyword.length) + 88
           )
           snippet = `${start > 0 ? '…' : ''}${searchText
             .slice(start, end)
             .trim()}${end < searchText.length ? '…' : ''}`
         }
 
-        return { ...page, snippet }
+        const titleExact = title === keyword
+        const titleMatch = terms.some((term) => title.includes(term))
+        const score =
+          (isDraftSearchPage(page) ? 1000 : 0) +
+          (titleExact ? 0 : titleMatch ? 10 : fuzzyTitleMatch ? 20 : 40) +
+          priorityOf(page)
+
+        return { ...page, snippet, score }
       })
       .filter(
         (
           page
         ): page is SearchPage & {
           snippet: string
+          score: number
         } => Boolean(page)
       )
+      .sort((a, b) => a.score - b.score)
       .slice(0, 14)
   }, [pages, query, searchPages])
 
@@ -387,9 +439,11 @@ export function WikiShell({
 
       if (event.key === 'Enter' && filteredPages[selectedResult]) {
         event.preventDefault()
-        window.location.assign(
+        router.push(
           withBasePath(`/page/${filteredPages[selectedResult].pageId}/`)
         )
+        setSearchOpen(false)
+        setQuery('')
       }
 
       if (event.key === 'Tab' && modalRef.current) {
@@ -419,7 +473,7 @@ export function WikiShell({
       document.body.style.overflow = previousOverflow
       window.removeEventListener('keydown', onKeyDown)
     }
-  }, [filteredPages, searchOpen, selectedResult])
+  }, [filteredPages, router, searchOpen, selectedResult])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -472,7 +526,7 @@ export function WikiShell({
           ☰
         </button>
 
-        <a className="brand" href={withBasePath('/')}>
+        <Link className="brand" href={withBasePath('/')} prefetch={false}>
           <span className="brand-mark brand-image-mark">
             {brandLogo ? (
               <img
@@ -492,7 +546,7 @@ export function WikiShell({
             <strong>{home ? '그냥서버 : 적자생존' : title}</strong>
             <small>OFFICIAL WIKI</small>
           </span>
-        </a>
+        </Link>
 
         <div className="top-actions">
           <button
@@ -543,10 +597,10 @@ export function WikiShell({
         )}
 
         <div className="sidebar-primary-links">
-          <a className="sidebar-home" href={withBasePath('/')}>
+          <Link className="sidebar-home" href={withBasePath('/')} prefetch={false} onClick={() => setMenuOpen(false)}>
             <span>🏠</span>
             위키 홈
-          </a>
+          </Link>
         </div>
 
         <nav className="toc-list">
@@ -567,9 +621,11 @@ export function WikiShell({
                   </div>
                   <div className="sidebar-category-links">
                     {groupPages.map((page) => (
-                      <a
+                      <Link
                         key={page.pageId}
                         href={withBasePath(`/page/${page.pageId}/`)}
+                        prefetch={false}
+                        onClick={() => setMenuOpen(false)}
                         className={`global-page-link ${
                           currentPageId &&
                           page.pageId.replaceAll('-', '') ===
@@ -591,7 +647,7 @@ export function WikiShell({
                         <span className="global-page-copy">
                           <strong>{page.title}</strong>
                         </span>
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </section>
@@ -756,6 +812,23 @@ export function WikiShell({
         </footer>
       </main>
 
+      {!home && (
+        <div className={`mobile-reading-tools ${readingProgress > 2 ? 'is-visible' : ''}`}>
+          {toc.length > 0 && (
+            <button type="button" onClick={() => setMenuOpen(true)} aria-label="현재 문서 목차 열기">
+              ☷ <span>목차</span>
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label="페이지 맨 위로 이동"
+          >
+            ↑ <span>위로</span>
+          </button>
+        </div>
+      )}
+
       {searchOpen && (
         <div
           className="search-modal-backdrop"
@@ -808,9 +881,14 @@ export function WikiShell({
             >
               {filteredPages.length ? (
                 filteredPages.map((page, index) => (
-                  <a
+                  <Link
                     key={page.pageId}
                     href={withBasePath(`/page/${page.pageId}/`)}
+                    prefetch={false}
+                    onClick={() => {
+                      setSearchOpen(false)
+                      setQuery('')
+                    }}
                     className={`search-result-card ${
                       selectedResult === index ? 'is-selected' : ''
                     }`}
@@ -823,8 +901,13 @@ export function WikiShell({
                       {sectionIcon(page.title)}
                     </span>
                     <span>
-                      <span className="search-result-category">
-                        {categoryLabel(page.title)}
+                      <span className="search-result-meta-row">
+                        <span className="search-result-category">
+                          {categoryLabel(page.title)}
+                        </span>
+                        {isDraftSearchPage(page) && (
+                          <em className="search-draft-badge">작성 중</em>
+                        )}
                       </span>
                       <strong>
                         <HighlightedText text={page.title} query={query} />
@@ -838,7 +921,7 @@ export function WikiShell({
                       </small>
                     </span>
                     <b>↗</b>
-                  </a>
+                  </Link>
                 ))
               ) : (
                 <p className="search-empty">
