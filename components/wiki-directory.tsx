@@ -95,6 +95,11 @@ const GROUPS = [
   }
 ] as const
 
+function mediaIdentity(value: string) {
+  const filename = value.split('/').pop() || value
+  return filename.replace(/\.[a-z0-9]+$/i, '')
+}
+
 function assignUniqueMedia(pages: NotionIndexPage[]) {
   const used = new Set<string>()
   const mediaById = new Map<string, string | null>()
@@ -103,9 +108,10 @@ function assignUniqueMedia(pages: NotionIndexPage[]) {
     const candidates = [page.thumbnail, page.cover, page.icon].filter(
       (value): value is string => Boolean(value)
     )
-    const media = candidates.find((value) => !used.has(value)) ?? null
+    const media =
+      candidates.find((value) => !used.has(mediaIdentity(value))) ?? null
 
-    if (media) used.add(media)
+    if (media) used.add(mediaIdentity(media))
     mediaById.set(page.pageId, media)
   }
 
