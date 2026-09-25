@@ -2651,16 +2651,20 @@ html[data-theme="light"] .draft-state {
   order: 2;
 }
 
-.wiki-main.is-home-main > .recent-viewed {
+.wiki-main.is-home-main > .wiki-survival-log {
   order: 3;
 }
 
-.wiki-main.is-home-main > .wiki-directory {
+.wiki-main.is-home-main > .recent-viewed {
   order: 4;
 }
 
-.wiki-main.is-home-main > .recent-updates {
+.wiki-main.is-home-main > .wiki-directory {
   order: 5;
+}
+
+.wiki-main.is-home-main > .recent-updates {
+  order: 6;
 }
 
 .wiki-main.is-home-main > .wiki-footer {
@@ -3848,5 +3852,764 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
 @media (prefers-reduced-motion: reduce) {
   .fun-secret-toast {
     animation: none;
+  }
+}
+
+
+/* === Survival log, roulette, treasure hunt, and unlock feedback === */
+.wiki-survival-log {
+  width: min(100%, var(--content-max));
+  margin: 0 auto;
+  padding: 24px;
+  border: 1px solid rgba(var(--gold-rgb),.11);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(84,127,94,.08), transparent 30%),
+    radial-gradient(circle at 6% 0%, rgba(var(--gold-rgb),.07), transparent 32%),
+    rgba(16,14,15,.88);
+  box-shadow: 0 18px 52px rgba(0,0,0,.14);
+}
+
+.survival-log-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.survival-log-head p {
+  margin: 0 0 5px;
+  color: #76a984;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+
+.survival-log-head h2 {
+  margin: 0;
+  color: #f1e8e2;
+  font-size: 21px;
+  letter-spacing: -.025em;
+}
+
+.survival-log-head > div > span {
+  display: block;
+  margin-top: 6px;
+  color: #8e817b;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.survival-streak-badge {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid rgba(229,115,66,.2);
+  border-radius: 999px;
+  background: rgba(229,115,66,.055);
+  color: #d99b72;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.survival-profile-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(180px,1.1fr) minmax(300px,1.6fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 17px;
+  border: 1px solid rgba(var(--gold-rgb),.12);
+  border-radius: 17px;
+  background:
+    linear-gradient(105deg, rgba(var(--gold-rgb),.055), transparent 55%),
+    rgba(255,255,255,.017);
+}
+
+.survival-profile-title {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.survival-profile-title > span {
+  color: #8d7d6a;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+.survival-profile-title > strong {
+  color: #e3bd76;
+  font-size: 21px;
+  letter-spacing: -.02em;
+}
+
+.survival-profile-title > small {
+  color: #8c807a;
+  font-size: 10px;
+}
+
+.survival-profile-metrics {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 12px;
+}
+
+.survival-profile-metrics > div {
+  min-height: 56px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 3px;
+  padding: 8px;
+}
+
+.survival-profile-metrics > div + div {
+  border-left: 1px solid rgba(255,255,255,.045);
+}
+
+.survival-profile-metrics strong {
+  color: #e7ddd7;
+  font-size: 16px;
+}
+
+.survival-profile-metrics small {
+  color: #766a65;
+  font-size: 8px;
+  text-align: center;
+}
+
+.survival-profile-card > button {
+  min-height: 40px;
+  padding: 0 13px;
+  border: 1px solid rgba(var(--gold-rgb),.16);
+  border-radius: 10px;
+  background: rgba(var(--gold-rgb),.05);
+  color: #c7ac82;
+  font-size: 10px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.survival-profile-card > button:hover,
+.survival-profile-card > button:focus-visible {
+  border-color: rgba(var(--gold-rgb),.28);
+  background: rgba(var(--gold-rgb),.08);
+}
+
+.survival-share-state {
+  position: absolute;
+  right: 15px;
+  bottom: -23px;
+  color: #7daa88;
+  font-size: 9px;
+}
+
+.survival-dashboard-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px;
+}
+
+.survival-panel {
+  min-width: 0;
+  min-height: 230px;
+  padding: 15px;
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 15px;
+  background: rgba(255,255,255,.014);
+}
+
+.survival-panel > header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 11px;
+}
+
+.survival-panel > header > div {
+  display: grid;
+  gap: 3px;
+}
+
+.survival-panel > header small {
+  color: #8b7963;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .09em;
+}
+
+.survival-panel > header strong {
+  color: #e7dcd6;
+  font-size: 14px;
+}
+
+.survival-panel > header > b {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.035);
+  color: #7c706b;
+  font-size: 8px;
+  font-weight: 850;
+}
+
+.survival-panel > header > b.is-complete {
+  background: rgba(111,185,131,.08);
+  color: #7fc091;
+}
+
+.mission-list {
+  display: grid;
+  gap: 7px;
+}
+
+.mission-list > div {
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: 32px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 9px;
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 11px;
+  background: rgba(255,255,255,.012);
+}
+
+.mission-list > div.is-done {
+  border-color: rgba(111,185,131,.12);
+  background: rgba(111,185,131,.025);
+}
+
+.mission-list > div > span {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(var(--gold-rgb),.045);
+  font-size: 16px;
+}
+
+.mission-list > div > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.mission-list strong {
+  color: #cec2bc;
+  font-size: 10px;
+}
+
+.mission-list small {
+  color: #746964;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.mission-list > div > b {
+  color: #887b75;
+  font-size: 9px;
+}
+
+.mission-list > div.is-done > b {
+  color: #78b58a;
+}
+
+.mission-list i {
+  height: 3px;
+  display: block;
+  margin-top: 4px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(255,255,255,.045);
+}
+
+.mission-list i > i {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: linear-gradient(90deg,#78ad85,#c5a366);
+}
+
+.collection-list {
+  display: grid;
+  gap: 10px;
+}
+
+.collection-list > div {
+  display: grid;
+  gap: 5px;
+}
+
+.collection-list > div > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.collection-list strong {
+  color: #cfc3bc;
+  font-size: 10px;
+}
+
+.collection-list small {
+  color: #776a64;
+  font-size: 9px;
+}
+
+.collection-list i {
+  height: 6px;
+  display: block;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(255,255,255,.045);
+}
+
+.collection-list i > i {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: linear-gradient(90deg,#c49b5d,#d65d52);
+}
+
+.treasure-slots {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 7px;
+}
+
+.treasure-slots > span {
+  aspect-ratio: 1.25;
+  display: grid;
+  place-items: center;
+  border: 1px dashed rgba(var(--gold-rgb),.11);
+  border-radius: 11px;
+  background: rgba(var(--gold-rgb),.018);
+  color: #5f5551;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.treasure-slots > span.is-found {
+  border-style: solid;
+  border-color: rgba(var(--gold-rgb),.2);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(var(--gold-rgb),.13), transparent 62%),
+    rgba(var(--gold-rgb),.035);
+  color: #ddba7b;
+}
+
+.treasure-panel > p {
+  margin: 10px 0 0;
+  color: #746964;
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.survival-tip {
+  margin-top: 11px;
+  display: grid;
+  grid-template-columns: 34px minmax(0,1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(93,135,187,.1);
+  border-radius: 12px;
+  background: rgba(93,135,187,.025);
+}
+
+.survival-tip > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(93,135,187,.06);
+}
+
+.survival-tip > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.survival-tip small {
+  color: #7890ad;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .08em;
+}
+
+.survival-tip strong {
+  color: #aebdce;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.random-roulette-wrap {
+  position: relative;
+  width: 190px;
+  height: 190px;
+  margin: 22px auto 12px;
+  display: grid;
+  place-items: center;
+}
+
+.random-roulette-pointer {
+  position: absolute;
+  z-index: 3;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #e7b766;
+  font-size: 20px;
+  filter: drop-shadow(0 3px 7px rgba(0,0,0,.35));
+}
+
+.random-roulette {
+  position: relative;
+  width: 172px;
+  height: 172px;
+  display: grid;
+  place-items: center;
+  border: 5px solid rgba(var(--gold-rgb),.2);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, #1a1718 0 23%, transparent 24%),
+    repeating-conic-gradient(
+      from -22.5deg,
+      rgba(198,151,85,.17) 0deg 45deg,
+      rgba(111,75,121,.14) 45deg 90deg
+    );
+  box-shadow:
+    inset 0 0 0 2px rgba(255,255,255,.035),
+    0 14px 38px rgba(0,0,0,.2);
+  transition: transform .92s cubic-bezier(.13,.69,.13,1);
+}
+
+.random-roulette::before {
+  content: "";
+  position: absolute;
+  inset: 22px;
+  border: 1px solid rgba(var(--gold-rgb),.11);
+  border-radius: 50%;
+}
+
+.random-roulette > span {
+  position: absolute;
+  left: calc(50% - 11px);
+  top: calc(50% - 11px);
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(14,12,13,.78);
+  color: #ccb07f;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.random-roulette > b {
+  position: relative;
+  z-index: 2;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(var(--gold-rgb),.18);
+  border-radius: 50%;
+  background: #171415;
+  font-size: 19px;
+}
+
+.random-roulette.is-spinning > span,
+.random-roulette.is-spinning > b {
+  filter: blur(.15px);
+}
+
+.random-ready.is-roulette-ready,
+.random-result.is-roulette-result {
+  margin-top: 8px;
+}
+
+.random-ready.is-roulette-ready > span,
+.random-result.is-roulette-result .random-result-dice {
+  display: none;
+}
+
+.wiki-treasure-find {
+  position: fixed;
+  z-index: 34;
+  right: 24px;
+  bottom: 88px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(var(--gold-rgb),.1);
+  border-radius: 50%;
+  background: rgba(16,14,15,.72);
+  color: rgba(221,186,123,.55);
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  backdrop-filter: blur(8px);
+  animation: treasureGlint 2.8s ease-in-out infinite;
+}
+
+.wiki-treasure-find:hover,
+.wiki-treasure-find:focus-visible {
+  border-color: rgba(var(--gold-rgb),.28);
+  color: #e8c37f;
+  background: rgba(var(--gold-rgb),.07);
+}
+
+.wiki-treasure-toast,
+.wiki-achievement-toast {
+  position: fixed;
+  z-index: 125;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid rgba(var(--gold-rgb),.2);
+  background: rgba(17,14,15,.96);
+  color: #dcc08d;
+  box-shadow: 0 18px 50px rgba(0,0,0,.32);
+  backdrop-filter: blur(12px);
+}
+
+.wiki-treasure-toast {
+  bottom: max(24px,env(safe-area-inset-bottom));
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.wiki-achievement-toast {
+  top: calc(var(--topbar) + 18px);
+  min-width: min(90vw,320px);
+  display: grid;
+  grid-template-columns: 42px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 13px;
+  border-radius: 14px;
+  animation: achievementUnlockIn .34s cubic-bezier(.17,.8,.24,1);
+  overflow: hidden;
+}
+
+.wiki-achievement-toast::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-130%);
+  background: linear-gradient(110deg,transparent,rgba(255,255,255,.08),transparent);
+  animation: achievementShine 1.25s ease .15s 1;
+  pointer-events: none;
+}
+
+.wiki-achievement-toast > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(var(--gold-rgb),.08);
+  font-size: 21px;
+}
+
+.wiki-achievement-toast > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.wiki-achievement-toast small {
+  color: #9e835d;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .11em;
+}
+
+.wiki-achievement-toast strong {
+  color: #ecd29e;
+  font-size: 12px;
+}
+
+.wiki-achievement-toast > b {
+  color: #e6bd73;
+  font-size: 16px;
+}
+
+@keyframes treasureGlint {
+  0%, 72%, 100% { transform: scale(1); box-shadow: 0 8px 24px rgba(0,0,0,.15); }
+  82% { transform: scale(1.08); box-shadow: 0 0 18px rgba(220,180,105,.22); }
+}
+
+@keyframes achievementUnlockIn {
+  from { opacity: 0; transform: translate(-50%,-12px) scale(.96); }
+  to { opacity: 1; transform: translate(-50%,0) scale(1); }
+}
+
+@keyframes achievementShine {
+  from { transform: translateX(-130%); }
+  to { transform: translateX(130%); }
+}
+
+html[data-theme="light"] .wiki-survival-log {
+  border-color: rgba(118,84,55,.12);
+  background:
+    radial-gradient(circle at 92% 0%, rgba(84,127,94,.055), transparent 30%),
+    radial-gradient(circle at 6% 0%, rgba(149,107,47,.05), transparent 32%),
+    rgba(255,250,243,.78);
+}
+
+html[data-theme="light"] .survival-log-head h2,
+html[data-theme="light"] .survival-profile-metrics strong,
+html[data-theme="light"] .survival-panel > header strong,
+html[data-theme="light"] .mission-list strong,
+html[data-theme="light"] .collection-list strong {
+  color: #523a33;
+}
+
+html[data-theme="light"] .survival-profile-card,
+html[data-theme="light"] .survival-panel {
+  border-color: rgba(118,84,55,.1);
+  background: rgba(255,255,255,.47);
+}
+
+html[data-theme="light"] .wiki-treasure-find {
+  border-color: rgba(149,107,47,.13);
+  background: rgba(255,250,243,.8);
+  color: rgba(126,88,37,.62);
+}
+
+html[data-theme="light"] .wiki-treasure-toast,
+html[data-theme="light"] .wiki-achievement-toast {
+  border-color: rgba(149,107,47,.17);
+  background: rgba(255,250,243,.97);
+  color: #76562f;
+  box-shadow: 0 16px 44px rgba(74,48,33,.16);
+}
+
+html[data-theme="light"] .wiki-achievement-toast strong {
+  color: #6f4a1e;
+}
+
+@media (max-width: 900px) {
+  .survival-profile-card {
+    grid-template-columns: 1fr;
+  }
+
+  .survival-profile-card > button {
+    width: 100%;
+  }
+
+  .survival-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .survival-panel {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  .wiki-survival-log {
+    padding: 15px;
+    border-radius: 17px;
+  }
+
+  .survival-log-head {
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .survival-log-head h2 {
+    font-size: 18px;
+  }
+
+  .survival-log-head > div > span {
+    font-size: 10px;
+  }
+
+  .survival-streak-badge {
+    padding: 5px 7px;
+    font-size: 8px;
+  }
+
+  .survival-profile-card {
+    padding: 13px;
+    gap: 12px;
+  }
+
+  .survival-profile-title > strong {
+    font-size: 19px;
+  }
+
+  .survival-profile-metrics {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  .survival-profile-metrics > div:nth-child(3) {
+    border-left: 0;
+    border-top: 1px solid rgba(255,255,255,.045);
+  }
+
+  .survival-profile-metrics > div:nth-child(4) {
+    border-top: 1px solid rgba(255,255,255,.045);
+  }
+
+  .survival-panel {
+    padding: 12px;
+  }
+
+  .treasure-slots {
+    grid-template-columns: repeat(4,minmax(0,1fr));
+  }
+
+  .random-roulette-wrap {
+    width: 176px;
+    height: 176px;
+  }
+
+  .random-roulette {
+    width: 160px;
+    height: 160px;
+  }
+
+  .random-roulette > span {
+    transform-origin: 11px 11px;
+  }
+
+  .wiki-treasure-find {
+    right: 14px;
+    bottom: 72px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .wiki-achievement-toast {
+    top: calc(var(--topbar) + 10px);
+    min-width: min(92vw,320px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wiki-treasure-find,
+  .wiki-achievement-toast,
+  .wiki-achievement-toast::after {
+    animation: none;
+  }
+
+  .random-roulette {
+    transition: none;
   }
 }
