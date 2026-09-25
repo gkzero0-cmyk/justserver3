@@ -496,9 +496,6 @@ export function WikiShell({
             {theme === 'dark' ? '☀' : '☾'}
           </button>
 
-          <a href={sourceUrl} target="_blank" rel="noreferrer">
-            Notion ↗
-          </a>
         </div>
       </header>
 
@@ -508,28 +505,23 @@ export function WikiShell({
           <span>{pages.length}개</span>
         </div>
 
-        <button
-          className="wiki-search wiki-search-trigger"
-          type="button"
-          aria-keyshortcuts="Control+K Meta+K /"
-          onClick={openSearch}
-        >
-          <span>⌕</span>
-          <span>전체 문서 검색</span>
-          <kbd>⌘K</kbd>
-        </button>
+        {!home && (
+          <button
+            className="wiki-search wiki-search-trigger"
+            type="button"
+            aria-keyshortcuts="Control+K Meta+K /"
+            onClick={openSearch}
+          >
+            <span>⌕</span>
+            <span>전체 문서 검색</span>
+            <kbd>⌘K</kbd>
+          </button>
+        )}
 
         <div className="sidebar-primary-links">
           <a className="sidebar-home" href={withBasePath('/')}>
             <span>🏠</span>
             위키 홈
-          </a>
-          <a
-            className="sidebar-home sidebar-status-link"
-            href={withBasePath('/status/')}
-          >
-            <span>●</span>
-            위키 상태
           </a>
         </div>
 
@@ -717,7 +709,6 @@ export function WikiShell({
             <span>서버 규칙과 플레이 가이드를 한곳에서 확인하세요.</span>
           </div>
           <nav className="footer-links">
-            <a href={withBasePath('/status/')}>위키 상태</a>
             <a href={sourceUrl} target="_blank" rel="noreferrer">
               원본 문서 ↗
             </a>

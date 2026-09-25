@@ -78,7 +78,7 @@ export default async function HomePage() {
     <WikiShell
       sourceUrl={notionPublicUrl(ROOT_PAGE_ID)}
       title={title}
-      pageCount={notionIndex.pages.length || 1}
+      pageCount={directoryPages.length}
       pages={directoryPages.map(({ pageId, title }) => ({
         pageId,
         title
@@ -103,7 +103,6 @@ export default async function HomePage() {
             <h2 id="recent-updates-title">최근 업데이트</h2>
             <span>최근 수정된 가이드부터 바로 확인할 수 있습니다.</span>
           </div>
-          <a href={withBasePath('/status/')}>전체 상태 보기 →</a>
         </div>
 
         <div className="recent-update-list">
