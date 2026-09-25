@@ -1027,7 +1027,7 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
                   </div>
                 )}
               </div>
-            ))}
+            )}
 
             {panel === 'progress' && (
               <div className="fun-modal-content">
