@@ -75,6 +75,30 @@ test.describe('desktop wiki journeys', () => {
     ).toBeVisible()
   })
 
+  test('enhancement lab runs a full enhancement interaction', async ({ page }) => {
+    await page.goto('/')
+
+    const explore = page.getByRole('button', { name: '위키 탐험 시작' })
+    await expect(explore).toBeVisible()
+    await explore.click()
+
+    const lab = page.locator('#enhancement-lab')
+    await expect(lab.getByText('강화 체험소', { exact: true })).toBeVisible()
+    await expect(
+      lab.getByText('다이아몬드 곡괭이', { exact: true })
+    ).toBeVisible()
+
+    const enhance = lab.getByRole('button', { name: /강화하기/ })
+    await expect(enhance).toBeVisible()
+    await enhance.click()
+
+    await expect(lab.getByText('강화 에너지를 주입하는 중…')).toBeVisible()
+    await expect(
+      lab.getByText(/강화 성공|강화 실패|강화 하락|장비 파괴|\+15 달성/)
+    ).toBeVisible({ timeout: 3000 })
+    await expect(lab.getByText('총 시도', { exact: true })).toBeVisible()
+  })
+
   test('verified FAQ exposes source-backed answers', async ({ page }) => {
     await page.goto('/guide/faq')
 
