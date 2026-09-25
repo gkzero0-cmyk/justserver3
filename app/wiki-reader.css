@@ -1942,3 +1942,67 @@ html[data-theme="light"] .mobile-toc-item.is-active {
     animation: none;
   }
 }
+
+
+.search-brief-badge {
+  padding: 2px 6px;
+  border: 1px solid rgba(214,168,95,.2);
+  border-radius: 999px;
+  background: rgba(214,168,95,.055);
+  color: #c7a169;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.brief-notice {
+  width: min(100%, var(--content-max));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(214,168,95,.17);
+  border-radius: 14px;
+  background: rgba(214,168,95,.028);
+}
+
+.brief-notice > span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(214,168,95,.08);
+  color: #c9a56e;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.brief-notice > div {
+  display: grid;
+  gap: 3px;
+}
+
+.brief-notice strong {
+  font-size: 13px;
+}
+
+.brief-notice small {
+  color: #8e817b;
+  font-size: 11px;
+}
+
+@media (max-width: 620px) {
+  .search-brief-badge {
+    font-size: 10px;
+  }
+
+  .brief-notice {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+html[data-theme="light"] .brief-notice {
+  border-color: rgba(149,107,47,.15);
+  background: rgba(149,107,47,.035);
+}
