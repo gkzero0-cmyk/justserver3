@@ -28,7 +28,7 @@ jobs:
 
       - name: Commit package lock
         run: |
-          if git diff --quiet -- package-lock.json; then
+          if [ -z "$(git status --porcelain -- package-lock.json)" ]; then
             echo "package-lock.json is already current."
             exit 0
           fi
