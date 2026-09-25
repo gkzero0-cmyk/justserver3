@@ -50,6 +50,10 @@ import {
   wikiSearchPageStatus
 } from '../lib/wiki-search.ts'
 import {
+  buildTopicCoverage,
+  classifyWikiSearchTopic
+} from '../lib/wiki-search-topics.ts'
+import {
   canonicalizeWikiPath,
   wikiGuidePath,
   wikiPageIdForSlug,
@@ -805,5 +809,37 @@ test('search returns at most three section hits from one document', () => {
   assert.equal(
     results.filter((item) => item.pageId === 'api' && item.anchor).length,
     3
+  )
+})
+
+
+test('classifies search demand into privacy-safe topic ids', () => {
+  assert.equal(classifyWikiSearchTopic('장비 강화 재료'), 'equipment')
+  assert.equal(classifyWikiSearchTopic('빚은 어떻게 갚아?'), 'economy')
+  assert.equal(classifyWikiSearchTopic('겉날개 사용 가능?'), 'rules')
+  assert.equal(classifyWikiSearchTopic('후원 API'), 'api')
+  assert.equal(classifyWikiSearchTopic('완전히 새로운 단어'), 'general')
+})
+
+test('topic coverage prioritizes important topics with content gaps', () => {
+  const coverage = buildTopicCoverage([
+    { title: '서버규칙', status: 'detailed' as const },
+    { title: '기초설정(뉴비필독)', status: 'detailed' as const },
+    { title: '많이 물어보는 것', status: 'detailed' as const },
+    { title: '빚 갚기', status: 'draft' as const },
+    { title: '신용등급', status: 'draft' as const },
+    { title: '땅 구매', status: 'detailed' as const },
+    { title: '장비강화', status: 'draft' as const },
+    { title: '장비수리', status: 'draft' as const },
+    { title: '채광', status: 'brief' as const },
+    { title: '사냥', status: 'brief' as const },
+    { title: 'API', status: 'detailed' as const }
+  ])
+
+  assert.equal(coverage[0]?.id, 'economy')
+  assert.ok(coverage.find((topic) => topic.id === 'equipment')!.score > 100)
+  assert.equal(
+    coverage.find((topic) => topic.id === 'rules')?.draft,
+    0
   )
 })
