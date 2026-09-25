@@ -9,7 +9,9 @@ import {
   classifyWikiContent,
   matchesKoreanInitials,
   suggestFallbackPages,
-  updateRecentPageIds
+  updateRecentPageIds,
+  wikiHeadingId,
+  type WikiContentStatus
 } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
 
@@ -22,6 +24,8 @@ type TocItem = {
 type WikiPageLink = {
   pageId: string
   title: string
+  status?: WikiContentStatus
+  category?: string
 }
 
 type SearchPage = WikiPageLink & {
@@ -66,8 +70,13 @@ const SEARCH_ALIASES: Record<string, string[]> = {
 }
 
 function searchPageStatus(page: SearchPage) {
+  if (page.status) return page.status
   const text = (page.searchText || '').replace(/\s+/g, ' ').trim()
   return text ? classifyWikiContent(page) : null
+}
+
+function pageCategoryLabel(page: WikiPageLink) {
+  return page.category || pageCategoryLabel(page)
 }
 
 function isDraftSearchPage(page: SearchPage) {
@@ -140,6 +149,7 @@ export function WikiShell({
   heroImageMd,
   heroImageSm,
   currentPageId,
+  contentStatus,
   home = false
 }: {
   children: React.ReactNode
@@ -152,6 +162,7 @@ export function WikiShell({
   heroImageMd?: string | null
   heroImageSm?: string | null
   currentPageId?: string | null
+  contentStatus?: WikiContentStatus
   home?: boolean
 }) {
   const router = useRouter()
@@ -173,6 +184,7 @@ export function WikiShell({
   const modalSearchRef = useRef<HTMLInputElement>(null)
   const modalRef = useRef<HTMLElement>(null)
   const mobileTocCloseRef = useRef<HTMLButtonElement>(null)
+  const handledHashRef = useRef('')
 
   useEffect(() => {
     const saved = window.localStorage.getItem('justserver3-theme')
@@ -221,7 +233,7 @@ export function WikiShell({
         currentPageId &&
         page.pageId.replaceAll('-', '') === currentPageId.replaceAll('-', '')
     )
-    return current ? categoryLabel(current.title) : '시작하기'
+    return current ? pageCategoryLabel(current) : '시작하기'
   }, [currentPageId, pages])
 
   useEffect(() => {
@@ -273,28 +285,154 @@ export function WikiShell({
   }
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      const nodes = Array.from(
-        document.querySelectorAll<HTMLElement>(
-          '.notion-page-content h1, .notion-page-content h2, .notion-page-content h3'
+    if (home) {
+      setToc([])
+      return
+    }
+
+    const root = document.getElementById('main-content')
+    if (!root) return
+
+    let frame = 0
+
+    const collectHeadings = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        const nodes = Array.from(
+          document.querySelectorAll<HTMLElement>(
+            '.notion-page-content h1, .notion-page-content h2, .notion-page-content h3'
+          )
         )
-      )
+        const occurrences = new Map<string, number>()
 
-      const next = nodes
-        .map((node, index) => {
-          const text = node.textContent?.trim() ?? ''
-          if (!text) return null
-          if (!node.id) node.id = `section-${index + 1}`
-          const level = Number(node.tagName.slice(1))
-          return { id: node.id, text, level }
+        const next = nodes
+          .map((node) => {
+            const rawText =
+              Array.from(node.childNodes)
+                .filter(
+                  (child) =>
+                    !(child instanceof HTMLElement) ||
+                    !child.classList.contains('heading-anchor-copy')
+                )
+                .map((child) => child.textContent || '')
+                .join('')
+                .trim()
+
+            if (!rawText) return null
+
+            const baseId = wikiHeadingId(rawText)
+            const occurrence = (occurrences.get(baseId) || 0) + 1
+            occurrences.set(baseId, occurrence)
+            const id = wikiHeadingId(rawText, occurrence)
+
+            if (node.id !== id) node.id = id
+            node.dataset.wikiHeading = 'true'
+
+            if (!node.querySelector(':scope > .heading-anchor-copy')) {
+              const button = document.createElement('button')
+              button.type = 'button'
+              button.className = 'heading-anchor-copy'
+              button.dataset.headingAnchor = id
+              button.setAttribute('aria-label', `${rawText} 항목 링크 복사`)
+              button.title = '이 항목 링크 복사'
+              button.textContent = '#'
+              node.append(button)
+            }
+
+            return {
+              id,
+              text: rawText,
+              level: Number(node.tagName.slice(1))
+            }
+          })
+          .filter((item): item is TocItem => Boolean(item))
+
+        setToc((current) => {
+          const unchanged =
+            current.length === next.length &&
+            current.every(
+              (item, index) =>
+                item.id === next[index]?.id &&
+                item.text === next[index]?.text &&
+                item.level === next[index]?.level
+            )
+          return unchanged ? current : next
         })
-        .filter((item): item is TocItem => Boolean(item))
 
-      setToc(next)
-    }, 450)
+        const hash = decodeURIComponent(window.location.hash.slice(1))
+        if (hash && handledHashRef.current !== hash) {
+          const target = document.getElementById(hash)
+          if (target) {
+            handledHashRef.current = hash
+            target.scrollIntoView({ block: 'start' })
+          }
+        }
+      })
+    }
 
-    return () => window.clearTimeout(timer)
-  }, [children])
+    collectHeadings()
+
+    const observer = new MutationObserver(collectHeadings)
+    observer.observe(root, {
+      childList: true,
+      subtree: true
+    })
+
+    const onHashChange = () => {
+      handledHashRef.current = ''
+      collectHeadings()
+    }
+    window.addEventListener('hashchange', onHashChange)
+
+    return () => {
+      cancelAnimationFrame(frame)
+      observer.disconnect()
+      window.removeEventListener('hashchange', onHashChange)
+    }
+  }, [children, home])
+
+  useEffect(() => {
+    const root = document.getElementById('main-content')
+    if (!root) return
+
+    const onHeadingLinkClick = async (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null
+      const button = target?.closest<HTMLButtonElement>('.heading-anchor-copy')
+      const id = button?.dataset.headingAnchor
+      if (!button || !id) return
+
+      event.preventDefault()
+      event.stopPropagation()
+
+      const url = new URL(window.location.href)
+      url.hash = id
+
+      try {
+        await navigator.clipboard.writeText(url.toString())
+      } catch {
+        const textarea = document.createElement('textarea')
+        textarea.value = url.toString()
+        textarea.setAttribute('readonly', '')
+        textarea.style.position = 'fixed'
+        textarea.style.opacity = '0'
+        document.body.append(textarea)
+        textarea.select()
+        document.execCommand('copy')
+        textarea.remove()
+      }
+
+      button.dataset.copied = 'true'
+      button.textContent = '✓'
+      button.setAttribute('aria-label', '항목 링크 복사됨')
+      window.setTimeout(() => {
+        button.dataset.copied = 'false'
+        button.textContent = '#'
+      }, 1200)
+    }
+
+    root.addEventListener('click', onHeadingLinkClick)
+    return () => root.removeEventListener('click', onHeadingLinkClick)
+  }, [])
 
   useEffect(() => {
     if (!toc.length) {
@@ -385,7 +523,21 @@ export function WikiShell({
         }
 
         if (!cancelled) {
-          setSearchPages(Array.isArray(data.pages) ? data.pages : [])
+          const pageMeta = new Map(
+            pages.map((page) => [page.pageId.replaceAll('-', ''), page])
+          )
+          setSearchPages(
+            Array.isArray(data.pages)
+              ? data.pages.map((page) => {
+                  const meta = pageMeta.get(page.pageId.replaceAll('-', ''))
+                  return {
+                    ...page,
+                    status: meta?.status,
+                    category: meta?.category
+                  }
+                })
+              : []
+          )
         }
       } catch {
         if (!cancelled) setSearchFailed(true)
@@ -399,7 +551,7 @@ export function WikiShell({
     return () => {
       cancelled = true
     }
-  }, [searchOpen, searchPages])
+  }, [pages, searchOpen, searchPages])
 
   const filteredPages = useMemo(() => {
     const source: SearchPage[] =
@@ -589,10 +741,17 @@ export function WikiShell({
   }, [])
 
   const goTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    })
+    const target = document.getElementById(id)
+    if (target) {
+      const url = new URL(window.location.href)
+      url.hash = id
+      window.history.pushState(null, '', url)
+      handledHashRef.current = id
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
     setMenuOpen(false)
     setMobileTocOpen(false)
   }
@@ -610,7 +769,10 @@ export function WikiShell({
   }, [mobileTocOpen])
 
   return (
-    <div className={`wiki-shell ${sidebarCollapsed ? 'is-sidebar-collapsed' : ''}`}>
+    <div
+      className={`wiki-shell ${sidebarCollapsed ? 'is-sidebar-collapsed' : ''}`}
+      data-content-status={contentStatus || undefined}
+    >
       <a className="skip-link" href="#main-content">
         본문으로 건너뛰기
       </a>
@@ -707,7 +869,7 @@ export function WikiShell({
             <span className="nav-section-label">전체 문서</span>
             {['시작하기', '주요 콘텐츠', '성장 · 경제'].map((group) => {
               const groupPages = pages.filter(
-                (page) => categoryLabel(page.title) === group
+                (page) => pageCategoryLabel(page) === group
               )
 
               if (!groupPages.length) return null
@@ -1088,7 +1250,7 @@ export function WikiShell({
                     className={`search-result-card ${
                       selectedResult === index ? 'is-selected' : ''
                     }`}
-                    data-category={categoryLabel(page.title)}
+                    data-category={pageCategoryLabel(page)}
                     role="option"
                     aria-selected={selectedResult === index}
                     onMouseEnter={() => setSelectedResult(index)}
@@ -1099,7 +1261,7 @@ export function WikiShell({
                     <span>
                       <span className="search-result-meta-row">
                         <span className="search-result-category">
-                          {categoryLabel(page.title)}
+                          {pageCategoryLabel(page)}
                         </span>
                         {searchPageStatus(page) === 'draft' && (
                           <em className="search-draft-badge">작성 중</em>
