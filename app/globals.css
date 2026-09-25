@@ -2948,3 +2948,40 @@ html[data-theme="light"] .global-page-link {
     transition-duration: .001ms !important;
   }
 }
+
+
+.starter-step {
+  isolation: isolate;
+}
+
+.starter-step-media,
+.starter-step-shade {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+
+.starter-step-media {
+  background-position: center;
+  background-size: cover;
+  opacity: .34;
+  transform: scale(1.03);
+}
+
+.starter-step-shade {
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(14,11,12,.97) 0%, rgba(14,11,12,.9) 57%, rgba(14,11,12,.48) 100%),
+    linear-gradient(0deg, rgba(14,11,12,.76), transparent 70%);
+}
+
+html[data-theme="light"] .starter-step-media {
+  opacity: .24;
+}
+
+html[data-theme="light"] .starter-step-shade {
+  background:
+    linear-gradient(90deg, rgba(255,250,243,.98) 0%, rgba(255,250,243,.91) 60%, rgba(255,250,243,.62) 100%),
+    linear-gradient(0deg, rgba(255,250,243,.72), transparent 70%);
+}
