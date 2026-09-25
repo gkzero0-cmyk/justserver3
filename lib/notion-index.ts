@@ -17,6 +17,8 @@ export type NotionIndexPage = {
   logo?: string | null
 }
 
+export type NotionAssetManifest = Record<string, string>
+
 export type NotionAssetStats = {
   originalBytes: number
   displayBytes: number
@@ -65,5 +67,48 @@ export async function readNotionIndex(): Promise<NotionIndex> {
     return (await response.json()) as NotionIndex
   } catch {
     return readLocalIndex()
+  }
+}
+
+
+const REMOTE_MANIFEST =
+  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/display-manifest.json?v=20260925-3'
+const FALLBACK_MANIFEST =
+  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/manifest.json?v=20260925-3'
+
+function readLocalManifest(): NotionAssetManifest {
+  try {
+    const manifestPath = path.join(
+      process.cwd(),
+      'public',
+      'notion-assets',
+      'manifest.json'
+    )
+
+    return JSON.parse(
+      fs.readFileSync(manifestPath, 'utf8')
+    ) as NotionAssetManifest
+  } catch {
+    return {}
+  }
+}
+
+export async function readNotionAssetManifest(): Promise<NotionAssetManifest> {
+  try {
+    const response = await fetch(REMOTE_MANIFEST, {
+      cache: 'no-store'
+    })
+
+    if (response.ok) {
+      return (await response.json()) as NotionAssetManifest
+    }
+
+    const fallback = await fetch(FALLBACK_MANIFEST, {
+      cache: 'no-store'
+    })
+    if (!fallback.ok) throw new Error(`HTTP ${fallback.status}`)
+    return (await fallback.json()) as NotionAssetManifest
+  } catch {
+    return readLocalManifest()
   }
 }
