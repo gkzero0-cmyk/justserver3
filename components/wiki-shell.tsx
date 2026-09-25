@@ -66,6 +66,7 @@ export function WikiShell({
   pages,
   brandLogo,
   heroImage,
+  currentPageId,
   home = false
 }: {
   children: React.ReactNode
@@ -76,6 +77,7 @@ export function WikiShell({
   pages: WikiPageLink[]
   brandLogo?: string | null
   heroImage?: string | null
+  currentPageId?: string | null
   home?: boolean
 }) {
   const [toc, setToc] = useState<TocItem[]>([])
@@ -83,6 +85,7 @@ export function WikiShell({
   const [menuOpen, setMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+  const [activeTocId, setActiveTocId] = useState('')
   const searchInputRef = useRef<HTMLInputElement>(null)
   const modalSearchRef = useRef<HTMLInputElement>(null)
 
@@ -175,6 +178,36 @@ export function WikiShell({
   }, [pages, query])
 
   useEffect(() => {
+    if (!toc.length) {
+      setActiveTocId('')
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+
+        if (visible[0]?.target.id) {
+          setActiveTocId(visible[0].target.id)
+        }
+      },
+      {
+        rootMargin: '-18% 0px -68% 0px',
+        threshold: [0, 1]
+      }
+    )
+
+    for (const item of toc) {
+      const element = document.getElementById(item.id)
+      if (element) observer.observe(element)
+    }
+
+    return () => observer.disconnect()
+  }, [toc])
+
+  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null
       const isTyping =
@@ -230,30 +263,12 @@ export function WikiShell({
         <a className="brand" href={withBasePath('/')}>
           <span className="brand-mark brand-image-mark">
             {brandLogo ? (
-              <svg
-                className="brand-logo-svg"
-                viewBox="0 0 132 123"
+              <img
+                className="brand-logo-image"
+                src={brandLogo}
+                alt=""
                 aria-hidden="true"
-              >
-                <defs>
-                  <filter id="remove-white-brand" colorInterpolationFilters="sRGB">
-                    <feColorMatrix
-                      type="matrix"
-                      values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -0.333 -0.333 -0.333 0 1"
-                    />
-                    <feComponentTransfer>
-                      <feFuncA type="table" tableValues="0 0.18 0.88 1" />
-                    </feComponentTransfer>
-                  </filter>
-                </defs>
-                <image
-                  href={brandLogo}
-                  width="132"
-                  height="123"
-                  preserveAspectRatio="xMidYMid meet"
-                  filter="url(#remove-white-brand)"
-                />
-              </svg>
+              />
             ) : (
               <span>적</span>
             )}
@@ -337,7 +352,20 @@ export function WikiShell({
               <a
                 key={page.pageId}
                 href={withBasePath(`/page/${page.pageId}/`)}
-                className="global-page-link"
+                className={`global-page-link ${
+                  currentPageId &&
+                  page.pageId.replaceAll('-', '') ===
+                    currentPageId.replaceAll('-', '')
+                    ? 'is-current'
+                    : ''
+                }`}
+                aria-current={
+                  currentPageId &&
+                  page.pageId.replaceAll('-', '') ===
+                    currentPageId.replaceAll('-', '')
+                    ? 'page'
+                    : undefined
+                }
               >
                 <span>{sectionIcon(page.title)}</span>
                 <span className="global-page-copy">
@@ -354,7 +382,10 @@ export function WikiShell({
                 <button
                   key={item.id}
                   type="button"
-                  className={`toc-item level-${item.level}`}
+                  className={`toc-item level-${item.level} ${
+                    activeTocId === item.id ? 'is-active' : ''
+                  }`}
+                  aria-current={activeTocId === item.id ? 'location' : undefined}
                   onClick={() => goTo(item.id)}
                 >
                   <span>{sectionIcon(item.text)}</span>
@@ -390,7 +421,10 @@ export function WikiShell({
               <button
                 key={item.id}
                 type="button"
-                className={`article-toc-item level-${item.level}`}
+                className={`article-toc-item level-${item.level} ${
+                  activeTocId === item.id ? 'is-active' : ''
+                }`}
+                aria-current={activeTocId === item.id ? 'location' : undefined}
                 onClick={() => goTo(item.id)}
               >
                 {item.text}
