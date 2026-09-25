@@ -45,6 +45,11 @@ import {
   wikiContentReadiness
 } from '../lib/wiki-content-health.ts'
 import {
+  buildWikiSearchResults,
+  expandedWikiSearchTerms,
+  wikiSearchPageStatus
+} from '../lib/wiki-search.ts'
+import {
   canonicalizeWikiPath,
   wikiGuidePath,
   wikiPageIdForSlug,
@@ -693,5 +698,112 @@ test('maps legacy page ids to readable guide routes', () => {
   assert.equal(
     canonicalizeWikiPath(`/page/${rulesId}`),
     '/guide/rules/'
+  )
+})
+
+
+test('search ranks exact titles ahead of section and body matches', () => {
+  const results = buildWikiSearchResults(
+    [
+      {
+        pageId: 'rules',
+        title: '서버규칙',
+        status: 'detailed' as const,
+        searchText: '입장료와 기본 규칙 안내',
+        sections: [
+          {
+            heading: '입장료',
+            anchor: '입장료',
+            text: '입장료 관련 규칙을 확인하세요.'
+          }
+        ]
+      },
+      {
+        pageId: 'fees',
+        title: '입장료',
+        status: 'detailed' as const,
+        searchText: '입장료 안내'
+      }
+    ],
+    '입장료'
+  )
+
+  assert.equal(results[0].pageId, 'fees')
+  assert.equal(results[0].resultKey, 'fees:page')
+  assert.equal(results.some((item) => item.anchor === '입장료'), true)
+})
+
+test('search aliases expand common player language', () => {
+  assert.deepEqual(
+    expandedWikiSearchTerms('광질').sort(),
+    ['광질', '채광'].sort()
+  )
+
+  const results = buildWikiSearchResults(
+    [
+      {
+        pageId: 'mine',
+        title: '채광',
+        status: 'brief' as const,
+        searchText: '광물을 채굴하는 콘텐츠입니다.'
+      }
+    ],
+    '광질'
+  )
+
+  assert.equal(results[0]?.pageId, 'mine')
+})
+
+test('search keeps draft matches behind ready results', () => {
+  const results = buildWikiSearchResults(
+    [
+      {
+        pageId: 'draft-upgrade',
+        title: '장비강화',
+        status: 'draft' as const,
+        searchText: '장비 강화 내용 추가 예정'
+      },
+      {
+        pageId: 'ready-guide',
+        title: '기초설정(뉴비필독)',
+        status: 'detailed' as const,
+        searchText: '장비 강화 전에 기본 설정을 확인하세요.',
+        sections: [
+          {
+            heading: '장비 준비',
+            anchor: '장비-준비',
+            text: '장비 강화 전에 필요한 기본 설정입니다.'
+          }
+        ]
+      }
+    ],
+    '장비'
+  )
+
+  assert.equal(results[0]?.pageId, 'ready-guide')
+  assert.equal(wikiSearchPageStatus(results.at(-1)!), 'draft')
+})
+
+test('search returns at most three section hits from one document', () => {
+  const results = buildWikiSearchResults(
+    [
+      {
+        pageId: 'api',
+        title: 'API',
+        status: 'detailed' as const,
+        searchText: '후원 연동 안내',
+        sections: Array.from({ length: 6 }, (_, index) => ({
+          heading: `후원 연동 ${index + 1}`,
+          anchor: `후원-${index + 1}`,
+          text: '후원 연동 상세 설명'
+        }))
+      }
+    ],
+    '후원'
+  )
+
+  assert.equal(
+    results.filter((item) => item.pageId === 'api' && item.anchor).length,
+    3
   )
 })
