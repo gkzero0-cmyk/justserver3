@@ -1180,13 +1180,6 @@ html[data-theme="light"] .notion-bookmark:hover {
   display: none;
 }
 
-.page-updated,
-.page-siblings small,
-.status-services small,
-.status-services span {
-  color: #93857f;
-}
-
 .state-card {
   display: grid;
   justify-items: center;
@@ -1614,8 +1607,8 @@ html[data-theme="light"] .state-actions a {
 }
 
 .recent-viewed-head > small {
-  color: #756963;
-  font-size: 9px;
+  color: var(--text-subtle);
+  font-size: 10px;
 }
 
 .recent-viewed-list {
@@ -1670,8 +1663,8 @@ html[data-theme="light"] .state-actions a {
 }
 
 .recent-update-date > small {
-  color: #786c66;
-  font-size: 9px;
+  color: var(--text-subtle);
+  font-size: 10px;
 }
 
 .search-loading-list {
@@ -2269,5 +2262,126 @@ html[data-theme="light"] .status-content-metrics article + article {
   .wiki-shell[data-content-status="brief"] .document-card .notion-page {
     padding-top: 18px !important;
     padding-bottom: 36px !important;
+  }
+}
+
+
+/* === Sidebar interaction and stable recent history === */
+.sidebar-category-head-toggle {
+  display: none;
+}
+
+.recent-viewed {
+  min-height: 116px;
+}
+
+.recent-viewed-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.recent-viewed-actions > small {
+  color: var(--text-subtle);
+  font-size: 10px;
+}
+
+.recent-viewed-actions > button {
+  min-height: 32px;
+  padding: 0 9px;
+  border: 1px solid rgba(var(--gold-rgb),.13);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-faint);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.recent-viewed-actions > button:hover,
+.recent-viewed-actions > button:focus-visible {
+  border-color: rgba(var(--gold-rgb),.25);
+  color: var(--gold);
+  background: rgba(var(--gold-rgb),.045);
+}
+
+.recent-viewed-empty {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 9px 10px;
+  border: 1px dashed rgba(var(--gold-rgb),.11);
+  border-radius: 11px;
+  color: var(--text-subtle);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.recent-viewed-loading {
+  grid-template-columns: repeat(3, minmax(0,1fr));
+}
+
+.recent-viewed-skeleton {
+  min-height: 48px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 11px;
+  background: rgba(255,255,255,.035);
+}
+
+.recent-viewed-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.055),
+    transparent
+  );
+  animation: wikiSkeleton 1.4s ease-in-out infinite;
+}
+
+@media (max-width: 980px) {
+  .sidebar-category-head-static {
+    display: none;
+  }
+
+  .sidebar-category-head-toggle {
+    display: flex;
+  }
+}
+
+@media (max-width: 620px) {
+  .recent-viewed {
+    min-height: 124px;
+  }
+
+  .recent-viewed-head {
+    align-items: flex-start;
+  }
+
+  .recent-viewed-actions > small {
+    display: none;
+  }
+
+  .recent-viewed-loading {
+    grid-template-columns: 1fr;
+  }
+
+  .recent-viewed-loading .recent-viewed-skeleton:nth-child(n + 2) {
+    display: none;
+  }
+}
+
+html[data-theme="light"] .recent-viewed-actions > button,
+html[data-theme="light"] .recent-viewed-empty {
+  border-color: rgba(118,84,55,.13);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recent-viewed-skeleton::after {
+    animation: none;
   }
 }
