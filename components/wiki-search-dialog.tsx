@@ -62,7 +62,12 @@ export function WikiSearchDialog({
   selectedIndex: number
   onQueryChange: (value: string) => void
   onSelectedIndexChange: (index: number) => void
-  onNavigate: (pageId: string, findTerm?: string, anchor?: string) => void
+  onNavigate: (
+    pageId: string,
+    findTerm?: string,
+    anchor?: string,
+    source?: 'result' | 'quick-answer'
+  ) => void
   onClose: () => void
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -107,7 +112,8 @@ export function WikiSearchDialog({
         onNavigate(
           results[selectedIndex].pageId,
           results[selectedIndex].findTerm,
-          results[selectedIndex].anchor
+          results[selectedIndex].anchor,
+          'result'
         )
         return
       }
@@ -202,7 +208,8 @@ export function WikiSearchDialog({
               onNavigate(
                 quickAnswer.pageId,
                 quickAnswer.findTerm,
-                quickAnswer.anchor
+                quickAnswer.anchor,
+                'quick-answer'
               )
             }
           >
@@ -259,7 +266,7 @@ export function WikiSearchDialog({
                 prefetch={false}
                 onClick={(event) => {
                   event.preventDefault()
-                  onNavigate(page.pageId, page.findTerm, page.anchor)
+                  onNavigate(page.pageId, page.findTerm, page.anchor, 'result')
                 }}
                 className={`search-result-card ${selectedIndex === index ? 'is-selected' : ''}`}
                 data-category={page.category}
