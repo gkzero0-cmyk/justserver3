@@ -8,7 +8,8 @@ import {
   relativeUpdateLabel,
   suggestFallbackPages,
   updateRecentPageIds,
-  wikiHeadingId
+  wikiHeadingId,
+  buildWikiFeedbackUrl
 } from '../lib/wiki-ux.ts'
 
 test('classifies placeholder and tiny pages as draft', () => {
@@ -93,4 +94,21 @@ test('uses server-provided content status when search text is unavailable', () =
     ),
     ['rules', 'mining']
   )
+})
+
+
+test('builds a prefilled feedback URL without leaking arbitrary user text', () => {
+  const url = new URL(
+    buildWikiFeedbackUrl({
+      pageId: 'abc123',
+      title: '서버규칙',
+      kind: 'incorrect'
+    })
+  )
+
+  assert.equal(url.origin, 'https://github.com')
+  assert.equal(url.pathname, '/gkzero0-cmyk/justserver3/issues/new')
+  assert.match(url.searchParams.get('title') || '', /서버규칙/)
+  assert.match(url.searchParams.get('body') || '', /abc123/)
+  assert.match(url.searchParams.get('body') || '', /잘못된 정보/)
 })
