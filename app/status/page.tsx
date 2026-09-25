@@ -8,7 +8,11 @@ export const revalidate = 300
 export const metadata = {
   title: '위키 상태',
   description:
-    '그냥서버 : 적자생존 공식 위키의 문서, 이미지, 자동 수집 및 빌드 상태입니다.'
+    '그냥서버 : 적자생존 공식 위키의 문서, 이미지, 자동 수집 및 빌드 상태입니다.',
+  robots: {
+    index: false,
+    follow: false
+  }
 }
 
 type WorkflowState = {
