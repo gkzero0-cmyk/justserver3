@@ -1,8 +1,11 @@
+import Link from 'next/link'
+
 import { StarterGuide } from '@/components/starter-guide'
 import { WikiDirectory } from '@/components/wiki-directory'
 import { WikiShell } from '@/components/wiki-shell'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
 import { readNotionIndex } from '@/lib/notion-index'
+import { isDraftPage } from '@/lib/wiki-content-status'
 import {
   deriveOptimizedVariant,
   resolveCachedAsset,
@@ -34,7 +37,7 @@ export default async function HomePage() {
     (page) => page.pageId.replaceAll('-', '') !== rootId
   )
   const recentPages = [...directoryPages]
-    .filter((page) => page.lastEdited)
+    .filter((page) => page.lastEdited && !isDraftPage(page))
     .sort(
       (a, b) =>
         new Date(b.lastEdited || 0).getTime() -
@@ -107,20 +110,23 @@ export default async function HomePage() {
 
         <div className="recent-update-list">
           {recentPages.map((page) => (
-            <a
+            <Link
               key={page.pageId}
               href={withBasePath(`/page/${page.pageId}/`)}
+              prefetch={false}
               className="recent-update-card"
             >
               <span className="recent-update-date">
                 {formatDate(page.lastEdited)}
               </span>
               <strong>{page.title}</strong>
-              <small className="recent-update-summary">
-                {page.changeSummary || '최근 문서 내용이 수정되었습니다.'}
-              </small>
+              {page.changeSummary && (
+                <small className="recent-update-summary">
+                  {page.changeSummary}
+                </small>
+              )}
               <span className="recent-update-arrow">→</span>
-            </a>
+            </Link>
           ))}
         </div>
       </section>
