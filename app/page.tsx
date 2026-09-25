@@ -118,6 +118,10 @@ export default async function HomePage() {
               key={page.pageId}
               href={withBasePath(`/page/${page.pageId}/`)}
               className="recent-update-card"
+              data-wiki-event="wiki_home_navigate"
+              data-wiki-section="recent-updates"
+              data-wiki-target={page.title}
+              data-wiki-status={wikiContentStatus(page)}
             >
               <span
                 className="recent-update-date"
