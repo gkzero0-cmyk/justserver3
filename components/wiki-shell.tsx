@@ -230,7 +230,30 @@ export function WikiShell({
         <a className="brand" href={withBasePath('/')}>
           <span className="brand-mark brand-image-mark">
             {brandLogo ? (
-              <img src={brandLogo} alt="" aria-hidden="true" />
+              <svg
+                className="brand-logo-svg"
+                viewBox="0 0 132 123"
+                aria-hidden="true"
+              >
+                <defs>
+                  <filter id="remove-white-brand" colorInterpolationFilters="sRGB">
+                    <feColorMatrix
+                      type="matrix"
+                      values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -0.333 -0.333 -0.333 0 1"
+                    />
+                    <feComponentTransfer>
+                      <feFuncA type="table" tableValues="0 0.18 0.88 1" />
+                    </feComponentTransfer>
+                  </filter>
+                </defs>
+                <image
+                  href={brandLogo}
+                  width="132"
+                  height="123"
+                  preserveAspectRatio="xMidYMid meet"
+                  filter="url(#remove-white-brand)"
+                />
+              </svg>
             ) : (
               <span>적</span>
             )}
