@@ -51,10 +51,20 @@ type WikiPageLink = WikiNavigationPage & {
   status?: WikiContentStatus
 }
 
+type SearchSection = {
+  heading: string
+  anchor: string
+  text: string
+}
+
 type SearchPage = WikiPageLink & {
   searchText?: string
+  sections?: SearchSection[]
   snippet?: string
   findTerm?: string
+  sectionTitle?: string
+  anchor?: string
+  resultKey?: string
   score?: number
 }
 
@@ -902,82 +912,142 @@ export function WikiShell({
       return index >= 0 ? index : 100
     }
 
+    const statusRank = (page: SearchPage) => {
+      const status = searchPageStatus(page)
+      return status === 'draft' ? 2 : status === 'brief' ? 1 : 0
+    }
+
+    const snippetAround = (text: string, term: string) => {
+      const lower = text.toLowerCase()
+      const index = lower.indexOf(term.toLowerCase())
+      if (index < 0) return text.trim().slice(0, 150)
+
+      const start = Math.max(0, index - 48)
+      const end = Math.min(text.length, index + term.length + 82)
+      return `${start > 0 ? '…' : ''}${text
+        .slice(start, end)
+        .replace(/\s+/g, ' ')
+        .trim()}${end < text.length ? '…' : ''}`
+    }
+
     if (!keyword) {
       return [...source]
         .sort((a, b) => {
-          const statusRank = (page: SearchPage) => {
-            const status = searchPageStatus(page)
-            return status === 'draft' ? 2 : status === 'brief' ? 1 : 0
-          }
           const statusDiff = statusRank(a) - statusRank(b)
           if (statusDiff) return statusDiff
           return priorityOf(a) - priorityOf(b)
         })
         .slice(0, 10)
-        .map((page) => ({ ...page, snippet: '' }))
+        .map((page) => ({
+          ...page,
+          snippet: '',
+          resultKey: `${page.pageId}:page`
+        }))
     }
 
-    return source
-      .map((page) => {
-        const title = page.title.toLowerCase()
-        const searchText = page.searchText ?? ''
-        const body = searchText.toLowerCase()
-        const matchingTerm =
-          terms.find((term) => title.includes(term) || body.includes(term)) ||
-          null
-        const initialMatch = matchesKoreanInitials(page.title, keyword)
-        const fuzzyTitleMatch =
-          keyword.length >= 3 &&
-          title
-            .split(/[\s()·:_-]+/)
-            .filter(Boolean)
-            .some(
-              (word) =>
-                Math.abs(word.length - keyword.length) <= 1 &&
-                editDistance(word, keyword) <= 1
-            )
+    const results: SearchPage[] = []
 
-        if (!matchingTerm && !initialMatch && !fuzzyTitleMatch) return null
-
-        const bodyIndex = matchingTerm ? body.indexOf(matchingTerm) : -1
-        let snippet = ''
-        if (bodyIndex >= 0 && searchText) {
-          const start = Math.max(0, bodyIndex - 56)
-          const end = Math.min(
-            searchText.length,
-            bodyIndex + (matchingTerm?.length || keyword.length) + 88
+    for (const page of source) {
+      const title = page.title.toLowerCase()
+      const searchText = page.searchText ?? ''
+      const body = searchText.toLowerCase()
+      const initialMatch = matchesKoreanInitials(page.title, keyword)
+      const fuzzyTitleMatch =
+        keyword.length >= 3 &&
+        title
+          .split(/[\s()·:_-]+/)
+          .filter(Boolean)
+          .some(
+            (word) =>
+              Math.abs(word.length - keyword.length) <= 1 &&
+              editDistance(word, keyword) <= 1
           )
-          snippet = `${start > 0 ? '…' : ''}${searchText
-            .slice(start, end)
-            .trim()}${end < searchText.length ? '…' : ''}`
+      const titleTerm =
+        terms.find((term) => title.includes(term)) || null
+      const titleExact = title === keyword
+      const titleMatch = Boolean(titleTerm)
+      const statusPenalty =
+        statusRank(page) === 2 ? 1000 : statusRank(page) === 1 ? 80 : 0
+
+      if (titleMatch || initialMatch || fuzzyTitleMatch) {
+        results.push({
+          ...page,
+          snippet: '',
+          findTerm: '',
+          resultKey: `${page.pageId}:page`,
+          score:
+            statusPenalty +
+            (titleExact
+              ? 0
+              : titleMatch
+                ? 8
+                : initialMatch
+                  ? 14
+                  : 20) +
+            priorityOf(page)
+        })
+      }
+
+      const sectionMatches = (page.sections || [])
+        .map((section) => {
+          const heading = section.heading.toLowerCase()
+          const sectionText = section.text || ''
+          const sectionBody = sectionText.toLowerCase()
+          const headingTerm =
+            terms.find((term) => heading.includes(term)) || null
+          const bodyTerm =
+            terms.find((term) => sectionBody.includes(term)) || null
+          const term = headingTerm || bodyTerm
+
+          if (!term || (!section.heading && !section.anchor)) return null
+
+          const headingExact = heading === keyword
+          const score =
+            statusPenalty +
+            (headingExact ? 4 : headingTerm ? 12 : 32) +
+            priorityOf(page)
+
+          return {
+            ...page,
+            sectionTitle: section.heading || '본문',
+            anchor: section.anchor || undefined,
+            findTerm: term,
+            snippet: sectionText
+              ? snippetAround(sectionText, term)
+              : section.heading,
+            resultKey: `${page.pageId}:${section.anchor || section.heading}`,
+            score
+          } satisfies SearchPage
+        })
+        .filter((result): result is SearchPage => Boolean(result))
+        .sort((a, b) => (a.score || 0) - (b.score || 0))
+        .slice(0, 3)
+
+      results.push(...sectionMatches)
+
+      if (
+        !titleMatch &&
+        !initialMatch &&
+        !fuzzyTitleMatch &&
+        sectionMatches.length === 0
+      ) {
+        const bodyTerm =
+          terms.find((term) => body.includes(term)) || null
+        if (bodyTerm) {
+          results.push({
+            ...page,
+            snippet: snippetAround(searchText, bodyTerm),
+            findTerm: bodyTerm,
+            resultKey: `${page.pageId}:body`,
+            score: statusPenalty + 44 + priorityOf(page)
+          })
         }
+      }
+    }
 
-        const titleExact = title === keyword
-        const titleMatch = terms.some((term) => title.includes(term))
-        const status = searchPageStatus(page)
-        const statusPenalty =
-          status === 'draft' ? 1000 : status === 'brief' ? 80 : 0
-        const findTerm =
-          !titleMatch && bodyIndex >= 0 ? matchingTerm || keyword : ''
-
-        const score =
-          statusPenalty +
-          (titleExact
-            ? 0
-            : titleMatch
-              ? 10
-              : initialMatch
-                ? 15
-                : fuzzyTitleMatch
-                  ? 20
-                  : 40) +
-          priorityOf(page)
-
-        return { ...page, snippet, findTerm, score }
-      })
-      .filter((page) => page !== null)
-      .sort((a, b) => a.score - b.score)
-      .slice(0, 14)
+    return results
+      .sort((a, b) => (a.score || 0) - (b.score || 0))
+      .slice(0, 16)
   }, [pages, query, searchPages])
 
   const fallbackPages = useMemo(() => {
@@ -995,7 +1065,10 @@ export function WikiShell({
         category: pageCategoryLabel(page),
         status: searchPageStatus(page),
         snippet: page.snippet,
-        findTerm: page.findTerm
+        findTerm: page.findTerm,
+        sectionTitle: page.sectionTitle,
+        anchor: page.anchor,
+        resultKey: page.resultKey
       })),
     [filteredPages]
   )
@@ -1017,7 +1090,11 @@ export function WikiShell({
     setQuery('')
   }
 
-  const navigateSearchResult = (pageId: string, findTerm?: string) => {
+  const navigateSearchResult = (
+    pageId: string,
+    findTerm?: string,
+    anchor?: string
+  ) => {
     const page = (searchPages ?? pages).find(
       (item) =>
         item.pageId.replaceAll('-', '') === pageId.replaceAll('-', '')
@@ -1029,11 +1106,11 @@ export function WikiShell({
     })
 
     const href = withBasePath(`/page/${pageId}/`)
-    router.push(
-      findTerm
-        ? `${href}?find=${encodeURIComponent(findTerm)}`
-        : href
-    )
+    const search = findTerm
+      ? `?find=${encodeURIComponent(findTerm)}`
+      : ''
+    const hash = anchor ? `#${encodeURIComponent(anchor)}` : ''
+    router.push(`${href}${search}${hash}`)
     closeSearch()
   }
 
