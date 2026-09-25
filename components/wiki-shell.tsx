@@ -650,7 +650,7 @@ export function WikiShell({
     return () => {
       cancelled = true
     }
-  }, [pages, searchOpen, searchPages])
+  }, [pages, searchOpen])
 
   const filteredPages = useMemo(() => {
     const source: SearchPage[] =
