@@ -33,7 +33,7 @@ export type NotionIndex = {
 }
 
 const REMOTE_INDEX =
-  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/index.json'
+  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/index.json?v=20260925-2'
 
 const EMPTY_INDEX: NotionIndex = {
   rootPageId: '3dad57d6a55c80469f3de9730cb88975',
