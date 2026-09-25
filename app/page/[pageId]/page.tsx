@@ -17,6 +17,7 @@ import {
   isDraftPage,
   wikiContentStatus
 } from '@/lib/wiki-content-status'
+import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 
 export const dynamicParams = true
 export const revalidate = 60
@@ -253,12 +254,15 @@ export default async function NotionSubPage({
       sourceUrl={notionPublicUrl(pageId)}
       title={title}
       pageCount={navigationPages.length || 1}
-      pages={navigationPages.map(({ pageId, title }) => ({
-        pageId,
-        title
+      pages={navigationPages.map((page) => ({
+        pageId: page.pageId,
+        title: page.title,
+        status: wikiContentStatus(page),
+        category: categoryTitleForPage(page.title)
       }))}
       brandLogo={brandLogo}
       currentPageId={pageId}
+      contentStatus={contentStatus}
     >
       {jsonLd && (
         <script
