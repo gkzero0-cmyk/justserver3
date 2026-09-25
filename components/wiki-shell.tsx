@@ -1095,17 +1095,31 @@ export function WikiShell({
   const navigateSearchResult = (
     pageId: string,
     findTerm?: string,
-    anchor?: string
+    anchor?: string,
+    source: 'result' | 'quick-answer' = 'result'
   ) => {
     const page = (searchPages ?? pages).find(
       (item) =>
         item.pageId.replaceAll('-', '') === pageId.replaceAll('-', '')
     )
 
-    track('wiki_search_navigate', {
-      category: page ? pageCategoryLabel(page) : 'unknown',
-      status: page ? searchPageStatus(page) || 'unknown' : 'unknown'
-    })
+    track(
+      source === 'quick-answer'
+        ? 'wiki_search_quick_answer'
+        : 'wiki_search_navigate',
+      {
+        category: page ? pageCategoryLabel(page) : 'unknown',
+        status: page ? searchPageStatus(page) || 'unknown' : 'unknown',
+        target: page?.title || 'unknown',
+        result_type: anchor ? 'section' : findTerm ? 'body' : 'title',
+        query_length:
+          query.trim().length <= 2
+            ? '1-2'
+            : query.trim().length <= 5
+              ? '3-5'
+              : '6+'
+      }
+    )
 
     const href = withBasePath(`/page/${pageId}/`)
     const search = findTerm
