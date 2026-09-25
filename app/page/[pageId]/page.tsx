@@ -311,6 +311,12 @@ export async function renderWikiPage(pageId: string) {
               최근 수정 <strong>{formatUpdatedDate(currentPage.lastEdited)}</strong>
             </span>
           )}
+          {currentPage.changeSummary && (
+            <span className="article-change-summary">
+              <em>최근 변경</em>
+              <strong>{currentPage.changeSummary}</strong>
+            </span>
+          )}
         </div>
       )}
 
