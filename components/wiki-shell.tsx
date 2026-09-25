@@ -1456,6 +1456,10 @@ export function WikiShell({
           <span aria-hidden="true">✦</span>
           <strong>탐험</strong>
         </Link>
+        <Link href={withBasePath('/#wiki-survival-log-title')} prefetch={false}>
+          <span aria-hidden="true">☰</span>
+          <strong>내 기록</strong>
+        </Link>
       </nav>
 
       {!home && (
