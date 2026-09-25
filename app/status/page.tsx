@@ -8,7 +8,54 @@ export const revalidate = 300
 
 export const metadata = {
   title: '위키 상태',
-  description: '그냥서버 : 적자생존 공식 위키의 문서 및 이미지 동기화 상태입니다.'
+  description:
+    '그냥서버 : 적자생존 공식 위키의 문서, 이미지, 자동 수집 및 빌드 상태입니다.'
+}
+
+type WorkflowState = {
+  status: string
+  conclusion: string | null
+  updatedAt: string | null
+  title: string | null
+  url: string | null
+}
+
+async function getWorkflowState(workflow: string): Promise<WorkflowState | null> {
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/gkzero0-cmyk/justserver3/actions/workflows/${workflow}/runs?branch=main&per_page=1`,
+      {
+        headers: {
+          Accept: 'application/vnd.github+json'
+        },
+        next: { revalidate: 300 }
+      }
+    )
+
+    if (!response.ok) return null
+
+    const data = (await response.json()) as {
+      workflow_runs?: Array<{
+        status?: string
+        conclusion?: string | null
+        updated_at?: string | null
+        display_title?: string | null
+        html_url?: string | null
+      }>
+    }
+    const run = data.workflow_runs?.[0]
+    if (!run) return null
+
+    return {
+      status: run.status || 'unknown',
+      conclusion: run.conclusion ?? null,
+      updatedAt: run.updated_at ?? null,
+      title: run.display_title ?? null,
+      url: run.html_url ?? null
+    }
+  } catch {
+    return null
+  }
 }
 
 function formatDate(value: string | null) {
@@ -26,10 +73,30 @@ function formatDate(value: string | null) {
   }).format(date)
 }
 
+function formatBytes(value?: number) {
+  if (!value || value <= 0) return '확인 중'
+  return `${(value / 1024 / 1024).toFixed(1)}MB`
+}
+
+function statusLabel(state: WorkflowState | null) {
+  if (!state) return '확인 불가'
+  if (state.status !== 'completed') return '진행 중'
+  if (state.conclusion === 'success') return '정상'
+  return '주의'
+}
+
+function statusTone(state: WorkflowState | null) {
+  if (!state) return 'unknown'
+  if (state.status !== 'completed') return 'working'
+  return state.conclusion === 'success' ? 'success' : 'warning'
+}
+
 export default async function StatusPage() {
-  const [index, manifest] = await Promise.all([
+  const [index, manifest, syncWorkflow, buildWorkflow] = await Promise.all([
     readNotionIndex(),
-    readNotionAssetManifest()
+    readNotionAssetManifest(),
+    getWorkflowState('sync-notion-assets.yml'),
+    getWorkflowState('build.yml')
   ])
 
   const rootId = index.rootPageId.replaceAll('-', '')
@@ -40,10 +107,11 @@ export default async function StatusPage() {
   const pages = index.pages.filter(
     (page) => page.pageId.replaceAll('-', '') !== rootId
   )
-  const brandLogo = rootPage?.icon ? resolveCachedAsset(rootPage.icon) : null
-  const optimizedAssets = new Set(
-    Object.values(manifest).filter((value) => value.includes('/optimized/'))
-  )
+  const brandLogo = rootPage?.logo
+    ? resolveCachedAsset(rootPage.logo)
+    : rootPage?.icon
+      ? resolveCachedAsset(rootPage.icon)
+      : null
   const recentPages = [...pages]
     .filter((page) => page.lastEdited)
     .sort(
@@ -53,50 +121,144 @@ export default async function StatusPage() {
     )
     .slice(0, 5)
 
+  const syncHealthy =
+    !syncWorkflow ||
+    syncWorkflow.status !== 'completed' ||
+    syncWorkflow.conclusion === 'success'
+  const buildHealthy =
+    !buildWorkflow ||
+    buildWorkflow.status !== 'completed' ||
+    buildWorkflow.conclusion === 'success'
+  const overallHealthy = syncHealthy && buildHealthy
+  const generated = index.generatedAt ? new Date(index.generatedAt) : null
+  const nextSync = generated
+    ? new Date(generated.getTime() + 6 * 60 * 60 * 1000).toISOString()
+    : null
+  const production = process.env.VERCEL_ENV === 'production'
+
   return (
     <WikiShell
       sourceUrl={notionPublicUrl(ROOT_PAGE_ID)}
       title="위키 상태"
       assetCount={Object.keys(manifest).length}
       pageCount={index.pages.length || 1}
-      pages={pages.map(({ pageId, title, searchText }) => ({
+      pages={pages.map(({ pageId, title }) => ({
         pageId,
-        title,
-        searchText
+        title
       }))}
       brandLogo={brandLogo}
     >
       <section className="status-dashboard">
         <div className="status-summary">
           <div>
-            <span className="status-dot" />
-            <strong>정상 운영 중</strong>
-            <small>Notion 원본과 위키 데이터가 연결되어 있습니다.</small>
+            <span
+              className={`status-dot ${overallHealthy ? '' : 'is-warning'}`}
+            />
+            <strong>
+              {overallHealthy ? '자동화 정상 운영 중' : '확인이 필요한 작업이 있습니다'}
+            </strong>
+            <small>
+              Notion 수집, 이미지 최적화, GitHub 빌드 상태를 함께 확인합니다.
+            </small>
           </div>
-          <time>마지막 동기화 {formatDate(index.generatedAt)}</time>
+          <time>마지막 데이터 동기화 {formatDate(index.generatedAt)}</time>
         </div>
 
-        <div className="status-grid">
+        <div className="status-grid status-grid-primary">
           <article>
-            <small>문서</small>
+            <small>세부 문서</small>
             <strong>{pages.length}</strong>
-            <span>검색 가능한 세부 가이드</span>
+            <span>현재 위키에서 탐색 가능한 가이드</span>
           </article>
           <article>
             <small>이미지 매핑</small>
             <strong>{Object.keys(manifest).length}</strong>
-            <span>Notion 이미지 연결 항목</span>
+            <span>Notion 원본 이미지 연결 항목</span>
           </article>
           <article>
-            <small>최적화 이미지</small>
-            <strong>{optimizedAssets.size}</strong>
-            <span>화면 표시용 WebP 자산</span>
+            <small>고유 이미지</small>
+            <strong>{index.assetStats?.uniqueSourceImages ?? '—'}</strong>
+            <span>
+              중복 매핑 {index.assetStats?.duplicateMappings ?? '—'}개 감지
+            </span>
           </article>
           <article>
-            <small>갱신 방식</small>
-            <strong>자동</strong>
-            <span>문서 5분 / 자산 주기 동기화</span>
+            <small>카드용 이미지 총량</small>
+            <strong>{formatBytes(index.assetStats?.thumbnailBytes)}</strong>
+            <span>480px WebP 썸네일 기준</span>
           </article>
+        </div>
+
+        <div className="status-services">
+          <article data-tone={statusTone(syncWorkflow)}>
+            <span className="status-service-icon">↻</span>
+            <div>
+              <small>Notion 수집 + 이미지 최적화</small>
+              <strong>{statusLabel(syncWorkflow)}</strong>
+              <span>
+                최근 실행 {formatDate(syncWorkflow?.updatedAt ?? index.generatedAt)}
+              </span>
+            </div>
+            {syncWorkflow?.url && (
+              <a href={syncWorkflow.url} target="_blank" rel="noreferrer">
+                실행 기록 ↗
+              </a>
+            )}
+          </article>
+
+          <article data-tone={statusTone(buildWorkflow)}>
+            <span className="status-service-icon">✓</span>
+            <div>
+              <small>GitHub Build</small>
+              <strong>{statusLabel(buildWorkflow)}</strong>
+              <span>{buildWorkflow?.title || '최신 main 검증'}</span>
+            </div>
+            {buildWorkflow?.url && (
+              <a href={buildWorkflow.url} target="_blank" rel="noreferrer">
+                빌드 기록 ↗
+              </a>
+            )}
+          </article>
+
+          <article data-tone={production ? 'success' : 'working'}>
+            <span className="status-service-icon">▲</span>
+            <div>
+              <small>Vercel 배포 환경</small>
+              <strong>{production ? 'Production' : 'Preview / Local'}</strong>
+              <span>현재 페이지가 실행 중인 배포 환경</span>
+            </div>
+            <a
+              href="https://justserver3.vercel.app/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              운영 사이트 ↗
+            </a>
+          </article>
+
+          <article data-tone="working">
+            <span className="status-service-icon">◷</span>
+            <div>
+              <small>다음 자산 동기화</small>
+              <strong>6시간 주기</strong>
+              <span>예상 {formatDate(nextSync)}</span>
+            </div>
+          </article>
+        </div>
+
+        <div className="status-asset-metrics">
+          <div>
+            <small>원본 이미지 보존량</small>
+            <strong>{formatBytes(index.assetStats?.originalBytes)}</strong>
+          </div>
+          <div>
+            <small>본문 표시용 WebP</small>
+            <strong>{formatBytes(index.assetStats?.displayBytes)}</strong>
+          </div>
+          <div>
+            <small>카드 전용 WebP</small>
+            <strong>{formatBytes(index.assetStats?.thumbnailBytes)}</strong>
+          </div>
         </div>
 
         <div className="status-recent">
@@ -105,12 +267,15 @@ export default async function StatusPage() {
               <p>RECENT CHANGES</p>
               <h2>최근 수정 문서</h2>
             </div>
-            <a href={withBasePath("/")}>위키 홈 →</a>
+            <a href={withBasePath('/')}>위키 홈 →</a>
           </div>
           <div className="status-recent-list">
             {recentPages.map((page) => (
               <a key={page.pageId} href={withBasePath(`/page/${page.pageId}/`)}>
-                <strong>{page.title}</strong>
+                <span>
+                  <strong>{page.title}</strong>
+                  {page.changeSummary && <small>{page.changeSummary}</small>}
+                </span>
                 <span>{formatDate(page.lastEdited)}</span>
               </a>
             ))}
