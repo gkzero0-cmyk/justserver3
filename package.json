@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "sync:notion-assets": "node scripts/cache-notion-assets.mjs",
-    "build": "next build",
+    "build": "npm test && next build",
     "start": "next start",
     "optimize:notion-assets": "node scripts/optimize-notion-assets.mjs",
     "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/wiki-ux.test.ts"
