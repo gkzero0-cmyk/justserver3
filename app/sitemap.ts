@@ -3,6 +3,7 @@ import type { MetadataRoute } from 'next'
 import { readNotionIndex } from '@/lib/notion-index'
 import { isDraftPage } from '@/lib/wiki-content-status'
 import { getSiteUrl } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 
 export const dynamic = 'force-static'
 
@@ -16,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url:
       page.pageId === index.rootPageId
         ? siteUrl
-        : `${siteUrl}/page/${page.pageId}`,
+        : `${siteUrl}${wikiGuidePath(page)}`,
     lastModified: page.lastEdited
       ? new Date(page.lastEdited)
       : index.generatedAt
