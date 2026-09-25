@@ -7,6 +7,7 @@ import { WikiShell } from '@/components/wiki-shell'
 import { WikiPageNavigation } from '@/components/wiki-page-navigation'
 import { WikiDocumentFeedback } from '@/components/wiki-document-feedback'
 import { WikiVerifiedFaq } from '@/components/wiki-verified-faq'
+import { WikiChangeHistory } from '@/components/wiki-change-history'
 import {
   WikiNextExploration,
   WikiReadingQuiz
@@ -329,6 +330,10 @@ export async function renderWikiPage(pageId: string) {
             </span>
           )}
         </div>
+      )}
+
+      {currentPage && (
+        <WikiChangeHistory entries={currentPage.history} />
       )}
 
       {draft ? (
