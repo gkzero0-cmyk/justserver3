@@ -1,7 +1,7 @@
 export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH?.replace(/\/$/, '') ?? ''
 
-const RAW_ASSET_ORIGIN =
-  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public'
+const CDN_ASSET_ORIGIN =
+  'https://cdn.jsdelivr.net/gh/gkzero0-cmyk/justserver3@main/public'
 
 export function withBasePath(pathname: string) {
   if (!pathname.startsWith('/')) return pathname
@@ -13,7 +13,7 @@ export function withBasePath(pathname: string) {
 export function resolveCachedAsset(pathname: string) {
   if (/^https?:\/\//i.test(pathname)) return pathname
   if (pathname.startsWith('/notion-assets/')) {
-    return `${RAW_ASSET_ORIGIN}${pathname}`
+    return `${CDN_ASSET_ORIGIN}${pathname}`
   }
   return withBasePath(pathname)
 }

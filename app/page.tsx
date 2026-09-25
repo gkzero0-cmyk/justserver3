@@ -1,11 +1,11 @@
-import { getPageTitle } from 'notion-utils'
-
 import { StarterGuide } from '@/components/starter-guide'
 import { WikiDirectory } from '@/components/wiki-directory'
 import { WikiShell } from '@/components/wiki-shell'
-import { getNotionPage, notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
-import { readNotionAssetManifest, readNotionIndex } from '@/lib/notion-index'
+import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
+import { readNotionIndex } from '@/lib/notion-index'
 import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
+
+export const revalidate = 60
 
 function formatDate(value: string | null) {
   if (!value) return ''
@@ -19,16 +19,13 @@ function formatDate(value: string | null) {
 }
 
 export default async function HomePage() {
-  const recordMap = await getNotionPage(ROOT_PAGE_ID)
-  const imageManifest = await readNotionAssetManifest()
   const notionIndex = await readNotionIndex()
-  const title = (getPageTitle(recordMap) || '그냥서버 : 적자생존 공식 위키').trim()
-
   const rootId = notionIndex.rootPageId.replaceAll('-', '')
   const rootPage =
     notionIndex.pages.find(
       (page) => page.pageId.replaceAll('-', '') === rootId
     ) ?? null
+  const title = rootPage?.title?.trim() || '그냥서버 : 적자생존 공식 위키'
   const directoryPages = notionIndex.pages.filter(
     (page) => page.pageId.replaceAll('-', '') !== rootId
   )
@@ -46,13 +43,21 @@ export default async function HomePage() {
     : rootPage?.logo
       ? resolveCachedAsset(rootPage.logo)
       : rootPage?.icon
-      ? resolveCachedAsset(rootPage.icon)
-      : null
-  const heroImage = rootPage?.hero
-    ? resolveCachedAsset(rootPage.hero)
-    : rootPage?.cover
-      ? resolveCachedAsset(rootPage.cover)
-      : null
+        ? resolveCachedAsset(rootPage.icon)
+        : null
+  const heroImage = rootPage?.hero1600
+    ? resolveCachedAsset(rootPage.hero1600)
+    : rootPage?.hero
+      ? resolveCachedAsset(rootPage.hero)
+      : rootPage?.cover
+        ? resolveCachedAsset(rootPage.cover)
+        : null
+  const heroImageMd = rootPage?.hero1280
+    ? resolveCachedAsset(rootPage.hero1280)
+    : heroImage
+  const heroImageSm = rootPage?.hero768
+    ? resolveCachedAsset(rootPage.hero768)
+    : heroImage
 
   const siteUrl = 'https://justserver3.vercel.app'
   const websiteJsonLd = {
@@ -68,7 +73,6 @@ export default async function HomePage() {
     <WikiShell
       sourceUrl={notionPublicUrl(ROOT_PAGE_ID)}
       title={title}
-      assetCount={Object.keys(imageManifest).length}
       pageCount={notionIndex.pages.length || 1}
       pages={directoryPages.map(({ pageId, title }) => ({
         pageId,
@@ -76,6 +80,8 @@ export default async function HomePage() {
       }))}
       brandLogo={brandLogo}
       heroImage={heroImage}
+      heroImageMd={heroImageMd}
+      heroImageSm={heroImageSm}
       home
     >
       <script

@@ -1,8 +1,11 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+
+const SEARCH_INDEX_URL =
+  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/search-index.json'
 
 type NotionWebhookPayload = {
   verification_token?: string
@@ -60,7 +63,37 @@ function normalizePageId(value?: string) {
   return value?.replaceAll('-', '') || null
 }
 
-export async function GET() {
+async function searchIndexResponse() {
+  const response = await fetch(SEARCH_INDEX_URL, {
+    next: {
+      revalidate: 60,
+      tags: ['notion-search']
+    }
+  })
+
+  if (!response.ok) {
+    return Response.json(
+      { pages: [], error: 'search-index-unavailable' },
+      { status: 502 }
+    )
+  }
+
+  return new Response(await response.text(), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+    }
+  })
+}
+
+export async function GET(request: Request) {
+  const url = new URL(request.url)
+
+  if (url.searchParams.get('resource') === 'search-index') {
+    return searchIndexResponse()
+  }
+
   return Response.json({
     ready: true,
     endpoint: '/api/notion-webhook',
@@ -68,7 +101,7 @@ export async function GET() {
       Boolean(process.env.NOTION_WEBHOOK_VERIFICATION_TOKEN),
     instantAssetSync: Boolean(process.env.GITHUB_ACTIONS_TOKEN),
     fallbackSyncMinutes: 5,
-    liveContentCacheSeconds: 10
+    liveContentCacheSeconds: 3600
   })
 }
 
@@ -83,8 +116,6 @@ export async function POST(request: Request) {
   }
 
   if (payload.verification_token) {
-    // This token is required once in the Notion connection UI.
-    // It is intentionally emitted only during the one-time verification request.
     console.info(
       '[notion-webhook] verification-token',
       payload.verification_token
@@ -99,20 +130,27 @@ export async function POST(request: Request) {
   const signature = request.headers.get('x-notion-signature')
   const verified = verifySignature(rawBody, signature)
 
-  if (verified === false) {
-    return Response.json({ ok: false, error: 'invalid-signature' }, { status: 401 })
+  if (verified === null) {
+    return Response.json(
+      { ok: false, error: 'webhook-not-verified' },
+      { status: 503 }
+    )
   }
 
-  // Until the verification token is installed as an environment variable,
-  // only requests carrying the Notion signature header are accepted.
-  if (verified === null && !signature?.startsWith('sha256=')) {
-    return Response.json({ ok: false, error: 'missing-signature' }, { status: 401 })
+  if (!verified) {
+    return Response.json(
+      { ok: false, error: 'invalid-signature' },
+      { status: 401 }
+    )
   }
 
   const pageId = normalizePageId(payload.entity?.id)
 
+  revalidateTag('notion-page', 'max')
+  revalidateTag('notion-index', 'max')
+  revalidateTag('notion-assets', 'max')
+  revalidateTag('notion-search', 'max')
   revalidatePath('/')
-  revalidatePath('/status')
 
   if (pageId) {
     revalidatePath(`/page/${pageId}`)
@@ -126,7 +164,7 @@ export async function POST(request: Request) {
   console.info('[notion-webhook] event', {
     type: payload.type || 'unknown',
     pageId,
-    verified: verified === true,
+    verified: true,
     assetSync
   })
 

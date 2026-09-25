@@ -9,7 +9,8 @@ export const ROOT_PAGE_ID =
 const getPage = async (pageId: string) => notion.getPage(pageId)
 
 export const getNotionPage = unstable_cache(getPage, ['notion-page'], {
-  revalidate: 10
+  revalidate: 3600,
+  tags: ['notion-page']
 })
 
 export const notionPublicUrl = (pageId: string) =>

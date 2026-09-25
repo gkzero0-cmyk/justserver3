@@ -11,7 +11,11 @@ export type NotionIndexPage = {
   searchText: string
   changeSummary?: string | null
   thumbnail?: string | null
+  thumbnailSmall?: string | null
   hero?: string | null
+  hero768?: string | null
+  hero1280?: string | null
+  hero1600?: string | null
   logo64?: string | null
   logo128?: string | null
   logo?: string | null
@@ -61,7 +65,10 @@ function readLocalIndex(): NotionIndex {
 export async function readNotionIndex(): Promise<NotionIndex> {
   try {
     const response = await fetch(REMOTE_INDEX, {
-      cache: 'no-store'
+      next: {
+        revalidate: 60,
+        tags: ['notion-index']
+      }
     })
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     return (await response.json()) as NotionIndex
@@ -96,7 +103,10 @@ function readLocalManifest(): NotionAssetManifest {
 export async function readNotionAssetManifest(): Promise<NotionAssetManifest> {
   try {
     const response = await fetch(REMOTE_MANIFEST, {
-      cache: 'no-store'
+      next: {
+        revalidate: 60,
+        tags: ['notion-assets']
+      }
     })
 
     if (response.ok) {
@@ -104,7 +114,10 @@ export async function readNotionAssetManifest(): Promise<NotionAssetManifest> {
     }
 
     const fallback = await fetch(FALLBACK_MANIFEST, {
-      cache: 'no-store'
+      next: {
+        revalidate: 60,
+        tags: ['notion-assets']
+      }
     })
     if (!fallback.ok) throw new Error(`HTTP ${fallback.status}`)
     return (await fallback.json()) as NotionAssetManifest
