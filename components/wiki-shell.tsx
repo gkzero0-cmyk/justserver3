@@ -44,6 +44,9 @@ type SearchIndexPayload = {
   pages?: SearchPage[]
 }
 
+let clientSearchIndexCache: SearchIndexPayload | null = null
+let clientSearchIndexCachedAt = 0
+
 const SEARCH_INDEX_URLS = [
   withBasePath('/notion-assets/search-index.json'),
   withBasePath('/api/notion-webhook?resource=search-index')
@@ -537,14 +540,6 @@ export function WikiShell({
   useEffect(() => {
     if (!searchOpen) return
 
-    const now = Date.now()
-    if (
-      searchPages &&
-      now - searchRefreshAtRef.current < 45_000
-    ) {
-      return
-    }
-
     let cancelled = false
 
     const withPageMeta = (data: SearchIndexPayload) => {
@@ -570,21 +565,40 @@ export function WikiShell({
       return Number.isNaN(value) ? 0 : value
     }
 
+    if (!searchPages && clientSearchIndexCache) {
+      setSearchPages(withPageMeta(clientSearchIndexCache))
+    }
+
+    const now = Date.now()
+    const lastRefresh = Math.max(
+      searchRefreshAtRef.current,
+      clientSearchIndexCachedAt
+    )
+
+    if (
+      (searchPages || clientSearchIndexCache) &&
+      now - lastRefresh < 45_000
+    ) {
+      return
+    }
+
     const load = async () => {
-      if (!searchPages) setSearchLoading(true)
+      if (!searchPages && !clientSearchIndexCache) setSearchLoading(true)
       setSearchFailed(false)
 
       let staticData: SearchIndexPayload | null = null
       let liveData: SearchIndexPayload | null = null
 
       try {
-        if (!searchPages) {
+        if (!searchPages && !clientSearchIndexCache) {
           try {
             const staticResponse = await fetch(SEARCH_INDEX_URLS[0], {
               cache: 'no-store'
             })
             if (staticResponse.ok) {
               staticData = (await staticResponse.json()) as SearchIndexPayload
+              clientSearchIndexCache = staticData
+              clientSearchIndexCachedAt = Date.now()
               if (!cancelled) setSearchPages(withPageMeta(staticData))
             }
           } catch {
@@ -615,10 +629,15 @@ export function WikiShell({
           )
 
         if (!cancelled && liveData && shouldApplyLive) {
+          clientSearchIndexCache = liveData
+          clientSearchIndexCachedAt = Date.now()
           setSearchPages(withPageMeta(liveData))
         }
 
-        if (!cancelled) searchRefreshAtRef.current = Date.now()
+        if (!cancelled) {
+          searchRefreshAtRef.current =
+            clientSearchIndexCachedAt || Date.now()
+        }
       } catch {
         if (!cancelled) setSearchFailed(true)
       } finally {
@@ -757,6 +776,16 @@ export function WikiShell({
   }
 
   const navigateSearchResult = (pageId: string) => {
+    const page = (searchPages ?? pages).find(
+      (item) =>
+        item.pageId.replaceAll('-', '') === pageId.replaceAll('-', '')
+    )
+
+    track('wiki_search_navigate', {
+      category: page ? pageCategoryLabel(page) : 'unknown',
+      status: page ? searchPageStatus(page) || 'unknown' : 'unknown'
+    })
+
     router.push(withBasePath(`/page/${pageId}/`))
     closeSearch()
   }
@@ -818,6 +847,27 @@ export function WikiShell({
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
+
+  useEffect(() => {
+    const root = document.querySelector<HTMLElement>('.wiki-shell')
+    if (!root) return
+
+    const onTrackedClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null
+      const element = target?.closest<HTMLElement>('[data-wiki-event]')
+      const eventName = element?.dataset.wikiEvent
+      if (!element || !eventName) return
+
+      track(eventName, {
+        section: element.dataset.wikiSection || 'unknown',
+        target: element.dataset.wikiTarget || 'unknown',
+        status: element.dataset.wikiStatus || 'unknown'
+      })
+    }
+
+    root.addEventListener('click', onTrackedClick)
+    return () => root.removeEventListener('click', onTrackedClick)
   }, [])
 
   const goTo = (id: string) => {
@@ -926,7 +976,7 @@ export function WikiShell({
       />
 
       <main
-        className={`wiki-main ${!home && toc.length ? 'has-article-toc' : ''}`}
+        className={`wiki-main ${home ? 'is-home-main' : ''} ${!home && toc.length ? 'has-article-toc' : ''}`}
         id="main-content"
       >
         <section
@@ -960,6 +1010,10 @@ export function WikiShell({
               {pages.find((page) => page.title === '기초설정(뉴비필독)') ? (
                 <Link
                   className="hero-badge hero-badge-link"
+                  data-wiki-event="wiki_home_navigate"
+                  data-wiki-section="hero"
+                  data-wiki-target="newbie-guide"
+                  data-wiki-status="ready"
                   href={withBasePath(
                     `/page/${pages.find((page) => page.title === '기초설정(뉴비필독)')!.pageId}/`
                   )}
