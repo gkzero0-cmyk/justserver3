@@ -276,38 +276,52 @@ export default async function NotionSubPage({
 
       <WikiPageNavigation current={currentPage} pages={readyNavigationPages} />
 
-      {draft && (
-        <aside className="draft-notice" role="status">
-          <span>작성 중</span>
-          <div>
-            <strong>이 문서는 아직 내용을 정리하고 있습니다.</strong>
-            <small>확정된 내용만 표시하며, Notion 원문이 보강되면 자동으로 반영됩니다.</small>
+      {draft ? (
+        <section className="draft-state" role="status" aria-labelledby="draft-state-title">
+          <div className="draft-state-icon" aria-hidden="true">🛠️</div>
+          <p>PREPARING GUIDE</p>
+          <h2 id="draft-state-title">{title} 가이드를 정리하고 있습니다.</h2>
+          <span>
+            아직 확정된 내용이 충분하지 않아 빈 문서 대신 준비 상태를 표시합니다.
+            Notion 원문이 보강되면 같은 주소에 자동으로 반영됩니다.
+          </span>
+          <div className="state-actions">
+            <Link href={withBasePath(`/#category-${currentPage ? categoryKey(currentPage.title) : 'start'}`)}>
+              전체 가이드 보기
+            </Link>
+            {related[0] && (
+              <Link href={withBasePath(`/page/${related[0].pageId}/`)}>
+                {related[0].title} 먼저 보기
+              </Link>
+            )}
           </div>
-        </aside>
-      )}
+        </section>
+      ) : (
+        <>
+          {contentStatus === 'brief' && (
+            <aside className="brief-notice" role="status">
+              <span>간단 안내</span>
+              <div>
+                <strong>현재는 핵심 내용만 간단히 정리된 문서입니다.</strong>
+                <small>추가 정보가 정리되면 같은 주소에 자동으로 보강됩니다.</small>
+              </div>
+            </aside>
+          )}
 
-      {contentStatus === 'brief' && (
-        <aside className="brief-notice" role="status">
-          <span>간단 안내</span>
-          <div>
-            <strong>현재는 핵심 내용만 간단히 정리된 문서입니다.</strong>
-            <small>추가 정보가 정리되면 같은 주소에 자동으로 보강됩니다.</small>
-          </div>
-        </aside>
-      )}
+          <section className="document-card">
+            <NotionDocument
+              recordMap={recordMap}
+              imageManifest={imageManifest}
+            />
+          </section>
 
-      <section className="document-card">
-        <NotionDocument
-          recordMap={recordMap}
-          imageManifest={imageManifest}
-        />
-      </section>
-
-      {currentPage && (
-        <WikiDocumentFeedback
-          pageId={currentPage.pageId}
-          title={currentPage.title}
-        />
+          {currentPage && (
+            <WikiDocumentFeedback
+              pageId={currentPage.pageId}
+              title={currentPage.title}
+            />
+          )}
+        </>
       )}
 
       {related.length > 0 && (
