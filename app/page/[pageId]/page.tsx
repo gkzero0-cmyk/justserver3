@@ -304,7 +304,6 @@ export default async function NotionSubPage({
                 <Link
                   key={page.pageId}
                   href={withBasePath(`/page/${page.pageId}/`)}
-                  prefetch={false}
                   className="related-doc-card"
                 >
                   <span className="related-doc-image">
