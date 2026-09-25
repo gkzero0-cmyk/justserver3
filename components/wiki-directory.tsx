@@ -3,7 +3,6 @@ import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
 
 function iconForTitle(title: string) {
   const value = title.toLowerCase()
-
   if (value.includes('스토리')) return '📖'
   if (value.includes('룰') || value.includes('규칙')) return '📜'
   if (value.includes('api') || value.includes('후원')) return '💝'
@@ -25,13 +24,11 @@ function iconForTitle(title: string) {
   if (value.includes('빚')) return '💸'
   if (value.includes('신용')) return '💳'
   if (value.includes('물어보는')) return '❓'
-
   return '✦'
 }
 
 function categoryForTitle(title: string) {
   const value = title.toLowerCase()
-
   if (
     value.includes('스토리') ||
     value.includes('규칙') ||
@@ -39,9 +36,7 @@ function categoryForTitle(title: string) {
     value.includes('api') ||
     value.includes('뉴비') ||
     value.includes('기초')
-  ) {
-    return 'start'
-  }
+  ) return 'start'
 
   if (
     value.includes('땅') ||
@@ -50,9 +45,7 @@ function categoryForTitle(title: string) {
     value.includes('수리') ||
     value.includes('강화') ||
     value.includes('물어보는')
-  ) {
-    return 'growth'
-  }
+  ) return 'growth'
 
   return 'content'
 }
@@ -66,33 +59,36 @@ function badgeForTitle(title: string) {
   return null
 }
 
-const FEATURED = new Set([
-  '서버규칙',
-  '기초설정(뉴비필독)',
-  '채광',
-  '빚 갚기',
-  '장비강화'
-])
+const DESCRIPTION_BY_TITLE: Record<string, string> = {
+  스토리: '서버 세계관과 시작 배경',
+  서버규칙: '플레이 전 반드시 확인할 운영 규칙',
+  패치노트: '최근 변경점과 업데이트 기록',
+  API: '후원·API 연동 관련 안내',
+  '기초설정(뉴비필독)': '첫 접속 전에 끝내야 할 필수 설정',
+  채광: '광물 채집·판매·초반 수익 안내',
+  낚시: '낚시 시스템과 보상 안내',
+  도축: '도축 시스템과 재료 획득 안내',
+  사냥: '전투·몬스터·사냥 보상 안내',
+  요리: '재료 활용과 요리 시스템 안내',
+  도감: '수집 도감과 달성 보상 안내',
+  파쿠르: '파쿠르 진행과 보상 안내',
+  즉석복권: '복권 이용 방법과 보상 안내',
+  경마장: '경마장 이용 방법과 시스템 안내',
+  카지노: '카지노 게임과 이용 방법 안내',
+  '땅 구매': '토지 구매와 소유 시스템 안내',
+  '빚 갚기': '부채 상환과 경제 진행 흐름',
+  신용등급: '신용등급 조건과 혜택 안내',
+  장비수리: '장비 내구도와 수리 방법 안내',
+  장비강화: '강화 단계·재료·성장 안내',
+  '많이 물어보는 것': '자주 묻는 질문을 빠르게 확인'
+}
+
+const FEATURED = new Set(['서버규칙','기초설정(뉴비필독)','채광','빚 갚기','장비강화'])
 
 const GROUPS = [
-  {
-    key: 'start',
-    icon: '🧭',
-    title: '시작하기',
-    description: '처음 접속하기 전에 확인할 필수 안내'
-  },
-  {
-    key: 'content',
-    icon: '🎮',
-    title: '주요 콘텐츠',
-    description: '채광부터 도감·파쿠르·미니게임까지'
-  },
-  {
-    key: 'growth',
-    icon: '📈',
-    title: '성장 · 경제',
-    description: '땅, 빚, 신용등급, 장비 성장과 FAQ'
-  }
+  { key: 'start', icon: '🧭', title: '시작하기', description: '처음 접속하기 전에 확인할 필수 안내' },
+  { key: 'content', icon: '🎮', title: '주요 콘텐츠', description: '채광부터 도감·파쿠르·미니게임까지' },
+  { key: 'growth', icon: '📈', title: '성장 · 경제', description: '땅, 빚, 신용등급, 장비 성장과 FAQ' }
 ] as const
 
 function mediaIdentity(value: string) {
@@ -100,31 +96,24 @@ function mediaIdentity(value: string) {
   return filename.replace(/\.[a-z0-9]+$/i, '')
 }
 
+function isCardThumbnail(value?: string | null): value is string {
+  return Boolean(value && (/\/optimized\/thumb256\//.test(value) || /\/optimized\/thumb\//.test(value)))
+}
+
 function assignUniqueMedia(pages: NotionIndexPage[]) {
   const used = new Set<string>()
   const mediaById = new Map<string, string | null>()
-
   for (const page of pages) {
-    const candidates = [page.thumbnail, page.cover, page.icon].filter(
-      (value): value is string => Boolean(value)
-    )
-    const media =
-      candidates.find((value) => !used.has(mediaIdentity(value))) ?? null
-
+    const candidates = [page.thumbnailSmall, page.thumbnail].filter(isCardThumbnail)
+    const media = candidates.find((value) => !used.has(mediaIdentity(value))) ?? null
     if (media) used.add(mediaIdentity(media))
     mediaById.set(page.pageId, media)
   }
-
   return mediaById
 }
 
-export function WikiDirectory({
-  pages
-}: {
-  pages: NotionIndexPage[]
-}) {
+export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
   if (!pages.length) return null
-
   const mediaById = assignUniqueMedia(pages)
   const grouped = GROUPS.map((group) => ({
     ...group,
@@ -162,24 +151,10 @@ export function WikiDirectory({
                 const featured = FEATURED.has(page.title)
 
                 return (
-                  <a
-                    key={page.pageId}
-                    href={withBasePath(`/page/${page.pageId}/`)}
-                    className={`directory-card ${featured ? 'is-featured' : ''}`}
-                  >
-                    <span
-                      className={`directory-media ${media ? 'has-image' : 'is-icon'}`}
-                    >
+                  <a key={page.pageId} href={withBasePath(`/page/${page.pageId}/`)} className={`directory-card ${featured ? 'is-featured' : ''}`}>
+                    <span className={`directory-media ${media ? 'has-image' : 'is-icon'}`}>
                       {resolvedMedia ? (
-                        <img
-                          src={resolvedMedia}
-                          alt=""
-                          aria-hidden="true"
-                          loading="lazy"
-                          decoding="async"
-                          width="480"
-                          height="270"
-                        />
+                        <img src={resolvedMedia} alt="" aria-hidden="true" loading="lazy" decoding="async" width="256" height="256" />
                       ) : (
                         iconForTitle(page.title)
                       )}
@@ -190,9 +165,7 @@ export function WikiDirectory({
                         <strong>{page.title}</strong>
                         {badge && <em>{badge}</em>}
                       </span>
-                      <small>
-                        {featured ? '처음이라면 꼭 확인하세요' : '상세 가이드 열기'}
-                      </small>
+                      <small>{DESCRIPTION_BY_TITLE[page.title] || (featured ? '처음이라면 꼭 확인하세요' : '상세 가이드 열기')}</small>
                     </span>
 
                     <span className="directory-arrow">↗</span>

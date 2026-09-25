@@ -1,20 +1,14 @@
 import type { NotionIndexPage } from '@/lib/notion-index'
-import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
+import { withBasePath } from '@/lib/url-utils'
 
-const STEP_TITLES = [
-  '서버규칙',
-  '기초설정(뉴비필독)',
-  '빚 갚기',
-  '채광',
-  '장비강화'
-]
+const STEP_TITLES = ['서버규칙','기초설정(뉴비필독)','빚 갚기','채광','장비강화']
 
 const STEP_META = [
-  ['01', '규칙 확인', '먼저 서버 규칙과 주의사항을 확인합니다.'],
-  ['02', '기초 설정', '첫 접속 전에 필요한 설정을 끝냅니다.'],
-  ['03', '경제 이해', '빚과 신용 구조를 먼저 이해합니다.'],
-  ['04', '첫 수익', '채광을 기준으로 초반 수익 루트를 익힙니다.'],
-  ['05', '장비 성장', '수익을 장비 강화와 성장으로 연결합니다.']
+  ['01', '📜', '규칙 확인', '먼저 서버 규칙과 주의사항을 확인합니다.'],
+  ['02', '🧭', '기초 설정', '첫 접속 전에 필요한 설정을 끝냅니다.'],
+  ['03', '💸', '경제 이해', '빚과 신용 구조를 먼저 이해합니다.'],
+  ['04', '⛏️', '첫 수익', '채광을 기준으로 초반 수익 루트를 익힙니다.'],
+  ['05', '⚒️', '장비 성장', '수익을 장비 강화와 성장으로 연결합니다.']
 ] as const
 
 export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
@@ -37,39 +31,18 @@ export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
       </div>
 
       <div className="starter-steps">
-        {steps.map(({ page, meta }) => {
-          const media = page!.thumbnail || page!.cover || page!.icon
-          const resolvedMedia = media ? resolveCachedAsset(media) : null
-
-          return (
-            <a
-              key={page!.pageId}
-              href={withBasePath(`/page/${page!.pageId}/`)}
-              className="starter-step"
-            >
-              {resolvedMedia && (
-                <img
-                  className="starter-step-media"
-                  src={resolvedMedia}
-                  alt=""
-                  aria-hidden="true"
-                  loading="lazy"
-                  decoding="async"
-                  width="480"
-                  height="270"
-                />
-              )}
-              <span className="starter-step-shade" aria-hidden="true" />
-              <span className="starter-number">{meta[0]}</span>
-              <span className="starter-copy">
-                <strong>{meta[1]}</strong>
-                <small>{meta[2]}</small>
-              </span>
-              <span className="starter-target">{page!.title}</span>
-              <span className="starter-arrow">→</span>
-            </a>
-          )
-        })}
+        {steps.map(({ page, meta }) => (
+          <a key={page!.pageId} href={withBasePath(`/page/${page!.pageId}/`)} className="starter-step">
+            <span className="starter-number">{meta[0]}</span>
+            <span className="starter-icon" aria-hidden="true">{meta[1]}</span>
+            <span className="starter-copy">
+              <strong>{meta[2]}</strong>
+              <small>{meta[3]}</small>
+            </span>
+            <span className="starter-target">{page!.title}</span>
+            <span className="starter-arrow">→</span>
+          </a>
+        ))}
       </div>
     </section>
   )

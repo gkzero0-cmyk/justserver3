@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
 
 import { withBasePath } from '@/lib/url-utils'
 
@@ -20,22 +19,34 @@ type SearchPage = WikiPageLink & {
   searchText?: string
 }
 
-const SEARCH_INDEX_URL =
-  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/search-index.json?v=20260925-2'
+const SEARCH_INDEX_URL = withBasePath(
+  '/api/notion-webhook?resource=search-index'
+)
 
 function sectionIcon(text: string) {
   const value = text.toLowerCase()
 
+  if (value.includes('스토리')) return '📖'
   if (value.includes('규칙') || value.includes('룰')) return '📜'
   if (value.includes('api') || value.includes('후원')) return '💝'
+  if (value.includes('뉴비') || value.includes('기초')) return '🧭'
+  if (value.includes('패치') || value.includes('업데이트')) return '📝'
   if (value.includes('강화')) return '⚒️'
+  if (value.includes('수리')) return '🔧'
   if (value.includes('광산') || value.includes('채광')) return '⛏️'
   if (value.includes('낚시')) return '🎣'
+  if (value.includes('도축')) return '🥩'
   if (value.includes('사냥')) return '⚔️'
   if (value.includes('요리')) return '🍳'
-  if (value.includes('도감')) return '📖'
+  if (value.includes('도감')) return '📚'
+  if (value.includes('파쿠르')) return '🏃'
+  if (value.includes('복권')) return '🎟️'
+  if (value.includes('경마')) return '🏇'
   if (value.includes('카지노') || value.includes('가챠')) return '🎰'
-  if (value.includes('패치') || value.includes('업데이트')) return '📝'
+  if (value.includes('땅')) return '🏠'
+  if (value.includes('빚')) return '💸'
+  if (value.includes('신용')) return '💳'
+  if (value.includes('물어보는')) return '❓'
   if (value.includes('참여') || value.includes('접속')) return '📢'
   if (value.includes('아이템')) return '🎁'
   if (value.includes('안내') || value.includes('가이드')) return '🧭'
@@ -98,26 +109,27 @@ export function WikiShell({
   children,
   sourceUrl,
   title,
-  assetCount,
   pageCount,
   pages,
   brandLogo,
   heroImage,
+  heroImageMd,
+  heroImageSm,
   currentPageId,
   home = false
 }: {
   children: React.ReactNode
   sourceUrl: string
   title: string
-  assetCount: number
   pageCount: number
   pages: WikiPageLink[]
   brandLogo?: string | null
   heroImage?: string | null
+  heroImageMd?: string | null
+  heroImageSm?: string | null
   currentPageId?: string | null
   home?: boolean
 }) {
-  const router = useRouter()
   const [toc, setToc] = useState<TocItem[]>([])
   const [query, setQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
@@ -131,29 +143,6 @@ export function WikiShell({
   const [selectedResult, setSelectedResult] = useState(0)
   const modalSearchRef = useRef<HTMLInputElement>(null)
   const modalRef = useRef<HTMLElement>(null)
-
-  useEffect(() => {
-    const refreshIfVisible = () => {
-      if (document.visibilityState === 'visible') {
-        router.refresh()
-      }
-    }
-
-    const interval = window.setInterval(refreshIfVisible, 30_000)
-
-    const onVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        window.setTimeout(() => router.refresh(), 120)
-      }
-    }
-
-    window.addEventListener('visibilitychange', onVisibilityChange)
-
-    return () => {
-      window.clearInterval(interval)
-      window.removeEventListener('visibilitychange', onVisibilityChange)
-    }
-  }, [router]) // justserver-live-refresh
 
   useEffect(() => {
     const saved = window.localStorage.getItem('justserver3-theme')
@@ -278,9 +267,7 @@ export function WikiShell({
       setSearchFailed(false)
 
       try {
-        const response = await fetch(SEARCH_INDEX_URL, {
-          cache: 'no-store'
-        })
+        const response = await fetch(SEARCH_INDEX_URL)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
 
         const data = (await response.json()) as {
@@ -549,31 +536,49 @@ export function WikiShell({
         <nav className="toc-list">
           <div className="global-page-list">
             <span className="nav-section-label">전체 문서</span>
-            {pages.map((page) => (
-              <a
-                key={page.pageId}
-                href={withBasePath(`/page/${page.pageId}/`)}
-                className={`global-page-link ${
-                  currentPageId &&
-                  page.pageId.replaceAll('-', '') ===
-                    currentPageId.replaceAll('-', '')
-                    ? 'is-current'
-                    : ''
-                }`}
-                aria-current={
-                  currentPageId &&
-                  page.pageId.replaceAll('-', '') ===
-                    currentPageId.replaceAll('-', '')
-                    ? 'page'
-                    : undefined
-                }
-              >
-                <span>{sectionIcon(page.title)}</span>
-                <span className="global-page-copy">
-                  <strong>{page.title}</strong>
-                </span>
-              </a>
-            ))}
+            {['시작하기', '주요 콘텐츠', '성장 · 경제'].map((group) => {
+              const groupPages = pages.filter(
+                (page) => categoryLabel(page.title) === group
+              )
+
+              if (!groupPages.length) return null
+
+              return (
+                <section className="sidebar-category" key={group}>
+                  <div className="sidebar-category-head">
+                    <strong>{group}</strong>
+                    <span>{groupPages.length}</span>
+                  </div>
+                  <div className="sidebar-category-links">
+                    {groupPages.map((page) => (
+                      <a
+                        key={page.pageId}
+                        href={withBasePath(`/page/${page.pageId}/`)}
+                        className={`global-page-link ${
+                          currentPageId &&
+                          page.pageId.replaceAll('-', '') ===
+                            currentPageId.replaceAll('-', '')
+                            ? 'is-current'
+                            : ''
+                        }`}
+                        aria-current={
+                          currentPageId &&
+                          page.pageId.replaceAll('-', '') ===
+                            currentPageId.replaceAll('-', '')
+                            ? 'page'
+                            : undefined
+                        }
+                      >
+                        <span>{sectionIcon(page.title)}</span>
+                        <span className="global-page-copy">
+                          <strong>{page.title}</strong>
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </section>
+              )
+            })}
           </div>
 
           <div className="current-toc mobile-current-toc">
@@ -651,11 +656,23 @@ export function WikiShell({
           aria-label="위키 안내"
         >
           {heroImage && home && (
-            <div
-              className="hero-background-image"
-              style={{ backgroundImage: `url("${heroImage}")` }}
-              aria-hidden="true"
-            />
+            <picture className="hero-background-image" aria-hidden="true">
+              {heroImageSm && (
+                <source media="(max-width: 640px)" srcSet={heroImageSm} />
+              )}
+              {heroImageMd && (
+                <source media="(max-width: 1280px)" srcSet={heroImageMd} />
+              )}
+              <img
+                src={heroImage}
+                alt=""
+                width="1600"
+                height="900"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+              />
+            </picture>
           )}
           <div className="hero-overlay" aria-hidden="true" />
 

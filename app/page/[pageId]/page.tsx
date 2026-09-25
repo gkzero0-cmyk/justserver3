@@ -13,6 +13,7 @@ import {
 } from '@/lib/url-utils'
 
 export const dynamicParams = true
+export const revalidate = 60
 
 const RELATED_BY_TITLE: Record<string, string[]> = {
   스토리: ['서버규칙', '기초설정(뉴비필독)', '빚 갚기'],
@@ -238,7 +239,6 @@ export default async function NotionSubPage({
     <WikiShell
       sourceUrl={notionPublicUrl(pageId)}
       title={title}
-      assetCount={Object.keys(imageManifest).length}
       pageCount={notionIndex.pages.length || 1}
       pages={navigationPages.map(({ pageId, title }) => ({
         pageId,
@@ -271,7 +271,12 @@ export default async function NotionSubPage({
           </div>
           <div className="related-docs-grid">
             {related.map((page) => {
-              const image = page.thumbnail || page.cover || page.icon
+              const image = [page.thumbnailSmall, page.thumbnail].find(
+                (value) =>
+                  value &&
+                  (/\/optimized\/thumb256\//.test(value) ||
+                    /\/optimized\/thumb\//.test(value))
+              )
               const resolvedImage = image ? resolveCachedAsset(image) : null
 
               return (
