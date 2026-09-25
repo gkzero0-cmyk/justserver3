@@ -24,6 +24,7 @@ import {
 } from '@/lib/wiki-content-status'
 import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import { buildReadingQuiz } from '@/lib/wiki-reading-game'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 
 export const dynamicParams = true
 export const revalidate = 60
@@ -113,12 +114,9 @@ function relatedPages(current: NotionIndexPage, pages: NotionIndexPage[]) {
   return [...explicit, ...fallback]
 }
 
-export async function generateMetadata({
-  params
-}: {
-  params: Promise<{ pageId: string }>
-}): Promise<Metadata> {
-  const { pageId } = await params
+export async function generateWikiPageMetadata(
+  pageId: string
+): Promise<Metadata> {
   const notionIndex = await readNotionIndex()
   const page =
     notionIndex.pages.find(
@@ -163,6 +161,15 @@ export async function generateMetadata({
   }
 }
 
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ pageId: string }>
+}): Promise<Metadata> {
+  const { pageId } = await params
+  return generateWikiPageMetadata(pageId)
+}
+
 export async function generateStaticParams() {
   const notionIndex = await readNotionIndex()
   const rootId = notionIndex.rootPageId.replaceAll('-', '')
@@ -172,12 +179,7 @@ export async function generateStaticParams() {
     .map((page) => ({ pageId: page.pageId }))
 }
 
-export default async function NotionSubPage({
-  params
-}: {
-  params: Promise<{ pageId: string }>
-}) {
-  const { pageId } = await params
+export async function renderWikiPage(pageId: string) {
   const [recordMap, imageManifest, notionIndex] = await Promise.all([
     getNotionPage(pageId),
     readNotionAssetManifest(),
@@ -221,7 +223,9 @@ export default async function NotionSubPage({
       ? resolveCachedAsset(rootPage.icon)
       : null
   const siteUrl = getSiteUrl()
-  const canonical = `${siteUrl}/page/${pageId.replaceAll('-', '')}`
+  const canonical = currentPage
+    ? `${siteUrl}${wikiGuidePath(currentPage)}`
+    : `${siteUrl}/page/${pageId.replaceAll('-', '')}`
   const jsonLd = currentPage
     ? {
         '@context': 'https://schema.org',
@@ -234,7 +238,7 @@ export default async function NotionSubPage({
             isRelatedTo: related.map((page) => ({
               '@type': 'WebPage',
               name: page.title,
-              url: `${siteUrl}/page/${page.pageId}`
+              url: `${siteUrl}${wikiGuidePath(page)}`
             })),
             isPartOf: {
               '@type': 'WebSite',
@@ -409,4 +413,13 @@ export default async function NotionSubPage({
       />
     </WikiShell>
   )
+}
+
+export default async function NotionSubPage({
+  params
+}: {
+  params: Promise<{ pageId: string }>
+}) {
+  const { pageId } = await params
+  return renderWikiPage(pageId)
 }
