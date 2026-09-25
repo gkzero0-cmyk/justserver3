@@ -56,6 +56,27 @@ test.describe('desktop wiki journeys', () => {
     await expect(page.getByText('자료 검토 큐', { exact: true })).toBeVisible()
     await expect(page.getByText('검색 UX 분석', { exact: true })).toBeVisible()
   })
+
+  test('verified FAQ exposes source-backed answers', async ({ page }) => {
+    await page.goto('/guide/faq')
+
+    await expect(
+      page.getByText('빠르게 확인하는 서버 규칙', { exact: true })
+    ).toBeVisible()
+    await expect(page.getByText('11개 확인됨', { exact: true })).toBeVisible()
+
+    const question = page.getByText('무한용암은 몇 개까지 만들 수 있나요?', {
+      exact: true
+    })
+    await question.click()
+
+    await expect(
+      page.getByText('개인당 최대 5개까지 허용됩니다.', { exact: true })
+    ).toBeVisible()
+    await expect(
+      page.getByRole('link', { name: '원문 규칙 확인 →' }).nth(4)
+    ).toBeVisible()
+  })
 })
 
 test.describe('mobile wiki journeys', () => {
