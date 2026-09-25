@@ -59,7 +59,7 @@ function readLocalIndex(): NotionIndex {
 export async function readNotionIndex(): Promise<NotionIndex> {
   try {
     const response = await fetch(REMOTE_INDEX, {
-      next: { revalidate: 300 }
+      cache: 'no-store'
     })
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     return (await response.json()) as NotionIndex
