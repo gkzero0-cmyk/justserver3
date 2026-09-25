@@ -1,8 +1,50 @@
-import {
-  classifyWikiContent,
-  matchesKoreanInitials,
-  type WikiContentStatus
-} from './wiki-ux'
+type WikiContentStatus = 'draft' | 'brief' | 'detailed'
+
+const PLACEHOLDER_PATTERN =
+  /위키\s*업데이트\s*예정|내용\s*추가\s*예정|작성\s*중/i
+
+const INITIALS = [
+  'ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ',
+  'ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'
+] as const
+
+function classifySearchContent(page: {
+  searchText?: string | null
+  status?: WikiContentStatus | null
+}): WikiContentStatus {
+  if (
+    page.status === 'draft' ||
+    page.status === 'brief' ||
+    page.status === 'detailed'
+  ) {
+    return page.status
+  }
+
+  const text = (page.searchText || '').replace(/\s+/g, ' ').trim()
+  if (PLACEHOLDER_PATTERN.test(text) || text.length < 80) return 'draft'
+  if (text.length < 220) return 'brief'
+  return 'detailed'
+}
+
+function extractKoreanInitials(value: string) {
+  let result = ''
+  for (const character of value.normalize('NFC')) {
+    const code = character.charCodeAt(0)
+    if (code >= 0xac00 && code <= 0xd7a3) {
+      const index = Math.floor((code - 0xac00) / 588)
+      result += INITIALS[index] || character
+      continue
+    }
+    if (/[ㄱ-ㅎ]/.test(character)) result += character
+  }
+  return result
+}
+
+function matchesKoreanInitials(value: string, query: string) {
+  const normalized = query.replace(/\s+/g, '')
+  if (!normalized || !/^[ㄱ-ㅎ]+$/.test(normalized)) return false
+  return extractKoreanInitials(value).includes(normalized)
+}
 
 export type WikiSearchSection = {
   heading: string
@@ -57,7 +99,7 @@ const SEARCH_ALIASES: Record<string, string[]> = {
 export function wikiSearchPageStatus(page: WikiSearchPage) {
   if (page.status) return page.status
   const text = (page.searchText || '').replace(/\s+/g, ' ').trim()
-  return text ? classifyWikiContent(page) : null
+  return text ? classifySearchContent(page) : null
 }
 
 function editDistance(left: string, right: string) {
