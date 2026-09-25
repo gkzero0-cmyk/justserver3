@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { getPageTitle } from 'notion-utils'
 
 import { NotionDocument } from '@/components/notion-document'
@@ -112,6 +113,7 @@ export async function generateMetadata({
       .replace(/\s+/g, ' ')
       .trim()
       .slice(0, 155) || `${page.title} 가이드`
+  const draft = isDraftPage(page)
   const siteUrl = getSiteUrl()
   const canonical = `${siteUrl}/page/${page.pageId}`
   const image = page.cover || page.icon
@@ -121,6 +123,7 @@ export async function generateMetadata({
     title: page.title,
     description,
     alternates: { canonical },
+    robots: draft ? { index: false, follow: true } : { index: true, follow: true },
     openGraph: {
       title: `${page.title} | 그냥서버 : 적자생존 공식 위키`,
       description,
@@ -173,8 +176,9 @@ export default async function NotionSubPage({
     currentPage?.title ||
     '서버 위키'
   ).trim()
+  const readyNavigationPages = navigationPages.filter((page) => !isDraftPage(page))
   const related = currentPage
-    ? relatedPages(currentPage, navigationPages)
+    ? relatedPages(currentPage, readyNavigationPages)
     : []
   const draft = currentPage ? isDraftPage(currentPage) : false
 
@@ -242,7 +246,7 @@ export default async function NotionSubPage({
     <WikiShell
       sourceUrl={notionPublicUrl(pageId)}
       title={title}
-      pageCount={notionIndex.pages.length || 1}
+      pageCount={navigationPages.length || 1}
       pages={navigationPages.map(({ pageId, title }) => ({
         pageId,
         title
@@ -257,7 +261,7 @@ export default async function NotionSubPage({
         />
       )}
 
-      <WikiPageNavigation current={currentPage} pages={navigationPages} />
+      <WikiPageNavigation current={currentPage} pages={readyNavigationPages} />
 
       {draft && (
         <aside className="draft-notice" role="status">
@@ -297,9 +301,10 @@ export default async function NotionSubPage({
               const resolvedImage = image ? resolveCachedAsset(image) : null
 
               return (
-                <a
+                <Link
                   key={page.pageId}
                   href={withBasePath(`/page/${page.pageId}/`)}
+                  prefetch={false}
                   className="related-doc-card"
                 >
                   <span className="related-doc-image">
@@ -320,7 +325,7 @@ export default async function NotionSubPage({
                     <small>상세 가이드 보기</small>
                   </span>
                   <b>→</b>
-                </a>
+                </Link>
               )
             })}
           </div>
@@ -329,7 +334,7 @@ export default async function NotionSubPage({
 
       <WikiPageNavigation
         current={currentPage}
-        pages={navigationPages}
+        pages={readyNavigationPages}
         mode="siblings"
       />
     </WikiShell>
