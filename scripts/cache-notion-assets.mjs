@@ -679,7 +679,7 @@ function buildReviewQueue(pageIndex, faqCandidates) {
   const changes = pageIndex
     .flatMap((page) => {
       const latest = Array.isArray(page.history) ? page.history[0] : null
-      if (!latest) return []
+      if (!latest || latest.type === 'baseline') return []
       return [{
         id: `change:${page.pageId}:${latest.at}`,
         kind: 'change',
