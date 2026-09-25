@@ -119,12 +119,12 @@ function playTone(
     const master = ctx.createGain()
     const compressor = ctx.createDynamicsCompressor()
 
-    master.gain.setValueAtTime(0.72, now)
-    compressor.threshold.setValueAtTime(-20, now)
-    compressor.knee.setValueAtTime(16, now)
-    compressor.ratio.setValueAtTime(5, now)
-    compressor.attack.setValueAtTime(0.004, now)
-    compressor.release.setValueAtTime(0.2, now)
+    master.gain.setValueAtTime(0.42, now)
+    compressor.threshold.setValueAtTime(-24, now)
+    compressor.knee.setValueAtTime(18, now)
+    compressor.ratio.setValueAtTime(6, now)
+    compressor.attack.setValueAtTime(0.006, now)
+    compressor.release.setValueAtTime(0.24, now)
     compressor.connect(master)
     master.connect(ctx.destination)
 
@@ -142,7 +142,7 @@ function playTone(
       osc.frequency.setValueAtTime(frequency, now + start)
       if (endFrequency) {
         osc.frequency.exponentialRampToValueAtTime(
-          Math.max(35, endFrequency),
+          Math.max(34, endFrequency),
           now + start + duration
         )
       }
@@ -158,7 +158,7 @@ function playTone(
       osc.connect(gain)
       gain.connect(compressor)
       osc.start(now + start)
-      osc.stop(now + start + duration + 0.03)
+      osc.stop(now + start + duration + 0.035)
     }
 
     const noise = (
@@ -181,7 +181,7 @@ function playTone(
       source.buffer = buffer
       filter.type = filterType
       filter.frequency.setValueAtTime(frequency, now + start)
-      filter.Q.setValueAtTime(0.8, now + start)
+      filter.Q.setValueAtTime(0.9, now + start)
       gain.gain.setValueAtTime(Math.max(0.0002, gainValue), now + start)
       gain.gain.exponentialRampToValueAtTime(
         0.0001,
@@ -191,59 +191,47 @@ function playTone(
       filter.connect(gain)
       gain.connect(compressor)
       source.start(now + start)
-      source.stop(now + start + duration + 0.02)
+      source.stop(now + start + duration + 0.025)
     }
 
-    const metalStrike = (
+    const anvil = (
       base: number,
       start = 0,
-      strength = 0.045,
+      strength = 0.042,
       duration = 0.42
     ) => {
-      const partials = [
-        [1, 1],
-        [1.47, 0.52],
-        [2.13, 0.31],
-        [2.73, 0.2]
-      ] as const
-      partials.forEach(([ratio, weight], index) => {
-        tone(
-          base * ratio,
-          start + index * 0.004,
-          duration * (1 - index * 0.08),
-          strength * weight,
-          index % 2 === 0 ? 'sine' : 'triangle'
-        )
-      })
-      noise(start, 0.055, strength * 0.34, 'highpass', 1700)
+      tone(base, start, duration, strength, 'triangle')
+      tone(base * 1.42, start + 0.008, duration * 0.78, strength * 0.42)
+      tone(base * 1.93, start + 0.015, duration * 0.58, strength * 0.22)
+      noise(start, 0.065, strength * 0.36, 'bandpass', 920)
     }
 
     if (kind === 'charge') {
-      metalStrike(165, 0, 0.035, 0.24)
-      tone(190, 0.04, 0.46, 0.023, 'sine', 390)
-      tone(285, 0.16, 0.34, 0.014, 'triangle', 570)
+      anvil(118, 0, 0.034, 0.28)
+      tone(72, 0.03, 0.5, 0.026, 'sine', 112)
+      noise(0.08, 0.26, 0.011, 'lowpass', 650)
     } else if (kind === 'success') {
-      metalStrike(330, 0, 0.05, 0.48)
-      tone(659, 0.07, 0.34, 0.032, 'sine')
-      tone(988, 0.16, 0.38, 0.021, 'sine')
+      anvil(156, 0, 0.05, 0.48)
+      tone(228, 0.06, 0.42, 0.026, 'sine')
+      tone(326, 0.15, 0.38, 0.016, 'triangle')
     } else if (kind === 'max') {
-      metalStrike(392, 0, 0.056, 0.58)
-      tone(523, 0.05, 0.5, 0.033, 'sine')
-      tone(784, 0.14, 0.56, 0.03, 'sine')
-      tone(1047, 0.28, 0.62, 0.025, 'sine')
-      noise(0.08, 0.18, 0.012, 'highpass', 2600)
+      anvil(172, 0, 0.055, 0.58)
+      tone(238, 0.07, 0.56, 0.028, 'sine')
+      tone(342, 0.17, 0.58, 0.022, 'triangle')
+      tone(468, 0.29, 0.56, 0.014, 'sine')
+      noise(0.06, 0.34, 0.012, 'bandpass', 760)
     } else if (kind === 'down') {
-      metalStrike(180, 0, 0.045, 0.38)
-      tone(310, 0.03, 0.42, 0.026, 'triangle', 145)
+      anvil(110, 0, 0.043, 0.4)
+      tone(152, 0.04, 0.44, 0.028, 'triangle', 72)
     } else if (kind === 'destroy') {
-      metalStrike(108, 0, 0.064, 0.5)
-      noise(0.02, 0.38, 0.052, 'lowpass', 1100)
-      noise(0.07, 0.24, 0.025, 'highpass', 2200)
-      tone(92, 0.02, 0.62, 0.038, 'sine', 48)
-      tone(58, 0.12, 0.72, 0.025, 'triangle')
+      anvil(78, 0, 0.062, 0.5)
+      noise(0.015, 0.42, 0.055, 'lowpass', 820)
+      noise(0.05, 0.22, 0.022, 'bandpass', 1250)
+      tone(66, 0.02, 0.72, 0.044, 'sine', 38)
+      tone(45, 0.14, 0.76, 0.028, 'triangle')
     } else {
-      metalStrike(145, 0, 0.04, 0.32)
-      tone(178, 0.02, 0.28, 0.019, 'triangle', 132)
+      anvil(102, 0, 0.039, 0.34)
+      tone(116, 0.03, 0.3, 0.021, 'triangle', 82)
     }
 
     window.setTimeout(() => {
@@ -259,14 +247,14 @@ function EnhancementPickaxe({
   level: number
   broken: boolean
 }) {
-  const enchanted = level >= 10 && !broken
+  const enchanted = level >= 8 && !broken
   return (
     <img
       className="enhancement-pickaxe-image"
       src={
         enchanted
-          ? 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/enhancement-lab/enchanted-diamond-pickaxe.webp'
-          : 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/enhancement-lab/diamond-pickaxe.png'
+          ? 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/enhancement-lab/enchanted-diamond-pickaxe.webp?v=20260926b'
+          : 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/enhancement-lab/diamond-pickaxe.png?v=20260926b'
       }
       alt={
         enchanted
@@ -450,7 +438,7 @@ export function WikiEnhancementLab({
     >
       <header className="enhancement-lab-head">
         <div>
-          <p>MINIGAME · 장비강화</p>
+          <p>미니게임 · 장비강화</p>
           <h2 id="enhancement-lab-title">강화 체험소</h2>
           <span>
             위키를 보다가 잠깐 즐길 수 있는 장비강화 체험입니다. +15까지 올려보세요.
@@ -491,7 +479,7 @@ export function WikiEnhancementLab({
           <div className="enhancement-item-stage">
             <div
               className="enhancement-slot-shell"
-              data-enchanted={stats.level >= 10 && !broken ? 'true' : 'false'}
+              data-enchanted={stats.level >= 8 && !broken ? 'true' : 'false'}
             >
               <div className="enhancement-slot">
                 <div className="enhancement-slot-inner">
@@ -505,7 +493,23 @@ export function WikiEnhancementLab({
                       broken={broken}
                     />
                   </div>
-                  {stats.level >= 10 && !broken && (
+                  <span
+                    className="enhancement-tier-mark"
+                    data-tier={broken ? 'destroy' : glowTier}
+                  >
+                    {broken
+                      ? '파괴됨'
+                      : stats.level >= 15
+                        ? '최대 강화'
+                        : stats.level >= 12
+                          ? '과충전'
+                          : stats.level >= 8
+                            ? '인챈트'
+                            : stats.level >= 5
+                              ? '강화광'
+                              : '기본'}
+                  </span>
+                  {stats.level >= 8 && !broken && (
                     <div
                       className="enhancement-enchant-sheen"
                       aria-hidden="true"
@@ -544,12 +548,16 @@ export function WikiEnhancementLab({
               </strong>
               <span>
                 {broken
-                  ? '파괴됨 · 새 곡괭이를 받아 다시 도전할 수 있습니다.'
+                  ? '파괴됨 · 새 곡괭이를 받아 0강부터 다시 도전합니다.'
                   : stats.level >= 15
                     ? '최대 강화 · +15 달성'
-                    : stats.level >= 10
-                      ? '인챈트 활성 · 다음 성공 확률 ' + rule.success + '%'
-                      : danger.label + ' 단계 · 다음 성공 확률 ' + rule.success + '%'}
+                    : stats.level >= 12
+                      ? '과충전 단계 · 보라빛 강화 효과 활성'
+                      : stats.level >= 8
+                        ? '인챈트 단계 · 청보라 강화 효과 활성'
+                        : stats.level >= 5
+                          ? '강화광 단계 · 청록빛 강화 효과 활성'
+                          : danger.label + ' 단계 · 다음 성공 확률 ' + rule.success + '%'}
               </span>
             </div>
           </div>
@@ -557,6 +565,7 @@ export function WikiEnhancementLab({
           <div
             className="enhancement-result"
             data-outcome={outcome || 'idle'}
+            aria-live="polite"
           >
             <span aria-hidden="true">
               {outcome === 'max'
@@ -613,7 +622,7 @@ export function WikiEnhancementLab({
           <section className="enhancement-probability">
             <div className="enhancement-panel-title">
               <div>
-                <small>CURRENT ODDS</small>
+                <small>강화 확률</small>
                 <strong>현재 강화 확률</strong>
               </div>
               <span data-tone={danger.tone}>{danger.label}</span>
@@ -640,8 +649,15 @@ export function WikiEnhancementLab({
               </div>
             ) : (
               <div className="enhancement-max-panel">
-                <strong>MAX +15</strong>
+                <strong>최대 +15</strong>
                 <span>최고 단계에 도달했습니다.</span>
+              </div>
+            )}
+
+            {stats.level < 15 && rule.destroy > 0 && (
+              <div className="enhancement-risk-warning" role="note">
+                <strong>파괴 위험 {rule.destroy}%</strong>
+                <span>실패 판정에 따라 장비가 파괴될 수 있습니다.</span>
               </div>
             )}
 
@@ -654,10 +670,10 @@ export function WikiEnhancementLab({
           <section className="enhancement-records">
             <div className="enhancement-panel-title">
               <div>
-                <small>YOUR RECORD</small>
+                <small>내 기록</small>
                 <strong>강화 기록</strong>
               </div>
-              <b>BEST +{stats.best}</b>
+              <b>최고 +{stats.best}</b>
             </div>
 
             <div className="enhancement-record-grid">
@@ -691,7 +707,7 @@ export function WikiEnhancementLab({
           <section className="enhancement-links">
             <div className="enhancement-panel-title">
               <div>
-                <small>WIKI LINKS</small>
+                <small>관련 문서</small>
                 <strong>관련 가이드</strong>
               </div>
             </div>

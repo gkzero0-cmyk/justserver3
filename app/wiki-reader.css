@@ -9741,3 +9741,373 @@ html[data-theme="light"] .enhancement-links a {
     animation: none !important;
   }
 }
+
+
+/* === 2026-09-26 enhancement lab refinement v2 === */
+.home-playground {
+  overflow: visible;
+}
+
+.home-playground-content {
+  overflow: visible;
+  padding-bottom: 30px;
+}
+
+.wiki-enhancement-lab {
+  overflow: visible;
+  padding-bottom: 22px;
+}
+
+.enhancement-main-grid {
+  align-items: start;
+}
+
+.enhancement-forge {
+  min-height: 442px;
+  padding: 15px;
+}
+
+.enhancement-item-stage {
+  min-height: 242px;
+  gap: 8px;
+  padding: 5px 0 3px;
+}
+
+.enhancement-slot-shell {
+  width: 168px;
+  height: 168px;
+  padding: 6px;
+}
+
+.enhancement-slot {
+  padding: 5px;
+}
+
+.enhancement-pickaxe {
+  width: 136px;
+  height: 136px;
+}
+
+.enhancement-pickaxe-image {
+  background: transparent !important;
+}
+
+.enhancement-item-tooltip {
+  width: min(320px, 92%);
+  padding: 8px 10px;
+}
+
+.enhancement-side {
+  gap: 8px;
+}
+
+.enhancement-side > section {
+  gap: 8px;
+  padding: 11px;
+}
+
+.enhancement-record-grid,
+.enhancement-odds-grid {
+  gap: 5px;
+}
+
+.enhancement-odds-grid > div,
+.enhancement-record-grid > span {
+  padding: 8px;
+}
+
+/* The base sprite is transparent; the slot itself supplies the background. */
+.enhancement-slot-inner {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(var(--forge-glow), .025), transparent 58%),
+    #0d0f10;
+}
+
+/* Make each reinforcement band immediately recognizable without turning the wiki into a neon game UI. */
+.enhancement-forge[data-tier="mid"] .enhancement-slot-shell {
+  border-color: rgba(69, 196, 200, .34);
+  box-shadow:
+    inset 3px 3px 0 rgba(255,255,255,.035),
+    inset -3px -3px 0 rgba(0,0,0,.4),
+    0 0 0 1px rgba(69,196,200,.055),
+    0 10px 26px rgba(0,0,0,.28);
+}
+
+.enhancement-forge[data-tier="mid"] .enhancement-pickaxe {
+  transform: translateY(1px) scale(1.015);
+  filter:
+    brightness(1.05)
+    drop-shadow(0 8px 8px rgba(0,0,0,.38))
+    drop-shadow(0 0 10px rgba(70,205,207,.28));
+}
+
+.enhancement-forge[data-tier="high"] .enhancement-slot-shell {
+  border-color: rgba(86, 145, 231, .48);
+  box-shadow:
+    inset 3px 3px 0 rgba(255,255,255,.04),
+    inset -3px -3px 0 rgba(0,0,0,.42),
+    0 0 0 1px rgba(86,145,231,.09),
+    0 0 20px rgba(86,145,231,.13),
+    0 10px 28px rgba(0,0,0,.3);
+}
+
+.enhancement-forge[data-tier="high"] .enhancement-slot-inner {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(82,139,229,.11), transparent 56%),
+    #0c0f14;
+}
+
+.enhancement-forge[data-tier="high"] .enhancement-pickaxe {
+  transform: translateY(1px) scale(1.035);
+  filter:
+    brightness(1.08)
+    saturate(1.12)
+    drop-shadow(0 8px 8px rgba(0,0,0,.38))
+    drop-shadow(0 0 14px rgba(91,143,224,.34));
+}
+
+.enhancement-forge[data-tier="extreme"] .enhancement-slot-shell {
+  border-color: rgba(178, 104, 222, .56);
+  box-shadow:
+    inset 3px 3px 0 rgba(255,255,255,.045),
+    inset -3px -3px 0 rgba(0,0,0,.44),
+    0 0 0 1px rgba(178,104,222,.11),
+    0 0 24px rgba(178,104,222,.18),
+    0 10px 30px rgba(0,0,0,.32);
+}
+
+.enhancement-forge[data-tier="extreme"] .enhancement-slot-inner {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(178,104,222,.15), transparent 58%),
+    #100c13;
+}
+
+.enhancement-forge[data-tier="extreme"] .enhancement-pickaxe {
+  transform: translateY(1px) scale(1.055);
+  filter:
+    brightness(1.12)
+    saturate(1.2)
+    drop-shadow(0 8px 9px rgba(0,0,0,.4))
+    drop-shadow(0 0 18px rgba(183,105,228,.42));
+}
+
+.enhancement-forge[data-tier="legendary"] .enhancement-slot-shell {
+  border-color: rgba(231, 188, 87, .72);
+  box-shadow:
+    inset 3px 3px 0 rgba(255,255,255,.055),
+    inset -3px -3px 0 rgba(0,0,0,.45),
+    0 0 0 1px rgba(231,188,87,.14),
+    0 0 28px rgba(231,188,87,.22),
+    0 10px 32px rgba(0,0,0,.32);
+}
+
+.enhancement-forge[data-tier="legendary"] .enhancement-slot-inner {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(231,188,87,.17), transparent 60%),
+    #12100b;
+}
+
+.enhancement-forge[data-tier="legendary"] .enhancement-pickaxe {
+  transform: translateY(1px) scale(1.065);
+  filter:
+    brightness(1.18)
+    saturate(1.15)
+    drop-shadow(0 8px 9px rgba(0,0,0,.42))
+    drop-shadow(0 0 20px rgba(231,188,87,.48));
+}
+
+.enhancement-tier-mark {
+  position: absolute;
+  z-index: 7;
+  top: 7px;
+  left: 7px;
+  min-width: 38px;
+  padding: 3px 6px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(5,7,8,.82);
+  color: #8e9293;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1.2;
+  text-align: center;
+  letter-spacing: .02em;
+  text-shadow: 0 1px 1px #000;
+}
+
+.enhancement-tier-mark[data-tier="mid"] {
+  border-color: rgba(69,196,200,.3);
+  color: #77d5d7;
+}
+
+.enhancement-tier-mark[data-tier="high"] {
+  border-color: rgba(86,145,231,.36);
+  color: #91b8f2;
+}
+
+.enhancement-tier-mark[data-tier="extreme"] {
+  border-color: rgba(178,104,222,.42);
+  color: #cf98ec;
+}
+
+.enhancement-tier-mark[data-tier="legendary"] {
+  border-color: rgba(231,188,87,.48);
+  color: #e8c982;
+}
+
+.enhancement-tier-mark[data-tier="destroy"] {
+  border-color: rgba(216,77,66,.48);
+  color: #e27e75;
+}
+
+/* Broken items stay dark and transparent instead of revealing the source image background. */
+.enhancement-forge[data-state="destroy"] .enhancement-slot-inner {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(170,53,44,.12), transparent 58%),
+    #090a0b;
+}
+
+.enhancement-forge[data-state="destroy"] .enhancement-slot-inner::after {
+  content: '';
+  position: absolute;
+  z-index: 5;
+  inset: 9%;
+  pointer-events: none;
+  opacity: .82;
+  background:
+    linear-gradient(132deg, transparent 46%, rgba(215,82,71,.55) 47%, rgba(215,82,71,.55) 48%, transparent 49%),
+    linear-gradient(48deg, transparent 56%, rgba(215,82,71,.34) 57%, rgba(215,82,71,.34) 58%, transparent 59%),
+    linear-gradient(162deg, transparent 62%, rgba(215,82,71,.25) 63%, rgba(215,82,71,.25) 64%, transparent 65%);
+}
+
+.enhancement-forge[data-state="destroy"] .enhancement-pickaxe {
+  opacity: .22;
+  transform: translateY(4px) rotate(6deg) scale(.8);
+  filter:
+    grayscale(1)
+    brightness(.25)
+    contrast(1.25)
+    drop-shadow(0 7px 7px rgba(0,0,0,.6));
+}
+
+.enhancement-forge[data-state="destroy"] .enhancement-slot-level {
+  border-color: rgba(216,77,66,.4);
+  color: #df776f;
+}
+
+/* The sheen should read as enchanted metal, not a bright arcade flash. */
+.enhancement-enchant-sheen {
+  opacity: .22;
+  background:
+    linear-gradient(
+      115deg,
+      transparent 35%,
+      rgba(91,153,232,.07) 43%,
+      rgba(180,100,222,.18) 49%,
+      rgba(91,153,232,.08) 55%,
+      transparent 63%
+    );
+}
+
+.enhancement-forge[data-tier="extreme"] .enhancement-enchant-sheen {
+  opacity: .32;
+}
+
+.enhancement-forge[data-tier="legendary"] .enhancement-enchant-sheen {
+  opacity: .38;
+  background:
+    linear-gradient(
+      115deg,
+      transparent 35%,
+      rgba(235,190,88,.08) 43%,
+      rgba(231,188,87,.25) 49%,
+      rgba(191,124,224,.11) 55%,
+      transparent 63%
+    );
+}
+
+.enhancement-risk-warning {
+  display: grid;
+  gap: 2px;
+  padding: 8px 9px;
+  border: 1px solid rgba(213,86,73,.16);
+  border-left: 3px solid rgba(213,86,73,.54);
+  border-radius: 5px;
+  background: rgba(213,86,73,.035);
+}
+
+.enhancement-risk-warning strong {
+  color: #d9867d;
+  font-size: 9px;
+}
+
+.enhancement-risk-warning span {
+  color: #8d7773;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.enhancement-panel-title > b {
+  border-color: rgba(var(--forge-glow), .12);
+  color: rgb(var(--forge-glow));
+}
+
+/* Slightly denser controls keep the complete mini-game visible on common laptop heights. */
+.enhancement-result {
+  min-height: 40px;
+  padding: 8px 10px;
+}
+
+.enhancement-primary {
+  min-height: 54px;
+}
+
+@media (max-width: 900px) {
+  .home-playground-content {
+    padding-bottom: 24px;
+  }
+
+  .enhancement-forge {
+    min-height: 422px;
+  }
+
+  .enhancement-side {
+    grid-template-columns: repeat(3, minmax(0,1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .wiki-enhancement-lab {
+    padding: 13px 13px 19px;
+  }
+
+  .enhancement-forge {
+    min-height: 405px;
+    padding: 13px;
+  }
+
+  .enhancement-item-stage {
+    min-height: 226px;
+  }
+
+  .enhancement-slot-shell {
+    width: 154px;
+    height: 154px;
+  }
+
+  .enhancement-pickaxe {
+    width: 124px;
+    height: 124px;
+  }
+
+  .enhancement-side {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enhancement-tier-mark,
+  .enhancement-slot-shell,
+  .enhancement-pickaxe {
+    transition: none !important;
+  }
+}
