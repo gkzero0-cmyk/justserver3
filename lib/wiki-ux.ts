@@ -93,3 +93,33 @@ export function relativeUpdateLabel(
     timeZone: 'Asia/Seoul'
   }).format(date)
 }
+
+
+export function suggestFallbackPages<
+  T extends { pageId: string; title: string; searchText?: string | null }
+>(
+  pages: T[],
+  priorityTitles: string[],
+  limit = 3
+) {
+  const priority = new Map(
+    priorityTitles.map((title, index) => [title, index])
+  )
+
+  return [...pages]
+    .filter((page) => classifyWikiContent(page) !== 'draft')
+    .sort((a, b) => {
+      const aPriority = priority.get(a.title) ?? 999
+      const bPriority = priority.get(b.title) ?? 999
+      if (aPriority !== bPriority) return aPriority - bPriority
+
+      const aStatus = classifyWikiContent(a)
+      const bStatus = classifyWikiContent(b)
+      if (aStatus !== bStatus) {
+        return aStatus === 'detailed' ? -1 : 1
+      }
+
+      return a.title.localeCompare(b.title, 'ko')
+    })
+    .slice(0, Math.max(1, limit))
+}
