@@ -28,7 +28,7 @@ function readLocalManifest(): NotionAssetManifest {
 export async function readNotionAssetManifest(): Promise<NotionAssetManifest> {
   try {
     const response = await fetch(REMOTE_MANIFEST, {
-      next: { revalidate: 300 }
+      cache: 'no-store'
     })
 
     if (response.ok) {
@@ -36,7 +36,7 @@ export async function readNotionAssetManifest(): Promise<NotionAssetManifest> {
     }
 
     const fallback = await fetch(FALLBACK_MANIFEST, {
-      next: { revalidate: 300 }
+      cache: 'no-store'
     })
     if (!fallback.ok) throw new Error(`HTTP ${fallback.status}`)
     return (await fallback.json()) as NotionAssetManifest
