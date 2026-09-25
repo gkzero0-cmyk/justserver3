@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,6 +18,23 @@ jobs:
           node-version: 24
       - run: npm ci
       - run: npm run build
+
+      - name: Build current deploy bundle
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: node scripts/build-deploy-bundle.mjs
+
+      - name: Store current deploy bundle
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .deploy/current.json
+          if git diff --cached --quiet; then
+            echo "Deploy bundle is already current."
+          else
+            git commit -m "Refresh deploy bundle [skip ci]"
+            git push
+          fi
 
       - name: Trigger Vercel production refresh when configured
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
