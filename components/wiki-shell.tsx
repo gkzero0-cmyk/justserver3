@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { track } from '@vercel/analytics'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
@@ -186,6 +187,7 @@ export function WikiShell({
   const modalSearchRef = useRef<HTMLInputElement>(null)
   const modalRef = useRef<HTMLElement>(null)
   const handledHashRef = useRef('')
+  const zeroSearchTrackedRef = useRef('')
 
   useEffect(() => {
     const saved = window.localStorage.getItem('justserver3-theme')
@@ -282,6 +284,7 @@ export function WikiShell({
     window.localStorage.removeItem(RECENT_PAGES_KEY)
     setRecentPageIds([])
     setRecentReady(true)
+    track('wiki_recent_history_clear')
   }
 
   const toggleMobileCategory = (category: string) => {
@@ -510,6 +513,7 @@ export function WikiShell({
 
   const openSearch = () => {
     setSearchOpen(true)
+    track('wiki_search_open')
     window.setTimeout(() => modalSearchRef.current?.focus(), 30)
   }
 
@@ -654,6 +658,34 @@ export function WikiShell({
       searchPages ?? pages.map((page) => ({ ...page, searchText: '' }))
     return suggestFallbackPages(source, SEARCH_PRIORITY, 3)
   }, [filteredPages.length, pages, query, searchPages])
+
+  useEffect(() => {
+    const keyword = query.trim()
+    if (!keyword || searchLoading || filteredPages.length) return
+
+    const sourceReady = Boolean(searchPages) || searchFailed
+    if (!sourceReady) return
+
+    const signature = `${keyword.length}:${searchPages ? 'index' : 'fallback'}`
+    if (zeroSearchTrackedRef.current === signature) return
+    zeroSearchTrackedRef.current = signature
+
+    track('wiki_search_zero_result', {
+      query_length:
+        keyword.length <= 2
+          ? '1-2'
+          : keyword.length <= 5
+            ? '3-5'
+            : '6+',
+      source: searchPages ? 'index' : 'fallback'
+    })
+  }, [
+    filteredPages.length,
+    query,
+    searchFailed,
+    searchLoading,
+    searchPages
+  ])
 
   useEffect(() => {
     setSelectedResult(0)
