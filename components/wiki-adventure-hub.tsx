@@ -26,6 +26,11 @@ import {
 import { iconForTitle } from '@/lib/wiki-taxonomy'
 import type { WikiContentStatus } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
+import {
+  readWikiStateValue,
+  readWikiStringArray,
+  writeWikiStateValue
+} from '@/lib/wiki-client-state'
 
 type AdventurePage = {
   pageId: string
@@ -35,12 +40,6 @@ type AdventurePage = {
 }
 
 type AdventureTab = 'story' | 'passport' | 'build' | 'boss'
-
-const READ_PAGES_KEY = 'justserver3-read-pages-v1'
-const FUN_STATS_KEY = 'justserver3-fun-stats-v1'
-const SURVIVAL_RECORD_KEY = 'justserver3-survival-record-v1'
-const SEEN_STORY_KEY = 'justserver3-seen-story-chapters-v1'
-const SEEN_BOSS_KEY = 'justserver3-seen-boss-weeks-v1'
 
 const TAB_LABELS: Array<{
   id: AdventureTab
@@ -58,21 +57,10 @@ function normalize(value: string) {
   return value.replaceAll('-', '')
 }
 
-function readStringArray(key: string) {
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(key) || '[]')
-    return Array.isArray(parsed)
-      ? parsed.filter((value): value is string => typeof value === 'string')
-      : []
-  } catch {
-    return []
-  }
-}
-
 function readFunStats() {
   try {
     return normalizeWikiFunStats(
-      JSON.parse(window.localStorage.getItem(FUN_STATS_KEY) || 'null')
+      readWikiStateValue('funStats', null)
     )
   } catch {
     return { ...EMPTY_WIKI_FUN_STATS }
@@ -82,7 +70,7 @@ function readFunStats() {
 function readSurvivalRecord() {
   try {
     return normalizeSurvivalRecord(
-      JSON.parse(window.localStorage.getItem(SURVIVAL_RECORD_KEY) || 'null')
+      readWikiStateValue('survivalRecord', null)
     )
   } catch {
     return { ...EMPTY_SURVIVAL_RECORD, activityByDay: {} }
@@ -117,7 +105,7 @@ export function WikiAdventureHub({
 
   useEffect(() => {
     const refresh = () => {
-      setReadIds(readStringArray(READ_PAGES_KEY))
+      setReadIds(readWikiStringArray('readPages'))
       setStats(readFunStats())
       setRecord(readSurvivalRecord())
     }
@@ -186,10 +174,10 @@ export function WikiAdventureHub({
     const completed = story
       .filter((chapter) => chapter.complete)
       .map((chapter) => chapter.id)
-    const seen = readStringArray(SEEN_STORY_KEY)
+    const seen = readWikiStringArray('seenStoryChapters')
 
-    if (!window.localStorage.getItem(SEEN_STORY_KEY)) {
-      window.localStorage.setItem(SEEN_STORY_KEY, JSON.stringify(completed))
+    if (!readWikiStateValue<unknown>('seenStoryChapters', null)) {
+      writeWikiStateValue('seenStoryChapters', completed)
       return
     }
 
@@ -197,9 +185,9 @@ export function WikiAdventureHub({
     if (!unlocked) return
 
     const chapter = story.find((item) => item.id === unlocked)
-    window.localStorage.setItem(
-      SEEN_STORY_KEY,
-      JSON.stringify([...new Set([...seen, unlocked])])
+    writeWikiStateValue(
+      'seenStoryChapters',
+      [...new Set([...seen, unlocked])]
     )
     setNotice({
       icon: '🎬',
@@ -214,22 +202,22 @@ export function WikiAdventureHub({
   useEffect(() => {
     if (!progressReady) return
 
-    const existing = window.localStorage.getItem(SEEN_BOSS_KEY)
+    const existing = readWikiStateValue<unknown>('seenBossWeeks', null)
     if (!existing) {
-      window.localStorage.setItem(
-        SEEN_BOSS_KEY,
-        JSON.stringify(boss.defeated ? [weekKey] : [])
+      writeWikiStateValue(
+        'seenBossWeeks',
+        boss.defeated ? [weekKey] : []
       )
       return
     }
 
     if (!boss.defeated) return
-    const seen = readStringArray(SEEN_BOSS_KEY)
+    const seen = readWikiStringArray('seenBossWeeks')
     if (seen.includes(weekKey)) return
 
-    window.localStorage.setItem(
-      SEEN_BOSS_KEY,
-      JSON.stringify([...new Set([...seen, weekKey])])
+    writeWikiStateValue(
+      'seenBossWeeks',
+      [...new Set([...seen, weekKey])]
     )
     setNotice({
       icon: '🏆',
