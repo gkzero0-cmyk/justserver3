@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { withBasePath } from '@/lib/url-utils'
 
@@ -116,6 +117,7 @@ export function WikiShell({
   currentPageId?: string | null
   home?: boolean
 }) {
+  const router = useRouter()
   const [toc, setToc] = useState<TocItem[]>([])
   const [query, setQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
@@ -129,6 +131,29 @@ export function WikiShell({
   const [selectedResult, setSelectedResult] = useState(0)
   const modalSearchRef = useRef<HTMLInputElement>(null)
   const modalRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const refreshIfVisible = () => {
+      if (document.visibilityState === 'visible') {
+        router.refresh()
+      }
+    }
+
+    const interval = window.setInterval(refreshIfVisible, 30_000)
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        window.setTimeout(() => router.refresh(), 120)
+      }
+    }
+
+    window.addEventListener('visibilitychange', onVisibilityChange)
+
+    return () => {
+      window.clearInterval(interval)
+      window.removeEventListener('visibilitychange', onVisibilityChange)
+    }
+  }, [router]) // justserver-live-refresh
 
   useEffect(() => {
     const saved = window.localStorage.getItem('justserver3-theme')
