@@ -1,5 +1,5 @@
 import type { NotionIndexPage } from '@/lib/notion-index'
-import { withBasePath } from '@/lib/url-utils'
+import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
 
 const STEP_TITLES = [
   '서버규칙',
@@ -37,21 +37,34 @@ export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
       </div>
 
       <div className="starter-steps">
-        {steps.map(({ page, meta }) => (
-          <a
-            key={page!.pageId}
-            href={withBasePath(`/page/${page!.pageId}/`)}
-            className="starter-step"
-          >
-            <span className="starter-number">{meta[0]}</span>
-            <span className="starter-copy">
-              <strong>{meta[1]}</strong>
-              <small>{meta[2]}</small>
-            </span>
-            <span className="starter-target">{page!.title}</span>
-            <span className="starter-arrow">→</span>
-          </a>
-        ))}
+        {steps.map(({ page, meta }) => {
+          const media = page!.cover || page!.icon
+          const resolvedMedia = media ? resolveCachedAsset(media) : null
+
+          return (
+            <a
+              key={page!.pageId}
+              href={withBasePath(`/page/${page!.pageId}/`)}
+              className="starter-step"
+            >
+              {resolvedMedia && (
+                <span
+                  className="starter-step-media"
+                  style={{ backgroundImage: `url("${resolvedMedia}")` }}
+                  aria-hidden="true"
+                />
+              )}
+              <span className="starter-step-shade" aria-hidden="true" />
+              <span className="starter-number">{meta[0]}</span>
+              <span className="starter-copy">
+                <strong>{meta[1]}</strong>
+                <small>{meta[2]}</small>
+              </span>
+              <span className="starter-target">{page!.title}</span>
+              <span className="starter-arrow">→</span>
+            </a>
+          )
+        })}
       </div>
     </section>
   )
