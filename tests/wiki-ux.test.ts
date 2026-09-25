@@ -32,6 +32,13 @@ import {
   unreadRecommendations
 } from '../lib/wiki-reading-game.ts'
 import {
+  buildStoryChapters,
+  passportProgress,
+  recommendedSurvivalBuild,
+  storyProgress,
+  weeklyWikiBoss
+} from '../lib/wiki-adventure.ts'
+import {
   classifyWikiContent,
   extractKoreanInitials,
   matchesKoreanInitials,
@@ -440,4 +447,105 @@ test('related reading order places unread guides before completed ones', () => {
     ),
     ['b', 'c', 'a']
   )
+})
+
+
+test('story mode unlocks chapters sequentially from completed reading', () => {
+  const pages = [
+    { pageId: 'story', title: '스토리', category: '시작하기' },
+    { pageId: 'rules', title: '서버규칙', category: '시작하기' },
+    { pageId: 'mine', title: '채광', category: '주요 콘텐츠' },
+    { pageId: 'fish', title: '낚시', category: '주요 콘텐츠' },
+    { pageId: 'land', title: '땅 구매', category: '성장 · 경제' },
+    { pageId: 'credit', title: '신용등급', category: '성장 · 경제' },
+    { pageId: 'cook', title: '요리', category: '주요 콘텐츠' },
+    { pageId: 'hunt', title: '사냥', category: '주요 콘텐츠' }
+  ]
+  const chapters = buildStoryChapters(pages)
+  const initial = storyProgress(chapters, [])
+  assert.equal(initial[0].unlocked, true)
+  assert.equal(initial[1].unlocked, false)
+
+  const firstTarget = chapters[0].choices[0].pageId
+  const next = storyProgress(chapters, [firstTarget])
+  assert.equal(next[0].complete, true)
+  assert.equal(next[1].unlocked, true)
+})
+
+test('survival build follows personality result and only uses available pages', () => {
+  const pages = [
+    { pageId: 'mine', title: '채광', category: '주요 콘텐츠' },
+    { pageId: 'repair', title: '장비수리', category: '성장 · 경제' },
+    { pageId: 'rules', title: '서버규칙', category: '시작하기' }
+  ]
+  const build = recommendedSurvivalBuild(pages, 'miner', 3)
+
+  assert.equal(build.personalized, true)
+  assert.equal(build.title, '광부 생존 빌드')
+  assert.deepEqual(
+    build.pages.map((page) => page.pageId),
+    ['mine', 'repair', 'rules']
+  )
+})
+
+test('passport awards a special seal only when a category is fully read', () => {
+  const pages = [
+    { pageId: 'a', title: '서버규칙', category: '시작하기' },
+    { pageId: 'b', title: '기초설정(뉴비필독)', category: '시작하기' },
+    { pageId: 'c', title: '채광', category: '주요 콘텐츠' }
+  ]
+  const passport = passportProgress(pages, ['a', 'b'])
+  const start = passport.find((group) => group.category === '시작하기')
+  const content = passport.find((group) => group.category === '주요 콘텐츠')
+
+  assert.equal(start?.complete, true)
+  assert.equal(start?.count, 2)
+  assert.equal(content?.complete, false)
+  assert.equal(content?.count, 0)
+})
+
+test('weekly boss counts rereads on different days as separate reading actions', () => {
+  const boss = weeklyWikiBoss(
+    {
+      '2026-09-21': {
+        reads: ['same-page'],
+        readingQuizzes: [],
+        treasures: []
+      },
+      '2026-09-22': {
+        reads: ['same-page'],
+        readingQuizzes: ['same-page'],
+        treasures: []
+      },
+      '2026-09-23': {
+        reads: ['another-page'],
+        readingQuizzes: [],
+        treasures: ['another-page']
+      }
+    },
+    '2026-09-21'
+  )
+
+  assert.equal(boss.actions.reads, 3)
+  assert.equal(boss.actions.quizzes, 1)
+  assert.equal(boss.actions.treasures, 1)
+  assert.equal(boss.damage, 56)
+  assert.equal(boss.remaining, 44)
+})
+
+test('weekly boss caps damage at full defeat', () => {
+  const boss = weeklyWikiBoss(
+    {
+      '2026-09-21': {
+        reads: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'],
+        readingQuizzes: ['a'],
+        treasures: ['a']
+      }
+    },
+    '2026-09-21'
+  )
+
+  assert.equal(boss.damage, 100)
+  assert.equal(boss.remaining, 0)
+  assert.equal(boss.defeated, true)
 })
