@@ -6363,3 +6363,643 @@ html[data-theme="light"] .passport-cover {
     transition: none;
   }
 }
+
+
+/* === Survival Adventure polish pass === */
+.adventure-overview {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 7px;
+  margin-bottom: 9px;
+}
+
+.adventure-overview > span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 10px;
+  background: rgba(255,255,255,.012);
+}
+
+.adventure-overview small {
+  color: #6f6560;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.adventure-overview strong {
+  overflow: hidden;
+  color: #aaa09a;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adventure-overview > span.is-complete {
+  border-color: rgba(112,178,128,.12);
+  background: rgba(112,178,128,.022);
+}
+
+.adventure-overview > span.is-complete strong {
+  color: #88b792;
+}
+
+.adventure-continue-card {
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 34px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 9px;
+  padding: 10px 12px;
+  border: 1px solid rgba(var(--gold-rgb),.12);
+  border-radius: 13px;
+  background:
+    linear-gradient(105deg, rgba(var(--gold-rgb),.05), transparent 64%),
+    rgba(255,255,255,.012);
+  text-decoration: none;
+  transition: transform .16s ease, border-color .16s ease, background .16s ease;
+}
+
+.adventure-continue-card:hover,
+.adventure-continue-card:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(var(--gold-rgb),.23);
+  background:
+    linear-gradient(105deg, rgba(var(--gold-rgb),.075), transparent 64%),
+    rgba(255,255,255,.016);
+}
+
+.adventure-continue-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(var(--gold-rgb),.13);
+  border-radius: 10px;
+  background: rgba(var(--gold-rgb),.045);
+  color: #c59e65;
+  font-size: 10px;
+}
+
+.adventure-continue-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.adventure-continue-copy small {
+  color: #9d7d52;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .09em;
+}
+
+.adventure-continue-copy strong {
+  overflow: hidden;
+  color: #d9cec8;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adventure-continue-copy em {
+  overflow: hidden;
+  color: #776c66;
+  font-size: 8px;
+  font-style: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adventure-continue-card > b {
+  color: #ad8c60;
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+.adventure-stage > [role="tabpanel"] {
+  animation: adventurePanelIn .2s ease-out;
+}
+
+.story-progress-strip {
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr) auto;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 13px 44px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,.04);
+  border-radius: 10px;
+  background: rgba(255,255,255,.01);
+}
+
+.story-progress-strip > span {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.story-progress-strip strong,
+.story-progress-strip > b {
+  color: #b99767;
+  font-size: 9px;
+}
+
+.story-progress-strip small {
+  color: #6d625d;
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.story-progress-strip > i {
+  height: 4px;
+  display: block;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255,255,255,.045);
+}
+
+.story-progress-strip > i > i {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: linear-gradient(90deg,#8aa076,#c79d5e);
+  transition: width .35s ease;
+}
+
+.story-chapter-list > article.is-current .story-chapter-marker > span {
+  border-color: rgba(var(--gold-rgb),.25);
+  color: #d0ab70;
+  background:
+    radial-gradient(circle, rgba(var(--gold-rgb),.09), rgba(var(--gold-rgb),.025));
+  box-shadow: 0 0 0 4px rgba(var(--gold-rgb),.025);
+}
+
+.story-chapter-list > article.is-current .story-chapter-copy {
+  position: relative;
+}
+
+.story-chapter-list > article.is-current .story-chapter-copy::before {
+  content: "NOW";
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 2px 5px;
+  border: 1px solid rgba(var(--gold-rgb),.12);
+  border-radius: 999px;
+  color: #9f8055;
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.passport-pages > article {
+  position: relative;
+  overflow: hidden;
+}
+
+.passport-special-seal {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0;
+  border: 2px solid rgba(157,108,65,.22);
+  border-radius: 50%;
+  color: rgba(172,118,66,.62);
+  transform: rotate(-11deg);
+  pointer-events: none;
+}
+
+.passport-special-seal::before,
+.passport-special-seal::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+
+.passport-special-seal::before {
+  inset: 4px;
+  border: 1px dashed currentColor;
+}
+
+.passport-special-seal::after {
+  inset: 9px;
+  border: 1px solid rgba(157,108,65,.12);
+}
+
+.passport-special-seal b,
+.passport-special-seal em {
+  position: relative;
+  z-index: 1;
+  font-style: normal;
+  line-height: 1;
+}
+
+.passport-special-seal b {
+  font-size: 6px;
+  letter-spacing: .08em;
+}
+
+.passport-special-seal em {
+  margin-top: 2px;
+  font-size: 14px;
+}
+
+.passport-stamps > a {
+  position: relative;
+}
+
+.passport-stamps > a.is-stamped::before,
+.passport-stamps > a.is-stamped::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.passport-stamps > a.is-stamped::before {
+  inset: 4px;
+  border: 1px dashed rgba(var(--gold-rgb),.17);
+}
+
+.passport-stamps > a.is-stamped::after {
+  width: 7px;
+  height: 7px;
+  right: 7px;
+  top: 9px;
+  background: rgba(var(--gold-rgb),.16);
+  box-shadow:
+    -30px 34px 0 rgba(var(--gold-rgb),.09),
+    -3px 41px 0 rgba(var(--gold-rgb),.08);
+}
+
+.boss-defeat-seal {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 82px;
+  height: 82px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  border: 2px solid rgba(var(--gold-rgb),.24);
+  border-radius: 50%;
+  color: #ba965e;
+  transform: rotate(-9deg);
+  background: rgba(19,16,16,.34);
+  box-shadow:
+    inset 0 0 0 5px rgba(var(--gold-rgb),.025),
+    0 8px 26px rgba(0,0,0,.12);
+  animation: bossSealIn .5s cubic-bezier(.17,.82,.27,1);
+}
+
+.boss-defeat-seal::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px dashed currentColor;
+  border-radius: 50%;
+  opacity: .7;
+}
+
+.boss-defeat-seal span,
+.boss-defeat-seal b {
+  position: relative;
+  z-index: 1;
+  line-height: 1.1;
+}
+
+.boss-defeat-seal span {
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: .08em;
+}
+
+.boss-defeat-seal b {
+  margin-top: 3px;
+  font-size: 6px;
+  letter-spacing: .09em;
+}
+
+.weekly-boss-card.is-defeated .boss-visual {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(var(--gold-rgb),.1), transparent 35%),
+    rgba(255,255,255,.012);
+}
+
+.weekly-boss-card.is-defeated .boss-icon {
+  box-shadow:
+    0 0 0 6px rgba(var(--gold-rgb),.025),
+    0 0 30px rgba(var(--gold-rgb),.08);
+}
+
+.boss-next-hit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 9px 10px;
+  border: 1px solid rgba(181,84,72,.075);
+  border-radius: 10px;
+  background: rgba(181,84,72,.018);
+}
+
+.boss-next-hit > div {
+  display: grid;
+  gap: 2px;
+}
+
+.boss-next-hit small {
+  color: #956a65;
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .09em;
+}
+
+.boss-next-hit strong {
+  color: #ac918b;
+  font-size: 8px;
+}
+
+.boss-next-hit > a {
+  flex: 0 0 auto;
+  padding: 5px 7px;
+  border: 1px solid rgba(181,84,72,.1);
+  border-radius: 8px;
+  color: #b27b73;
+  font-size: 7px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.adventure-stage-nav {
+  display: grid;
+  grid-template-columns: 72px minmax(0,1fr) 72px;
+  align-items: center;
+  gap: 8px;
+  margin-top: 13px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(255,255,255,.04);
+}
+
+.adventure-stage-nav button {
+  min-height: 32px;
+  border: 1px solid rgba(255,255,255,.05);
+  border-radius: 8px;
+  background: rgba(255,255,255,.014);
+  color: #8b7d75;
+  font: inherit;
+  font-size: 8px;
+  cursor: pointer;
+}
+
+.adventure-stage-nav button:not(:disabled):hover {
+  border-color: rgba(var(--gold-rgb),.13);
+  color: #b6976c;
+}
+
+.adventure-stage-nav button:disabled {
+  opacity: .28;
+  cursor: default;
+}
+
+.adventure-stage-nav > span {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  color: #847770;
+  font-size: 8px;
+}
+
+.adventure-stage-nav > span small {
+  color: #665d58;
+  font-size: 7px;
+}
+
+.adventure-unlock-toast {
+  position: fixed;
+  z-index: 126;
+  top: calc(var(--topbar) + 18px);
+  left: 50%;
+  min-width: min(90vw,340px);
+  display: grid;
+  grid-template-columns: 42px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 13px;
+  overflow: hidden;
+  transform: translateX(-50%);
+  border: 1px solid rgba(var(--gold-rgb),.2);
+  border-radius: 14px;
+  background: rgba(17,14,15,.96);
+  color: #dcc08d;
+  box-shadow: 0 18px 50px rgba(0,0,0,.3);
+  backdrop-filter: blur(12px);
+  animation: adventureUnlockIn .32s cubic-bezier(.17,.8,.24,1);
+}
+
+.adventure-unlock-toast::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-130%);
+  background: linear-gradient(110deg,transparent,rgba(255,255,255,.07),transparent);
+  animation: adventureUnlockShine 1.2s ease .12s 1;
+  pointer-events: none;
+}
+
+.adventure-unlock-toast > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(var(--gold-rgb),.07);
+  font-size: 21px;
+}
+
+.adventure-unlock-toast > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.adventure-unlock-toast small {
+  color: #9d8058;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.adventure-unlock-toast strong {
+  overflow: hidden;
+  color: #e8cf9b;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adventure-unlock-toast em {
+  color: #8c7e76;
+  font-size: 7px;
+  font-style: normal;
+}
+
+.adventure-unlock-toast > b {
+  color: #d4ad6c;
+  font-size: 15px;
+}
+
+@keyframes adventurePanelIn {
+  from { opacity: .45; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bossSealIn {
+  from { opacity: 0; transform: rotate(-18deg) scale(.82); }
+  to { opacity: 1; transform: rotate(-9deg) scale(1); }
+}
+
+@keyframes adventureUnlockIn {
+  from { opacity: 0; transform: translate(-50%,-10px) scale(.97); }
+  to { opacity: 1; transform: translate(-50%,0) scale(1); }
+}
+
+@keyframes adventureUnlockShine {
+  from { transform: translateX(-130%); }
+  to { transform: translateX(130%); }
+}
+
+html[data-theme="light"] .adventure-overview > span,
+html[data-theme="light"] .adventure-continue-card,
+html[data-theme="light"] .story-progress-strip,
+html[data-theme="light"] .boss-next-hit,
+html[data-theme="light"] .adventure-stage-nav button {
+  border-color: rgba(118,84,55,.08);
+  background-color: rgba(255,255,255,.38);
+}
+
+html[data-theme="light"] .adventure-continue-copy strong,
+html[data-theme="light"] .boss-next-hit strong {
+  color: #60473e;
+}
+
+html[data-theme="light"] .passport-special-seal {
+  color: rgba(129,77,34,.62);
+  border-color: rgba(129,77,34,.23);
+}
+
+html[data-theme="light"] .boss-defeat-seal {
+  color: #8a642f;
+  border-color: rgba(138,100,47,.25);
+  background: rgba(255,250,243,.68);
+}
+
+html[data-theme="light"] .adventure-unlock-toast {
+  border-color: rgba(149,107,47,.17);
+  background: rgba(255,250,243,.97);
+  color: #76562f;
+  box-shadow: 0 16px 44px rgba(74,48,33,.16);
+}
+
+html[data-theme="light"] .adventure-unlock-toast strong {
+  color: #6f4a1e;
+}
+
+@media (max-width: 900px) {
+  .adventure-overview {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  .story-progress-strip {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  .adventure-continue-card {
+    grid-template-columns: 32px minmax(0,1fr);
+  }
+
+  .adventure-continue-card > b {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .adventure-continue-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .adventure-overview {
+    gap: 5px;
+  }
+
+  .adventure-overview > span {
+    padding: 7px 8px;
+  }
+
+  .story-progress-strip {
+    grid-template-columns: auto minmax(0,1fr);
+  }
+
+  .story-progress-strip > b {
+    grid-column: 2;
+    justify-self: end;
+    margin-top: -5px;
+  }
+
+  .passport-special-seal {
+    right: 7px;
+    bottom: 7px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .boss-defeat-seal {
+    right: 10px;
+    bottom: 10px;
+    width: 70px;
+    height: 70px;
+  }
+
+  .boss-next-hit {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .adventure-stage-nav {
+    grid-template-columns: 64px minmax(0,1fr) 64px;
+  }
+
+  .adventure-unlock-toast {
+    top: calc(var(--topbar) + 10px);
+    min-width: min(92vw,340px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adventure-stage > [role="tabpanel"],
+  .story-progress-strip > i > i,
+  .boss-defeat-seal,
+  .adventure-unlock-toast,
+  .adventure-unlock-toast::after {
+    animation: none;
+    transition: none;
+  }
+
+  .adventure-continue-card {
+    transition: none;
+  }
+}
