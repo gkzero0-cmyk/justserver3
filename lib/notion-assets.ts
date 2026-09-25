@@ -4,9 +4,9 @@ import path from 'node:path'
 export type NotionAssetManifest = Record<string, string>
 
 const REMOTE_MANIFEST =
-  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/display-manifest.json'
+  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/display-manifest.json?v=20260925-2'
 const FALLBACK_MANIFEST =
-  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/manifest.json'
+  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/manifest.json?v=20260925-2'
 
 function readLocalManifest(): NotionAssetManifest {
   try {
