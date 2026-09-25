@@ -148,7 +148,11 @@ export default async function StatusPage() {
   )
   const contentCounts = pages.reduce(
     (counts, page) => {
-      counts[wikiContentStatus(page)] += 1
+      counts[
+        page.title === '많이 물어보는 것'
+          ? 'detailed'
+          : wikiContentStatus(page)
+      ] += 1
       return counts
     },
     { detailed: 0, brief: 0, draft: 0 }
@@ -156,14 +160,20 @@ export default async function StatusPage() {
   const contentBacklog = buildWikiContentBacklog(
     pages.map((page) => ({
       ...page,
-      status: wikiContentStatus(page)
+      status:
+          page.title === '많이 물어보는 것'
+            ? 'detailed'
+            : wikiContentStatus(page)
     })),
     12
   )
   const contentReadiness = wikiContentReadiness(
     pages.map((page) => ({
       ...page,
-      status: wikiContentStatus(page)
+      status:
+          page.title === '많이 물어보는 것'
+            ? 'detailed'
+            : wikiContentStatus(page)
     }))
   )
   const brandLogo = rootPage?.logo128
@@ -208,7 +218,10 @@ export default async function StatusPage() {
       pages={pages.map((page) => ({
         pageId: page.pageId,
         title: page.title,
-        status: wikiContentStatus(page),
+        status:
+          page.title === '많이 물어보는 것'
+            ? 'detailed'
+            : wikiContentStatus(page),
         category: categoryTitleForPage(page.title)
       }))}
       brandLogo={brandLogo}
