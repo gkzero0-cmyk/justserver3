@@ -4169,3 +4169,368 @@ html[data-theme="light"] .notion-bookmark:hover {
   }
 }
 
+
+
+/* === Reader UX pass 2026-09-25 === */
+.directory-group {
+  scroll-margin-top: calc(var(--topbar) + 20px);
+}
+
+.search-result-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.search-draft-badge {
+  padding: 2px 6px;
+  border: 1px dashed rgba(160,147,140,.22);
+  border-radius: 999px;
+  color: #a99a93;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.document-card .notion-table,
+.document-card .notion-simple-table {
+  max-width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(214,168,95,.28) transparent;
+}
+
+.document-card .notion-table::-webkit-scrollbar,
+.document-card .notion-simple-table::-webkit-scrollbar {
+  height: 6px;
+}
+
+.document-card .notion-table::-webkit-scrollbar-thumb,
+.document-card .notion-simple-table::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(214,168,95,.25);
+}
+
+.mobile-reading-tools {
+  display: none;
+}
+
+.page-updated,
+.page-siblings small,
+.status-services small,
+.status-services span {
+  color: #93857f;
+}
+
+.state-card {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.state-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(217,83,69,.24);
+  border-radius: 50%;
+  background: rgba(217,83,69,.08);
+  color: #e48378;
+  font-weight: 900;
+}
+
+.state-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.state-actions a,
+.state-actions button {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 15px;
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.state-actions a {
+  border: 1px solid rgba(214,168,95,.18);
+  background: rgba(214,168,95,.055);
+  color: #cbb189;
+}
+
+.loading-wiki-shell {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.loading-topbar {
+  position: fixed;
+  z-index: 40;
+  inset: 0 0 auto 0;
+  height: var(--topbar);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 22px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  background: rgba(9,9,10,.96);
+}
+
+.loading-logo,
+.loading-line,
+.loading-search,
+.loading-nav-item,
+.loading-block {
+  display: block;
+  overflow: hidden;
+  background: rgba(255,255,255,.055);
+  position: relative;
+}
+
+.loading-logo::after,
+.loading-line::after,
+.loading-search::after,
+.loading-nav-item::after,
+.loading-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+  animation: wikiSkeleton 1.5s ease-in-out infinite;
+}
+
+.loading-logo {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+}
+
+.loading-line {
+  height: 11px;
+  border-radius: 999px;
+}
+
+.loading-line.is-brand { width: 190px; }
+.loading-line.is-title { width: 92px; margin-bottom: 14px; }
+.loading-line.is-kicker { width: 120px; }
+.loading-line.is-heading { width: min(65%, 520px); height: 36px; }
+.loading-line.is-wide { width: 92%; }
+.loading-line.is-medium { width: 64%; }
+
+.loading-search {
+  width: 220px;
+  height: 38px;
+  margin-left: auto;
+  border-radius: 11px;
+}
+
+.loading-sidebar {
+  position: fixed;
+  top: var(--topbar);
+  bottom: 0;
+  left: 0;
+  width: var(--sidebar);
+  padding: 25px 20px;
+  border-right: 1px solid rgba(255,255,255,.05);
+  background: rgba(13,11,12,.96);
+}
+
+.loading-nav-item {
+  width: 100%;
+  height: 38px;
+  margin: 6px 0;
+  border-radius: 9px;
+}
+
+.loading-main {
+  min-height: 100vh;
+  padding: calc(var(--topbar) + 28px) 32px 72px calc(var(--sidebar) + 32px);
+  display: grid;
+  align-content: start;
+  gap: 20px;
+}
+
+.loading-hero,
+.loading-document {
+  width: min(100%, var(--content-max));
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+  border: 1px solid rgba(255,255,255,.055);
+  background: rgba(255,255,255,.018);
+}
+
+.loading-hero {
+  min-height: 138px;
+  align-content: center;
+  padding: 26px;
+  border-radius: 20px;
+}
+
+.loading-document {
+  min-height: 360px;
+  align-content: start;
+  padding: 34px;
+  border-radius: 18px;
+}
+
+.loading-block {
+  width: 100%;
+  height: 150px;
+  margin-top: 8px;
+  border-radius: 14px;
+}
+
+@keyframes wikiSkeleton {
+  100% { transform: translateX(100%); }
+}
+
+@media (max-width: 1279px) {
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-current-toc {
+    order: -1;
+    margin-bottom: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(214,168,95,.08);
+  }
+
+  .mobile-current-toc .nav-section-label::after {
+    content: " · 현재 문서";
+  }
+}
+
+@media (max-width: 980px) {
+  .global-page-link,
+  .toc-item {
+    min-height: 46px;
+  }
+
+  .global-page-link {
+    align-items: center;
+  }
+
+  .loading-sidebar {
+    display: none;
+  }
+
+  .loading-main {
+    padding: calc(var(--topbar) + 18px) 14px 56px;
+  }
+
+  .loading-search {
+    width: 44px;
+  }
+
+  .mobile-reading-tools {
+    position: fixed;
+    z-index: 35;
+    right: 14px;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    display: flex;
+    gap: 7px;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease;
+  }
+
+  .mobile-reading-tools.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .mobile-reading-tools button {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 12px;
+    border: 1px solid rgba(214,168,95,.2);
+    border-radius: 999px;
+    background: rgba(15,12,13,.94);
+    color: #d6c3b8;
+    box-shadow: 0 8px 28px rgba(0,0,0,.28);
+    cursor: pointer;
+  }
+
+  .mobile-reading-tools button span {
+    font-size: 10px;
+    font-weight: 800;
+  }
+}
+
+@media (max-width: 620px) {
+  .page-updated,
+  .page-siblings small,
+  .status-services small,
+  .status-services span {
+    font-size: 11px;
+  }
+
+  .breadcrumbs {
+    font-size: 12px;
+    line-height: 1.55;
+    flex-wrap: wrap;
+  }
+
+  .search-result-category,
+  .search-draft-badge {
+    font-size: 10px;
+  }
+
+  .loading-topbar {
+    padding: 0 12px;
+  }
+
+  .loading-line.is-brand {
+    width: 120px;
+  }
+
+  .loading-main {
+    gap: 14px;
+  }
+
+  .loading-hero {
+    min-height: 110px;
+    padding: 20px;
+  }
+
+  .loading-document {
+    padding: 22px 18px;
+  }
+}
+
+html[data-theme="light"] .mobile-reading-tools button,
+html[data-theme="light"] .state-actions a {
+  border-color: rgba(118,84,55,.16);
+  background: rgba(255,250,243,.96);
+  color: #665149;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-logo::after,
+  .loading-line::after,
+  .loading-search::after,
+  .loading-nav-item::after,
+  .loading-block::after {
+    animation: none;
+  }
+}
