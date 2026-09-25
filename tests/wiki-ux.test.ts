@@ -40,6 +40,17 @@ import {
   weeklyWikiBoss
 } from '../lib/wiki-adventure.ts'
 import {
+  buildWikiContentBacklog,
+  wikiContentHealth,
+  wikiContentReadiness
+} from '../lib/wiki-content-health.ts'
+import {
+  canonicalizeWikiPath,
+  wikiGuidePath,
+  wikiPageIdForSlug,
+  wikiSlugForPageId
+} from '../lib/wiki-routes.ts'
+import {
   classifyWikiContent,
   extractKoreanInitials,
   matchesKoreanInitials,
@@ -597,4 +608,90 @@ test('next adventure action falls back to build and reread goals', () => {
   )
   assert.equal(rereadAction?.kind, 'reread')
   assert.equal(rereadAction?.page.pageId, 'a')
+})
+
+
+test('prioritizes source-needed core documents in the content backlog', () => {
+  const backlog = buildWikiContentBacklog([
+    {
+      pageId: 'mine',
+      title: '채광',
+      searchText: '채광 안내 '.repeat(20),
+      status: 'detailed' as const
+    },
+    {
+      pageId: 'credit',
+      title: '신용등급',
+      searchText: '위키 업데이트 예정입니다.',
+      status: 'draft' as const
+    },
+    {
+      pageId: 'fish',
+      title: '낚시',
+      searchText: '낚시 안내를 간단하게 설명합니다. '.repeat(4),
+      status: 'brief' as const
+    }
+  ])
+
+  assert.equal(backlog[0].pageId, 'credit')
+  assert.equal(backlog[0].stage, 'source-needed')
+  assert.match(backlog[0].nextAction, /공식 원문/)
+  assert.equal(backlog.some((item) => item.pageId === 'mine'), false)
+})
+
+test('reports wiki content readiness from detailed and brief pages', () => {
+  assert.deepEqual(
+    wikiContentReadiness([
+      {
+        pageId: 'a',
+        title: '상세',
+        searchText: '가'.repeat(260),
+        status: 'detailed' as const
+      },
+      {
+        pageId: 'b',
+        title: '간단',
+        searchText: '나'.repeat(100),
+        status: 'brief' as const
+      },
+      {
+        pageId: 'c',
+        title: '작성중',
+        searchText: '위키 업데이트 예정입니다.',
+        status: 'draft' as const
+      }
+    ]),
+    {
+      total: 3,
+      detailed: 1,
+      brief: 1,
+      draft: 1,
+      ready: 2,
+      percent: 67
+    }
+  )
+
+  assert.equal(
+    wikiContentHealth({
+      pageId: 'upgrade',
+      title: '장비강화',
+      searchText: '위키 업데이트 예정입니다.'
+    }).score > 100,
+    true
+  )
+})
+
+test('maps legacy page ids to readable guide routes', () => {
+  const rulesId = '3dad57d6a55c802aa11adaed7c2c98ff'
+
+  assert.equal(wikiSlugForPageId(rulesId), 'rules')
+  assert.equal(wikiPageIdForSlug('rules'), rulesId)
+  assert.equal(
+    wikiGuidePath({ pageId: rulesId, title: '서버규칙' }),
+    '/guide/rules/'
+  )
+  assert.equal(
+    canonicalizeWikiPath(`/page/${rulesId}`),
+    '/guide/rules/'
+  )
 })
