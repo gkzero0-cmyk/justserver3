@@ -12,6 +12,17 @@ type PlaygroundPage = {
   status?: WikiContentStatus
 }
 
+const WikiEnhancementLab = dynamic(
+  () =>
+    import('@/components/wiki-enhancement-lab').then(
+      (mod) => mod.WikiEnhancementLab
+    ),
+  {
+    ssr: false,
+    loading: () => <PlaygroundLoading label="강화 체험소를 준비하는 중" />
+  }
+)
+
 const WikiFunZone = dynamic(
   () => import('@/components/wiki-fun-zone').then((mod) => mod.WikiFunZone),
   { ssr: false, loading: () => <PlaygroundLoading label="PLAY ZONE을 여는 중" /> }
@@ -50,6 +61,7 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
       const hash = window.location.hash
       if (
         hash === '#wiki-explore' ||
+        hash === '#enhancement-lab' ||
         hash === '#wiki-survival-log-title' ||
         hash === '#reading-explorer-title' ||
         hash === '#wiki-adventure-title'
@@ -88,6 +100,7 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
           <div className="home-playground-chips" aria-label="위키 탐험 기능">
             <b>📚 {readyCount}개 공개 가이드</b>
             <b>🏆 완독·업적</b>
+            <b>⚒️ 강화 체험소</b>
             <b>🎲 PLAY ZONE</b>
             <b>⚔️ 주간 보스</b>
           </div>
@@ -106,6 +119,7 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
 
       {open && (
         <div className="home-playground-content" id="home-playground-content">
+          <WikiEnhancementLab pages={pages} />
           <WikiFunZone pages={pages} />
           <WikiSurvivalLog pages={pages} />
           <WikiReadingExplorer pages={pages} />
