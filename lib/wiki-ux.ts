@@ -12,7 +12,18 @@ function compactText(value?: string | null) {
   return (value || '').replace(/\s+/g, ' ').trim()
 }
 
-export function classifyWikiContent(page: { searchText?: string | null }): WikiContentStatus {
+export function classifyWikiContent(page: {
+  searchText?: string | null
+  status?: WikiContentStatus | null
+}): WikiContentStatus {
+  if (
+    page.status === 'draft' ||
+    page.status === 'brief' ||
+    page.status === 'detailed'
+  ) {
+    return page.status
+  }
+
   const text = compactText(page.searchText)
   if (PLACEHOLDER_PATTERN.test(text) || text.length < 80) return 'draft'
   if (text.length < 220) return 'brief'
@@ -96,7 +107,12 @@ export function relativeUpdateLabel(
 
 
 export function suggestFallbackPages<
-  T extends { pageId: string; title: string; searchText?: string | null }
+  T extends {
+    pageId: string
+    title: string
+    searchText?: string | null
+    status?: WikiContentStatus | null
+  }
 >(
   pages: T[],
   priorityTitles: string[],
@@ -122,4 +138,18 @@ export function suggestFallbackPages<
       return a.title.localeCompare(b.title, 'ko')
     })
     .slice(0, Math.max(1, limit))
+}
+
+
+export function wikiHeadingId(text: string, occurrence = 1) {
+  const base =
+    text
+      .normalize('NFKC')
+      .trim()
+      .toLowerCase()
+      .replace(/[^0-9a-z가-힣ㄱ-ㅎㅏ-ㅣ]+/g, '-')
+      .replace(/-{2,}/g, '-')
+      .replace(/^-|-$/g, '') || 'section'
+
+  return occurrence > 1 ? `${base}-${occurrence}` : base
 }
