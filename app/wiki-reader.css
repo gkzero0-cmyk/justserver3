@@ -7916,3 +7916,100 @@ html[data-theme="light"] .mobile-quick-grid a {
     grid-template-columns: 1fr;
   }
 }
+
+
+.status-source-review {
+  display: grid;
+  grid-template-columns: minmax(220px, .7fr) minmax(0, 1.3fr);
+  gap: 16px;
+  padding: 14px;
+  border: 1px dashed rgba(var(--gold-rgb), .14);
+  border-radius: 13px;
+  background: rgba(var(--gold-rgb), .018);
+}
+
+.status-source-review > div:first-child {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+}
+
+.status-source-review > div:first-child small {
+  color: var(--gold);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.status-source-review > div:first-child strong {
+  font-size: 12px;
+}
+
+.status-source-review > div:first-child span {
+  color: var(--text-subtle);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.status-source-review-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 6px;
+}
+
+.status-source-review-links > span {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto auto;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 9px;
+  border: 1px solid rgba(255,255,255,.05);
+  border-radius: 9px;
+  background: rgba(255,255,255,.012);
+}
+
+.status-source-review-links strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #bcaea7;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-source-review-links a {
+  color: #9e8d84;
+  font-size: 9px;
+  text-decoration: none;
+}
+
+.status-source-review-links a:hover,
+.status-source-review-links a:focus-visible {
+  color: var(--gold);
+}
+
+html[data-theme="light"] .status-source-review-links > span {
+  border-color: rgba(118,84,55,.11);
+  background: rgba(255,255,255,.36);
+}
+
+@media (max-width: 760px) {
+  .status-source-review {
+    grid-template-columns: 1fr;
+  }
+
+  .status-source-review-links {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 460px) {
+  .status-source-review-links > span {
+    grid-template-columns: minmax(0,1fr) auto;
+  }
+
+  .status-source-review-links a:last-child {
+    grid-column: 1 / -1;
+  }
+}
