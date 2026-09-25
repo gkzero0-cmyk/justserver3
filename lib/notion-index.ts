@@ -39,7 +39,7 @@ export type NotionIndex = {
 }
 
 const REMOTE_INDEX =
-  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/index.json?v=20260925-2'
+  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/index.json?v=20260925-4'
 
 const EMPTY_INDEX: NotionIndex = {
   rootPageId: '3dad57d6a55c80469f3de9730cb88975',
@@ -65,6 +65,9 @@ function readLocalIndex(): NotionIndex {
 export async function readNotionIndex(): Promise<NotionIndex> {
   try {
     const response = await fetch(REMOTE_INDEX, {
+      headers: {
+        'Cache-Control': 'no-cache'
+      },
       next: {
         revalidate: 60,
         tags: ['notion-index']
@@ -79,9 +82,9 @@ export async function readNotionIndex(): Promise<NotionIndex> {
 
 
 const REMOTE_MANIFEST =
-  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/display-manifest.json?v=20260925-3'
+  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/display-manifest.json?v=20260925-4'
 const FALLBACK_MANIFEST =
-  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/manifest.json?v=20260925-3'
+  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/manifest.json?v=20260925-4'
 
 function readLocalManifest(): NotionAssetManifest {
   try {
@@ -103,6 +106,9 @@ function readLocalManifest(): NotionAssetManifest {
 export async function readNotionAssetManifest(): Promise<NotionAssetManifest> {
   try {
     const response = await fetch(REMOTE_MANIFEST, {
+      headers: {
+        'Cache-Control': 'no-cache'
+      },
       next: {
         revalidate: 60,
         tags: ['notion-assets']
@@ -114,6 +120,9 @@ export async function readNotionAssetManifest(): Promise<NotionAssetManifest> {
     }
 
     const fallback = await fetch(FALLBACK_MANIFEST, {
+      headers: {
+        'Cache-Control': 'no-cache'
+      },
       next: {
         revalidate: 60,
         tags: ['notion-assets']
