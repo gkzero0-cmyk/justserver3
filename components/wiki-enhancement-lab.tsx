@@ -182,6 +182,9 @@ function attemptDelay(level: number) {
   return 650
 }
 
+let activeEnhancementAudioContext: AudioContext | null = null
+let activeEnhancementAudioCloseTimer: number | null = null
+
 function randomPercent() {
   const values = new Uint32Array(1)
   window.crypto.getRandomValues(values)
@@ -196,7 +199,18 @@ function playTone(
     const AudioContextClass = window.AudioContext
     if (!AudioContextClass) return
 
+    if (
+      activeEnhancementAudioContext &&
+      activeEnhancementAudioContext.state !== 'closed'
+    ) {
+      void activeEnhancementAudioContext.close().catch(() => {})
+    }
+    if (activeEnhancementAudioCloseTimer) {
+      window.clearTimeout(activeEnhancementAudioCloseTimer)
+    }
+
     const ctx = new AudioContextClass()
+    activeEnhancementAudioContext = ctx
     const now = ctx.currentTime
     const intensity = Math.max(0, Math.min(15, level))
     const master = ctx.createGain()
@@ -326,8 +340,12 @@ function playTone(
       tone(116, 0.03, 0.3, 0.021, 'triangle', 82)
     }
 
-    window.setTimeout(() => {
-      void ctx.close()
+    activeEnhancementAudioCloseTimer = window.setTimeout(() => {
+      if (activeEnhancementAudioContext === ctx) {
+        activeEnhancementAudioContext = null
+      }
+      void ctx.close().catch(() => {})
+      activeEnhancementAudioCloseTimer = null
     }, 1500)
   } catch {}
 }
@@ -374,7 +392,9 @@ export function WikiEnhancementLab({
   const [message, setMessage] = useState(
     '강화 버튼을 눌러 +15에 도전해보세요.'
   )
+  const [newBestLevel, setNewBestLevel] = useState<number | null>(null)
   const timerRef = useRef<number | null>(null)
+  const bestTimerRef = useRef<number | null>(null)
 
   const rule = RULES[Math.min(stats.level, 14)]
   const danger = dangerLabel(stats.level)
@@ -407,6 +427,14 @@ export function WikiEnhancementLab({
     setReady(true)
     return () => {
       if (timerRef.current) window.clearTimeout(timerRef.current)
+      if (bestTimerRef.current) window.clearTimeout(bestTimerRef.current)
+      if (
+        activeEnhancementAudioContext &&
+        activeEnhancementAudioContext.state !== 'closed'
+      ) {
+        void activeEnhancementAudioContext.close().catch(() => {})
+        activeEnhancementAudioContext = null
+      }
     }
   }, [])
 
@@ -470,6 +498,9 @@ export function WikiEnhancementLab({
         to
       }
 
+      const reachedLevel = nextOutcome === 'destroy' ? from : to
+      const isNewBest = reachedLevel > stats.best
+
       const next: EnhancementStats = {
         ...stats,
         attempts: stats.attempts + 1,
@@ -479,7 +510,7 @@ export function WikiEnhancementLab({
         failures: stats.failures + (nextOutcome === 'fail' ? 1 : 0),
         downgrades: stats.downgrades + (nextOutcome === 'down' ? 1 : 0),
         destroyed: stats.destroyed + (nextOutcome === 'destroy' ? 1 : 0),
-        best: Math.max(stats.best, nextOutcome === 'destroy' ? from : to),
+        best: Math.max(stats.best, reachedLevel),
         maxWins: stats.maxWins + (nextOutcome === 'max' ? 1 : 0),
         level: nextOutcome === 'destroy' ? from : to,
         broken: nextOutcome === 'destroy',
@@ -505,6 +536,15 @@ export function WikiEnhancementLab({
       setOutcome(nextOutcome)
       setMessage(resultMessage(nextOutcome, from, to))
       setAnimating(false)
+
+      if (isNewBest) {
+        setNewBestLevel(reachedLevel)
+        if (bestTimerRef.current) window.clearTimeout(bestTimerRef.current)
+        bestTimerRef.current = window.setTimeout(() => {
+          setNewBestLevel(null)
+          bestTimerRef.current = null
+        }, 1650)
+      }
 
       if (nextOutcome === 'destroy') {
         setBroken(true)
@@ -542,6 +582,7 @@ export function WikiEnhancementLab({
     persist(next)
     setBroken(false)
     setOutcome(null)
+    setNewBestLevel(null)
     setMessage(
       '새 다이아몬드 곡괭이를 지급했습니다. 다시 도전해보세요.'
     )
@@ -565,6 +606,7 @@ export function WikiEnhancementLab({
     persist(next)
     setBroken(false)
     setOutcome(null)
+    setNewBestLevel(null)
     setMessage('새 강화 도전을 시작합니다.')
     track('wiki_enhancement_restart')
   }
@@ -610,6 +652,13 @@ export function WikiEnhancementLab({
           }
         >
           <div className="enhancement-forge-grid" aria-hidden="true" />
+
+          {newBestLevel !== null && (
+            <div className="enhancement-new-best" role="status">
+              <small>새 최고 기록</small>
+              <strong>+{newBestLevel}</strong>
+            </div>
+          )}
 
           <div className="enhancement-level-row">
             <span className="enhancement-level-label">강화 단계</span>
@@ -688,14 +737,25 @@ export function WikiEnhancementLab({
             </div>
 
             {broken && (
-              <div className="enhancement-shards" aria-hidden="true">
-                {Array.from({ length: 9 }, (_, index) => (
-                  <i
-                    key={index}
-                    style={{ '--i': index } as CSSProperties}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="enhancement-break-pieces" aria-hidden="true">
+                  {Array.from({ length: 8 }, (_, index) => (
+                    <i
+                      key={'piece-' + index}
+                      data-part={index < 5 ? 'diamond' : 'handle'}
+                      style={{ '--i': index } as CSSProperties}
+                    />
+                  ))}
+                </div>
+                <div className="enhancement-shards" aria-hidden="true">
+                  {Array.from({ length: 12 }, (_, index) => (
+                    <i
+                      key={index}
+                      style={{ '--i': index } as CSSProperties}
+                    />
+                  ))}
+                </div>
+              </>
             )}
 
             <div className="enhancement-item-tooltip">
@@ -738,6 +798,29 @@ export function WikiEnhancementLab({
             </span>
             <strong>{message}</strong>
           </div>
+
+          {(broken || stats.level >= 15) && (
+            <section
+              className="enhancement-run-result"
+              data-outcome={broken ? 'destroy' : 'max'}
+              aria-label="이번 강화 도전 결과"
+            >
+              <div>
+                <small>{broken ? '도전 종료' : '도전 완료'}</small>
+                <strong>
+                  {broken
+                    ? '곡괭이가 파괴되었습니다'
+                    : '+15 강화에 성공했습니다'}
+                </strong>
+              </div>
+              <div className="enhancement-run-result-stats">
+                <span><small>총 시도</small><b>{stats.run.attempts}</b></span>
+                <span><small>최고 강화</small><b>+{stats.run.best}</b></span>
+                <span><small>성공</small><b>{stats.run.successes}</b></span>
+                <span><small>하락</small><b>{stats.run.downgrades}</b></span>
+              </div>
+            </section>
+          )}
 
           {broken && repairPage ? (
             <Link
