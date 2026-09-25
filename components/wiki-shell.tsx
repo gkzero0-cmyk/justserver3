@@ -13,8 +13,14 @@ type TocItem = {
 type WikiPageLink = {
   pageId: string
   title: string
+}
+
+type SearchPage = WikiPageLink & {
   searchText?: string
 }
+
+const SEARCH_INDEX_URL =
+  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/search-index.json'
 
 function sectionIcon(text: string) {
   const value = text.toLowerCase()
@@ -23,15 +29,45 @@ function sectionIcon(text: string) {
   if (value.includes('api') || value.includes('후원')) return '💝'
   if (value.includes('강화')) return '⚒️'
   if (value.includes('광산') || value.includes('채광')) return '⛏️'
-  if (value.includes('가챠')) return '🎰'
-  if (value.includes('던전')) return '⚔️'
+  if (value.includes('낚시')) return '🎣'
+  if (value.includes('사냥')) return '⚔️'
+  if (value.includes('요리')) return '🍳'
+  if (value.includes('도감')) return '📖'
+  if (value.includes('카지노') || value.includes('가챠')) return '🎰'
   if (value.includes('패치') || value.includes('업데이트')) return '📝'
   if (value.includes('참여') || value.includes('접속')) return '📢'
-  if (value.includes('도감')) return '📖'
   if (value.includes('아이템')) return '🎁'
   if (value.includes('안내') || value.includes('가이드')) return '🧭'
 
   return '✦'
+}
+
+function categoryLabel(title: string) {
+  const value = title.toLowerCase()
+
+  if (
+    value.includes('스토리') ||
+    value.includes('규칙') ||
+    value.includes('패치') ||
+    value.includes('api') ||
+    value.includes('뉴비') ||
+    value.includes('기초')
+  ) {
+    return '시작하기'
+  }
+
+  if (
+    value.includes('땅') ||
+    value.includes('빚') ||
+    value.includes('신용') ||
+    value.includes('수리') ||
+    value.includes('강화') ||
+    value.includes('물어보는')
+  ) {
+    return '성장 · 경제'
+  }
+
+  return '주요 콘텐츠'
 }
 
 function HighlightedText({
@@ -86,8 +122,13 @@ export function WikiShell({
   const [searchOpen, setSearchOpen] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [activeTocId, setActiveTocId] = useState('')
-  const searchInputRef = useRef<HTMLInputElement>(null)
+  const [readingProgress, setReadingProgress] = useState(0)
+  const [searchPages, setSearchPages] = useState<SearchPage[] | null>(null)
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [searchFailed, setSearchFailed] = useState(false)
+  const [selectedResult, setSelectedResult] = useState(0)
   const modalSearchRef = useRef<HTMLInputElement>(null)
+  const modalRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const saved = window.localStorage.getItem('justserver3-theme')
@@ -131,52 +172,6 @@ export function WikiShell({
     return () => window.clearTimeout(timer)
   }, [children])
 
-  const filtered = useMemo(() => {
-    const keyword = query.trim().toLowerCase()
-    if (!keyword) return toc
-    return toc.filter((item) => item.text.toLowerCase().includes(keyword))
-  }, [query, toc])
-
-  const filteredPages = useMemo(() => {
-    const keyword = query.trim().toLowerCase()
-
-    if (!keyword) {
-      return pages.slice(0, 10).map((page) => ({ ...page, snippet: '' }))
-    }
-
-    return pages
-      .map((page) => {
-        const title = page.title.toLowerCase()
-        const body = (page.searchText ?? '').toLowerCase()
-        const titleMatch = title.includes(keyword)
-        const bodyIndex = body.indexOf(keyword)
-
-        if (!titleMatch && bodyIndex < 0) return null
-
-        let snippet = ''
-        if (bodyIndex >= 0 && page.searchText) {
-          const start = Math.max(0, bodyIndex - 56)
-          const end = Math.min(
-            page.searchText.length,
-            bodyIndex + keyword.length + 88
-          )
-          snippet = `${start > 0 ? '…' : ''}${page.searchText
-            .slice(start, end)
-            .trim()}${end < page.searchText.length ? '…' : ''}`
-        }
-
-        return { ...page, snippet }
-      })
-      .filter(
-        (
-          page
-        ): page is WikiPageLink & {
-          snippet: string
-        } => Boolean(page)
-      )
-      .slice(0, 14)
-  }, [pages, query])
-
   useEffect(() => {
     if (!toc.length) {
       setActiveTocId('')
@@ -208,6 +203,188 @@ export function WikiShell({
   }, [toc])
 
   useEffect(() => {
+    if (home) return
+
+    let frame = 0
+
+    const updateProgress = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        const article = document.querySelector<HTMLElement>('.document-card')
+        if (!article) return
+
+        const rect = article.getBoundingClientRect()
+        const start = window.scrollY + rect.top - 120
+        const end =
+          start +
+          Math.max(article.offsetHeight - window.innerHeight * 0.42, 1)
+        const value = Math.min(
+          1,
+          Math.max(0, (window.scrollY - start) / Math.max(end - start, 1))
+        )
+
+        setReadingProgress(Math.round(value * 100))
+      })
+    }
+
+    updateProgress()
+    window.addEventListener('scroll', updateProgress, { passive: true })
+    window.addEventListener('resize', updateProgress)
+
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', updateProgress)
+      window.removeEventListener('resize', updateProgress)
+    }
+  }, [home])
+
+  const openSearch = () => {
+    setSearchOpen(true)
+    window.setTimeout(() => modalSearchRef.current?.focus(), 30)
+  }
+
+  useEffect(() => {
+    if (!searchOpen || searchPages || searchLoading) return
+
+    let cancelled = false
+
+    const load = async () => {
+      setSearchLoading(true)
+      setSearchFailed(false)
+
+      try {
+        const response = await fetch(SEARCH_INDEX_URL, {
+          cache: 'force-cache'
+        })
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+        const data = (await response.json()) as {
+          pages?: SearchPage[]
+        }
+
+        if (!cancelled) {
+          setSearchPages(Array.isArray(data.pages) ? data.pages : [])
+        }
+      } catch {
+        if (!cancelled) setSearchFailed(true)
+      } finally {
+        if (!cancelled) setSearchLoading(false)
+      }
+    }
+
+    void load()
+
+    return () => {
+      cancelled = true
+    }
+  }, [searchOpen, searchPages, searchLoading])
+
+  const filteredPages = useMemo(() => {
+    const source = searchPages ?? pages
+    const keyword = query.trim().toLowerCase()
+
+    if (!keyword) {
+      return source.slice(0, 10).map((page) => ({ ...page, snippet: '' }))
+    }
+
+    return source
+      .map((page) => {
+        const title = page.title.toLowerCase()
+        const searchText = 'searchText' in page ? page.searchText ?? '' : ''
+        const body = searchText.toLowerCase()
+        const titleMatch = title.includes(keyword)
+        const bodyIndex = body.indexOf(keyword)
+
+        if (!titleMatch && bodyIndex < 0) return null
+
+        let snippet = ''
+        if (bodyIndex >= 0 && searchText) {
+          const start = Math.max(0, bodyIndex - 56)
+          const end = Math.min(
+            searchText.length,
+            bodyIndex + keyword.length + 88
+          )
+          snippet = `${start > 0 ? '…' : ''}${searchText
+            .slice(start, end)
+            .trim()}${end < searchText.length ? '…' : ''}`
+        }
+
+        return { ...page, snippet }
+      })
+      .filter(
+        (
+          page
+        ): page is SearchPage & {
+          snippet: string
+        } => Boolean(page)
+      )
+      .slice(0, 14)
+  }, [pages, query, searchPages])
+
+  useEffect(() => {
+    setSelectedResult(0)
+  }, [query, filteredPages.length])
+
+  useEffect(() => {
+    if (!searchOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault()
+        setSelectedResult((value) =>
+          filteredPages.length ? (value + 1) % filteredPages.length : 0
+        )
+      }
+
+      if (event.key === 'ArrowUp') {
+        event.preventDefault()
+        setSelectedResult((value) =>
+          filteredPages.length
+            ? (value - 1 + filteredPages.length) % filteredPages.length
+            : 0
+        )
+      }
+
+      if (event.key === 'Enter' && filteredPages[selectedResult]) {
+        event.preventDefault()
+        window.location.assign(
+          withBasePath(`/page/${filteredPages[selectedResult].pageId}/`)
+        )
+      }
+
+      if (event.key === 'Tab' && modalRef.current) {
+        const focusable = Array.from(
+          modalRef.current.querySelectorAll<HTMLElement>(
+            'input, button, a[href], [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter((element) => !element.hasAttribute('disabled'))
+
+        if (!focusable.length) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault()
+          last.focus()
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault()
+          first.focus()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [filteredPages, searchOpen, selectedResult])
+
+  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null
       const isTyping =
@@ -220,15 +397,13 @@ export function WikiShell({
         ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k')
       ) {
         event.preventDefault()
-        setSearchOpen(true)
-        window.setTimeout(() => modalSearchRef.current?.focus(), 30)
+        openSearch()
       }
 
       if (event.key === 'Escape') {
         setSearchOpen(false)
         setQuery('')
         modalSearchRef.current?.blur()
-        searchInputRef.current?.blur()
       }
     }
 
@@ -268,6 +443,9 @@ export function WikiShell({
                 src={brandLogo}
                 alt=""
                 aria-hidden="true"
+                width="54"
+                height="54"
+                decoding="async"
               />
             ) : (
               <span>적</span>
@@ -283,10 +461,8 @@ export function WikiShell({
           <button
             className="header-search-button"
             type="button"
-            onClick={() => {
-              setSearchOpen(true)
-              window.setTimeout(() => modalSearchRef.current?.focus(), 30)
-            }}
+            aria-keyshortcuts="Control+K Meta+K /"
+            onClick={openSearch}
           >
             <span>⌕</span>
             <span>문서 검색</span>
@@ -296,6 +472,7 @@ export function WikiShell({
           <button
             className="theme-toggle"
             type="button"
+            aria-pressed={theme === 'light'}
             aria-label={
               theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'
             }
@@ -321,10 +498,8 @@ export function WikiShell({
         <button
           className="wiki-search wiki-search-trigger"
           type="button"
-          onClick={() => {
-            setSearchOpen(true)
-            window.setTimeout(() => modalSearchRef.current?.focus(), 30)
-          }}
+          aria-keyshortcuts="Control+K Meta+K /"
+          onClick={openSearch}
         >
           <span>⌕</span>
           <span>전체 문서 검색</span>
@@ -348,7 +523,7 @@ export function WikiShell({
         <nav className="toc-list">
           <div className="global-page-list">
             <span className="nav-section-label">전체 문서</span>
-            {pages.slice(0, 12).map((page) => (
+            {pages.map((page) => (
               <a
                 key={page.pageId}
                 href={withBasePath(`/page/${page.pageId}/`)}
@@ -377,8 +552,8 @@ export function WikiShell({
 
           <div className="current-toc mobile-current-toc">
             <span className="nav-section-label">현재 페이지</span>
-            {filtered.length ? (
-              filtered.map((item) => (
+            {toc.length ? (
+              toc.map((item) => (
                 <button
                   key={item.id}
                   type="button"
@@ -415,6 +590,13 @@ export function WikiShell({
 
       {!home && toc.length > 0 && (
         <aside className="article-toc" aria-label="현재 문서 목차">
+          <div className="article-progress">
+            <span>읽는 중</span>
+            <strong>{readingProgress}%</strong>
+          </div>
+          <div className="article-progress-track" aria-hidden="true">
+            <span style={{ height: `${readingProgress}%` }} />
+          </div>
           <span className="article-toc-label">이 페이지에서</span>
           <nav>
             {toc.map((item) => (
@@ -473,10 +655,8 @@ export function WikiShell({
               <button
                 className="hero-search-cta"
                 type="button"
-                onClick={() => {
-                  setSearchOpen(true)
-                  window.setTimeout(() => modalSearchRef.current?.focus(), 30)
-                }}
+                aria-keyshortcuts="Control+K Meta+K /"
+                onClick={openSearch}
               >
                 <span>⌕</span>
                 <span>가이드, 콘텐츠, 아이템을 검색하세요</span>
@@ -511,6 +691,7 @@ export function WikiShell({
           }}
         >
           <section
+            ref={modalRef}
             className="search-modal"
             role="dialog"
             aria-modal="true"
@@ -524,6 +705,7 @@ export function WikiShell({
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="규칙, 빚, 채광, 강화 등 무엇이든 검색하세요"
                 aria-label="위키 전체 검색"
+                aria-controls="wiki-search-results"
               />
               <button
                 type="button"
@@ -535,23 +717,40 @@ export function WikiShell({
             </div>
 
             <div className="search-result-meta" aria-live="polite">
-              {query.trim()
-                ? `${filteredPages.length}개의 검색 결과`
-                : '추천 문서'}
+              {searchLoading
+                ? '본문 검색 색인을 불러오는 중…'
+                : searchFailed
+                  ? '본문 색인을 불러오지 못해 제목 검색으로 표시합니다.'
+                  : query.trim()
+                    ? `${filteredPages.length}개의 검색 결과`
+                    : '추천 문서 · ↑↓ 선택 · Enter 이동'}
             </div>
 
-            <div className="search-modal-results">
+            <div
+              className="search-modal-results"
+              id="wiki-search-results"
+              role="listbox"
+              aria-label="검색 결과"
+            >
               {filteredPages.length ? (
-                filteredPages.map((page) => (
+                filteredPages.map((page, index) => (
                   <a
                     key={page.pageId}
                     href={withBasePath(`/page/${page.pageId}/`)}
-                    className="search-result-card"
+                    className={`search-result-card ${
+                      selectedResult === index ? 'is-selected' : ''
+                    }`}
+                    role="option"
+                    aria-selected={selectedResult === index}
+                    onMouseEnter={() => setSelectedResult(index)}
                   >
                     <span className="search-result-icon">
                       {sectionIcon(page.title)}
                     </span>
                     <span>
+                      <span className="search-result-category">
+                        {categoryLabel(page.title)}
+                      </span>
                       <strong>
                         <HighlightedText text={page.title} query={query} />
                       </strong>
