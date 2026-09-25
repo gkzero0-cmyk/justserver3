@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { NotionRenderer } from 'react-notion-x'
 import type { ExtendedRecordMap } from 'notion-types'
 
@@ -45,11 +46,27 @@ export function NotionDocument({
   recordMap: ExtendedRecordMap
   imageManifest: ImageManifest
 }) {
+  const [darkMode, setDarkMode] = useState(true)
+
+  useEffect(() => {
+    const root = document.documentElement
+    const syncTheme = () => setDarkMode(root.dataset.theme !== 'light')
+    syncTheme()
+
+    const observer = new MutationObserver(syncTheme)
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    })
+
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <NotionRenderer
       recordMap={recordMap}
       fullPage={false}
-      darkMode
+      darkMode={darkMode}
       disableHeader
       mapPageUrl={(pageId) =>
         withBasePath(`/page/${pageId.replaceAll('-', '')}/`)
