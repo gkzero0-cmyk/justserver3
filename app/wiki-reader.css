@@ -808,10 +808,6 @@
     background: rgba(13,11,12,.985);
   }
 
-  .sidebar-edge-toggle {
-    display: none;
-  }
-
   .wiki-hero.has-hero-image.is-home {
     min-height: 315px;
   }
