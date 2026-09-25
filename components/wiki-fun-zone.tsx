@@ -5,9 +5,15 @@ import { track } from '@vercel/analytics'
 import { useEffect, useMemo, useState } from 'react'
 
 import {
+  EMPTY_WIKI_FUN_STATS,
   highestScoreKey,
+  normalizeWikiFunStats,
   seoulDateKey,
-  wikiExplorationProgress
+  unlockedWikiAchievementIds,
+  wikiExplorationProgress,
+  wikiTitleFromAchievements,
+  type WikiAchievementId,
+  type WikiFunStats
 } from '@/lib/wiki-fun'
 import type { WikiContentStatus } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
@@ -15,10 +21,17 @@ import { withBasePath } from '@/lib/url-utils'
 type FunPage = {
   pageId: string
   title: string
+  category?: string
   status?: WikiContentStatus
 }
 
-type Panel = 'fortune' | 'quiz' | 'progress' | null
+type Panel =
+  | 'fortune'
+  | 'quiz'
+  | 'random'
+  | 'progress'
+  | 'achievements'
+  | null
 
 type Fortune = {
   icon: string
@@ -37,6 +50,7 @@ type ArchetypeId =
 
 const VISITED_PAGES_KEY = 'justserver3-visited-pages-v1'
 const FORTUNE_KEY = 'justserver3-daily-fortune-v1'
+const FUN_STATS_KEY = 'justserver3-fun-stats-v1'
 
 const FORTUNES: Fortune[] = [
   {
@@ -233,6 +247,76 @@ const QUESTIONS: Array<{
   }
 ]
 
+const ACHIEVEMENTS: Array<{
+  id: WikiAchievementId
+  icon: string
+  title: string
+  description: string
+  secret?: boolean
+}> = [
+  {
+    id: 'first-step',
+    icon: '👣',
+    title: '첫 발자국',
+    description: '준비된 가이드 1개를 확인했습니다.'
+  },
+  {
+    id: 'guide',
+    icon: '🗺️',
+    title: '위키 길잡이',
+    description: '준비된 가이드 3개를 확인했습니다.'
+  },
+  {
+    id: 'explorer',
+    icon: '🧭',
+    title: '적자생존 탐험가',
+    description: '위키 탐험도 50%를 달성했습니다.'
+  },
+  {
+    id: 'conqueror',
+    icon: '👑',
+    title: '위키 정복자',
+    description: '현재 준비된 모든 가이드를 발견했습니다.'
+  },
+  {
+    id: 'fortune',
+    icon: '🔮',
+    title: '운세 입문자',
+    description: '오늘의 적자 운세를 한 번 확인했습니다.'
+  },
+  {
+    id: 'analyst',
+    icon: '🧬',
+    title: '성향 분석가',
+    description: '생존형 테스트를 끝까지 완료했습니다.'
+  },
+  {
+    id: 'randomizer',
+    icon: '🎲',
+    title: '운명 결정사',
+    description: '랜덤 추천을 3번 받아봤습니다.'
+  },
+  {
+    id: 'secret-hunter',
+    icon: '🥚',
+    title: '비밀 수집가',
+    description: '숨겨진 기록을 하나 발견했습니다.',
+    secret: true
+  },
+  {
+    id: 'egg-master',
+    icon: '✨',
+    title: '이스터에그 헌터',
+    description: '숨겨진 기록을 모두 발견했습니다.',
+    secret: true
+  }
+]
+
+const RANDOM_EXCLUDED_TITLES = new Set([
+  '서버규칙',
+  '기초설정(뉴비필독)'
+])
+
 function emptyScores(): Record<ArchetypeId, number> {
   return {
     miner: 0,
@@ -257,11 +341,28 @@ function readVisitedPages() {
   }
 }
 
+function readFunStats() {
+  try {
+    return normalizeWikiFunStats(
+      JSON.parse(window.localStorage.getItem(FUN_STATS_KEY) || 'null')
+    )
+  } catch {
+    return { ...EMPTY_WIKI_FUN_STATS }
+  }
+}
+
 export function WikiFunZone({ pages }: { pages: FunPage[] }) {
   const readyPages = useMemo(
     () => pages.filter((page) => page.status !== 'draft'),
     [pages]
   )
+  const randomCandidates = useMemo(() => {
+    const preferred = readyPages.filter(
+      (page) => !RANDOM_EXCLUDED_TITLES.has(page.title)
+    )
+    return preferred.length ? preferred : readyPages
+  }, [readyPages])
+
   const [panel, setPanel] = useState<Panel>(null)
   const [fortuneIndex, setFortuneIndex] = useState<number | null>(null)
   const [visitedIds, setVisitedIds] = useState<string[]>([])
@@ -270,6 +371,13 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
     useState<Record<ArchetypeId, number>>(emptyScores)
   const [quizResult, setQuizResult] = useState<ArchetypeId | null>(null)
   const [shareState, setShareState] = useState('')
+  const [recommendedPage, setRecommendedPage] = useState<FunPage | null>(null)
+  const [stats, setStats] = useState<WikiFunStats>({
+    ...EMPTY_WIKI_FUN_STATS
+  })
+  const [secretZoneClicks, setSecretZoneClicks] = useState(0)
+  const [fortuneOrbClicks, setFortuneOrbClicks] = useState(0)
+  const [secretToast, setSecretToast] = useState('')
 
   const exploration = useMemo(
     () =>
@@ -285,8 +393,42 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
     [exploration.visited]
   )
 
+  const unlockedAchievements = useMemo(
+    () => unlockedWikiAchievementIds(exploration, stats),
+    [exploration, stats]
+  )
+  const unlockedSet = useMemo(
+    () => new Set(unlockedAchievements),
+    [unlockedAchievements]
+  )
+  const currentTitle = useMemo(
+    () => wikiTitleFromAchievements(unlockedAchievements),
+    [unlockedAchievements]
+  )
+
+  const persistStats = (next: WikiFunStats) => {
+    const normalized = normalizeWikiFunStats(next)
+    setStats(normalized)
+    window.localStorage.setItem(FUN_STATS_KEY, JSON.stringify(normalized))
+  }
+
+  const unlockEgg = (id: string, message: string) => {
+    if (stats.eggs.includes(id)) return
+
+    const next = {
+      ...stats,
+      eggs: [...stats.eggs, id]
+    }
+    persistStats(next)
+    setSecretToast(message)
+    window.setTimeout(() => setSecretToast(''), 2800)
+    track('wiki_fun_easter_egg', { egg: id })
+  }
+
   useEffect(() => {
     const today = seoulDateKey()
+    let nextStats = readFunStats()
+
     try {
       const saved = JSON.parse(
         window.localStorage.getItem(FORTUNE_KEY) || 'null'
@@ -299,8 +441,17 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
         saved.index < FORTUNES.length
       ) {
         setFortuneIndex(saved.index)
+        if (nextStats.fortuneDraws === 0) {
+          nextStats = { ...nextStats, fortuneDraws: 1 }
+          window.localStorage.setItem(
+            FUN_STATS_KEY,
+            JSON.stringify(nextStats)
+          )
+        }
       }
     } catch {}
+
+    setStats(nextStats)
 
     const refreshVisited = () => setVisitedIds(readVisitedPages())
     refreshVisited()
@@ -331,9 +482,8 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
     if (fortuneIndex !== null) return
 
     const values = new Uint32Array(1)
-    window.crypto?.getRandomValues?.(values)
-    const seed = values[0] || Math.floor(Math.random() * 2 ** 32)
-    const index = seed % FORTUNES.length
+    window.crypto.getRandomValues(values)
+    const index = values[0] % FORTUNES.length
     const today = seoulDateKey()
 
     window.localStorage.setItem(
@@ -341,6 +491,10 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
       JSON.stringify({ date: today, index })
     )
     setFortuneIndex(index)
+    persistStats({
+      ...stats,
+      fortuneDraws: stats.fortuneDraws + 1
+    })
     track('wiki_fun_complete', {
       feature: 'daily-fortune',
       result: String(index)
@@ -363,6 +517,10 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
     if (quizIndex >= QUESTIONS.length - 1) {
       const result = highestScoreKey(nextScores, 'miner')
       setQuizResult(result)
+      persistStats({
+        ...stats,
+        quizCompletions: stats.quizCompletions + 1
+      })
       track('wiki_fun_complete', {
         feature: 'survival-type',
         result
@@ -407,10 +565,67 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
     }
   }
 
+  const openRandom = () => {
+    setRecommendedPage(null)
+    setPanel('random')
+    track('wiki_fun_open', { feature: 'random-guide' })
+  }
+
+  const rollRandom = () => {
+    if (!randomCandidates.length) return
+
+    const values = new Uint32Array(1)
+    window.crypto.getRandomValues(values)
+    let index = values[0] % randomCandidates.length
+
+    if (
+      recommendedPage &&
+      randomCandidates.length > 1 &&
+      randomCandidates[index]?.pageId === recommendedPage.pageId
+    ) {
+      index = (index + 1) % randomCandidates.length
+    }
+
+    const picked = randomCandidates[index]
+    setRecommendedPage(picked)
+    persistStats({
+      ...stats,
+      randomRolls: stats.randomRolls + 1
+    })
+    track('wiki_fun_complete', {
+      feature: 'random-guide',
+      category: picked.category || 'unknown'
+    })
+  }
+
   const openProgress = () => {
     setVisitedIds(readVisitedPages())
     setPanel('progress')
     track('wiki_fun_open', { feature: 'exploration' })
+  }
+
+  const openAchievements = () => {
+    setVisitedIds(readVisitedPages())
+    setPanel('achievements')
+    track('wiki_fun_open', { feature: 'achievements' })
+  }
+
+  const hitPlayZoneSecret = () => {
+    const next = secretZoneClicks + 1
+    setSecretZoneClicks(next)
+    if (next >= 7) {
+      setSecretZoneClicks(0)
+      unlockEgg('play-zone', '🥚 숨겨진 기록 발견 · PLAY ZONE을 두드린 자')
+    }
+  }
+
+  const hitFortuneOrbSecret = () => {
+    const next = fortuneOrbClicks + 1
+    setFortuneOrbClicks(next)
+    if (next >= 5) {
+      setFortuneOrbClicks(0)
+      unlockEgg('fortune-orb', '🥚 숨겨진 기록 발견 · 운명을 너무 많이 만진 자')
+    }
   }
 
   const fortune =
@@ -422,11 +637,20 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
     <section className="wiki-fun-zone" aria-labelledby="wiki-fun-zone-title">
       <div className="fun-zone-head">
         <div>
-          <p>PLAY ZONE</p>
+          <button
+            className="fun-secret-trigger"
+            type="button"
+            aria-label="PLAY ZONE"
+            onClick={hitPlayZoneSecret}
+          >
+            PLAY ZONE
+          </button>
           <h2 id="wiki-fun-zone-title">정보만 보고 가기 아쉽다면?</h2>
-          <span>적자생존 위키에서 가볍게 즐길 수 있는 기능입니다.</span>
+          <span>
+            가볍게 놀고, 가이드를 발견하고, 나만의 칭호도 모아보세요.
+          </span>
         </div>
-        <strong>3 FUN</strong>
+        <strong>5 FUN</strong>
       </div>
 
       <div className="fun-zone-grid">
@@ -440,10 +664,14 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
             <small>하루 한 번</small>
             <strong>오늘의 적자 운세</strong>
             <em>
-              {fortune ? `오늘 결과 · ${fortune.title}` : '오늘은 어떤 생존 운일까요?'}
+              {fortune
+                ? `오늘 결과 · ${fortune.title}`
+                : '오늘은 어떤 생존 운일까요?'}
             </em>
           </span>
-          <span className="fun-card-action">{fortune ? '다시 보기' : '운세 보기'} →</span>
+          <span className="fun-card-action">
+            {fortune ? '다시 보기' : '운세 보기'} →
+          </span>
         </button>
 
         <button
@@ -478,7 +706,43 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
           </span>
           <span className="fun-card-action">기록 보기 →</span>
         </button>
+
+        <button
+          className="fun-card is-random"
+          type="button"
+          onClick={openRandom}
+        >
+          <span className="fun-card-icon" aria-hidden="true">🎲</span>
+          <span className="fun-card-copy">
+            <small>결정 장애 탈출</small>
+            <strong>오늘 뭐 하지?</strong>
+            <em>준비된 가이드 중 하나를 랜덤으로 골라드립니다.</em>
+          </span>
+          <span className="fun-card-action">랜덤 추천 →</span>
+        </button>
+
+        <button
+          className="fun-card is-achievements"
+          type="button"
+          onClick={openAchievements}
+        >
+          <span className="fun-card-icon" aria-hidden="true">🏅</span>
+          <span className="fun-card-copy">
+            <small>현재 칭호</small>
+            <strong>{currentTitle}</strong>
+            <em>
+              업적 {unlockedAchievements.length}/{ACHIEVEMENTS.length}개 해금 · 비밀 기록도 있습니다.
+            </em>
+          </span>
+          <span className="fun-card-action">업적 확인 →</span>
+        </button>
       </div>
+
+      {secretToast && (
+        <div className="fun-secret-toast" role="status">
+          {secretToast}
+        </div>
+      )}
 
       {panel && (
         <div
@@ -497,7 +761,11 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
                 ? '오늘의 적자 운세'
                 : panel === 'quiz'
                   ? '나는 어떤 생존형 테스트'
-                  : '위키 탐험도'
+                  : panel === 'random'
+                    ? '오늘 뭐 하지 랜덤 추천'
+                    : panel === 'achievements'
+                      ? '업적과 칭호'
+                      : '위키 탐험도'
             }
           >
             <button
@@ -511,14 +779,21 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
 
             {panel === 'fortune' && (
               <div className="fun-modal-content">
-                <span className="fun-modal-kicker">DAILY FORTUNE · KST 00:00 RESET</span>
+                <span className="fun-modal-kicker">
+                  DAILY FORTUNE · KST 00:00 RESET
+                </span>
                 <h2>오늘의 적자 운세</h2>
 
                 {fortune ? (
                   <div className="fortune-result">
-                    <span className="fortune-result-icon" aria-hidden="true">
+                    <button
+                      className="fortune-secret-orb"
+                      type="button"
+                      aria-label="오늘의 운세 결과 아이콘"
+                      onClick={hitFortuneOrbSecret}
+                    >
                       {fortune.icon}
-                    </span>
+                    </button>
                     <p>오늘의 결과</p>
                     <h3>{fortune.title}</h3>
                     <strong>{fortune.message}</strong>
@@ -539,7 +814,10 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
 
                 {fortune && (
                   <div className="fun-result-actions">
-                    <button type="button" onClick={() => void shareResult('fortune')}>
+                    <button
+                      type="button"
+                      onClick={() => void shareResult('fortune')}
+                    >
                       결과 공유
                     </button>
                     <button type="button" onClick={() => setPanel(null)}>
@@ -568,7 +846,10 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
                     <small>추천 플레이 · {result.recommendation}</small>
 
                     <div className="fun-result-actions">
-                      <button type="button" onClick={() => void shareResult('quiz')}>
+                      <button
+                        type="button"
+                        onClick={() => void shareResult('quiz')}
+                      >
                         결과 공유
                       </button>
                       <button type="button" onClick={startQuiz}>
@@ -580,7 +861,9 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
                 ) : (
                   <>
                     <div className="quiz-progress-row">
-                      <span>{quizIndex + 1} / {QUESTIONS.length}</span>
+                      <span>
+                        {quizIndex + 1} / {QUESTIONS.length}
+                      </span>
                       <span className="quiz-progress-track">
                         <span
                           style={{
@@ -605,6 +888,60 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
                       </div>
                     </div>
                   </>
+                )}
+              </div>
+            )}
+
+            {panel === 'random' && (
+              <div className="fun-modal-content">
+                <span className="fun-modal-kicker">RANDOM PICK</span>
+                <h2>오늘 뭐 하지?</h2>
+
+                {recommendedPage ? (
+                  <div className="random-result">
+                    <span className="random-result-dice" aria-hidden="true">🎲</span>
+                    <p>오늘의 랜덤 추천</p>
+                    <h3>{recommendedPage.title}</h3>
+                    <small>{recommendedPage.category || '적자생존 가이드'}</small>
+                    <strong>
+                      고민은 여기까지. 오늘은 이 가이드에서 시작해보세요.
+                    </strong>
+
+                    <div className="fun-result-actions">
+                      <Link
+                        href={withBasePath(
+                          `/page/${recommendedPage.pageId}/`
+                        )}
+                        onClick={() => {
+                          track('wiki_fun_random_navigate', {
+                            category:
+                              recommendedPage.category || 'unknown'
+                          })
+                          setPanel(null)
+                        }}
+                      >
+                        이 가이드 보러가기
+                      </Link>
+                      <button type="button" onClick={rollRandom}>
+                        다시 뽑기
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="random-ready">
+                    <span aria-hidden="true">🎲</span>
+                    <strong>무엇을 할지 고민 중인가요?</strong>
+                    <small>
+                      현재 준비가 끝난 가이드 중 하나를 무작위로 골라드립니다.
+                    </small>
+                    <button
+                      type="button"
+                      onClick={rollRandom}
+                      disabled={!randomCandidates.length}
+                    >
+                      랜덤 추천 받기
+                    </button>
+                  </div>
                 )}
               </div>
             )}
@@ -655,6 +992,57 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
                       🏆 준비된 가이드를 전부 발견했습니다. 적자생존 탐험 완료!
                     </div>
                   )}
+              </div>
+            )}
+
+            {panel === 'achievements' && (
+              <div className="fun-modal-content">
+                <span className="fun-modal-kicker">ACHIEVEMENTS</span>
+                <h2>업적 & 칭호</h2>
+
+                <div className="achievement-title-card">
+                  <span>현재 대표 칭호</span>
+                  <strong>{currentTitle}</strong>
+                  <small>
+                    업적 {unlockedAchievements.length}/{ACHIEVEMENTS.length}개 해금
+                  </small>
+                </div>
+
+                <div className="achievement-grid">
+                  {ACHIEVEMENTS.map((achievement) => {
+                    const unlocked = unlockedSet.has(achievement.id)
+                    const hidden = achievement.secret && !unlocked
+
+                    return (
+                      <article
+                        key={achievement.id}
+                        className={unlocked ? 'is-unlocked' : ''}
+                      >
+                        <span className="achievement-icon" aria-hidden="true">
+                          {hidden ? '❔' : achievement.icon}
+                        </span>
+                        <div>
+                          <strong>
+                            {hidden ? '??? 숨겨진 기록' : achievement.title}
+                          </strong>
+                          <small>
+                            {hidden
+                              ? 'PLAY ZONE 어딘가에 단서가 숨어 있습니다.'
+                              : achievement.description}
+                          </small>
+                        </div>
+                        <b>{unlocked ? '해금' : '잠김'}</b>
+                      </article>
+                    )
+                  })}
+                </div>
+
+                <div className="achievement-stats">
+                  <span>🔮 운세 {stats.fortuneDraws}회</span>
+                  <span>🧬 테스트 {stats.quizCompletions}회</span>
+                  <span>🎲 랜덤 {stats.randomRolls}회</span>
+                  <span>🥚 비밀 {stats.eggs.length}/2</span>
+                </div>
               </div>
             )}
           </section>
