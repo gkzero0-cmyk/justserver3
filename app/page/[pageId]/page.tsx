@@ -368,6 +368,16 @@ export async function renderWikiPage(pageId: string) {
             <NotionDocument
               recordMap={recordMap}
               imageManifest={imageManifest}
+              relatedPages={readyNavigationPages
+                .filter(
+                  (page) =>
+                    page.pageId.replaceAll('-', '') !==
+                    currentPage?.pageId.replaceAll('-', '')
+                )
+                .map((page) => ({
+                  pageId: page.pageId,
+                  title: page.title
+                }))}
             />
           </section>
 
