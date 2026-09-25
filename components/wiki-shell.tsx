@@ -44,7 +44,7 @@ import {
 } from '@/lib/wiki-ux'
 import {
   buildWikiSearchResults,
-  WIKI_WIKI_SEARCH_PRIORITY,
+  WIKI_SEARCH_PRIORITY,
   wikiSearchPageStatus,
   type WikiSearchIndexPayload as SearchIndexPayload,
   type WikiSearchPage as SearchPage
