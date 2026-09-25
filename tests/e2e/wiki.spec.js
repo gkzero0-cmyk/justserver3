@@ -74,7 +74,9 @@ test.describe('desktop wiki journeys', () => {
       page.getByText('개인당 최대 5개까지 허용됩니다.', { exact: true })
     ).toBeVisible()
     await expect(
-      page.getByRole('link', { name: '원문 규칙 확인 →' }).nth(4)
+      page
+        .locator('#faq-5')
+        .getByRole('link', { name: '원문 규칙 확인 →' })
     ).toBeVisible()
   })
 })
