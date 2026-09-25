@@ -65,6 +65,9 @@ function normalizePageId(value?: string) {
 
 async function searchIndexResponse() {
   const response = await fetch(SEARCH_INDEX_URL, {
+    headers: {
+      'Cache-Control': 'no-cache'
+    },
     next: {
       revalidate: 60,
       tags: ['notion-search']
