@@ -147,15 +147,45 @@ export default async function NotionSubPage({
   const jsonLd = currentPage
     ? {
         '@context': 'https://schema.org',
-        '@type': 'Article',
-        headline: currentPage.title,
-        dateModified: currentPage.lastEdited ?? undefined,
-        mainEntityOfPage: canonical,
-        isPartOf: {
-          '@type': 'WebSite',
-          name: '그냥서버 : 적자생존 공식 위키',
-          url: siteUrl
-        }
+        '@graph': [
+          {
+            '@type': 'Article',
+            headline: currentPage.title,
+            dateModified: currentPage.lastEdited ?? undefined,
+            mainEntityOfPage: canonical,
+            isPartOf: {
+              '@type': 'WebSite',
+              name: '그냥서버 : 적자생존 공식 위키',
+              url: siteUrl
+            }
+          },
+          {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: '위키 홈',
+                item: siteUrl
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: categoryKey(currentPage.title) === 'start'
+                  ? '시작하기'
+                  : categoryKey(currentPage.title) === 'growth'
+                    ? '성장 · 경제'
+                    : '주요 콘텐츠'
+              },
+              {
+                '@type': 'ListItem',
+                position: 3,
+                name: currentPage.title,
+                item: canonical
+              }
+            ]
+          }
+        ]
       }
     : null
 
@@ -171,6 +201,7 @@ export default async function NotionSubPage({
         searchText
       }))}
       brandLogo={brandLogo}
+      currentPageId={pageId}
     >
       {jsonLd && (
         <script
