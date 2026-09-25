@@ -6,6 +6,7 @@ import { NotionDocument } from '@/components/notion-document'
 import { WikiShell } from '@/components/wiki-shell'
 import { WikiPageNavigation } from '@/components/wiki-page-navigation'
 import { WikiDocumentFeedback } from '@/components/wiki-document-feedback'
+import { WikiVerifiedFaq } from '@/components/wiki-verified-faq'
 import {
   WikiNextExploration,
   WikiReadingQuiz
@@ -128,12 +129,15 @@ export async function generateWikiPageMetadata(
   }
 
   const description =
-    page.searchText
-      .replace(page.title, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, 155) || `${page.title} 가이드`
-  const draft = isDraftPage(page)
+    page.title === '많이 물어보는 것'
+      ? '그냥서버 : 적자생존 서버규칙에서 직접 확인한 자주 묻는 질문과 답변을 빠르게 확인하세요.'
+      : page.searchText
+          .replace(page.title, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 155) || `${page.title} 가이드`
+  const draft =
+    page.title === '많이 물어보는 것' ? false : isDraftPage(page)
   const siteUrl = getSiteUrl()
   const canonical = `${siteUrl}${wikiGuidePath(page)}`
   const image = page.cover || page.icon
@@ -202,16 +206,23 @@ export async function renderWikiPage(pageId: string) {
     currentPage?.title ||
     '서버 위키'
   ).trim()
-  const readyNavigationPages = navigationPages.filter((page) => !isDraftPage(page))
+  const readyNavigationPages = navigationPages.filter(
+    (page) => !isDraftPage(page) || page.title === '많이 물어보는 것'
+  )
   const related = currentPage
     ? relatedPages(currentPage, readyNavigationPages)
     : []
-  const contentStatus = currentPage
+  const hasVerifiedFaq = currentPage?.title === '많이 물어보는 것'
+  const rawContentStatus = currentPage
     ? wikiContentStatus(currentPage)
     : 'detailed'
+  const contentStatus =
+    hasVerifiedFaq && rawContentStatus === 'draft'
+      ? 'brief'
+      : rawContentStatus
   const draft = contentStatus === 'draft'
   const readingQuiz =
-    currentPage && !draft
+    currentPage && !draft && !hasVerifiedFaq
       ? buildReadingQuiz(currentPage, readyNavigationPages)
       : null
 
@@ -364,22 +375,26 @@ export async function renderWikiPage(pageId: string) {
             </aside>
           )}
 
-          <section className="document-card">
-            <NotionDocument
-              recordMap={recordMap}
-              imageManifest={imageManifest}
-              relatedPages={readyNavigationPages
-                .filter(
-                  (page) =>
-                    page.pageId.replaceAll('-', '') !==
-                    currentPage?.pageId.replaceAll('-', '')
-                )
-                .map((page) => ({
-                  pageId: page.pageId,
-                  title: page.title
-                }))}
-            />
-          </section>
+          {hasVerifiedFaq ? (
+            <WikiVerifiedFaq />
+          ) : (
+            <section className="document-card">
+              <NotionDocument
+                recordMap={recordMap}
+                imageManifest={imageManifest}
+                relatedPages={readyNavigationPages
+                  .filter(
+                    (page) =>
+                      page.pageId.replaceAll('-', '') !==
+                      currentPage?.pageId.replaceAll('-', '')
+                  )
+                  .map((page) => ({
+                    pageId: page.pageId,
+                    title: page.title
+                  }))}
+              />
+            </section>
+          )}
 
           {currentPage && (
             <>
