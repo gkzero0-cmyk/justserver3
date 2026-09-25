@@ -106,7 +106,8 @@ export default async function HomePage() {
         pages={directoryPages.map((page) => ({
           pageId: page.pageId,
           title: page.title,
-          status: wikiContentStatus(page)
+          status: wikiContentStatus(page),
+          category: categoryTitleForPage(page.title)
         }))}
       />
       <WikiDirectory pages={directoryPages} />
