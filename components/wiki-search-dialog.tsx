@@ -13,6 +13,7 @@ export type WikiSearchResult = {
   category: string
   status: WikiContentStatus | null
   snippet?: string
+  findTerm?: string
 }
 
 function HighlightedText({
@@ -58,7 +59,7 @@ export function WikiSearchDialog({
   selectedIndex: number
   onQueryChange: (value: string) => void
   onSelectedIndexChange: (index: number) => void
-  onNavigate: (pageId: string) => void
+  onNavigate: (pageId: string, findTerm?: string) => void
   onClose: () => void
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -90,7 +91,10 @@ export function WikiSearchDialog({
 
       if (event.key === 'Enter' && results[selectedIndex]) {
         event.preventDefault()
-        onNavigate(results[selectedIndex].pageId)
+        onNavigate(
+          results[selectedIndex].pageId,
+          results[selectedIndex].findTerm
+        )
         return
       }
 
@@ -196,9 +200,12 @@ export function WikiSearchDialog({
             results.map((page, index) => (
               <Link
                 key={page.pageId}
-                href={withBasePath(`/page/${page.pageId}/`)}
+                href={`${withBasePath(`/page/${page.pageId}/`)}${page.findTerm ? `?find=${encodeURIComponent(page.findTerm)}` : ''}`}
                 prefetch={false}
-                onClick={onClose}
+                onClick={(event) => {
+                  event.preventDefault()
+                  onNavigate(page.pageId, page.findTerm)
+                }}
                 className={`search-result-card ${selectedIndex === index ? 'is-selected' : ''}`}
                 data-category={page.category}
                 role="option"
