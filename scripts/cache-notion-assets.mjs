@@ -358,6 +358,13 @@ async function readExistingIndex() {
   }
 }
 
+function compactChangeSnippet(value, limit = 96) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim()
+  if (!text) return ''
+  if (text.length <= limit) return text
+  return `${text.slice(0, limit).trim()}…`
+}
+
 function changeSummaryFor(previous, current) {
   if (!previous) return '새 가이드 추가'
   if (previous.title !== current.title) return `문서명 변경 · ${current.title}`
@@ -367,17 +374,29 @@ function changeSummaryFor(previous, current) {
 
   const oldText = previous.searchText || ''
   const newText = current.searchText || ''
-  let index = 0
-  const max = Math.min(oldText.length, newText.length)
-  while (index < max && oldText[index] === newText[index]) index += 1
 
-  const start = Math.max(0, index - 24)
-  const end = Math.min(newText.length, index + 72)
-  const snippet = newText.slice(start, end).replace(/\s+/g, ' ').trim()
+  let prefix = 0
+  const maxPrefix = Math.min(oldText.length, newText.length)
+  while (prefix < maxPrefix && oldText[prefix] === newText[prefix]) prefix += 1
 
-  return snippet
-    ? `내용 변경 · ${start > 0 ? '…' : ''}${snippet}${end < newText.length ? '…' : ''}`
-    : '본문 내용 업데이트'
+  let oldEnd = oldText.length - 1
+  let newEnd = newText.length - 1
+  while (
+    oldEnd >= prefix &&
+    newEnd >= prefix &&
+    oldText[oldEnd] === newText[newEnd]
+  ) {
+    oldEnd -= 1
+    newEnd -= 1
+  }
+
+  const removed = compactChangeSnippet(oldText.slice(prefix, oldEnd + 1))
+  const added = compactChangeSnippet(newText.slice(prefix, newEnd + 1))
+
+  if (added && !removed) return `내용 추가 · ${added}`
+  if (!added && removed) return `내용 정리 · ${removed}`
+  if (added) return `내용 수정 · ${added}`
+  return '본문 내용 업데이트'
 }
 
 async function readExistingManifest() {
