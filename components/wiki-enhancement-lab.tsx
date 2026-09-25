@@ -263,11 +263,11 @@ function EnhancementPickaxe({
   return (
     <img
       className="enhancement-pickaxe-image"
-      src={withBasePath(
+      src={
         enchanted
-          ? '/enhancement-lab/enchanted-diamond-pickaxe.webp'
-          : '/enhancement-lab/diamond-pickaxe.png'
-      )}
+          ? 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/enhancement-lab/enchanted-diamond-pickaxe.webp'
+          : 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/enhancement-lab/diamond-pickaxe.png'
+      }
       alt={
         enchanted
           ? '인챈트된 다이아몬드 곡괭이'
