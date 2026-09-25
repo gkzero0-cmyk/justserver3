@@ -279,14 +279,19 @@ export default async function NotionSubPage({
                   href={withBasePath(`/page/${page.pageId}/`)}
                   className="related-doc-card"
                 >
-                  <span
-                    className="related-doc-image"
-                    style={
-                      resolvedImage
-                        ? { backgroundImage: `url("${resolvedImage}")` }
-                        : undefined
-                    }
-                  />
+                  <span className="related-doc-image">
+                    {resolvedImage && (
+                      <img
+                        src={resolvedImage}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                        width="480"
+                        height="270"
+                      />
+                    )}
+                  </span>
                   <span>
                     <strong>{page.title}</strong>
                     <small>상세 가이드 보기</small>
