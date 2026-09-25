@@ -13,7 +13,7 @@ const rootFiles = [
   'vercel.json'
 ]
 
-const sourceDirs = ['app', 'components', 'lib', 'tests']
+const sourceDirs = ['app', 'components', 'data', 'lib', 'tests']
 const publicJsonFiles = [
   'public/notion-assets/display-manifest.json',
   'public/notion-assets/index.json',
