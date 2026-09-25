@@ -20,6 +20,11 @@ type WorkflowState = {
   url: string | null
 }
 
+type ProductionHealth = {
+  ok: boolean
+  status: number | null
+}
+
 async function getWorkflowState(workflow: string): Promise<WorkflowState | null> {
   try {
     const response = await fetch(
@@ -58,6 +63,25 @@ async function getWorkflowState(workflow: string): Promise<WorkflowState | null>
   }
 }
 
+async function getProductionHealth(): Promise<ProductionHealth> {
+  try {
+    const response = await fetch('https://justserver3.vercel.app/', {
+      method: 'HEAD',
+      next: { revalidate: 300 }
+    })
+
+    return {
+      ok: response.ok,
+      status: response.status
+    }
+  } catch {
+    return {
+      ok: false,
+      status: null
+    }
+  }
+}
+
 function formatDate(value: string | null) {
   if (!value) return '확인되지 않음'
   const date = new Date(value)
@@ -92,12 +116,14 @@ function statusTone(state: WorkflowState | null) {
 }
 
 export default async function StatusPage() {
-  const [index, manifest, syncWorkflow, buildWorkflow] = await Promise.all([
-    readNotionIndex(),
-    readNotionAssetManifest(),
-    getWorkflowState('sync-notion-assets.yml'),
-    getWorkflowState('build.yml')
-  ])
+  const [index, manifest, syncWorkflow, buildWorkflow, productionHealth] =
+    await Promise.all([
+      readNotionIndex(),
+      readNotionAssetManifest(),
+      getWorkflowState('sync-notion-assets.yml'),
+      getWorkflowState('build.yml'),
+      getProductionHealth()
+    ])
 
   const rootId = index.rootPageId.replaceAll('-', '')
   const rootPage =
@@ -131,7 +157,7 @@ export default async function StatusPage() {
     !buildWorkflow ||
     buildWorkflow.status !== 'completed' ||
     buildWorkflow.conclusion === 'success'
-  const overallHealthy = syncHealthy && buildHealthy
+  const overallHealthy = syncHealthy && buildHealthy && productionHealth.ok
   const generated = index.generatedAt ? new Date(index.generatedAt) : null
   const nextSync = generated
     ? new Date(generated.getTime() + 6 * 60 * 60 * 1000).toISOString()
@@ -222,12 +248,26 @@ export default async function StatusPage() {
             )}
           </article>
 
-          <article data-tone={production ? 'success' : 'working'}>
+          <article
+            data-tone={
+              productionHealth.ok ? 'success' : production ? 'warning' : 'working'
+            }
+          >
             <span className="status-service-icon">▲</span>
             <div>
-              <small>Vercel 배포 환경</small>
-              <strong>{production ? 'Production' : 'Preview / Local'}</strong>
-              <span>현재 페이지가 실행 중인 배포 환경</span>
+              <small>Vercel Production</small>
+              <strong>
+                {productionHealth.ok
+                  ? '정상 응답'
+                  : production
+                    ? '응답 확인 필요'
+                    : 'Preview / Local'}
+              </strong>
+              <span>
+                {productionHealth.status
+                  ? `HTTP ${productionHealth.status} · justserver3.vercel.app`
+                  : '운영 URL 응답을 확인하지 못했습니다.'}
+              </span>
             </div>
             <a
               href="https://justserver3.vercel.app/"
