@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 import type { NotionIndexPage } from '@/lib/notion-index'
 import { categoryForTitle, iconForTitle } from '@/lib/wiki-taxonomy'
-import { isDraftPage } from '@/lib/wiki-content-status'
+import { wikiContentStatus } from '@/lib/wiki-content-status'
 import {
   deriveOptimizedVariant,
   resolveCachedAsset,
@@ -79,10 +79,29 @@ function assignUniqueMedia(pages: NotionIndexPage[]) {
 export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
   if (!pages.length) return null
   const mediaById = assignUniqueMedia(pages)
-  const grouped = GROUPS.map((group) => ({
-    ...group,
-    pages: pages.filter((page) => categoryForTitle(page.title) === group.key)
-  })).filter((group) => group.pages.length > 0)
+  const grouped = GROUPS.map((group) => {
+    const groupPages = pages.filter(
+      (page) => categoryForTitle(page.title) === group.key
+    )
+    return {
+      ...group,
+      pages: groupPages,
+      readyPages: groupPages.filter(
+        (page) => wikiContentStatus(page) !== 'draft'
+      ),
+      draftPages: groupPages.filter(
+        (page) => wikiContentStatus(page) === 'draft'
+      )
+    }
+  }).filter((group) => group.pages.length > 0)
+
+  const counts = pages.reduce(
+    (acc, page) => {
+      acc[wikiContentStatus(page)] += 1
+      return acc
+    },
+    { detailed: 0, brief: 0, draft: 0 }
+  )
 
   return (
     <section className="wiki-directory" aria-labelledby="wiki-directory-title">
@@ -92,7 +111,9 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
           <h2 id="wiki-directory-title">위키 가이드 바로가기</h2>
           <span>이미지와 아이콘만 봐도 문서를 빠르게 구분할 수 있게 정리했습니다.</span>
         </div>
-        <span>{pages.length}개 세부 문서</span>
+        <span>
+          상세 {counts.detailed} · 간단 {counts.brief} · 작성 중 {counts.draft}
+        </span>
       </div>
 
       <div className="directory-groups">
@@ -108,20 +129,24 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
             </div>
 
             <div className="directory-grid">
-              {group.pages.map((page) => {
+              {group.readyPages.map((page) => {
                 const media = mediaById.get(page.pageId) ?? null
                 const resolvedMedia = media ? resolveCachedAsset(media) : null
-                const draft = isDraftPage(page)
-                const badge = draft ? '작성 중' : badgeForTitle(page.title)
-                const featured = FEATURED.has(page.title) && !draft
+                const status = wikiContentStatus(page)
+                const badge =
+                  status === 'brief'
+                    ? '간단 안내'
+                    : badgeForTitle(page.title)
+                const featured =
+                  FEATURED.has(page.title) && status === 'detailed'
 
                 return (
                   <Link
                     key={page.pageId}
                     href={withBasePath(`/page/${page.pageId}/`)}
                     prefetch={false}
-                    className={`directory-card ${featured ? 'is-featured' : ''} ${draft ? 'is-draft' : ''}`}
-                    data-status={draft ? 'draft' : 'ready'}
+                    className={`directory-card ${featured ? 'is-featured' : ''} ${status === 'brief' ? 'is-brief' : ''}`}
+                    data-status={status}
                   >
                     <span className={`directory-media ${media ? 'has-image' : 'is-icon'}`}>
                       {resolvedMedia ? (
@@ -137,11 +162,11 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                         {badge && <em>{badge}</em>}
                       </span>
                       <small>
-                        {draft
-                          ? '내용을 정리하고 있습니다.'
-                          : DESCRIPTION_BY_TITLE[page.title] ||
-                            (featured
-                              ? '처음이라면 꼭 확인하세요'
+                        {DESCRIPTION_BY_TITLE[page.title] ||
+                          (featured
+                            ? '처음이라면 꼭 확인하세요'
+                            : status === 'brief'
+                              ? '핵심 내용만 간단히 정리된 안내입니다.'
                               : '상세 가이드 열기')}
                       </small>
                     </span>
@@ -151,6 +176,49 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                 )
               })}
             </div>
+
+            {group.draftPages.length > 0 && (
+              <details className="directory-drafts">
+                <summary>
+                  <span>작성 중인 문서 {group.draftPages.length}개</span>
+                  <small>필요할 때 펼쳐보세요</small>
+                </summary>
+                <div className="directory-grid is-drafts">
+                  {group.draftPages.map((page) => {
+                    const media = mediaById.get(page.pageId) ?? null
+                    const resolvedMedia = media
+                      ? resolveCachedAsset(media)
+                      : null
+
+                    return (
+                      <Link
+                        key={page.pageId}
+                        href={withBasePath(`/page/${page.pageId}/`)}
+                        prefetch={false}
+                        className="directory-card is-draft"
+                        data-status="draft"
+                      >
+                        <span className={`directory-media ${media ? 'has-image' : 'is-icon'}`}>
+                          {resolvedMedia ? (
+                            <img src={resolvedMedia} alt="" aria-hidden="true" loading="lazy" decoding="async" width="256" height="256" />
+                          ) : (
+                            iconForTitle(page.title)
+                          )}
+                        </span>
+                        <span className="directory-copy">
+                          <span className="directory-title-row">
+                            <strong>{page.title}</strong>
+                            <em>작성 중</em>
+                          </span>
+                          <small>내용을 정리하고 있습니다.</small>
+                        </span>
+                        <span className="directory-arrow">↗</span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </details>
+            )}
           </section>
         ))}
       </div>
