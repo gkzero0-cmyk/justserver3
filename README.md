@@ -22,7 +22,7 @@
 - 가이드 카테고리 홈
 - sitemap.xml / robots.txt
 - GitHub Actions 빌드 검증
-- 6시간 단위 Notion 이미지·페이지 인덱스 동기화
+- 5분 단위 Notion 이미지·페이지 인덱스 동기화
 
 ## 자동 동기화 흐름
 
