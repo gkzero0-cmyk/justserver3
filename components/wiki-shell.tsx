@@ -1080,6 +1080,9 @@ export function WikiShell({
     return () => root.removeEventListener('click', onTrackedClick)
   }, [])
 
+  const readyPageCount = pages.filter((page) => page.status !== 'draft').length
+  const draftPageCount = pages.length - readyPageCount
+
   const goTo = (id: string) => {
     const target = document.getElementById(id)
     if (target) {
@@ -1233,7 +1236,10 @@ export function WikiShell({
               ) : (
                 <span className="hero-badge">🧭 뉴비 필독</span>
               )}
-              <span className="hero-badge">📚 문서 {pageCount}개</span>
+              <span className="hero-badge">📚 공개 {readyPageCount}개</span>
+              {draftPageCount > 0 && (
+                <span className="hero-badge is-muted">🛠 준비 중 {draftPageCount}개</span>
+              )}
             </div>
           )}
 
@@ -1293,6 +1299,25 @@ export function WikiShell({
       </main>
 
       <WikiAchievementNotifier pages={pages} />
+
+      <nav className="mobile-bottom-nav" aria-label="모바일 빠른 메뉴">
+        <Link href={withBasePath('/')} prefetch={false}>
+          <span aria-hidden="true">⌂</span>
+          <strong>홈</strong>
+        </Link>
+        <button type="button" onClick={openSearch}>
+          <span aria-hidden="true">⌕</span>
+          <strong>검색</strong>
+        </button>
+        <Link href={withBasePath('/#wiki-explore')} prefetch={false}>
+          <span aria-hidden="true">✦</span>
+          <strong>탐험</strong>
+        </Link>
+        <Link href={withBasePath('/#wiki-survival-log-title')} prefetch={false}>
+          <span aria-hidden="true">☰</span>
+          <strong>내 기록</strong>
+        </Link>
+      </nav>
 
       {!home && (
         <div className={`mobile-reading-tools ${readingProgress > 2 ? 'is-visible' : ''}`}>
