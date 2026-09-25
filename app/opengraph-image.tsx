@@ -38,8 +38,7 @@ export default function OpenGraphImage() {
             flexDirection: 'column',
             justifyContent: 'space-between',
             width: '100%',
-            zIndex: 1
-          }}
+            }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <div
