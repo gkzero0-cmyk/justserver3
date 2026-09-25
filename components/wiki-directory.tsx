@@ -1,6 +1,5 @@
 import type { NotionIndexPage } from '@/lib/notion-index'
-import { withBasePath } from '@/lib/url-utils'
-import { resolveCachedAsset } from '@/lib/url-utils'
+import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
 
 function iconForTitle(title: string) {
   const value = title.toLowerCase()
@@ -58,6 +57,23 @@ function categoryForTitle(title: string) {
   return 'content'
 }
 
+function badgeForTitle(title: string) {
+  if (title === '서버규칙' || title.includes('뉴비필독')) return '필수'
+  if (title === '채광' || title === '빚 갚기' || title === '장비강화') return '핵심'
+  if (title === '패치노트') return '업데이트'
+  if (title === '많이 물어보는 것') return 'FAQ'
+  if (title === 'API') return 'API'
+  return null
+}
+
+const FEATURED = new Set([
+  '서버규칙',
+  '기초설정(뉴비필독)',
+  '채광',
+  '빚 갚기',
+  '장비강화'
+])
+
 const GROUPS = [
   {
     key: 'start',
@@ -79,6 +95,23 @@ const GROUPS = [
   }
 ] as const
 
+function assignUniqueMedia(pages: NotionIndexPage[]) {
+  const used = new Set<string>()
+  const mediaById = new Map<string, string | null>()
+
+  for (const page of pages) {
+    const candidates = [page.thumbnail, page.cover, page.icon].filter(
+      (value): value is string => Boolean(value)
+    )
+    const media = candidates.find((value) => !used.has(value)) ?? null
+
+    if (media) used.add(media)
+    mediaById.set(page.pageId, media)
+  }
+
+  return mediaById
+}
+
 export function WikiDirectory({
   pages
 }: {
@@ -86,6 +119,7 @@ export function WikiDirectory({
 }) {
   if (!pages.length) return null
 
+  const mediaById = assignUniqueMedia(pages)
   const grouped = GROUPS.map((group) => ({
     ...group,
     pages: pages.filter((page) => categoryForTitle(page.title) === group.key)
@@ -97,6 +131,7 @@ export function WikiDirectory({
         <div>
           <p>QUICK DIRECTORY</p>
           <h2 id="wiki-directory-title">위키 가이드 바로가기</h2>
+          <span>이미지와 아이콘만 봐도 문서를 빠르게 구분할 수 있게 정리했습니다.</span>
         </div>
         <span>{pages.length}개 세부 문서</span>
       </div>
@@ -115,17 +150,19 @@ export function WikiDirectory({
 
             <div className="directory-grid">
               {group.pages.map((page) => {
-                const media = page.cover || page.icon
+                const media = mediaById.get(page.pageId) ?? null
                 const resolvedMedia = media ? resolveCachedAsset(media) : null
+                const badge = badgeForTitle(page.title)
+                const featured = FEATURED.has(page.title)
 
                 return (
                   <a
                     key={page.pageId}
                     href={withBasePath(`/page/${page.pageId}/`)}
-                    className="directory-card"
+                    className={`directory-card ${featured ? 'is-featured' : ''}`}
                   >
                     <span
-                      className={`directory-media ${media ? 'has-image' : ''}`}
+                      className={`directory-media ${media ? 'has-image' : 'is-icon'}`}
                       style={
                         resolvedMedia
                           ? { backgroundImage: `url("${resolvedMedia}")` }
@@ -136,8 +173,13 @@ export function WikiDirectory({
                     </span>
 
                     <span className="directory-copy">
-                      <strong>{page.title}</strong>
-                      <small>상세 가이드 열기</small>
+                      <span className="directory-title-row">
+                        <strong>{page.title}</strong>
+                        {badge && <em>{badge}</em>}
+                      </span>
+                      <small>
+                        {featured ? '처음이라면 꼭 확인하세요' : '상세 가이드 열기'}
+                      </small>
                     </span>
 
                     <span className="directory-arrow">↗</span>
