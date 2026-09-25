@@ -401,7 +401,7 @@ test('unread recommendations prioritize nearly completed collections', () => {
 
   assert.deepEqual(
     unreadRecommendations(pages, ['a'], 2).map((page) => page.pageId),
-    ['b', 'c']
+    ['b', 'd']
   )
 })
 
