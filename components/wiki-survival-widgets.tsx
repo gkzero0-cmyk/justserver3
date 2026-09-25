@@ -17,18 +17,17 @@ import {
   treasurePageIds
 } from '@/lib/wiki-survival'
 import type { WikiContentStatus } from '@/lib/wiki-ux'
+import {
+  readWikiStateValue,
+  readWikiStringArray,
+  writeWikiStateValue
+} from '@/lib/wiki-client-state'
 
 type WidgetPage = {
   pageId: string
   title: string
   status?: WikiContentStatus
 }
-
-const VISITED_PAGES_KEY = 'justserver3-read-pages-v1'
-const FUN_STATS_KEY = 'justserver3-fun-stats-v1'
-const SURVIVAL_RECORD_KEY = 'justserver3-survival-record-v1'
-const TREASURES_KEY = 'justserver3-treasures-v1'
-const SEEN_ACHIEVEMENTS_KEY = 'justserver3-seen-achievements-v1'
 
 const ACHIEVEMENT_LABELS: Record<
   WikiAchievementId,
@@ -45,21 +44,10 @@ const ACHIEVEMENT_LABELS: Record<
   'egg-master': { icon: '✨', title: '이스터에그 헌터' }
 }
 
-function readStringArray(key: string) {
-  try {
-    const value = JSON.parse(window.localStorage.getItem(key) || '[]')
-    return Array.isArray(value)
-      ? value.filter((item): item is string => typeof item === 'string')
-      : []
-  } catch {
-    return []
-  }
-}
-
 function readFunStats(): WikiFunStats {
   try {
     return normalizeWikiFunStats(
-      JSON.parse(window.localStorage.getItem(FUN_STATS_KEY) || 'null')
+      readWikiStateValue('funStats', null)
     )
   } catch {
     return normalizeWikiFunStats(null)
@@ -88,7 +76,7 @@ export function WikiTreasureFind({
 
   useEffect(() => {
     setFound(
-      readStringArray(TREASURES_KEY).some(
+      readWikiStringArray('treasures').some(
         (id) => id.replaceAll('-', '') === normalizedCurrent
       )
     )
@@ -98,12 +86,13 @@ export function WikiTreasureFind({
     if (!normalizedCurrent || targetIndex < 0) return
 
     const icon = ['💎', '🪙', '🔑', '📜'][targetIndex % 4]
-    const existing = readStringArray(TREASURES_KEY)
+    const existing = readWikiStringArray('treasures')
     const normalized = existing.map((id) => id.replaceAll('-', ''))
     if (!normalized.includes(normalizedCurrent)) {
-      window.localStorage.setItem(
-        TREASURES_KEY,
-        JSON.stringify([...existing, normalizedCurrent])
+      writeWikiStateValue(
+        'treasures',
+        [...existing, normalizedCurrent],
+        'justserver3:treasure'
       )
     }
 
@@ -111,7 +100,7 @@ export function WikiTreasureFind({
     try {
       record = normalizeSurvivalRecord(
         JSON.parse(
-          window.localStorage.getItem(SURVIVAL_RECORD_KEY) || 'null'
+          JSON.stringify(readWikiStateValue('survivalRecord', null))
         )
       )
     } catch {
@@ -124,9 +113,11 @@ export function WikiTreasureFind({
       'treasure',
       normalizedCurrent
     )
-    window.localStorage.setItem(SURVIVAL_RECORD_KEY, JSON.stringify(next))
-    window.dispatchEvent(new Event('justserver3:treasure'))
-    window.dispatchEvent(new Event('justserver3:survival-record'))
+    writeWikiStateValue(
+      'survivalRecord',
+      next,
+      'justserver3:survival-record'
+    )
 
     setFound(true)
     setNotice(icon + ' 위키 보물을 발견했습니다!')
@@ -228,17 +219,17 @@ export function WikiAchievementNotifier({
 
   useEffect(() => {
     const refresh = () => {
-      const visited = readStringArray(VISITED_PAGES_KEY)
+      const visited = readWikiStringArray('readPages')
       const stats = readFunStats()
       const progress = wikiExplorationProgress(visited, readyIds)
       const unlocked = unlockedWikiAchievementIds(progress, stats)
-      const seen = new Set(readStringArray(SEEN_ACHIEVEMENTS_KEY))
+      const seen = new Set(readWikiStringArray('seenAchievements'))
 
       if (!initialized.current) {
         initialized.current = true
-        window.localStorage.setItem(
-          SEEN_ACHIEVEMENTS_KEY,
-          JSON.stringify([...new Set([...seen, ...unlocked])])
+        writeWikiStateValue(
+          'seenAchievements',
+          [...new Set([...seen, ...unlocked])]
         )
         return
       }
@@ -247,10 +238,7 @@ export function WikiAchievementNotifier({
       if (!newlyUnlocked.length) return
 
       const nextSeen = [...new Set([...seen, ...newlyUnlocked])]
-      window.localStorage.setItem(
-        SEEN_ACHIEVEMENTS_KEY,
-        JSON.stringify(nextSeen)
-      )
+      writeWikiStateValue('seenAchievements', nextSeen)
 
       const first = newlyUnlocked[0]
       setToast(first)
