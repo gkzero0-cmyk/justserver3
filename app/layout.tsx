@@ -13,9 +13,9 @@ export const metadata: Metadata = {
     '그냥서버 : 적자생존의 서버 규칙, 시스템, 아이템, 콘텐츠와 각종 가이드를 모아보는 공식 위키입니다.',
   applicationName: '그냥서버 : 적자생존 공식 위키',
   icons: {
-    icon: 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/optimized/logo/da97a92ed58d144e4aacf9ec.webp',
-    shortcut: 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/optimized/logo/da97a92ed58d144e4aacf9ec.webp',
-    apple: 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/optimized/logo/da97a92ed58d144e4aacf9ec.webp'
+    icon: 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/optimized/logo64/da97a92ed58d144e4aacf9ec.webp',
+    shortcut: 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/optimized/logo64/da97a92ed58d144e4aacf9ec.webp',
+    apple: 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/optimized/logo64/da97a92ed58d144e4aacf9ec.webp'
   },
   category: 'game guide',
   openGraph: {
