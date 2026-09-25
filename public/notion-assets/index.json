@@ -1,6 +1,6 @@
 {
   "rootPageId": "3dad57d6a55c80469f3de9730cb88975",
-  "generatedAt": "2026-09-25T17:51:01.192Z",
+  "generatedAt": "2026-09-25T18:34:32.313Z",
   "pages": [
     {
       "pageId": "3dad57d6a55c80469f3de9730cb88975",
@@ -38,7 +38,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T21:21:25.563Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/b09673e524a534b5aa016381.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/b09673e524a534b5aa016381.webp",
       "hero": "/notion-assets/optimized/hero1600/b09673e524a534b5aa016381.webp",
@@ -65,7 +73,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T16:57:25.468Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/1945b1c3063b12e3c65d84e1.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/1945b1c3063b12e3c65d84e1.webp",
       "hero": null,
@@ -177,7 +193,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T21:12:00.583Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/686d4518773c9bde43dc3c5c.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/686d4518773c9bde43dc3c5c.webp",
       "hero": null,
@@ -198,7 +222,15 @@
       "searchText": "패치노트 그냥서버 : 적자생존 공식 위키",
       "sections": [],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T20:07:58.683Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/0c90b8cd10051cddd69f483f.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/0c90b8cd10051cddd69f483f.webp",
       "hero": null,
@@ -550,7 +582,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-21T09:47:00.023Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/1cbfebed088209f34e4ed712.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/1cbfebed088209f34e4ed712.webp",
       "hero": null,
@@ -717,7 +757,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T20:08:58.380Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/1cbfebed088209f34e4ed712.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/1cbfebed088209f34e4ed712.webp",
       "hero": null,
@@ -754,7 +802,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T20:50:00.251Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/0c90b8cd10051cddd69f483f.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/0c90b8cd10051cddd69f483f.webp",
       "hero": null,
@@ -786,7 +842,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T20:53:32.335Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/75a3e00065c6268113f65030.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/75a3e00065c6268113f65030.webp",
       "hero": null,
@@ -818,7 +882,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T20:53:52.361Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/15cebc8916fa83a750030f7a.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/15cebc8916fa83a750030f7a.webp",
       "hero": null,
@@ -860,7 +932,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T20:54:13.111Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/96a29cdd6a8568e70ea0dced.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/96a29cdd6a8568e70ea0dced.webp",
       "hero": null,
@@ -902,7 +982,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-21T09:50:00.998Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/a226495c1f93dc827bde1ae3.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/a226495c1f93dc827bde1ae3.webp",
       "hero": null,
@@ -923,7 +1011,15 @@
       "searchText": "도감 그냥서버 : 적자생존 공식 위키",
       "sections": [],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T20:53:13.871Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/2eea11752af73e2d4527a67c.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/2eea11752af73e2d4527a67c.webp",
       "hero": null,
@@ -960,7 +1056,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T20:57:52.229Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/969148cb6c4f63a3c5088811.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/969148cb6c4f63a3c5088811.webp",
       "hero": null,
@@ -987,7 +1091,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T21:22:00.265Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": null,
       "thumbnailSmall": null,
       "hero": null,
@@ -1014,7 +1126,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T21:22:04.058Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": null,
       "thumbnailSmall": null,
       "hero": null,
@@ -1041,7 +1161,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T21:22:17.972Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": null,
       "thumbnailSmall": null,
       "hero": null,
@@ -1103,7 +1231,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T21:06:58.536Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": "/notion-assets/optimized/thumb/3b35f0881ae93962664ad10e.webp",
       "thumbnailSmall": "/notion-assets/optimized/thumb256/3b35f0881ae93962664ad10e.webp",
       "hero": null,
@@ -1130,7 +1266,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T21:22:28.617Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": null,
       "thumbnailSmall": null,
       "hero": null,
@@ -1157,7 +1301,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T21:22:31.331Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": null,
       "thumbnailSmall": null,
       "hero": null,
@@ -1184,7 +1336,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T21:22:33.597Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": null,
       "thumbnailSmall": null,
       "hero": null,
@@ -1211,7 +1371,15 @@
         }
       ],
       "changeSummary": null,
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T21:22:36.142Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": null,
       "thumbnailSmall": null,
       "hero": null,
@@ -1288,7 +1456,15 @@
         }
       ],
       "changeSummary": "내용 수정 · 재입주할 수 있나요? 가능합니다. 다만 재입주할 때도 입장료를 다시 내야 합니다. 재입주 입장료 다시 입장 재입주하면 강화 장비는 어떻게 되나요? 재입주 시 기존에 보유하고…",
-      "history": [],
+      "history": [
+        {
+          "at": "2026-09-19T21:23:02.352Z",
+          "type": "baseline",
+          "summary": "변경 이력 추적 시작",
+          "added": null,
+          "removed": null
+        }
+      ],
       "thumbnail": null,
       "thumbnailSmall": null,
       "hero": null,
@@ -1484,6 +1660,70 @@
   ],
   "reviewQueue": [
     {
+      "id": "change:3e0d57d6a55c80c5a8afe20753a11db1:2026-09-21T09:50:00.998Z",
+      "kind": "change",
+      "title": "요리",
+      "pageId": "3e0d57d6a55c80c5a8afe20753a11db1",
+      "summary": "변경 이력 추적 시작",
+      "at": "2026-09-21T09:50:00.998Z"
+    },
+    {
+      "id": "change:3dad57d6a55c80f28689c7bebde648fe:2026-09-21T09:47:00.023Z",
+      "kind": "change",
+      "title": "API",
+      "pageId": "3dad57d6a55c80f28689c7bebde648fe",
+      "summary": "변경 이력 추적 시작",
+      "at": "2026-09-21T09:47:00.023Z"
+    },
+    {
+      "id": "change:3e0d57d6a55c80aa89daee3da173adf7:2026-09-19T21:23:02.352Z",
+      "kind": "change",
+      "title": "많이 물어보는 것",
+      "pageId": "3e0d57d6a55c80aa89daee3da173adf7",
+      "summary": "변경 이력 추적 시작",
+      "at": "2026-09-19T21:23:02.352Z"
+    },
+    {
+      "id": "change:3e0d57d6a55c80fc99eef96b991ea5df:2026-09-19T21:22:36.142Z",
+      "kind": "change",
+      "title": "장비강화",
+      "pageId": "3e0d57d6a55c80fc99eef96b991ea5df",
+      "summary": "변경 이력 추적 시작",
+      "at": "2026-09-19T21:22:36.142Z"
+    },
+    {
+      "id": "change:3e0d57d6a55c8066b139d896b3c40081:2026-09-19T21:22:33.597Z",
+      "kind": "change",
+      "title": "장비수리",
+      "pageId": "3e0d57d6a55c8066b139d896b3c40081",
+      "summary": "변경 이력 추적 시작",
+      "at": "2026-09-19T21:22:33.597Z"
+    },
+    {
+      "id": "change:3ddd57d6a55c80d1a126c09593be5d6e:2026-09-19T21:22:31.331Z",
+      "kind": "change",
+      "title": "신용등급",
+      "pageId": "3ddd57d6a55c80d1a126c09593be5d6e",
+      "summary": "변경 이력 추적 시작",
+      "at": "2026-09-19T21:22:31.331Z"
+    },
+    {
+      "id": "change:3e0d57d6a55c80f4bd26e6c22516eb8a:2026-09-19T21:22:28.617Z",
+      "kind": "change",
+      "title": "빚 갚기",
+      "pageId": "3e0d57d6a55c80f4bd26e6c22516eb8a",
+      "summary": "변경 이력 추적 시작",
+      "at": "2026-09-19T21:22:28.617Z"
+    },
+    {
+      "id": "change:3e0d57d6a55c80378750e502be28b30f:2026-09-19T21:22:17.972Z",
+      "kind": "change",
+      "title": "카지노",
+      "pageId": "3e0d57d6a55c80378750e502be28b30f",
+      "summary": "변경 이력 추적 시작",
+      "at": "2026-09-19T21:22:17.972Z"
+    },
+    {
       "id": "faq:3dad57d6a55c80c0b4adc2aa5676076b:또한-낮은-확률로-강화재료를-얻을-수-있습니다",
       "kind": "faq-candidate",
       "title": "낚시",
@@ -1529,22 +1769,6 @@
       "title": "서버규칙",
       "pageId": "3dad57d6a55c802aa11adaed7c2c98ff",
       "summary": "📌 X-ray 등 비인가 외부 프로그램 사용 금지",
-      "at": null
-    },
-    {
-      "id": "faq:3dad57d6a55c802aa11adaed7c2c98ff:일자굴파기-금지",
-      "kind": "faq-candidate",
-      "title": "서버규칙",
-      "pageId": "3dad57d6a55c802aa11adaed7c2c98ff",
-      "summary": "📌 일자굴파기 금지",
-      "at": null
-    },
-    {
-      "id": "faq:3dad57d6a55c802aa11adaed7c2c98ff:다른-서버에서-안되는-행동들은-여기서도-금지",
-      "kind": "faq-candidate",
-      "title": "서버규칙",
-      "pageId": "3dad57d6a55c802aa11adaed7c2c98ff",
-      "summary": "📌 다른 서버에서 안되는 행동들은 여기서도 금지",
       "at": null
     }
   ],
