@@ -286,11 +286,23 @@ export default async function NotionSubPage({
             Notion 원문이 보강되면 같은 주소에 자동으로 반영됩니다.
           </span>
           <div className="state-actions">
-            <Link href={withBasePath(`/#category-${currentPage ? categoryKey(currentPage.title) : 'start'}`)}>
+            <Link
+              href={withBasePath(`/#category-${currentPage ? categoryKey(currentPage.title) : 'start'}`)}
+              data-wiki-event="wiki_draft_navigate"
+              data-wiki-section="draft-state"
+              data-wiki-target="directory"
+              data-wiki-status="draft"
+            >
               전체 가이드 보기
             </Link>
             {related[0] && (
-              <Link href={withBasePath(`/page/${related[0].pageId}/`)}>
+              <Link
+                href={withBasePath(`/page/${related[0].pageId}/`)}
+                data-wiki-event="wiki_draft_navigate"
+                data-wiki-section="draft-state"
+                data-wiki-target={related[0].title}
+                data-wiki-status="ready"
+              >
                 {related[0].title} 먼저 보기
               </Link>
             )}
@@ -349,6 +361,10 @@ export default async function NotionSubPage({
                   key={page.pageId}
                   href={withBasePath(`/page/${page.pageId}/`)}
                   className="related-doc-card"
+                  data-wiki-event="wiki_related_navigate"
+                  data-wiki-section="related-guides"
+                  data-wiki-target={page.title}
+                  data-wiki-status={wikiContentStatus(page)}
                 >
                   <span className="related-doc-image">
                     {resolvedImage && (
