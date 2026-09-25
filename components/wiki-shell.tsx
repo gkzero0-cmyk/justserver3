@@ -51,6 +51,7 @@ import {
   type WikiSearchPage as SearchPage
 } from '@/lib/wiki-search'
 import { withBasePath } from '@/lib/url-utils'
+import { classifyWikiSearchTopic } from '@/lib/wiki-search-topics'
 
 type TocItem = ReadingTocItem
 
@@ -130,6 +131,7 @@ export function WikiShell({
   const [selectedResult, setSelectedResult] = useState(0)
   const handledHashRef = useRef('')
   const zeroSearchTrackedRef = useRef('')
+  const topicSearchTrackedRef = useRef('')
   const searchRefreshAtRef = useRef(0)
   const readingProgressRef = useRef(0)
 
@@ -892,6 +894,7 @@ export function WikiShell({
         status: page ? wikiSearchPageStatus(page) || 'unknown' : 'unknown',
         target: page?.title || 'unknown',
         result_type: anchor ? 'section' : findTerm ? 'body' : 'title',
+        topic: classifyWikiSearchTopic(query),
         query_length:
           query.trim().length <= 2
             ? '1-2'
@@ -912,6 +915,26 @@ export function WikiShell({
 
   useEffect(() => {
     const keyword = query.trim()
+    if (keyword.length < 2 || !searchOpen) return
+
+    const topic = classifyWikiSearchTopic(keyword)
+    const signature = `${topic}:${keyword.length <= 2 ? '1-2' : keyword.length <= 5 ? '3-5' : '6+'}`
+    if (topicSearchTrackedRef.current === signature) return
+    topicSearchTrackedRef.current = signature
+
+    track('wiki_search_topic', {
+      topic,
+      query_length:
+        keyword.length <= 2
+          ? '1-2'
+          : keyword.length <= 5
+            ? '3-5'
+            : '6+'
+    })
+  }, [query, searchOpen])
+
+  useEffect(() => {
+    const keyword = query.trim()
     if (!keyword || searchLoading || filteredPages.length) return
 
     const sourceReady = Boolean(searchPages) || searchFailed
@@ -922,6 +945,7 @@ export function WikiShell({
     zeroSearchTrackedRef.current = signature
 
     track('wiki_search_zero_result', {
+      topic: classifyWikiSearchTopic(keyword),
       query_length:
         keyword.length <= 2
           ? '1-2'
