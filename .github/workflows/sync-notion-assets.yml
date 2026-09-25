@@ -50,17 +50,32 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git fetch origin main
-          git reset --hard origin/main
+          for attempt in 1 2 3; do
+            echo "Sync commit attempt ${attempt}/3"
 
-          rm -rf public/notion-assets
-          mkdir -p public
-          cp -a /tmp/notion-assets public/notion-assets
+            git fetch origin main
+            git reset --hard origin/main
 
-          git add public/notion-assets
-          if git diff --cached --quiet; then
-            echo "No Notion asset changes."
-          else
+            rm -rf public/notion-assets
+            mkdir -p public
+            cp -a /tmp/notion-assets public/notion-assets
+
+            git add public/notion-assets
+            if git diff --cached --quiet; then
+              echo "No Notion asset changes."
+              exit 0
+            fi
+
             git commit -m "Sync Notion image assets"
-            git push origin main
-          fi
+
+            if git push origin HEAD:main; then
+              echo "Notion assets pushed successfully."
+              exit 0
+            fi
+
+            echo "Main changed during sync; retrying against the latest commit."
+            sleep 2
+          done
+
+          echo "Unable to push refreshed Notion assets after 3 attempts."
+          exit 1
