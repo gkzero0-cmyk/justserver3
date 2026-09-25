@@ -10,6 +10,7 @@ import {
   RecentViewedSection,
   type ReadingTocItem
 } from '@/components/wiki-reading-widgets'
+import { WikiMobileQuickView } from '@/components/wiki-mobile-quick-view'
 import {
   WikiNavigation,
   type WikiNavigationPage
@@ -192,6 +193,7 @@ export function WikiShell({
   const [query, setQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
   const [mobileTocOpen, setMobileTocOpen] = useState(false)
+  const [mobileQuickOpen, setMobileQuickOpen] = useState(false)
   const [openMobileCategories, setOpenMobileCategories] = useState<string[]>([])
   const [recentPageIds, setRecentPageIds] = useState<string[]>([])
   const [recentReady, setRecentReady] = useState(false)
@@ -1181,6 +1183,7 @@ export function WikiShell({
       if (event.key === 'Escape') {
         setSearchOpen(false)
         setMobileTocOpen(false)
+        setMobileQuickOpen(false)
         setQuery('')
       }
     }
@@ -1439,13 +1442,19 @@ export function WikiShell({
           <span aria-hidden="true">⌕</span>
           <strong>검색</strong>
         </button>
+        <button
+          type="button"
+          onClick={() => {
+            setMobileQuickOpen(true)
+            track('wiki_mobile_quick_open')
+          }}
+        >
+          <span aria-hidden="true">⚡</span>
+          <strong>빠른정보</strong>
+        </button>
         <Link href={withBasePath('/#wiki-explore')} prefetch={false}>
           <span aria-hidden="true">✦</span>
           <strong>탐험</strong>
-        </Link>
-        <Link href={withBasePath('/#wiki-survival-log-title')} prefetch={false}>
-          <span aria-hidden="true">☰</span>
-          <strong>내 기록</strong>
         </Link>
       </nav>
 
@@ -1473,6 +1482,14 @@ export function WikiShell({
           activeTocId={activeTocId}
           onClose={() => setMobileTocOpen(false)}
           onNavigate={goTo}
+        />
+      )}
+
+      {mobileQuickOpen && (
+        <WikiMobileQuickView
+          pages={pages}
+          onClose={() => setMobileQuickOpen(false)}
+          onOpenSearch={openSearch}
         />
       )}
 
