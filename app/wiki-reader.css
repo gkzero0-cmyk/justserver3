@@ -2636,3 +2636,29 @@ html[data-theme="light"] .draft-state {
     font-size: 10px;
   }
 }
+
+
+/* === Home information hierarchy === */
+.wiki-main.is-home-main > .wiki-hero {
+  order: 0;
+}
+
+.wiki-main.is-home-main > .starter-guide {
+  order: 1;
+}
+
+.wiki-main.is-home-main > .recent-viewed {
+  order: 2;
+}
+
+.wiki-main.is-home-main > .wiki-directory {
+  order: 3;
+}
+
+.wiki-main.is-home-main > .recent-updates {
+  order: 4;
+}
+
+.wiki-main.is-home-main > .wiki-footer {
+  order: 10;
+}
