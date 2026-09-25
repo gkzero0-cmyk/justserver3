@@ -104,7 +104,11 @@ function mirrorLegacy(field: WikiStateField, value: unknown) {
   try {
     window.localStorage.setItem(
       key,
-      typeof value === 'string' ? value : JSON.stringify(value)
+      field === 'readMigration' && value
+        ? '1'
+        : typeof value === 'string'
+          ? value
+          : JSON.stringify(value)
     )
   } catch {}
 }
