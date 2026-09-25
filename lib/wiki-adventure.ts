@@ -307,7 +307,7 @@ export function weeklyWikiBoss(
   weekKey: string
 ) {
   const start = dateKeyDayNumber(weekKey)
-  const reads = new Set<string>()
+  let reads = 0
   const quizzes = new Set<string>()
   const treasures = new Set<string>()
   let fortune = 0
@@ -318,7 +318,7 @@ export function weeklyWikiBoss(
     const activity = activityByDay[dayNumberDateKey(start + offset)]
     if (!activity) continue
 
-    for (const id of activity.reads || []) reads.add(normalizeId(id))
+    reads += (activity.reads || []).length
     for (const id of activity.readingQuizzes || []) quizzes.add(normalizeId(id))
     for (const id of activity.treasures || []) treasures.add(normalizeId(id))
     fortune += Math.max(0, Math.floor(activity.fortune || 0))
@@ -329,7 +329,7 @@ export function weeklyWikiBoss(
   const hp = 100
   const damage = Math.min(
     hp,
-    reads.size * 12 +
+    reads * 12 +
       quizzes.size * 8 +
       treasures.size * 12 +
       fortune * 3 +
@@ -346,7 +346,7 @@ export function weeklyWikiBoss(
     percent: Math.min(100, damage),
     defeated: damage >= hp,
     actions: {
-      reads: reads.size,
+      reads,
       quizzes: quizzes.size,
       treasures: treasures.size,
       fortune,
