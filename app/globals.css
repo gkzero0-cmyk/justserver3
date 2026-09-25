@@ -3407,3 +3407,73 @@ html[data-theme="light"] .search-result-card.is-selected {
     grid-column: 2;
   }
 }
+
+
+/* Larger information cards without losing scanability */
+@media (min-width: 961px) {
+  .starter-steps {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .starter-step {
+    grid-column: span 2;
+    min-height: 178px;
+  }
+
+  .starter-step:nth-child(4),
+  .starter-step:nth-child(5) {
+    grid-column: span 3;
+  }
+
+  .recent-update-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 11px;
+  }
+}
+
+html[data-theme="light"] .notion-simple-table,
+html[data-theme="light"] .notion-table,
+html[data-theme="light"] .notion-bookmark,
+html[data-theme="light"] .notion-callout,
+html[data-theme="light"] .notion-toggle {
+  border-color: rgba(118,84,55,.15) !important;
+}
+
+html[data-theme="light"] .notion-callout {
+  background: rgba(184,61,52,.035) !important;
+}
+
+html[data-theme="light"] .notion-toggle:hover {
+  background: rgba(149,107,47,.035) !important;
+}
+
+html[data-theme="light"] .notion-bookmark:hover {
+  border-color: rgba(184,61,52,.2) !important;
+}
+
+@media (max-width: 960px) {
+  .starter-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .starter-step,
+  .starter-step:nth-child(4),
+  .starter-step:nth-child(5) {
+    grid-column: auto;
+  }
+
+  .starter-step:last-child {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .starter-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .starter-step,
+  .starter-step:last-child {
+    grid-column: auto;
+  }
+}
