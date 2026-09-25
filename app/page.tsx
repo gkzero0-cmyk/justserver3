@@ -4,6 +4,7 @@ import { StarterGuide } from '@/components/starter-guide'
 import { WikiFunZone } from '@/components/wiki-fun-zone'
 import { WikiSurvivalLog } from '@/components/wiki-survival-log'
 import { WikiReadingExplorer } from '@/components/wiki-reading-explorer'
+import { WikiAdventureHub } from '@/components/wiki-adventure-hub'
 import { WikiDirectory } from '@/components/wiki-directory'
 import { WikiShell } from '@/components/wiki-shell'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
@@ -121,6 +122,14 @@ export default async function HomePage() {
         }))}
       />
       <WikiReadingExplorer
+        pages={directoryPages.map((page) => ({
+          pageId: page.pageId,
+          title: page.title,
+          status: wikiContentStatus(page),
+          category: categoryTitleForPage(page.title)
+        }))}
+      />
+      <WikiAdventureHub
         pages={directoryPages.map((page) => ({
           pageId: page.pageId,
           title: page.title,
