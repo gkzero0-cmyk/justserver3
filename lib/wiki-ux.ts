@@ -153,3 +153,40 @@ export function wikiHeadingId(text: string, occurrence = 1) {
 
   return occurrence > 1 ? `${base}-${occurrence}` : base
 }
+
+
+export function buildWikiFeedbackUrl({
+  pageId,
+  title,
+  kind
+}: {
+  pageId: string
+  title: string
+  kind: 'incorrect' | 'improve'
+}) {
+  const normalizedPageId = pageId.replaceAll('-', '')
+  const issueTitle =
+    kind === 'incorrect'
+      ? `[위키 오류] ${title}`
+      : `[위키 보강] ${title}`
+  const requestLabel =
+    kind === 'incorrect' ? '잘못된 정보 제보' : '내용 보강 요청'
+  const body = [
+    `## ${requestLabel}`,
+    '',
+    `- 문서: ${title}`,
+    `- 문서 ID: ${normalizedPageId}`,
+    `- 문서 주소: https://justserver3.vercel.app/page/${normalizedPageId}`,
+    '',
+    '### 확인이 필요한 내용',
+    '',
+    '<!-- 이 아래에 수정 또는 추가가 필요한 내용을 적어주세요. -->'
+  ].join('\n')
+
+  const url = new URL(
+    'https://github.com/gkzero0-cmyk/justserver3/issues/new'
+  )
+  url.searchParams.set('title', issueTitle)
+  url.searchParams.set('body', body)
+  return url.toString()
+}
