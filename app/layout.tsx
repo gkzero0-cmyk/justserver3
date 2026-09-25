@@ -3,6 +3,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import 'react-notion-x/src/styles.css'
 import './globals.css'
+import './wiki-reader.css'
 import { getSiteUrl } from '@/lib/url-utils'
 
 export const metadata: Metadata = {
