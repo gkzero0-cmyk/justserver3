@@ -35,8 +35,8 @@ export function RecentViewedSection({
     >
       <div className="recent-viewed-head">
         <div>
-          <p>RECENTLY VIEWED</p>
-          <h2 id="recent-viewed-title">최근 본 문서</h2>
+          <p>CONTINUE READING</p>
+          <h2 id="recent-viewed-title">이어서 읽기</h2>
         </div>
         <div className="recent-viewed-actions">
           <small>이 브라우저에만 저장됩니다.</small>
@@ -59,11 +59,11 @@ export function RecentViewedSection({
         </div>
       ) : pages.length > 0 ? (
         <div className="recent-viewed-list">
-          {pages.map((page) => (
+          {pages.map((page, index) => (
             <Link
               key={page.pageId}
               href={withBasePath(`/page/${page.pageId}/`)}
-              className="recent-viewed-card"
+              className={`recent-viewed-card ${index === 0 ? 'is-primary' : ''}`}
               data-wiki-event="wiki_home_navigate"
               data-wiki-section="recent-viewed"
               data-wiki-target={page.title}
