@@ -64,6 +64,10 @@ export function RecentViewedSection({
               key={page.pageId}
               href={withBasePath(`/page/${page.pageId}/`)}
               className="recent-viewed-card"
+              data-wiki-event="wiki_home_navigate"
+              data-wiki-section="recent-viewed"
+              data-wiki-target={page.title}
+              data-wiki-status="ready"
             >
               <span aria-hidden="true">{iconForTitle(page.title)}</span>
               <strong>{page.title}</strong>
