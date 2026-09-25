@@ -1,5 +1,7 @@
 import type { NextConfig } from 'next'
 
+import { WIKI_GUIDE_ROUTES } from './lib/wiki-routes'
+
 const isGitHubPages = process.env.GITHUB_PAGES === 'true'
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
 
@@ -10,6 +12,17 @@ const nextConfig: NextConfig = {
         trailingSlash: true,
         basePath,
         assetPrefix: basePath
+      }
+    : {}),
+  ...(!isGitHubPages
+    ? {
+        async redirects() {
+          return WIKI_GUIDE_ROUTES.map(({ pageId, slug }) => ({
+            source: `/page/${pageId}`,
+            destination: `/guide/${slug}/`,
+            permanent: true
+          }))
+        }
       }
     : {}),
   images: {
