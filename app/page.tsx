@@ -5,7 +5,8 @@ import { WikiDirectory } from '@/components/wiki-directory'
 import { WikiShell } from '@/components/wiki-shell'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
 import { readNotionIndex } from '@/lib/notion-index'
-import { isDraftPage } from '@/lib/wiki-content-status'
+import { isDraftPage, wikiContentStatus } from '@/lib/wiki-content-status'
+import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import { relativeUpdateLabel } from '@/lib/wiki-ux'
 import {
   deriveOptimizedVariant,
@@ -83,9 +84,11 @@ export default async function HomePage() {
       sourceUrl={notionPublicUrl(ROOT_PAGE_ID)}
       title={title}
       pageCount={directoryPages.length}
-      pages={directoryPages.map(({ pageId, title }) => ({
-        pageId,
-        title
+      pages={directoryPages.map((page) => ({
+        pageId: page.pageId,
+        title: page.title,
+        status: wikiContentStatus(page),
+        category: categoryTitleForPage(page.title)
       }))}
       brandLogo={brandLogo}
       heroImage={heroImage}
