@@ -1,33 +1,8 @@
+import Link from 'next/link'
+
 import type { NotionIndexPage } from '@/lib/notion-index'
+import { categoryAnchorForTitle, categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import { withBasePath } from '@/lib/url-utils'
-
-function categoryTitle(title: string) {
-  const value = title.toLowerCase()
-
-  if (
-    value.includes('스토리') ||
-    value.includes('규칙') ||
-    value.includes('패치') ||
-    value.includes('api') ||
-    value.includes('뉴비') ||
-    value.includes('기초')
-  ) {
-    return '시작하기'
-  }
-
-  if (
-    value.includes('땅') ||
-    value.includes('빚') ||
-    value.includes('신용') ||
-    value.includes('수리') ||
-    value.includes('강화') ||
-    value.includes('물어보는')
-  ) {
-    return '성장 · 경제'
-  }
-
-  return '주요 콘텐츠'
-}
 
 function formatDate(value: string | null) {
   if (!value) return null
@@ -57,29 +32,30 @@ export function WikiPageNavigation({
     currentIndex >= 0 && currentIndex < pages.length - 1
       ? pages[currentIndex + 1]
       : null
-  const category = categoryTitle(current.title)
+  const category = categoryTitleForPage(current.title)
   const updatedAt = formatDate(current.lastEdited)
 
   if (mode === 'siblings') {
     return (
       <nav className="page-siblings page-siblings-bottom" aria-label="이전 및 다음 문서">
         {previous ? (
-          <a href={withBasePath(`/page/${previous.pageId}/`)}>
+          <Link href={withBasePath(`/page/${previous.pageId}/`)} prefetch={false}>
             <small>← 이전 문서</small>
             <strong>{previous.title}</strong>
-          </a>
+          </Link>
         ) : (
           <span />
         )}
 
         {next ? (
-          <a
+          <Link
             href={withBasePath(`/page/${next.pageId}/`)}
+            prefetch={false}
             className="page-sibling-next"
           >
             <small>다음 문서 →</small>
             <strong>{next.title}</strong>
-          </a>
+          </Link>
         ) : (
           <span />
         )}
@@ -90,9 +66,9 @@ export function WikiPageNavigation({
   return (
     <div className="page-context">
       <nav className="breadcrumbs" aria-label="현재 위치">
-        <a href={withBasePath('/')}>위키 홈</a>
+        <Link href={withBasePath('/')} prefetch={false}>위키 홈</Link>
         <span>›</span>
-        <span>{category}</span>
+        <Link href={withBasePath(`/#${categoryAnchorForTitle(current.title)}`)} prefetch={false}>{category}</Link>
         <span>›</span>
         <strong>{current.title}</strong>
       </nav>
