@@ -145,6 +145,28 @@ async function optimizeAsset(publicPath, { makeHero = false, makeLogo = false } 
         fallbackPublicPath: display.publicPath
       })
     : null
+  const logo64 = makeLogo
+    ? await ensureVariant({
+        sourceBytes,
+        hash,
+        kind: 'logo64',
+        width: 64,
+        quality: 94,
+        alphaQuality: 100,
+        fallbackPublicPath: display.publicPath
+      })
+    : null
+  const logo128 = makeLogo
+    ? await ensureVariant({
+        sourceBytes,
+        hash,
+        kind: 'logo128',
+        width: 128,
+        quality: 94,
+        alphaQuality: 100,
+        fallbackPublicPath: display.publicPath
+      })
+    : null
   const logo = makeLogo
     ? await ensureVariant({
         sourceBytes,
@@ -152,7 +174,7 @@ async function optimizeAsset(publicPath, { makeHero = false, makeLogo = false } 
         kind: 'logo',
         width: 256,
         quality: 92,
-        alphaQuality: 98,
+        alphaQuality: 100,
         fallbackPublicPath: display.publicPath
       })
     : null
@@ -161,11 +183,20 @@ async function optimizeAsset(publicPath, { makeHero = false, makeLogo = false } 
     display: display.publicPath,
     thumbnail: thumbnail.publicPath,
     hero: hero?.publicPath ?? null,
+    logo64: logo64?.publicPath ?? null,
+    logo128: logo128?.publicPath ?? null,
     logo: logo?.publicPath ?? null,
     sourceBytes: sourceBytes.length,
     displayBytes: display.bytes,
     thumbnailBytes: thumbnail.bytes,
-    active: [display.relative, thumbnail.relative, hero?.relative, logo?.relative].filter(Boolean)
+    active: [
+      display.relative,
+      thumbnail.relative,
+      hero?.relative,
+      logo64?.relative,
+      logo128?.relative,
+      logo?.relative
+    ].filter(Boolean)
   }
 }
 
@@ -256,6 +287,12 @@ async function main() {
           coverVariants?.thumbnail || iconVariants?.thumbnail || null,
         hero: isRoot
           ? coverVariants?.hero || coverVariants?.display || page.cover || null
+          : null,
+        logo64: isRoot
+          ? iconVariants?.logo64 || iconVariants?.logo || iconVariants?.display || page.icon || null
+          : null,
+        logo128: isRoot
+          ? iconVariants?.logo128 || iconVariants?.logo || iconVariants?.display || page.icon || null
           : null,
         logo: isRoot
           ? iconVariants?.logo || iconVariants?.display || page.icon || null
