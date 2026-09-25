@@ -135,14 +135,15 @@ export function storyProgress(
     const completedChoice = chapter.choices.find((page) =>
       read.has(normalizeId(page.pageId))
     )
+    const complete = unlocked && Boolean(completedChoice)
     const state = {
       ...chapter,
       unlocked,
-      complete: Boolean(completedChoice),
-      completedPageId: completedChoice?.pageId || null
+      complete,
+      completedPageId: complete ? completedChoice?.pageId || null : null
     }
 
-    if (!completedChoice) unlocked = false
+    if (!complete) unlocked = false
     return state
   })
 }
