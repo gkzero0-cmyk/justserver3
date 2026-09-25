@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import type { NotionIndexPage } from '@/lib/notion-index'
 import { isDraftPage } from '@/lib/wiki-content-status'
 import { withBasePath } from '@/lib/url-utils'
@@ -16,7 +18,7 @@ export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
   const steps = STEP_TITLES.map((title, index) => {
     const page = pages.find((item) => item.title === title)
     return { page, meta: STEP_META[index] }
-  }).filter((item) => item.page)
+  }).filter((item) => item.page && !isDraftPage(item.page))
 
   if (!steps.length) return null
 
@@ -26,21 +28,21 @@ export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
         <div>
           <p>FIRST START</p>
           <h2 id="starter-guide-title">처음 오셨나요?</h2>
-          <span>이 순서대로 보면 서버 흐름을 가장 빠르게 이해할 수 있습니다.</span>
+          <span>현재 준비된 핵심 가이드를 순서대로 확인해보세요.</span>
         </div>
-        <strong>5 STEP</strong>
+        <strong>{steps.length} STEP</strong>
       </div>
 
       <div className="starter-steps">
-        {steps.map(({ page, meta }) => {
-          const draft = isDraftPage(page!)
+        {steps.map(({ page, meta }, index) => {
           return (
-            <a
+            <Link
               key={page!.pageId}
               href={withBasePath(`/page/${page!.pageId}/`)}
-              className={`starter-step ${draft ? 'is-draft' : ''}`}
+              prefetch={false}
+              className="starter-step"
             >
-              <span className="starter-number">{meta[0]}</span>
+              <span className="starter-number">{String(index + 1).padStart(2, '0')}</span>
               <span className="starter-icon" aria-hidden="true">{meta[1]}</span>
               <span className="starter-copy">
                 <strong>{meta[2]}</strong>
@@ -48,10 +50,9 @@ export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
               </span>
               <span className="starter-target">
                 <span>{page!.title}</span>
-                {draft && <em>작성 중</em>}
               </span>
               <span className="starter-arrow">→</span>
-            </a>
+            </Link>
           )
         })}
       </div>
