@@ -13,7 +13,10 @@ import {
   resolveCachedAsset,
   withBasePath
 } from '@/lib/url-utils'
-import { isDraftPage } from '@/lib/wiki-content-status'
+import {
+  isDraftPage,
+  wikiContentStatus
+} from '@/lib/wiki-content-status'
 
 export const dynamicParams = true
 export const revalidate = 60
@@ -180,7 +183,10 @@ export default async function NotionSubPage({
   const related = currentPage
     ? relatedPages(currentPage, readyNavigationPages)
     : []
-  const draft = currentPage ? isDraftPage(currentPage) : false
+  const contentStatus = currentPage
+    ? wikiContentStatus(currentPage)
+    : 'detailed'
+  const draft = contentStatus === 'draft'
 
   const brandLogo = rootPage?.logo128
     ? resolveCachedAsset(rootPage.logo128)
@@ -269,6 +275,16 @@ export default async function NotionSubPage({
           <div>
             <strong>이 문서는 아직 내용을 정리하고 있습니다.</strong>
             <small>확정된 내용만 표시하며, Notion 원문이 보강되면 자동으로 반영됩니다.</small>
+          </div>
+        </aside>
+      )}
+
+      {contentStatus === 'brief' && (
+        <aside className="brief-notice" role="status">
+          <span>간단 안내</span>
+          <div>
+            <strong>현재는 핵심 내용만 간단히 정리된 문서입니다.</strong>
+            <small>추가 정보가 정리되면 같은 주소에 자동으로 보강됩니다.</small>
           </div>
         </aside>
       )}
