@@ -4,6 +4,11 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import {
+  MobileTocSheet,
+  RecentViewedSection,
+  type ReadingTocItem
+} from '@/components/wiki-reading-widgets'
 import { categoryTitleForPage, iconForTitle } from '@/lib/wiki-taxonomy'
 import {
   classifyWikiContent,
@@ -15,11 +20,7 @@ import {
 } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
 
-type TocItem = {
-  id: string
-  text: string
-  level: number
-}
+type TocItem = ReadingTocItem
 
 type WikiPageLink = {
   pageId: string
@@ -184,9 +185,6 @@ export function WikiShell({
   const [selectedResult, setSelectedResult] = useState(0)
   const modalSearchRef = useRef<HTMLInputElement>(null)
   const modalRef = useRef<HTMLElement>(null)
-  const mobileTocCloseRef = useRef<HTMLButtonElement>(null)
-  const mobileTocRef = useRef<HTMLElement>(null)
-  const mobileTocReturnFocusRef = useRef<HTMLElement | null>(null)
   const handledHashRef = useRef('')
 
   useEffect(() => {
@@ -284,14 +282,6 @@ export function WikiShell({
     window.localStorage.removeItem(RECENT_PAGES_KEY)
     setRecentPageIds([])
     setRecentReady(true)
-  }
-
-  const openMobileToc = () => {
-    mobileTocReturnFocusRef.current =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null
-    setMobileTocOpen(true)
   }
 
   const toggleMobileCategory = (category: string) => {
@@ -774,46 +764,6 @@ export function WikiShell({
     setMobileTocOpen(false)
   }
 
-  useEffect(() => {
-    if (!mobileTocOpen) return
-
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    const frame = requestAnimationFrame(() => mobileTocCloseRef.current?.focus())
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab' || !mobileTocRef.current) return
-
-      const focusable = Array.from(
-        mobileTocRef.current.querySelectorAll<HTMLElement>(
-          'button, a[href], [tabindex]:not([tabindex="-1"])'
-        )
-      ).filter((element) => !element.hasAttribute('disabled'))
-
-      if (!focusable.length) return
-
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault()
-        last.focus()
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault()
-        first.focus()
-      }
-    }
-
-    window.addEventListener('keydown', onKeyDown)
-
-    return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener('keydown', onKeyDown)
-      document.body.style.overflow = previousOverflow
-      requestAnimationFrame(() => mobileTocReturnFocusRef.current?.focus())
-    }
-  }, [mobileTocOpen])
-
   return (
     <div
       className={`wiki-shell ${sidebarCollapsed ? 'is-sidebar-collapsed' : ''}`}
@@ -1122,51 +1072,11 @@ export function WikiShell({
         </section>
 
         {home && (
-          <section
-            className={`recent-viewed ${!recentReady ? 'is-loading' : recentPages.length ? '' : 'is-empty'}`}
-            aria-labelledby="recent-viewed-title"
-            aria-busy={!recentReady}
-          >
-            <div className="recent-viewed-head">
-              <div>
-                <p>RECENTLY VIEWED</p>
-                <h2 id="recent-viewed-title">최근 본 문서</h2>
-              </div>
-              <div className="recent-viewed-actions">
-                <small>이 브라우저에만 저장됩니다.</small>
-                {recentReady && recentPages.length > 0 && (
-                  <button type="button" onClick={clearRecentPages}>
-                    기록 지우기
-                  </button>
-                )}
-              </div>
-            </div>
-            {!recentReady ? (
-              <div className="recent-viewed-list recent-viewed-loading" aria-hidden="true">
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <span className="recent-viewed-skeleton" key={index} />
-                ))}
-              </div>
-            ) : recentPages.length > 0 ? (
-              <div className="recent-viewed-list">
-                {recentPages.map((page) => (
-                  <Link
-                    key={page.pageId}
-                    href={withBasePath(`/page/${page.pageId}/`)}
-                    className="recent-viewed-card"
-                  >
-                    <span aria-hidden="true">{sectionIcon(page.title)}</span>
-                    <strong>{page.title}</strong>
-                    <b>→</b>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <p className="recent-viewed-empty">
-                아직 본 문서가 없습니다. 가이드를 열면 최근 기록이 여기에 표시됩니다.
-              </p>
-            )}
-          </section>
+          <RecentViewedSection
+            ready={recentReady}
+            pages={recentPages}
+            onClear={clearRecentPages}
+          />
         )}
 
         {children}
@@ -1187,7 +1097,7 @@ export function WikiShell({
       {!home && (
         <div className={`mobile-reading-tools ${readingProgress > 2 ? 'is-visible' : ''}`}>
           {toc.length > 0 && (
-            <button type="button" onClick={openMobileToc} aria-label="현재 문서 목차 열기">
+            <button type="button" onClick={() => setMobileTocOpen(true)} aria-label="현재 문서 목차 열기">
               ☷ <span>목차</span>
             </button>
           )}
@@ -1202,55 +1112,13 @@ export function WikiShell({
       )}
 
       {mobileTocOpen && (
-        <div
-          className="mobile-toc-backdrop"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.currentTarget === event.target) setMobileTocOpen(false)
-          }}
-        >
-          <section
-            ref={mobileTocRef}
-            className="mobile-toc-sheet"
-            role="dialog"
-            aria-modal="true"
-            aria-label="현재 문서 목차"
-          >
-            <div className="mobile-toc-handle" aria-hidden="true" />
-            <header>
-              <div>
-                <small>현재 문서</small>
-                <strong>목차</strong>
-              </div>
-              <button
-                ref={mobileTocCloseRef}
-                type="button"
-                aria-label="목차 닫기"
-                onClick={() => setMobileTocOpen(false)}
-              >
-                ×
-              </button>
-            </header>
-            <div className="mobile-toc-progress">
-              <span>읽는 중</span>
-              <b>{readingProgress}%</b>
-            </div>
-            <nav>
-              {toc.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={`mobile-toc-item level-${item.level} ${activeTocId === item.id ? 'is-active' : ''}`}
-                  aria-current={activeTocId === item.id ? 'location' : undefined}
-                  onClick={() => goTo(item.id)}
-                >
-                  <span>{sectionIcon(item.text)}</span>
-                  <strong>{item.text}</strong>
-                </button>
-              ))}
-            </nav>
-          </section>
-        </div>
+        <MobileTocSheet
+          toc={toc}
+          readingProgress={readingProgress}
+          activeTocId={activeTocId}
+          onClose={() => setMobileTocOpen(false)}
+          onNavigate={goTo}
+        />
       )}
 
       {searchOpen && (
