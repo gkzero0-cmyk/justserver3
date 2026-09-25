@@ -35,7 +35,7 @@ body {
   margin: 0;
   color: var(--text);
   background:
-    radial-gradient(circle at 70% -20%, rgba(101, 163, 13, 0.13), transparent 34rem),
+    radial-gradient(circle at 70% -20%, rgba(var(--accent-rgb),.11), transparent 34rem),
     var(--bg);
   font-family: Pretendard, "Noto Sans KR", Inter, system-ui, sans-serif;
 }
@@ -453,7 +453,7 @@ input {
   border: 1px solid rgba(var(--accent-rgb),.18);
   border-radius: 999px;
   background: rgba(var(--accent-rgb),.06);
-  color: #c8f7ac;
+  color: var(--gold);
   font-size: 11px;
   white-space: nowrap;
 }
