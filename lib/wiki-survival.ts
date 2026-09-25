@@ -1,4 +1,4 @@
-import { seoulDateKey, uniqueNormalizedPageIds } from './wiki-fun'
+import { seoulDateKey, uniqueNormalizedPageIds } from './wiki-fun.ts'
 
 export { seoulDateKey }
 
