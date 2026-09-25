@@ -1,59 +1,13 @@
+import Link from 'next/link'
+
 import type { NotionIndexPage } from '@/lib/notion-index'
+import { categoryForTitle, iconForTitle } from '@/lib/wiki-taxonomy'
 import { isDraftPage } from '@/lib/wiki-content-status'
 import {
   deriveOptimizedVariant,
   resolveCachedAsset,
   withBasePath
 } from '@/lib/url-utils'
-
-function iconForTitle(title: string) {
-  const value = title.toLowerCase()
-  if (value.includes('스토리')) return '📖'
-  if (value.includes('룰') || value.includes('규칙')) return '📜'
-  if (value.includes('api') || value.includes('후원')) return '💝'
-  if (value.includes('뉴비') || value.includes('기초')) return '🧭'
-  if (value.includes('패치')) return '📝'
-  if (value.includes('강화')) return '⚒️'
-  if (value.includes('수리')) return '🔧'
-  if (value.includes('광') || value.includes('채광')) return '⛏️'
-  if (value.includes('낚시')) return '🎣'
-  if (value.includes('도축')) return '🥩'
-  if (value.includes('사냥')) return '⚔️'
-  if (value.includes('요리')) return '🍳'
-  if (value.includes('도감')) return '📚'
-  if (value.includes('파쿠르')) return '🏃'
-  if (value.includes('복권')) return '🎟️'
-  if (value.includes('경마')) return '🏇'
-  if (value.includes('카지노')) return '🎰'
-  if (value.includes('땅')) return '🏠'
-  if (value.includes('빚')) return '💸'
-  if (value.includes('신용')) return '💳'
-  if (value.includes('물어보는')) return '❓'
-  return '✦'
-}
-
-function categoryForTitle(title: string) {
-  const value = title.toLowerCase()
-  if (
-    value.includes('스토리') ||
-    value.includes('규칙') ||
-    value.includes('패치') ||
-    value.includes('api') ||
-    value.includes('뉴비') ||
-    value.includes('기초')
-  ) return 'start'
-
-  if (
-    value.includes('땅') ||
-    value.includes('빚') ||
-    value.includes('신용') ||
-    value.includes('수리') ||
-    value.includes('강화') ||
-    value.includes('물어보는')
-  ) return 'growth'
-
-  return 'content'
-}
 
 function badgeForTitle(title: string) {
   if (title === '서버규칙' || title.includes('뉴비필독')) return '필수'
@@ -143,7 +97,7 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
 
       <div className="directory-groups">
         {grouped.map((group) => (
-          <section className="directory-group" data-category={group.key} key={group.key}>
+          <section className="directory-group" data-category={group.key} id={`category-${group.key}`} key={group.key}>
             <div className="directory-group-head">
               <span>{group.icon}</span>
               <div>
@@ -162,9 +116,10 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                 const featured = FEATURED.has(page.title) && !draft
 
                 return (
-                  <a
+                  <Link
                     key={page.pageId}
                     href={withBasePath(`/page/${page.pageId}/`)}
+                    prefetch={false}
                     className={`directory-card ${featured ? 'is-featured' : ''} ${draft ? 'is-draft' : ''}`}
                     data-status={draft ? 'draft' : 'ready'}
                   >
@@ -192,7 +147,7 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                     </span>
 
                     <span className="directory-arrow">↗</span>
-                  </a>
+                  </Link>
                 )
               })}
             </div>
