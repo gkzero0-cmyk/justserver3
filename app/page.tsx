@@ -42,8 +42,16 @@ export default async function HomePage() {
     )
     .slice(0, 5)
 
-  const brandLogo = rootPage?.icon ? resolveCachedAsset(rootPage.icon) : null
-  const heroImage = rootPage?.cover ? resolveCachedAsset(rootPage.cover) : null
+  const brandLogo = rootPage?.logo
+    ? resolveCachedAsset(rootPage.logo)
+    : rootPage?.icon
+      ? resolveCachedAsset(rootPage.icon)
+      : null
+  const heroImage = rootPage?.hero
+    ? resolveCachedAsset(rootPage.hero)
+    : rootPage?.cover
+      ? resolveCachedAsset(rootPage.cover)
+      : null
 
   const siteUrl = 'https://justserver3.vercel.app'
   const websiteJsonLd = {
@@ -61,10 +69,9 @@ export default async function HomePage() {
       title={title}
       assetCount={Object.keys(imageManifest).length}
       pageCount={notionIndex.pages.length || 1}
-      pages={directoryPages.map(({ pageId, title, searchText }) => ({
+      pages={directoryPages.map(({ pageId, title }) => ({
         pageId,
-        title,
-        searchText
+        title
       }))}
       brandLogo={brandLogo}
       heroImage={heroImage}
@@ -98,6 +105,11 @@ export default async function HomePage() {
                 {formatDate(page.lastEdited)}
               </span>
               <strong>{page.title}</strong>
+              {page.changeSummary && (
+                <small className="recent-update-summary">
+                  {page.changeSummary}
+                </small>
+              )}
               <span className="recent-update-arrow">→</span>
             </a>
           ))}
