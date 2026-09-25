@@ -96,14 +96,6 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
     }
   }).filter((group) => group.pages.length > 0)
 
-  const counts = pages.reduce(
-    (acc, page) => {
-      acc[wikiContentStatus(page)] += 1
-      return acc
-    },
-    { detailed: 0, brief: 0, draft: 0 }
-  )
-
   return (
     <section className="wiki-directory" aria-labelledby="wiki-directory-title">
       <div className="directory-heading">
@@ -112,9 +104,7 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
           <h2 id="wiki-directory-title">위키 가이드 바로가기</h2>
           <span>이미지와 아이콘만 봐도 문서를 빠르게 구분할 수 있게 정리했습니다.</span>
         </div>
-        <span>
-          상세 {counts.detailed} · 간단 {counts.brief} · 작성 중 {counts.draft}
-        </span>
+        <span>{pages.length}개 가이드</span>
       </div>
 
       <div className="directory-groups">

@@ -39,6 +39,11 @@ type SearchPage = WikiPageLink & {
   searchText?: string
 }
 
+type SearchIndexPayload = {
+  generatedAt?: string
+  pages?: SearchPage[]
+}
+
 const SEARCH_INDEX_URLS = [
   withBasePath('/notion-assets/search-index.json'),
   withBasePath('/api/notion-webhook?resource=search-index')
@@ -170,6 +175,7 @@ export function WikiShell({
   const [selectedResult, setSelectedResult] = useState(0)
   const handledHashRef = useRef('')
   const zeroSearchTrackedRef = useRef('')
+  const searchRefreshAtRef = useRef(0)
 
   useEffect(() => {
     const saved = window.localStorage.getItem('justserver3-theme')
@@ -529,47 +535,90 @@ export function WikiShell({
   }, [currentPageId, pages, router])
 
   useEffect(() => {
-    if (!searchOpen || searchPages) return
+    if (!searchOpen) return
+
+    const now = Date.now()
+    if (
+      searchPages &&
+      now - searchRefreshAtRef.current < 45_000
+    ) {
+      return
+    }
 
     let cancelled = false
 
+    const withPageMeta = (data: SearchIndexPayload) => {
+      const pageMeta = new Map(
+        pages.map((page) => [page.pageId.replaceAll('-', ''), page])
+      )
+
+      return Array.isArray(data.pages)
+        ? data.pages.map((page) => {
+            const meta = pageMeta.get(page.pageId.replaceAll('-', ''))
+            return {
+              ...page,
+              status: meta?.status,
+              category: meta?.category
+            }
+          })
+        : []
+    }
+
+    const generatedTime = (data: SearchIndexPayload | null) => {
+      if (!data?.generatedAt) return 0
+      const value = new Date(data.generatedAt).getTime()
+      return Number.isNaN(value) ? 0 : value
+    }
+
     const load = async () => {
-      setSearchLoading(true)
+      if (!searchPages) setSearchLoading(true)
       setSearchFailed(false)
 
-      try {
-        let data: { pages?: SearchPage[] } | null = null
+      let staticData: SearchIndexPayload | null = null
+      let liveData: SearchIndexPayload | null = null
 
-        for (const url of SEARCH_INDEX_URLS) {
+      try {
+        if (!searchPages) {
           try {
-            const response = await fetch(url, { cache: 'no-store' })
-            if (!response.ok) continue
-            data = (await response.json()) as { pages?: SearchPage[] }
-            break
+            const staticResponse = await fetch(SEARCH_INDEX_URLS[0], {
+              cache: 'no-store'
+            })
+            if (staticResponse.ok) {
+              staticData = (await staticResponse.json()) as SearchIndexPayload
+              if (!cancelled) setSearchPages(withPageMeta(staticData))
+            }
           } catch {
-            // Try the live API fallback when the static index is unavailable.
+            // The live search index below remains available as a fallback.
           }
         }
 
-        if (!data) throw new Error('search-index-unavailable')
-
-        if (!cancelled) {
-          const pageMeta = new Map(
-            pages.map((page) => [page.pageId.replaceAll('-', ''), page])
-          )
-          setSearchPages(
-            Array.isArray(data.pages)
-              ? data.pages.map((page) => {
-                  const meta = pageMeta.get(page.pageId.replaceAll('-', ''))
-                  return {
-                    ...page,
-                    status: meta?.status,
-                    category: meta?.category
-                  }
-                })
-              : []
-          )
+        try {
+          const liveResponse = await fetch(SEARCH_INDEX_URLS[1], {
+            cache: 'no-store'
+          })
+          if (liveResponse.ok) {
+            liveData = (await liveResponse.json()) as SearchIndexPayload
+          }
+        } catch {
+          // Keep the instant static result when the live refresh is unavailable.
         }
+
+        if (!staticData && !liveData && !searchPages) {
+          throw new Error('search-index-unavailable')
+        }
+
+        const shouldApplyLive =
+          Boolean(liveData) &&
+          (
+            !staticData ||
+            generatedTime(liveData) >= generatedTime(staticData)
+          )
+
+        if (!cancelled && liveData && shouldApplyLive) {
+          setSearchPages(withPageMeta(liveData))
+        }
+
+        if (!cancelled) searchRefreshAtRef.current = Date.now()
       } catch {
         if (!cancelled) setSearchFailed(true)
       } finally {
@@ -908,7 +957,18 @@ export function WikiShell({
           {home && (
             <div className="hero-badges">
               <span className="hero-badge primary">공식 위키</span>
-              <span className="hero-badge">🧭 뉴비 필독</span>
+              {pages.find((page) => page.title === '기초설정(뉴비필독)') ? (
+                <Link
+                  className="hero-badge hero-badge-link"
+                  href={withBasePath(
+                    `/page/${pages.find((page) => page.title === '기초설정(뉴비필독)')!.pageId}/`
+                  )}
+                >
+                  🧭 뉴비 필독
+                </Link>
+              ) : (
+                <span className="hero-badge">🧭 뉴비 필독</span>
+              )}
               <span className="hero-badge">📚 문서 {pageCount}개</span>
             </div>
           )}
@@ -938,9 +998,9 @@ export function WikiShell({
           </div>
         </section>
 
-        {home && (
+        {home && recentReady && recentPages.length > 0 && (
           <RecentViewedSection
-            ready={recentReady}
+            ready
             pages={recentPages}
             onClear={clearRecentPages}
           />
