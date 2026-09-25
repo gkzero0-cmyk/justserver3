@@ -12,6 +12,7 @@ import {
   resolveCachedAsset,
   withBasePath
 } from '@/lib/url-utils'
+import { isDraftPage } from '@/lib/wiki-content-status'
 
 export const dynamicParams = true
 export const revalidate = 60
