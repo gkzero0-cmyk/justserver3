@@ -280,7 +280,8 @@ export function WikiShell({
   }, [searchOpen, searchPages, searchLoading])
 
   const filteredPages = useMemo(() => {
-    const source = searchPages ?? pages
+    const source: SearchPage[] =
+      searchPages ?? pages.map((page) => ({ ...page, searchText: '' }))
     const keyword = query.trim().toLowerCase()
 
     if (!keyword) {
@@ -290,7 +291,7 @@ export function WikiShell({
     return source
       .map((page) => {
         const title = page.title.toLowerCase()
-        const searchText = 'searchText' in page ? page.searchText ?? '' : ''
+        const searchText = page.searchText ?? ''
         const body = searchText.toLowerCase()
         const titleMatch = title.includes(keyword)
         const bodyIndex = body.indexOf(keyword)
