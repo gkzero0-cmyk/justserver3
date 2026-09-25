@@ -107,6 +107,7 @@ export function WikiAdventureHub({
     ...EMPTY_SURVIVAL_RECORD,
     activityByDay: {}
   })
+  const [progressReady, setProgressReady] = useState(false)
   const [notice, setNotice] = useState<{
     icon: string
     kicker: string
@@ -122,6 +123,7 @@ export function WikiAdventureHub({
     }
 
     refresh()
+    setProgressReady(true)
     const events = [
       'storage',
       'justserver3:read-pages',
@@ -179,6 +181,8 @@ export function WikiAdventureHub({
   const activeTabIndex = TAB_LABELS.findIndex((tab) => tab.id === activeTab)
 
   useEffect(() => {
+    if (!progressReady) return
+
     const completed = story
       .filter((chapter) => chapter.complete)
       .map((chapter) => chapter.id)
@@ -205,9 +209,20 @@ export function WikiAdventureHub({
     })
     const timer = window.setTimeout(() => setNotice(null), 3000)
     return () => window.clearTimeout(timer)
-  }, [story])
+  }, [progressReady, story])
 
   useEffect(() => {
+    if (!progressReady) return
+
+    const existing = window.localStorage.getItem(SEEN_BOSS_KEY)
+    if (!existing) {
+      window.localStorage.setItem(
+        SEEN_BOSS_KEY,
+        JSON.stringify(boss.defeated ? [weekKey] : [])
+      )
+      return
+    }
+
     if (!boss.defeated) return
     const seen = readStringArray(SEEN_BOSS_KEY)
     if (seen.includes(weekKey)) return
@@ -224,7 +239,7 @@ export function WikiAdventureHub({
     })
     const timer = window.setTimeout(() => setNotice(null), 3400)
     return () => window.clearTimeout(timer)
-  }, [boss.defeated, boss.name, weekKey])
+  }, [boss.defeated, boss.name, progressReady, weekKey])
 
   const changeTab = (tab: AdventureTab) => {
     setActiveTab(tab)
