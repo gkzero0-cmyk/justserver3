@@ -10,6 +10,10 @@ import {
   RecentViewedSection,
   type ReadingTocItem
 } from '@/components/wiki-reading-widgets'
+import {
+  WikiSearchDialog,
+  type WikiSearchResult
+} from '@/components/wiki-search-dialog'
 import { categoryTitleForPage, iconForTitle } from '@/lib/wiki-taxonomy'
 import {
   classifyWikiContent,
@@ -117,29 +121,6 @@ function expandedSearchTerms(keyword: string) {
   return [...terms].filter(Boolean)
 }
 
-function HighlightedText({
-  text,
-  query
-}: {
-  text: string
-  query: string
-}) {
-  const keyword = query.trim()
-  if (!keyword) return <>{text}</>
-
-  const lower = text.toLowerCase()
-  const index = lower.indexOf(keyword.toLowerCase())
-  if (index < 0) return <>{text}</>
-
-  return (
-    <>
-      {text.slice(0, index)}
-      <mark>{text.slice(index, index + keyword.length)}</mark>
-      {text.slice(index + keyword.length)}
-    </>
-  )
-}
-
 export function WikiShell({
   children,
   sourceUrl,
@@ -184,8 +165,6 @@ export function WikiShell({
   const [searchLoading, setSearchLoading] = useState(false)
   const [searchFailed, setSearchFailed] = useState(false)
   const [selectedResult, setSelectedResult] = useState(0)
-  const modalSearchRef = useRef<HTMLInputElement>(null)
-  const modalRef = useRef<HTMLElement>(null)
   const handledHashRef = useRef('')
   const zeroSearchTrackedRef = useRef('')
 
@@ -514,7 +493,6 @@ export function WikiShell({
   const openSearch = () => {
     setSearchOpen(true)
     track('wiki_search_open')
-    window.setTimeout(() => modalSearchRef.current?.focus(), 30)
   }
 
   useEffect(() => {
@@ -659,6 +637,40 @@ export function WikiShell({
     return suggestFallbackPages(source, SEARCH_PRIORITY, 3)
   }, [filteredPages.length, pages, query, searchPages])
 
+  const searchDialogResults = useMemo<WikiSearchResult[]>(
+    () =>
+      filteredPages.map((page) => ({
+        pageId: page.pageId,
+        title: page.title,
+        category: pageCategoryLabel(page),
+        status: searchPageStatus(page),
+        snippet: page.snippet
+      })),
+    [filteredPages]
+  )
+
+  const searchDialogFallbacks = useMemo<WikiSearchResult[]>(
+    () =>
+      fallbackPages.map((page) => ({
+        pageId: page.pageId,
+        title: page.title,
+        category: pageCategoryLabel(page),
+        status: searchPageStatus(page),
+        snippet: ''
+      })),
+    [fallbackPages]
+  )
+
+  const closeSearch = () => {
+    setSearchOpen(false)
+    setQuery('')
+  }
+
+  const navigateSearchResult = (pageId: string) => {
+    router.push(withBasePath(`/page/${pageId}/`))
+    closeSearch()
+  }
+
   useEffect(() => {
     const keyword = query.trim()
     if (!keyword || searchLoading || filteredPages.length) return
@@ -692,67 +704,6 @@ export function WikiShell({
   }, [query, filteredPages.length])
 
   useEffect(() => {
-    if (!searchOpen) return
-
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'ArrowDown') {
-        event.preventDefault()
-        setSelectedResult((value) =>
-          filteredPages.length ? (value + 1) % filteredPages.length : 0
-        )
-      }
-
-      if (event.key === 'ArrowUp') {
-        event.preventDefault()
-        setSelectedResult((value) =>
-          filteredPages.length
-            ? (value - 1 + filteredPages.length) % filteredPages.length
-            : 0
-        )
-      }
-
-      if (event.key === 'Enter' && filteredPages[selectedResult]) {
-        event.preventDefault()
-        router.push(
-          withBasePath(`/page/${filteredPages[selectedResult].pageId}/`)
-        )
-        setSearchOpen(false)
-        setQuery('')
-      }
-
-      if (event.key === 'Tab' && modalRef.current) {
-        const focusable = Array.from(
-          modalRef.current.querySelectorAll<HTMLElement>(
-            'input, button, a[href], [tabindex]:not([tabindex="-1"])'
-          )
-        ).filter((element) => !element.hasAttribute('disabled'))
-
-        if (!focusable.length) return
-        const first = focusable[0]
-        const last = focusable[focusable.length - 1]
-
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault()
-          last.focus()
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault()
-          first.focus()
-        }
-      }
-    }
-
-    window.addEventListener('keydown', onKeyDown)
-
-    return () => {
-      document.body.style.overflow = previousOverflow
-      window.removeEventListener('keydown', onKeyDown)
-    }
-  }, [filteredPages, router, searchOpen, selectedResult])
-
-  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null
       const isTyping =
@@ -772,7 +723,6 @@ export function WikiShell({
         setSearchOpen(false)
         setMobileTocOpen(false)
         setQuery('')
-        modalSearchRef.current?.blur()
       }
     }
 
@@ -1154,143 +1104,19 @@ export function WikiShell({
       )}
 
       {searchOpen && (
-        <div
-          className="search-modal-backdrop"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.currentTarget === event.target) setSearchOpen(false)
-          }}
-        >
-          <section
-            ref={modalRef}
-            className="search-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-label="위키 전체 검색"
-          >
-            <div className="search-modal-input" role="search">
-              <span>⌕</span>
-              <input
-                ref={modalSearchRef}
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="규칙, 빚, 채광, 강화 등 무엇이든 검색하세요"
-                aria-label="위키 전체 검색"
-                aria-controls="wiki-search-results"
-              />
-              <button
-                type="button"
-                aria-label="검색 닫기"
-                onClick={() => setSearchOpen(false)}
-              >
-                ESC
-              </button>
-            </div>
-
-            <div className="search-result-meta" aria-live="polite">
-              {searchLoading
-                ? '본문 검색 색인을 불러오는 중…'
-                : searchFailed
-                  ? '본문 색인을 불러오지 못해 제목 검색으로 표시합니다.'
-                  : query.trim()
-                    ? `${filteredPages.length}개의 검색 결과`
-                    : '추천 문서 · ↑↓ 선택 · Enter 이동'}
-            </div>
-
-            <div
-              className="search-modal-results"
-              id="wiki-search-results"
-              role="listbox"
-              aria-label="검색 결과"
-            >
-              {searchLoading && !searchPages && !searchFailed ? (
-                <div className="search-loading-list" aria-label="검색 색인 불러오는 중">
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <span className="search-loading-row" key={index}>
-                      <i />
-                      <b />
-                      <em />
-                    </span>
-                  ))}
-                </div>
-              ) : filteredPages.length ? (
-                filteredPages.map((page, index) => (
-                  <Link
-                    key={page.pageId}
-                    href={withBasePath(`/page/${page.pageId}/`)}
-                    prefetch={false}
-                    onClick={() => {
-                      setSearchOpen(false)
-                      setQuery('')
-                    }}
-                    className={`search-result-card ${
-                      selectedResult === index ? 'is-selected' : ''
-                    }`}
-                    data-category={pageCategoryLabel(page)}
-                    role="option"
-                    aria-selected={selectedResult === index}
-                    onMouseEnter={() => setSelectedResult(index)}
-                  >
-                    <span className="search-result-icon">
-                      {sectionIcon(page.title)}
-                    </span>
-                    <span>
-                      <span className="search-result-meta-row">
-                        <span className="search-result-category">
-                          {pageCategoryLabel(page)}
-                        </span>
-                        {searchPageStatus(page) === 'draft' && (
-                          <em className="search-draft-badge">작성 중</em>
-                        )}
-                        {searchPageStatus(page) === 'brief' && (
-                          <em className="search-brief-badge">간단 안내</em>
-                        )}
-                      </span>
-                      <strong>
-                        <HighlightedText text={page.title} query={query} />
-                      </strong>
-                      <small>
-                        {page.snippet ? (
-                          <HighlightedText text={page.snippet} query={query} />
-                        ) : (
-                          '상세 가이드 열기'
-                        )}
-                      </small>
-                    </span>
-                    <b>↗</b>
-                  </Link>
-                ))
-              ) : (
-                <div className="search-empty-state">
-                  <p className="search-empty">
-                    일치하는 문서를 찾지 못했습니다.
-                  </p>
-                  {fallbackPages.length > 0 && (
-                    <div className="search-fallback">
-                      <span>대신 많이 찾는 문서를 확인해보세요.</span>
-                      <div>
-                        {fallbackPages.map((page) => (
-                          <Link
-                            key={page.pageId}
-                            href={withBasePath(`/page/${page.pageId}/`)}
-                            onClick={() => {
-                              setSearchOpen(false)
-                              setQuery('')
-                            }}
-                          >
-                            <span aria-hidden="true">{sectionIcon(page.title)}</span>
-                            <strong>{page.title}</strong>
-                            <b>→</b>
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </section>
-        </div>
+        <WikiSearchDialog
+          query={query}
+          loading={searchLoading && !searchPages && !searchFailed}
+          failed={searchFailed}
+          results={searchDialogResults}
+          fallbackPages={searchDialogFallbacks}
+          selectedIndex={selectedResult}
+          onQueryChange={setQuery}
+          onSelectedIndexChange={setSelectedResult}
+          onNavigate={navigateSearchResult}
+          onClose={closeSearch}
+        />
+      )}
       )}
     </div>
   )
