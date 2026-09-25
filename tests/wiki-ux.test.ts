@@ -6,6 +6,7 @@ import {
   extractKoreanInitials,
   matchesKoreanInitials,
   relativeUpdateLabel,
+  suggestFallbackPages,
   updateRecentPageIds
 } from '../lib/wiki-ux.ts'
 
@@ -48,4 +49,24 @@ test('formats recent update dates relative to a supplied now', () => {
   assert.equal(relativeUpdateLabel('2026-09-25T01:00:00+09:00', now), '오늘')
   assert.equal(relativeUpdateLabel('2026-09-24T09:00:00+09:00', now), '어제')
   assert.equal(relativeUpdateLabel('2026-09-22T09:00:00+09:00', now), '3일 전')
+})
+
+
+test('suggests ready core guides when search has no direct result', () => {
+  const pages = [
+    { pageId: 'draft', title: '장비강화', searchText: '위키 업데이트 예정입니다.' },
+    { pageId: 'mining', title: '채광', searchText: '가'.repeat(120) },
+    { pageId: 'rules', title: '서버규칙', searchText: '가'.repeat(300) },
+    { pageId: 'api', title: 'API', searchText: '가'.repeat(300) },
+    { pageId: 'story', title: '스토리', searchText: '가'.repeat(300) }
+  ]
+
+  assert.deepEqual(
+    suggestFallbackPages(
+      pages,
+      ['서버규칙', '기초설정(뉴비필독)', '채광', '스토리', 'API'],
+      3
+    ).map((page) => page.pageId),
+    ['rules', 'mining', 'story']
+  )
 })
