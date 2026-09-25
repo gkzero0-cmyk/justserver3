@@ -216,10 +216,7 @@ export async function renderWikiPage(pageId: string) {
   const rawContentStatus = currentPage
     ? wikiContentStatus(currentPage)
     : 'detailed'
-  const contentStatus =
-    hasVerifiedFaq && rawContentStatus === 'draft'
-      ? 'brief'
-      : rawContentStatus
+  const contentStatus = hasVerifiedFaq ? 'detailed' : rawContentStatus
   const draft = contentStatus === 'draft'
   const readingQuiz =
     currentPage && !draft && !hasVerifiedFaq
@@ -296,7 +293,10 @@ export async function renderWikiPage(pageId: string) {
       pages={navigationPages.map((page) => ({
         pageId: page.pageId,
         title: page.title,
-        status: wikiContentStatus(page),
+        status:
+          page.title === '많이 물어보는 것'
+            ? 'detailed'
+            : wikiContentStatus(page),
         category: categoryTitleForPage(page.title)
       }))}
       brandLogo={brandLogo}
