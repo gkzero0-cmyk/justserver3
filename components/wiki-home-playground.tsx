@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import type { WikiContentStatus } from '@/lib/wiki-content-status'
 
@@ -44,6 +44,32 @@ function PlaygroundLoading({ label }: { label: string }) {
 export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
   const [open, setOpen] = useState(false)
   const readyCount = pages.filter((page) => page.status !== 'draft').length
+
+  useEffect(() => {
+    const openFromHash = () => {
+      const hash = window.location.hash
+      if (
+        hash === '#wiki-explore' ||
+        hash === '#wiki-survival-log-title' ||
+        hash === '#reading-explorer-title' ||
+        hash === '#wiki-adventure-title'
+      ) {
+        setOpen(true)
+        if (hash !== '#wiki-explore') {
+          window.setTimeout(() => {
+            document.querySelector(hash)?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            })
+          }, 120)
+        }
+      }
+    }
+
+    openFromHash()
+    window.addEventListener('hashchange', openFromHash)
+    return () => window.removeEventListener('hashchange', openFromHash)
+  }, [])
 
   return (
     <section
