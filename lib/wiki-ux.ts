@@ -1,3 +1,5 @@
+import { wikiGuidePath } from '@/lib/wiki-routes'
+
 export type WikiContentStatus = 'draft' | 'brief' | 'detailed'
 
 const PLACEHOLDER_PATTERN =
@@ -176,7 +178,7 @@ export function buildWikiFeedbackUrl({
     '',
     `- 문서: ${title}`,
     `- 문서 ID: ${normalizedPageId}`,
-    `- 문서 주소: https://justserver3.vercel.app/page/${normalizedPageId}`,
+    `- 문서 주소: https://justserver3.vercel.app${wikiGuidePath({ pageId: normalizedPageId, title })}`,
     '',
     '### 확인이 필요한 내용',
     '',
