@@ -39,9 +39,15 @@ type SearchPage = WikiPageLink & {
   searchText?: string
 }
 
-const SEARCH_INDEX_URL = withBasePath(
-  '/api/notion-webhook?resource=search-index'
-)
+const SEARCH_INDEX_URLS = [
+  withBasePath('/notion-assets/search-index.json'),
+  withBasePath('/api/notion-webhook?resource=search-index')
+]
+const CORE_PREFETCH_TITLES = new Set([
+  '서버규칙',
+  '기초설정(뉴비필독)',
+  '채광'
+])
 const RECENT_PAGES_KEY = 'justserver3-recent-pages-v1'
 
 function categoryLabel(title: string) {
@@ -493,6 +499,36 @@ export function WikiShell({
   }
 
   useEffect(() => {
+    const connection = (
+      navigator as Navigator & {
+        connection?: { saveData?: boolean; effectiveType?: string }
+      }
+    ).connection
+
+    if (
+      connection?.saveData ||
+      connection?.effectiveType === 'slow-2g' ||
+      connection?.effectiveType === '2g'
+    ) {
+      return
+    }
+
+    const timer = window.setTimeout(() => {
+      for (const page of pages) {
+        if (
+          page.status !== 'draft' &&
+          CORE_PREFETCH_TITLES.has(page.title) &&
+          page.pageId.replaceAll('-', '') !== currentPageId?.replaceAll('-', '')
+        ) {
+          router.prefetch(withBasePath(`/page/${page.pageId}/`))
+        }
+      }
+    }, 500)
+
+    return () => window.clearTimeout(timer)
+  }, [currentPageId, pages, router])
+
+  useEffect(() => {
     if (!searchOpen || searchPages) return
 
     let cancelled = false
@@ -502,12 +538,20 @@ export function WikiShell({
       setSearchFailed(false)
 
       try {
-        const response = await fetch(SEARCH_INDEX_URL)
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        let data: { pages?: SearchPage[] } | null = null
 
-        const data = (await response.json()) as {
-          pages?: SearchPage[]
+        for (const url of SEARCH_INDEX_URLS) {
+          try {
+            const response = await fetch(url, { cache: 'no-store' })
+            if (!response.ok) continue
+            data = (await response.json()) as { pages?: SearchPage[] }
+            break
+          } catch {
+            // Try the live API fallback when the static index is unavailable.
+          }
         }
+
+        if (!data) throw new Error('search-index-unavailable')
 
         if (!cancelled) {
           const pageMeta = new Map(
