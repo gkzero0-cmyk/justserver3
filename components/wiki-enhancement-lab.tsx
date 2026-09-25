@@ -28,6 +28,7 @@ type EnhancementStats = {
   destroyed: number
   best: number
   maxWins: number
+  broken: boolean
 }
 
 type EnhancementRule = {
@@ -45,7 +46,8 @@ const DEFAULT_STATS: EnhancementStats = {
   downgrades: 0,
   destroyed: 0,
   best: 0,
-  maxWins: 0
+  maxWins: 0,
+  broken: false
 }
 
 const RULES: EnhancementRule[] = [
@@ -77,7 +79,8 @@ function normalizeStats(value: unknown): EnhancementStats {
     downgrades: Math.max(0, Number(raw.downgrades) || 0),
     destroyed: Math.max(0, Number(raw.destroyed) || 0),
     best: Math.max(0, Math.min(15, Number(raw.best) || 0)),
-    maxWins: Math.max(0, Number(raw.maxWins) || 0)
+    maxWins: Math.max(0, Number(raw.maxWins) || 0),
+    broken: Boolean(raw.broken)
   }
 }
 
@@ -246,6 +249,7 @@ export function WikiEnhancementLab({
       readWikiStateValue('enhancementLab', DEFAULT_STATS)
     )
     setStats(saved)
+    setBroken(saved.broken)
     setReady(true)
     return () => {
       if (timerRef.current) window.clearTimeout(timerRef.current)
@@ -316,7 +320,8 @@ export function WikiEnhancementLab({
         destroyed: stats.destroyed + (nextOutcome === 'destroy' ? 1 : 0),
         best: Math.max(stats.best, nextOutcome === 'destroy' ? from : to),
         maxWins: stats.maxWins + (nextOutcome === 'max' ? 1 : 0),
-        level: nextOutcome === 'destroy' ? from : to
+        level: nextOutcome === 'destroy' ? from : to,
+        broken: nextOutcome === 'destroy'
       }
 
       persist(next)
@@ -344,7 +349,7 @@ export function WikiEnhancementLab({
   }
 
   const replaceBrokenPickaxe = () => {
-    const next = { ...stats, level: 0 }
+    const next = { ...stats, level: 0, broken: false }
     persist(next)
     setBroken(false)
     setOutcome(null)
@@ -355,7 +360,7 @@ export function WikiEnhancementLab({
   }
 
   const startNewRun = () => {
-    const next = { ...stats, level: 0 }
+    const next = { ...stats, level: 0, broken: false }
     persist(next)
     setBroken(false)
     setOutcome(null)
