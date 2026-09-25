@@ -12,6 +12,7 @@ import {
 import { iconForTitle } from '@/lib/wiki-taxonomy'
 import type { WikiContentStatus } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
+import { readWikiStringArray } from '@/lib/wiki-client-state'
 
 type ExplorerPage = {
   pageId: string
@@ -20,19 +21,8 @@ type ExplorerPage = {
   status?: WikiContentStatus
 }
 
-const READ_PAGES_KEY = 'justserver3-read-pages-v1'
-
 function readStoredPages() {
-  try {
-    const parsed = JSON.parse(
-      window.localStorage.getItem(READ_PAGES_KEY) || '[]'
-    )
-    return Array.isArray(parsed)
-      ? parsed.filter((value): value is string => typeof value === 'string')
-      : []
-  } catch {
-    return []
-  }
+  return readWikiStringArray('readPages')
 }
 
 function normalize(value: string) {
