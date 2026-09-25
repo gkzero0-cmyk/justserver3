@@ -6066,6 +6066,7 @@ html[data-theme="light"] .wiki-inline-treasure {
 }
 
 .boss-visual {
+  position: relative;
   min-height: 270px;
   display: grid;
   align-content: center;
