@@ -3,7 +3,7 @@ name: Sync Notion assets
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 */6 * * *'
+    - cron: '*/5 * * * *'
   push:
     branches: [main]
     paths:
