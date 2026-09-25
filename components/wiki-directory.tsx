@@ -1,4 +1,5 @@
 import type { NotionIndexPage } from '@/lib/notion-index'
+import { isDraftPage } from '@/lib/wiki-content-status'
 import {
   deriveOptimizedVariant,
   resolveCachedAsset,
@@ -156,11 +157,17 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
               {group.pages.map((page) => {
                 const media = mediaById.get(page.pageId) ?? null
                 const resolvedMedia = media ? resolveCachedAsset(media) : null
-                const badge = badgeForTitle(page.title)
-                const featured = FEATURED.has(page.title)
+                const draft = isDraftPage(page)
+                const badge = draft ? '작성 중' : badgeForTitle(page.title)
+                const featured = FEATURED.has(page.title) && !draft
 
                 return (
-                  <a key={page.pageId} href={withBasePath(`/page/${page.pageId}/`)} className={`directory-card ${featured ? 'is-featured' : ''}`}>
+                  <a
+                    key={page.pageId}
+                    href={withBasePath(`/page/${page.pageId}/`)}
+                    className={`directory-card ${featured ? 'is-featured' : ''} ${draft ? 'is-draft' : ''}`}
+                    data-status={draft ? 'draft' : 'ready'}
+                  >
                     <span className={`directory-media ${media ? 'has-image' : 'is-icon'}`}>
                       {resolvedMedia ? (
                         <img src={resolvedMedia} alt="" aria-hidden="true" loading="lazy" decoding="async" width="256" height="256" />
@@ -174,7 +181,14 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                         <strong>{page.title}</strong>
                         {badge && <em>{badge}</em>}
                       </span>
-                      <small>{DESCRIPTION_BY_TITLE[page.title] || (featured ? '처음이라면 꼭 확인하세요' : '상세 가이드 열기')}</small>
+                      <small>
+                        {draft
+                          ? '내용을 정리하고 있습니다.'
+                          : DESCRIPTION_BY_TITLE[page.title] ||
+                            (featured
+                              ? '처음이라면 꼭 확인하세요'
+                              : '상세 가이드 열기')}
+                      </small>
                     </span>
 
                     <span className="directory-arrow">↗</span>
