@@ -19,6 +19,22 @@ type EnhancementPage = {
 
 type EnhancementOutcome = 'success' | 'fail' | 'down' | 'destroy' | 'max'
 
+type EnhancementLogEntry = {
+  id: number
+  outcome: EnhancementOutcome
+  from: number
+  to: number
+}
+
+type EnhancementRun = {
+  attempts: number
+  successes: number
+  failures: number
+  downgrades: number
+  destroyed: number
+  best: number
+}
+
 type EnhancementStats = {
   level: number
   attempts: number
@@ -29,6 +45,8 @@ type EnhancementStats = {
   best: number
   maxWins: number
   broken: boolean
+  history: EnhancementLogEntry[]
+  run: EnhancementRun
 }
 
 type EnhancementRule = {
@@ -47,7 +65,16 @@ const DEFAULT_STATS: EnhancementStats = {
   destroyed: 0,
   best: 0,
   maxWins: 0,
-  broken: false
+  broken: false,
+  history: [],
+  run: {
+    attempts: 0,
+    successes: 0,
+    failures: 0,
+    downgrades: 0,
+    destroyed: 0,
+    best: 0
+  }
 }
 
 const RULES: EnhancementRule[] = [
@@ -80,7 +107,45 @@ function normalizeStats(value: unknown): EnhancementStats {
     destroyed: Math.max(0, Number(raw.destroyed) || 0),
     best: Math.max(0, Math.min(15, Number(raw.best) || 0)),
     maxWins: Math.max(0, Number(raw.maxWins) || 0),
-    broken: Boolean(raw.broken)
+    broken: Boolean(raw.broken),
+    history: Array.isArray(raw.history)
+      ? raw.history
+          .filter((entry): entry is EnhancementLogEntry => {
+            if (!entry || typeof entry !== 'object') return false
+            const value = entry as Partial<EnhancementLogEntry>
+            return (
+              typeof value.id === 'number' &&
+              ['success', 'fail', 'down', 'destroy', 'max'].includes(
+                String(value.outcome)
+              )
+            )
+          })
+          .slice(0, 8)
+          .map((entry) => ({
+            id: Number(entry.id),
+            outcome: entry.outcome,
+            from: Math.max(0, Math.min(15, Number(entry.from) || 0)),
+            to: Math.max(0, Math.min(15, Number(entry.to) || 0))
+          }))
+      : [],
+    run:
+      raw.run && typeof raw.run === 'object'
+        ? {
+            attempts: Math.max(0, Number(raw.run.attempts) || 0),
+            successes: Math.max(0, Number(raw.run.successes) || 0),
+            failures: Math.max(0, Number(raw.run.failures) || 0),
+            downgrades: Math.max(0, Number(raw.run.downgrades) || 0),
+            destroyed: Math.max(0, Number(raw.run.destroyed) || 0),
+            best: Math.max(0, Math.min(15, Number(raw.run.best) || 0))
+          }
+        : {
+            attempts: 0,
+            successes: 0,
+            failures: 0,
+            downgrades: 0,
+            destroyed: 0,
+            best: Math.max(0, Math.min(15, Number(raw.level) || 0))
+          }
   }
 }
 
@@ -101,6 +166,22 @@ function resultMessage(outcome: EnhancementOutcome, from: number, to: number) {
   return '강화 실패 · +' + from + ' 유지'
 }
 
+function outcomeLabel(outcome: EnhancementOutcome) {
+  if (outcome === 'success') return '성공'
+  if (outcome === 'max') return '+15 달성'
+  if (outcome === 'down') return '하락'
+  if (outcome === 'destroy') return '파괴'
+  return '실패'
+}
+
+function attemptDelay(level: number) {
+  if (level >= 14) return 1450
+  if (level >= 12) return 1200
+  if (level >= 8) return 980
+  if (level >= 5) return 800
+  return 650
+}
+
 function randomPercent() {
   const values = new Uint32Array(1)
   window.crypto.getRandomValues(values)
@@ -108,7 +189,8 @@ function randomPercent() {
 }
 
 function playTone(
-  kind: 'charge' | 'success' | 'fail' | 'down' | 'destroy' | 'max'
+  kind: 'charge' | 'success' | 'fail' | 'down' | 'destroy' | 'max',
+  level = 0
 ) {
   try {
     const AudioContextClass = window.AudioContext
@@ -116,6 +198,7 @@ function playTone(
 
     const ctx = new AudioContextClass()
     const now = ctx.currentTime
+    const intensity = Math.max(0, Math.min(15, level))
     const master = ctx.createGain()
     const compressor = ctx.createDynamicsCompressor()
 
@@ -207,9 +290,18 @@ function playTone(
     }
 
     if (kind === 'charge') {
-      anvil(118, 0, 0.034, 0.28)
+      anvil(118 - Math.min(22, intensity), 0, 0.034, 0.28)
       tone(72, 0.03, 0.5, 0.026, 'sine', 112)
       noise(0.08, 0.26, 0.011, 'lowpass', 650)
+      if (intensity >= 8) {
+        tone(54, 0.1, 0.62, 0.016, 'sine', 68)
+      }
+      if (intensity >= 12) {
+        noise(0.16, 0.48, 0.01, 'lowpass', 420)
+      }
+      if (intensity >= 14) {
+        tone(42, 0.26, 0.74, 0.017, 'triangle', 36)
+      }
     } else if (kind === 'success') {
       anvil(156, 0, 0.05, 0.48)
       tone(228, 0.06, 0.42, 0.026, 'sine')
@@ -362,7 +454,7 @@ export function WikiEnhancementLab({
     setAnimating(true)
     setOutcome(null)
     setMessage('강화 에너지를 주입하는 중…')
-    if (soundOn) playTone('charge')
+    if (soundOn) playTone('charge', from)
     vibrate(18)
 
     track('wiki_enhancement_attempt', {
@@ -371,6 +463,13 @@ export function WikiEnhancementLab({
     })
 
     timerRef.current = window.setTimeout(() => {
+      const historyEntry: EnhancementLogEntry = {
+        id: stats.attempts + 1,
+        outcome: nextOutcome,
+        from,
+        to
+      }
+
       const next: EnhancementStats = {
         ...stats,
         attempts: stats.attempts + 1,
@@ -383,7 +482,23 @@ export function WikiEnhancementLab({
         best: Math.max(stats.best, nextOutcome === 'destroy' ? from : to),
         maxWins: stats.maxWins + (nextOutcome === 'max' ? 1 : 0),
         level: nextOutcome === 'destroy' ? from : to,
-        broken: nextOutcome === 'destroy'
+        broken: nextOutcome === 'destroy',
+        history: [historyEntry, ...stats.history].slice(0, 8),
+        run: {
+          attempts: stats.run.attempts + 1,
+          successes:
+            stats.run.successes +
+            (nextOutcome === 'success' || nextOutcome === 'max' ? 1 : 0),
+          failures: stats.run.failures + (nextOutcome === 'fail' ? 1 : 0),
+          downgrades:
+            stats.run.downgrades + (nextOutcome === 'down' ? 1 : 0),
+          destroyed:
+            stats.run.destroyed + (nextOutcome === 'destroy' ? 1 : 0),
+          best: Math.max(
+            stats.run.best,
+            nextOutcome === 'destroy' ? from : to
+          )
+        }
       }
 
       persist(next)
@@ -400,18 +515,30 @@ export function WikiEnhancementLab({
         vibrate(nextOutcome === 'max' ? [25, 20, 25, 20, 70] : 35)
       }
 
-      if (soundOn) playTone(nextOutcome)
+      if (soundOn) playTone(nextOutcome, from)
 
       track('wiki_enhancement_result', {
         result: nextOutcome,
         from_level: String(from),
         to_level: String(to)
       })
-    }, 920)
+    }, attemptDelay(from))
   }
 
   const replaceBrokenPickaxe = () => {
-    const next = { ...stats, level: 0, broken: false }
+    const next = {
+      ...stats,
+      level: 0,
+      broken: false,
+      run: {
+        attempts: 0,
+        successes: 0,
+        failures: 0,
+        downgrades: 0,
+        destroyed: 0,
+        best: 0
+      }
+    }
     persist(next)
     setBroken(false)
     setOutcome(null)
@@ -422,7 +549,19 @@ export function WikiEnhancementLab({
   }
 
   const startNewRun = () => {
-    const next = { ...stats, level: 0, broken: false }
+    const next = {
+      ...stats,
+      level: 0,
+      broken: false,
+      run: {
+        attempts: 0,
+        successes: 0,
+        failures: 0,
+        downgrades: 0,
+        destroyed: 0,
+        best: 0
+      }
+    }
     persist(next)
     setBroken(false)
     setOutcome(null)
@@ -460,6 +599,8 @@ export function WikiEnhancementLab({
         <div
           className="enhancement-forge"
           data-tier={glowTier}
+          data-risk={danger.tone}
+          data-final-attempt={stats.level === 14 ? 'true' : 'false'}
           data-state={
             broken
               ? 'destroy'
@@ -474,6 +615,13 @@ export function WikiEnhancementLab({
             <span className="enhancement-level-label">강화 단계</span>
             <strong>+{stats.level}</strong>
             <span className="enhancement-item-name">다이아몬드 곡괭이</span>
+          </div>
+
+          <div className="enhancement-mobile-odds" aria-label="현재 강화 확률">
+            <span><small>성공</small><strong>{successRateLabel}</strong></span>
+            <span><small>실패</small><strong>{rule.fail}%</strong></span>
+            <span><small>하락</small><strong>{rule.down}%</strong></span>
+            <span><small>파괴</small><strong>{rule.destroy}%</strong></span>
           </div>
 
           <div className="enhancement-item-stage">
@@ -492,6 +640,14 @@ export function WikiEnhancementLab({
                       level={stats.level}
                       broken={broken}
                     />
+                    {!broken && stats.level >= 5 && (
+                      <span className="enhancement-pickaxe-runes" aria-hidden="true">
+                        <i />
+                        <i />
+                        <i />
+                        <i />
+                      </span>
+                    )}
                   </div>
                   <span
                     className="enhancement-tier-mark"
@@ -583,6 +739,26 @@ export function WikiEnhancementLab({
             <strong>{message}</strong>
           </div>
 
+          {broken && repairPage ? (
+            <Link
+              className="enhancement-context-guide is-repair"
+              href={withBasePath('/page/' + repairPage.pageId + '/')}
+              data-wiki-event="wiki_enhancement_context_guide"
+              data-wiki-target="장비수리"
+            >
+              장비가 파괴됐어요 · 장비수리 가이드 보기 <b>→</b>
+            </Link>
+          ) : stats.level >= 8 && enhancementPage ? (
+            <Link
+              className="enhancement-context-guide"
+              href={withBasePath('/page/' + enhancementPage.pageId + '/')}
+              data-wiki-event="wiki_enhancement_context_guide"
+              data-wiki-target="장비강화"
+            >
+              고강화 구간입니다 · 장비강화 가이드 보기 <b>→</b>
+            </Link>
+          ) : null}
+
           <div className="enhancement-action-zone">
             {broken ? (
               <button
@@ -606,14 +782,55 @@ export function WikiEnhancementLab({
               <button
                 type="button"
                 className="enhancement-primary"
+                data-risk={danger.tone}
                 disabled={!ready || animating}
                 onClick={enhance}
               >
-                {animating ? '강화 중…' : '강화하기'}
+                {animating
+                  ? stats.level >= 12
+                    ? '판정 중…'
+                    : '강화 중…'
+                  : stats.level === 14
+                    ? '최종 강화 도전'
+                    : rule.destroy > 0
+                      ? '파괴 가능 · 강화하기'
+                      : stats.level >= 5
+                        ? '주의 · 강화하기'
+                        : '강화하기'}
                 <span>
                   +{stats.level} → +{stats.level + 1}
+                  {stats.level === 14 ? ' · +15 도전' : ''}
                 </span>
               </button>
+            )}
+          </div>
+
+          <div className="enhancement-recent-log">
+            <div className="enhancement-log-head">
+              <strong>최근 강화 기록</strong>
+              <span>최근 {Math.min(stats.history.length, 5)}회</span>
+            </div>
+            {stats.history.length ? (
+              <div className="enhancement-log-list">
+                {stats.history.slice(0, 5).map((entry) => (
+                  <span
+                    key={entry.id}
+                    data-outcome={entry.outcome}
+                    title={resultMessage(entry.outcome, entry.from, entry.to)}
+                  >
+                    <b>{outcomeLabel(entry.outcome)}</b>
+                    <small>
+                      {entry.outcome === 'destroy'
+                        ? '+' + entry.from + ' → 파괴'
+                        : entry.outcome === 'fail'
+                          ? '+' + entry.from + ' 유지'
+                          : '+' + entry.from + ' → +' + entry.to}
+                    </small>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p>첫 강화 결과부터 이곳에 기록됩니다.</p>
             )}
           </div>
         </div>
@@ -667,14 +884,30 @@ export function WikiEnhancementLab({
             </p>
           </section>
 
-          <section className="enhancement-records">
+          <section className="enhancement-run">
             <div className="enhancement-panel-title">
               <div>
-                <small>내 기록</small>
-                <strong>강화 기록</strong>
+                <small>이번 도전</small>
+                <strong>현재 곡괭이 기록</strong>
+              </div>
+              <b>최고 +{stats.run.best}</b>
+            </div>
+            <div className="enhancement-run-strip">
+              <span><small>시도</small><strong>{stats.run.attempts}</strong></span>
+              <span><small>성공</small><strong>{stats.run.successes}</strong></span>
+              <span><small>하락</small><strong>{stats.run.downgrades}</strong></span>
+              <span><small>파괴</small><strong>{stats.run.destroyed}</strong></span>
+            </div>
+          </section>
+
+          <details className="enhancement-records">
+            <summary className="enhancement-panel-title">
+              <div>
+                <small>전체 기록</small>
+                <strong>누적 강화 기록</strong>
               </div>
               <b>최고 +{stats.best}</b>
-            </div>
+            </summary>
 
             <div className="enhancement-record-grid">
               <span>
@@ -702,15 +935,16 @@ export function WikiEnhancementLab({
                 <strong>{stats.failures}</strong>
               </span>
             </div>
-          </section>
+          </details>
 
-          <section className="enhancement-links">
-            <div className="enhancement-panel-title">
+          <details className="enhancement-links">
+            <summary className="enhancement-panel-title">
               <div>
                 <small>관련 문서</small>
-                <strong>관련 가이드</strong>
+                <strong>가이드 펼쳐보기</strong>
               </div>
-            </div>
+              <b>+</b>
+            </summary>
             <div>
               {enhancementPage && (
                 <Link
@@ -752,7 +986,7 @@ export function WikiEnhancementLab({
                 </Link>
               )}
             </div>
-          </section>
+          </details>
         </aside>
       </div>
     </section>
