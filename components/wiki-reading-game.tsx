@@ -11,21 +11,11 @@ import {
   seoulDateKey
 } from '@/lib/wiki-survival'
 import { withBasePath } from '@/lib/url-utils'
-
-const READ_PAGES_KEY = 'justserver3-read-pages-v1'
-const READING_QUIZZES_KEY = 'justserver3-reading-quizzes-v1'
-const SURVIVAL_RECORD_KEY = 'justserver3-survival-record-v1'
-
-function readStringArray(key: string) {
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(key) || '[]')
-    return Array.isArray(parsed)
-      ? parsed.filter((value): value is string => typeof value === 'string')
-      : []
-  } catch {
-    return []
-  }
-}
+import {
+  readWikiStateValue,
+  readWikiStringArray,
+  writeWikiStateValue
+} from '@/lib/wiki-client-state'
 
 function normalized(value: string) {
   return value.replaceAll('-', '')
@@ -49,12 +39,12 @@ export function WikiReadingQuiz({
   useEffect(() => {
     const refresh = () => {
       setReadComplete(
-        readStringArray(READ_PAGES_KEY).some(
+        readWikiStringArray('readPages').some(
           (value) => normalized(value) === normalizedPageId
         )
       )
       setQuizComplete(
-        readStringArray(READING_QUIZZES_KEY).some(
+        readWikiStringArray('readingQuizzes').some(
           (value) => normalized(value) === normalizedPageId
         )
       )
@@ -85,19 +75,18 @@ export function WikiReadingQuiz({
       return
     }
 
-    const completed = readStringArray(READING_QUIZZES_KEY)
+    const completed = readWikiStringArray('readingQuizzes')
     if (!completed.some((value) => normalized(value) === normalizedPageId)) {
-      window.localStorage.setItem(
-        READING_QUIZZES_KEY,
-        JSON.stringify([...completed, normalizedPageId])
+      writeWikiStateValue(
+        'readingQuizzes',
+        [...completed, normalizedPageId],
+        'justserver3:reading-quiz'
       )
 
       let record
       try {
         record = normalizeSurvivalRecord(
-          JSON.parse(
-            window.localStorage.getItem(SURVIVAL_RECORD_KEY) || 'null'
-          )
+          readWikiStateValue('survivalRecord', null)
         )
       } catch {
         record = normalizeSurvivalRecord(null)
@@ -109,9 +98,11 @@ export function WikiReadingQuiz({
         'reading-quiz',
         normalizedPageId
       )
-      window.localStorage.setItem(SURVIVAL_RECORD_KEY, JSON.stringify(next))
-      window.dispatchEvent(new Event('justserver3:survival-record'))
-      window.dispatchEvent(new Event('justserver3:reading-quiz'))
+      writeWikiStateValue(
+        'survivalRecord',
+        next,
+        'justserver3:survival-record'
+      )
     }
 
     setQuizComplete(true)
@@ -200,7 +191,7 @@ export function WikiNextExploration({
   const [readIds, setReadIds] = useState<string[]>([])
 
   useEffect(() => {
-    const refresh = () => setReadIds(readStringArray(READ_PAGES_KEY))
+    const refresh = () => setReadIds(readWikiStringArray('readPages'))
     refresh()
     window.addEventListener('storage', refresh)
     window.addEventListener('justserver3:read-pages', refresh)
