@@ -8233,3 +8233,512 @@ html[data-theme="light"] .verified-faq-answer p {
     gap: 4px;
   }
 }
+
+
+/* === 2026-09-26 intelligence and history === */
+.wiki-change-history {
+  margin: 10px 0 18px;
+  border: 1px solid rgba(var(--gold-rgb), .11);
+  border-radius: 13px;
+  background: rgba(255,255,255,.012);
+  overflow: hidden;
+}
+
+.wiki-change-history > summary {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 13px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.wiki-change-history > summary::-webkit-details-marker {
+  display: none;
+}
+
+.wiki-change-history > summary > span {
+  display: grid;
+  gap: 1px;
+}
+
+.wiki-change-history > summary small {
+  color: var(--gold);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.wiki-change-history > summary strong {
+  color: #c9bbb4;
+  font-size: 11px;
+}
+
+.wiki-change-history > summary b {
+  min-width: 24px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(var(--gold-rgb), .07);
+  color: #ac9270;
+  font-size: 9px;
+  text-align: center;
+}
+
+.wiki-change-history-list {
+  display: grid;
+  border-top: 1px solid rgba(255,255,255,.04);
+}
+
+.wiki-change-history-list article {
+  display: grid;
+  grid-template-columns: 88px minmax(0,1fr);
+  gap: 12px;
+  padding: 11px 13px;
+  border-bottom: 1px solid rgba(255,255,255,.035);
+}
+
+.wiki-change-history-list article:last-child {
+  border-bottom: 0;
+}
+
+.wiki-change-history-list time {
+  color: #746761;
+  font-size: 9px;
+}
+
+.wiki-change-history-list article > div {
+  display: grid;
+  gap: 6px;
+}
+
+.wiki-change-history-list article strong {
+  color: #bcaea7;
+  font-size: 10px;
+}
+
+.wiki-change-history-list p {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 56px minmax(0,1fr);
+  gap: 7px;
+  color: #94857d;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.wiki-change-history-list p span {
+  color: #6f625c;
+  font-weight: 800;
+}
+
+.wiki-change-history-list p.is-added span {
+  color: #8fa98d;
+}
+
+.wiki-change-history-list p.is-removed {
+  opacity: .72;
+}
+
+.since-visit {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0 20px;
+  padding: 15px;
+  border: 1px solid rgba(var(--accent-rgb), .13);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 0 0, rgba(var(--accent-rgb), .055), transparent 34%),
+    rgba(255,255,255,.012);
+}
+
+.since-visit-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.since-visit-head p {
+  margin: 0 0 2px;
+  color: #a9817a;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.since-visit-head h2 {
+  margin: 0;
+  color: #d2c5be;
+  font-size: 16px;
+}
+
+.since-visit-head > strong {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(var(--accent-rgb), .075);
+  color: #b98c84;
+  font-size: 9px;
+}
+
+.since-visit-list {
+  display: grid;
+  gap: 5px;
+}
+
+.since-visit-list a {
+  display: grid;
+  grid-template-columns: 120px minmax(0,1fr) 18px;
+  align-items: center;
+  gap: 9px;
+  min-height: 43px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 10px;
+  background: rgba(255,255,255,.012);
+  color: inherit;
+  text-decoration: none;
+}
+
+.since-visit-list a strong {
+  color: #baa9a1;
+  font-size: 10px;
+}
+
+.since-visit-list a span {
+  min-width: 0;
+  overflow: hidden;
+  color: #82746d;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.since-visit-list a b {
+  color: #8f7b72;
+}
+
+.mobile-quick-rules {
+  display: grid;
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid rgba(var(--gold-rgb), .12);
+  border-radius: 13px;
+  background: rgba(var(--gold-rgb), .025);
+}
+
+.mobile-quick-rules-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mobile-quick-rules-head strong {
+  color: #bcaea7;
+  font-size: 10px;
+}
+
+.mobile-quick-rules-head a {
+  color: #a78b66;
+  font-size: 9px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.mobile-quick-rule-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 5px;
+}
+
+.mobile-quick-rule-grid article {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 3px;
+  padding: 8px;
+  border-radius: 9px;
+  background: rgba(0,0,0,.13);
+}
+
+.mobile-quick-rule-grid small {
+  color: #81736c;
+  font-size: 8px;
+  line-height: 1.35;
+}
+
+.mobile-quick-rule-grid strong {
+  color: #c5b7af;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.status-intelligence {
+  display: grid;
+  gap: 13px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 15px;
+  background: rgba(255,255,255,.012);
+}
+
+.status-topic-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0,1fr));
+  gap: 7px;
+}
+
+.status-topic-grid article {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 24px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 10px;
+  background: rgba(0,0,0,.08);
+}
+
+.status-topic-grid article > span {
+  color: #635852;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.status-topic-grid article > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.status-topic-grid article strong {
+  color: #b9aaa2;
+  font-size: 9px;
+}
+
+.status-topic-grid article small {
+  color: #70635d;
+  font-size: 8px;
+}
+
+.status-topic-grid article > b {
+  color: #b39670;
+  font-size: 12px;
+}
+
+.status-intelligence-note {
+  margin: 0;
+  color: #746760;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.status-intelligence-note code {
+  color: #a58b79;
+}
+
+.status-review-queue {
+  display: grid;
+  gap: 5px;
+}
+
+.status-review-queue article {
+  display: grid;
+  grid-template-columns: 72px 150px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,.04);
+  border-radius: 9px;
+  background: rgba(255,255,255,.01);
+}
+
+.status-review-queue article > span {
+  width: max-content;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(var(--gold-rgb), .065);
+  color: #9f8768;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.status-review-queue article[data-kind="faq-candidate"] > span {
+  background: rgba(var(--accent-rgb), .07);
+  color: #a47d78;
+}
+
+.status-review-queue article > div {
+  display: contents;
+}
+
+.status-review-queue strong {
+  color: #a99a93;
+  font-size: 9px;
+}
+
+.status-review-queue small {
+  min-width: 0;
+  overflow: hidden;
+  color: #71645e;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-review-queue a {
+  color: #99836f;
+  font-size: 8px;
+  text-decoration: none;
+}
+
+.status-faq-candidates {
+  border-top: 1px solid rgba(255,255,255,.04);
+  padding-top: 8px;
+}
+
+.status-faq-candidates > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  list-style: none;
+}
+
+.status-faq-candidates > summary::-webkit-details-marker {
+  display: none;
+}
+
+.status-faq-candidates > summary strong {
+  color: #9f9089;
+  font-size: 9px;
+}
+
+.status-faq-candidates > summary span {
+  color: #73645e;
+  font-size: 8px;
+}
+
+.status-faq-candidates > div {
+  display: grid;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.status-faq-candidates a {
+  display: grid;
+  grid-template-columns: 150px minmax(0,1fr);
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.012);
+  color: inherit;
+  text-decoration: none;
+}
+
+.status-faq-candidates a > span {
+  display: grid;
+  gap: 1px;
+}
+
+.status-faq-candidates a strong {
+  color: #9f9089;
+  font-size: 9px;
+}
+
+.status-faq-candidates a small {
+  color: #665a55;
+  font-size: 8px;
+}
+
+.status-faq-candidates a b {
+  min-width: 0;
+  overflow: hidden;
+  color: #7f716a;
+  font-size: 9px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-empty-state {
+  margin: 0;
+  padding: 12px;
+  color: #746760;
+  font-size: 9px;
+  text-align: center;
+}
+
+html[data-theme="light"] .wiki-change-history,
+html[data-theme="light"] .since-visit,
+html[data-theme="light"] .status-intelligence {
+  border-color: rgba(118,84,55,.12);
+  background-color: rgba(255,255,255,.42);
+}
+
+html[data-theme="light"] .mobile-quick-rule-grid article,
+html[data-theme="light"] .status-topic-grid article,
+html[data-theme="light"] .status-review-queue article {
+  border-color: rgba(118,84,55,.09);
+  background: rgba(255,255,255,.4);
+}
+
+@media (max-width: 900px) {
+  .status-topic-grid {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+
+  .status-review-queue article {
+    grid-template-columns: 70px 120px minmax(0,1fr) auto;
+  }
+}
+
+@media (max-width: 620px) {
+  .wiki-change-history-list article {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .wiki-change-history-list p {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .since-visit-list a {
+    grid-template-columns: minmax(0,1fr) 18px;
+  }
+
+  .since-visit-list a span {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    white-space: normal;
+  }
+
+  .mobile-quick-rule-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .status-topic-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .status-review-queue article {
+    grid-template-columns: 64px minmax(0,1fr) auto;
+  }
+
+  .status-review-queue article > div {
+    display: grid;
+    gap: 2px;
+  }
+
+  .status-review-queue small {
+    white-space: normal;
+  }
+
+  .status-faq-candidates a {
+    grid-template-columns: 1fr;
+  }
+}
