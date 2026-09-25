@@ -83,6 +83,10 @@ export function WikiNavigation({
             href={withBasePath('/')}
             prefetch={false}
             onClick={onCloseMenu}
+            data-wiki-event="wiki_sidebar_navigate"
+            data-wiki-section="primary"
+            data-wiki-target="home"
+            data-wiki-status="ready"
           >
             <span>🏠</span>
             위키 홈
@@ -145,6 +149,10 @@ export function WikiNavigation({
                               ? `${page.title} — 준비 중인 문서`
                               : undefined
                           }
+                          data-wiki-event="wiki_sidebar_navigate"
+                          data-wiki-section={group}
+                          data-wiki-target={page.title}
+                          data-wiki-status={page.status || 'unknown'}
                         >
                           <span className="sidebar-page-icon" aria-hidden="true">
                             {iconForTitle(page.title)}
