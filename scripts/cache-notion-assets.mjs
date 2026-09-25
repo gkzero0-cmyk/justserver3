@@ -443,6 +443,13 @@ function changeSummaryFor(previous, current) {
   if (!previous) return '새 가이드 추가'
   if (previous.title !== current.title) return `문서명 변경 · ${current.title}`
   if (previous.searchText === current.searchText) {
+    if (
+      previous.lastEdited &&
+      current.lastEdited &&
+      previous.lastEdited !== current.lastEdited
+    ) {
+      return '표시 정보 업데이트 · 레이아웃·이미지 또는 문서 설정 변경'
+    }
     return previous.changeSummary || null
   }
 
