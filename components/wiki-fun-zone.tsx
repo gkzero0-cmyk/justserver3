@@ -21,6 +21,11 @@ import {
 } from '@/lib/wiki-survival'
 import type { WikiContentStatus } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
+import {
+  readWikiStateValue,
+  readWikiStringArray,
+  writeWikiStateValue
+} from '@/lib/wiki-client-state'
 
 type FunPage = {
   pageId: string
@@ -51,11 +56,6 @@ type ArchetypeId =
   | 'explorer'
   | 'strategist'
   | 'collector'
-
-const VISITED_PAGES_KEY = 'justserver3-read-pages-v1'
-const FORTUNE_KEY = 'justserver3-daily-fortune-v1'
-const FUN_STATS_KEY = 'justserver3-fun-stats-v1'
-const SURVIVAL_RECORD_KEY = 'justserver3-survival-record-v1'
 
 const FORTUNES: Fortune[] = [
   {
@@ -334,23 +334,12 @@ function emptyScores(): Record<ArchetypeId, number> {
 }
 
 function readVisitedPages() {
-  try {
-    const parsed = JSON.parse(
-      window.localStorage.getItem(VISITED_PAGES_KEY) || '[]'
-    )
-    return Array.isArray(parsed)
-      ? parsed.filter((value): value is string => typeof value === 'string')
-      : []
-  } catch {
-    return []
-  }
+  return readWikiStringArray('readPages')
 }
 
 function readFunStats() {
   try {
-    return normalizeWikiFunStats(
-      JSON.parse(window.localStorage.getItem(FUN_STATS_KEY) || 'null')
-    )
+    return normalizeWikiFunStats(readWikiStateValue('funStats', null))
   } catch {
     return { ...EMPTY_WIKI_FUN_STATS }
   }
@@ -416,34 +405,30 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
   const persistStats = (next: WikiFunStats) => {
     const normalized = normalizeWikiFunStats(next)
     setStats(normalized)
-    window.localStorage.setItem(FUN_STATS_KEY, JSON.stringify(normalized))
-    window.dispatchEvent(new Event('justserver3:fun-stats'))
+    writeWikiStateValue(
+      'funStats',
+      normalized,
+      'justserver3:fun-stats'
+    )
   }
 
   const recordActivity = (
     kind: 'fortune' | 'quiz' | 'random'
   ) => {
-    let record
-    try {
-      record = normalizeSurvivalRecord(
-        JSON.parse(
-          window.localStorage.getItem(SURVIVAL_RECORD_KEY) || 'null'
-        )
-      )
-    } catch {
-      record = normalizeSurvivalRecord(null)
-    }
+    const record = normalizeSurvivalRecord(
+      readWikiStateValue('survivalRecord', null)
+    )
 
     const next = recordSurvivalActivity(
       record,
       seoulDateKey(),
       kind
     )
-    window.localStorage.setItem(
-      SURVIVAL_RECORD_KEY,
-      JSON.stringify(next)
+    writeWikiStateValue(
+      'survivalRecord',
+      next,
+      'justserver3:survival-record'
     )
-    window.dispatchEvent(new Event('justserver3:survival-record'))
   }
 
   const unlockEgg = (id: string, message: string) => {
@@ -464,9 +449,10 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
     let nextStats = readFunStats()
 
     try {
-      const saved = JSON.parse(
-        window.localStorage.getItem(FORTUNE_KEY) || 'null'
-      ) as { date?: string; index?: number } | null
+      const saved = readWikiStateValue<{ date?: string; index?: number } | null>(
+        'dailyFortune',
+        null
+      )
       if (
         saved?.date === today &&
         Number.isInteger(saved.index) &&
@@ -477,10 +463,7 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
         setFortuneIndex(saved.index)
         if (nextStats.fortuneDraws === 0) {
           nextStats = { ...nextStats, fortuneDraws: 1 }
-          window.localStorage.setItem(
-            FUN_STATS_KEY,
-            JSON.stringify(nextStats)
-          )
+          writeWikiStateValue('funStats', nextStats)
         }
       }
     } catch {}
@@ -520,10 +503,7 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
     const index = values[0] % FORTUNES.length
     const today = seoulDateKey()
 
-    window.localStorage.setItem(
-      FORTUNE_KEY,
-      JSON.stringify({ date: today, index })
-    )
+    writeWikiStateValue('dailyFortune', { date: today, index })
     setFortuneIndex(index)
     persistStats({
       ...stats,
