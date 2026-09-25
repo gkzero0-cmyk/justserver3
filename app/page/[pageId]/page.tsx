@@ -15,6 +15,30 @@ import {
 
 export const dynamicParams = true
 
+const RELATED_BY_TITLE: Record<string, string[]> = {
+  스토리: ['서버규칙', '기초설정(뉴비필독)', '빚 갚기'],
+  서버규칙: ['기초설정(뉴비필독)', '많이 물어보는 것', '스토리'],
+  패치노트: ['서버규칙', '많이 물어보는 것', '기초설정(뉴비필독)'],
+  API: ['서버규칙', '많이 물어보는 것', '신용등급'],
+  '기초설정(뉴비필독)': ['서버규칙', '빚 갚기', '채광'],
+  채광: ['장비수리', '장비강화', '신용등급'],
+  낚시: ['요리', '도감', '신용등급'],
+  도축: ['요리', '도감', '신용등급'],
+  사냥: ['장비강화', '장비수리', '도감'],
+  요리: ['낚시', '도축', '도감'],
+  도감: ['채광', '낚시', '사냥'],
+  파쿠르: ['도감', '장비강화', '많이 물어보는 것'],
+  즉석복권: ['경마장', '카지노', '신용등급'],
+  경마장: ['카지노', '즉석복권', '신용등급'],
+  카지노: ['경마장', '즉석복권', '신용등급'],
+  '땅 구매': ['빚 갚기', '신용등급', '장비강화'],
+  '빚 갚기': ['신용등급', '땅 구매', '채광'],
+  신용등급: ['빚 갚기', '땅 구매', '장비강화'],
+  장비수리: ['장비강화', '채광', '사냥'],
+  장비강화: ['장비수리', '채광', '사냥'],
+  '많이 물어보는 것': ['서버규칙', '기초설정(뉴비필독)', '패치노트']
+}
+
 function categoryKey(title: string) {
   const value = title.toLowerCase()
 
@@ -44,14 +68,24 @@ function categoryKey(title: string) {
 }
 
 function relatedPages(current: NotionIndexPage, pages: NotionIndexPage[]) {
-  const category = categoryKey(current.title)
+  const byTitle = new Map(pages.map((page) => [page.title, page]))
+  const explicit = (RELATED_BY_TITLE[current.title] || [])
+    .map((title) => byTitle.get(title))
+    .filter((page): page is NotionIndexPage => Boolean(page))
+    .slice(0, 3)
 
-  return pages
+  if (explicit.length === 3) return explicit
+
+  const used = new Set([current.pageId, ...explicit.map((page) => page.pageId)])
+  const fallback = pages
     .filter(
       (page) =>
-        page.pageId !== current.pageId && categoryKey(page.title) === category
+        !used.has(page.pageId) &&
+        categoryKey(page.title) === categoryKey(current.title)
     )
-    .slice(0, 3)
+    .slice(0, 3 - explicit.length)
+
+  return [...explicit, ...fallback]
 }
 
 export async function generateMetadata({
@@ -141,7 +175,11 @@ export default async function NotionSubPage({
     ? relatedPages(currentPage, navigationPages)
     : []
 
-  const brandLogo = rootPage?.icon ? resolveCachedAsset(rootPage.icon) : null
+  const brandLogo = rootPage?.logo
+    ? resolveCachedAsset(rootPage.logo)
+    : rootPage?.icon
+      ? resolveCachedAsset(rootPage.icon)
+      : null
   const siteUrl = getSiteUrl()
   const canonical = `${siteUrl}/page/${pageId.replaceAll('-', '')}`
   const jsonLd = currentPage
@@ -153,6 +191,11 @@ export default async function NotionSubPage({
             headline: currentPage.title,
             dateModified: currentPage.lastEdited ?? undefined,
             mainEntityOfPage: canonical,
+            isRelatedTo: related.map((page) => ({
+              '@type': 'WebPage',
+              name: page.title,
+              url: `${siteUrl}/page/${page.pageId}`
+            })),
             isPartOf: {
               '@type': 'WebSite',
               name: '그냥서버 : 적자생존 공식 위키',
@@ -171,11 +214,12 @@ export default async function NotionSubPage({
               {
                 '@type': 'ListItem',
                 position: 2,
-                name: categoryKey(currentPage.title) === 'start'
-                  ? '시작하기'
-                  : categoryKey(currentPage.title) === 'growth'
-                    ? '성장 · 경제'
-                    : '주요 콘텐츠'
+                name:
+                  categoryKey(currentPage.title) === 'start'
+                    ? '시작하기'
+                    : categoryKey(currentPage.title) === 'growth'
+                      ? '성장 · 경제'
+                      : '주요 콘텐츠'
               },
               {
                 '@type': 'ListItem',
@@ -195,10 +239,9 @@ export default async function NotionSubPage({
       title={title}
       assetCount={Object.keys(imageManifest).length}
       pageCount={notionIndex.pages.length || 1}
-      pages={navigationPages.map(({ pageId, title, searchText }) => ({
+      pages={navigationPages.map(({ pageId, title }) => ({
         pageId,
-        title,
-        searchText
+        title
       }))}
       brandLogo={brandLogo}
       currentPageId={pageId}
@@ -227,7 +270,7 @@ export default async function NotionSubPage({
           </div>
           <div className="related-docs-grid">
             {related.map((page) => {
-              const image = page.cover || page.icon
+              const image = page.thumbnail || page.cover || page.icon
               const resolvedImage = image ? resolveCachedAsset(image) : null
 
               return (
