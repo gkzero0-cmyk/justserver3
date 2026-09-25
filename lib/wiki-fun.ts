@@ -56,6 +56,7 @@ export type WikiFunStats = {
   quizCompletions: number
   randomRolls: number
   eggs: string[]
+  lastQuizResult: string | null
 }
 
 export type WikiAchievementId =
@@ -73,7 +74,8 @@ export const EMPTY_WIKI_FUN_STATS: WikiFunStats = {
   fortuneDraws: 0,
   quizCompletions: 0,
   randomRolls: 0,
-  eggs: []
+  eggs: [],
+  lastQuizResult: null
 }
 
 function safeCount(value: unknown) {
@@ -102,7 +104,12 @@ export function normalizeWikiFunStats(value: unknown): WikiFunStats {
     fortuneDraws: safeCount(candidate.fortuneDraws),
     quizCompletions: safeCount(candidate.quizCompletions),
     randomRolls: safeCount(candidate.randomRolls),
-    eggs
+    eggs,
+    lastQuizResult:
+      typeof candidate.lastQuizResult === 'string' &&
+      candidate.lastQuizResult.trim()
+        ? candidate.lastQuizResult
+        : null
   }
 }
 
