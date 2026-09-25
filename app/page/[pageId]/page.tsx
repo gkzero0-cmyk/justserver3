@@ -5,8 +5,7 @@ import { NotionDocument } from '@/components/notion-document'
 import { WikiShell } from '@/components/wiki-shell'
 import { WikiPageNavigation } from '@/components/wiki-page-navigation'
 import { getNotionPage, notionPublicUrl } from '@/lib/notion'
-import { readNotionAssetManifest } from '@/lib/notion-assets'
-import { readNotionIndex, type NotionIndexPage } from '@/lib/notion-index'
+import { readNotionAssetManifest, readNotionIndex, type NotionIndexPage } from '@/lib/notion-index'
 import {
   getSiteUrl,
   resolveCachedAsset,
