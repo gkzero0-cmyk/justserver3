@@ -11,6 +11,7 @@ import {
   type ReadingTocItem
 } from '@/components/wiki-reading-widgets'
 import { WikiMobileQuickView } from '@/components/wiki-mobile-quick-view'
+import { WikiMobileNavigation } from '@/components/wiki-mobile-navigation'
 import {
   WikiNavigation,
   type WikiNavigationPage
@@ -1210,51 +1211,17 @@ export function WikiShell({
 
       <WikiAchievementNotifier pages={pages} />
 
-      <nav className="mobile-bottom-nav" aria-label="모바일 빠른 메뉴">
-        <Link href={withBasePath('/')} prefetch={false}>
-          <span aria-hidden="true">⌂</span>
-          <strong>홈</strong>
-        </Link>
-        <button type="button" onClick={openSearch}>
-          <span aria-hidden="true">⌕</span>
-          <strong>검색</strong>
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setMobileQuickOpen(true)
-            track('wiki_mobile_quick_open')
-          }}
-        >
-          <span aria-hidden="true">⚡</span>
-          <strong>빠른정보</strong>
-        </button>
-        <Link href={withBasePath('/#wiki-explore')} prefetch={false}>
-          <span aria-hidden="true">✦</span>
-          <strong>탐험</strong>
-        </Link>
-        <Link href={withBasePath('/#wiki-survival-log-title')} prefetch={false}>
-          <span aria-hidden="true">☰</span>
-          <strong>내 기록</strong>
-        </Link>
-      </nav>
-
-      {!home && (
-        <div className={`mobile-reading-tools ${readingProgress > 2 ? 'is-visible' : ''}`}>
-          {toc.length > 0 && (
-            <button type="button" onClick={() => setMobileTocOpen(true)} aria-label="현재 문서 목차 열기">
-              ☷ <span>목차</span>
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            aria-label="페이지 맨 위로 이동"
-          >
-            ↑ <span>위로</span>
-          </button>
-        </div>
-      )}
+      <WikiMobileNavigation
+        home={home}
+        readingProgress={readingProgress}
+        hasToc={toc.length > 0}
+        onOpenSearch={openSearch}
+        onOpenQuick={() => {
+          setMobileQuickOpen(true)
+          track('wiki_mobile_quick_open')
+        }}
+        onOpenToc={() => setMobileTocOpen(true)}
+      />
 
       {mobileTocOpen && (
         <MobileTocSheet
