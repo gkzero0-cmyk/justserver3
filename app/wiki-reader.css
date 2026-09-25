@@ -7340,3 +7340,25 @@ html[data-theme="light"] .adventure-unlock-toast strong {
     justify-content: space-between;
   }
 }
+
+
+/* Search result focus */
+.wiki-search-hit {
+  position: relative;
+  border-radius: 8px;
+  outline: 2px solid rgba(var(--gold-rgb), .42);
+  outline-offset: 4px;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--gold-rgb), .11),
+    rgba(var(--accent-rgb), .045)
+  ) !important;
+  box-shadow: 0 0 0 7px rgba(var(--gold-rgb), .035);
+  transition: outline-color .35s ease, background .35s ease, box-shadow .35s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wiki-search-hit {
+    scroll-margin-top: calc(var(--topbar) + 22px);
+  }
+}
