@@ -44,6 +44,11 @@ const themeScript = `
       ? saved
       : (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
     document.documentElement.dataset.theme = theme;
+
+    const sidebarCollapsed =
+      localStorage.getItem('justserver3-sidebar-collapsed') === 'true';
+    document.documentElement.dataset.sidebar =
+      sidebarCollapsed ? 'collapsed' : 'expanded';
   } catch {}
 `
 
