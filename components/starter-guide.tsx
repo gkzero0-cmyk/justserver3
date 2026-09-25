@@ -40,6 +40,10 @@ export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
               key={page!.pageId}
               href={withBasePath(`/page/${page!.pageId}/`)}
               className="starter-step"
+              data-wiki-event="wiki_home_navigate"
+              data-wiki-section="starter-guide"
+              data-wiki-target={page!.title}
+              data-wiki-status="ready"
             >
               <span className="starter-number">{String(index + 1).padStart(2, '0')}</span>
               <span className="starter-icon" aria-hidden="true">{meta[1]}</span>
