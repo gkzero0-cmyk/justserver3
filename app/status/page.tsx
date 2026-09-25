@@ -1,6 +1,9 @@
+import Link from 'next/link'
+
 import { WikiShell } from '@/components/wiki-shell'
 import { readNotionAssetManifest, readNotionIndex } from '@/lib/notion-index'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
+import { wikiContentStatus } from '@/lib/wiki-content-status'
 import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
 
 export const revalidate = 300
@@ -136,6 +139,13 @@ export default async function StatusPage() {
   const pages = index.pages.filter(
     (page) => page.pageId.replaceAll('-', '') !== rootId
   )
+  const contentCounts = pages.reduce(
+    (counts, page) => {
+      counts[wikiContentStatus(page)] += 1
+      return counts
+    },
+    { detailed: 0, brief: 0, draft: 0 }
+  )
   const brandLogo = rootPage?.logo128
     ? resolveCachedAsset(rootPage.logo128)
     : rootPage?.logo
@@ -144,7 +154,10 @@ export default async function StatusPage() {
       ? resolveCachedAsset(rootPage.icon)
       : null
   const recentPages = [...pages]
-    .filter((page) => page.lastEdited)
+    .filter(
+      (page) =>
+        page.lastEdited && wikiContentStatus(page) !== 'draft'
+    )
     .sort(
       (a, b) =>
         new Date(b.lastEdited || 0).getTime() -
@@ -198,7 +211,9 @@ export default async function StatusPage() {
           <article>
             <small>세부 문서</small>
             <strong>{pages.length}</strong>
-            <span>현재 위키에서 탐색 가능한 가이드</span>
+            <span>
+              상세 {contentCounts.detailed} · 간단 {contentCounts.brief} · 작성 중 {contentCounts.draft}
+            </span>
           </article>
           <article>
             <small>이미지 매핑</small>
@@ -216,6 +231,24 @@ export default async function StatusPage() {
             <small>카드용 이미지 총량</small>
             <strong>{formatBytes(index.assetStats?.thumbnailBytes)}</strong>
             <span>480px WebP 썸네일 기준</span>
+          </article>
+        </div>
+
+        <div className="status-content-metrics" aria-label="문서 완성도">
+          <article data-status="detailed">
+            <small>상세 가이드</small>
+            <strong>{contentCounts.detailed}</strong>
+            <span>충분한 내용이 정리된 문서</span>
+          </article>
+          <article data-status="brief">
+            <small>간단 안내</small>
+            <strong>{contentCounts.brief}</strong>
+            <span>핵심 내용만 먼저 정리된 문서</span>
+          </article>
+          <article data-status="draft">
+            <small>작성 중</small>
+            <strong>{contentCounts.draft}</strong>
+            <span>Notion 원문 보강을 기다리는 문서</span>
           </article>
         </div>
 
@@ -339,17 +372,21 @@ export default async function StatusPage() {
               <p>RECENT CHANGES</p>
               <h2>최근 수정 문서</h2>
             </div>
-            <a href={withBasePath('/')}>위키 홈 →</a>
+            <Link href={withBasePath('/')} prefetch={false}>위키 홈 →</Link>
           </div>
           <div className="status-recent-list">
             {recentPages.map((page) => (
-              <a key={page.pageId} href={withBasePath(`/page/${page.pageId}/`)}>
+              <Link
+                key={page.pageId}
+                href={withBasePath(`/page/${page.pageId}/`)}
+                prefetch={false}
+              >
                 <span>
                   <strong>{page.title}</strong>
                   {page.changeSummary && <small>{page.changeSummary}</small>}
                 </span>
                 <span>{formatDate(page.lastEdited)}</span>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
