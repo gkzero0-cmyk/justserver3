@@ -13,7 +13,7 @@ export type WikiSearchSection = {
 export type WikiSearchPage = {
   pageId: string
   title: string
-  category?: string | null
+  category?: string
   status?: WikiContentStatus
   searchText?: string
   sections?: WikiSearchSection[]
