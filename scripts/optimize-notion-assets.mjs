@@ -86,6 +86,7 @@ async function ensureVariant({
 async function optimizeAsset(publicPath, { makeHero = false, makeLogo = false } = {}) {
   if (!publicPath?.startsWith('/notion-assets/')) {
     return {
+      contentHash: null,
       display: publicPath,
       thumbnail: publicPath,
       hero: makeHero ? publicPath : null,
@@ -102,6 +103,7 @@ async function optimizeAsset(publicPath, { makeHero = false, makeLogo = false } 
 
   if (!['.png', '.jpg', '.jpeg', '.webp', '.avif', '.bmp'].includes(ext)) {
     return {
+      contentHash: null,
       display: publicPath,
       thumbnail: publicPath,
       hero: makeHero ? publicPath : null,
@@ -180,6 +182,7 @@ async function optimizeAsset(publicPath, { makeHero = false, makeLogo = false } 
     : null
 
   return {
+    contentHash: hash,
     display: display.publicPath,
     thumbnail: thumbnail.publicPath,
     hero: hero?.publicPath ?? null,
@@ -244,6 +247,7 @@ async function main() {
   let displayBytes = 0
   let thumbnailBytes = 0
   let duplicateMappings = 0
+  const contentHashes = new Set()
 
   const uniquePaths = [...new Set(Object.values(sourceManifest))]
 
@@ -254,6 +258,7 @@ async function main() {
     })
 
     pathMap.set(publicPath, variants)
+    if (variants.contentHash) contentHashes.add(variants.contentHash)
     originalBytes += variants.sourceBytes
     displayBytes += variants.displayBytes
     thumbnailBytes += variants.thumbnailBytes
@@ -269,7 +274,7 @@ async function main() {
     displayManifest[sourceUrl] = variants.display
   }
 
-  duplicateMappings = Object.keys(sourceManifest).length - uniquePaths.length
+  duplicateMappings = Math.max(0, uniquePaths.length - contentHashes.size)
 
   if (index?.pages) {
     index.pages = index.pages.map((page) => {
@@ -304,7 +309,7 @@ async function main() {
       originalBytes,
       displayBytes,
       thumbnailBytes,
-      uniqueSourceImages: uniquePaths.length,
+      uniqueSourceImages: contentHashes.size || uniquePaths.length,
       duplicateMappings
     }
 
@@ -328,7 +333,7 @@ async function main() {
 
   const saved = Math.max(0, originalBytes - displayBytes)
   console.log(
-    `[optimize] ${uniquePaths.length} unique sources, ${duplicateMappings} duplicate mappings, display saved ~${(
+    `[optimize] ${contentHashes.size || uniquePaths.length} unique images, ${duplicateMappings} duplicate mappings, display saved ~${(
       saved /
       1024 /
       1024
