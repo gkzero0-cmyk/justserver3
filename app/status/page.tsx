@@ -4,6 +4,10 @@ import { WikiShell } from '@/components/wiki-shell'
 import { readNotionAssetManifest, readNotionIndex } from '@/lib/notion-index'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
 import { wikiContentStatus } from '@/lib/wiki-content-status'
+import {
+  buildWikiContentBacklog,
+  wikiContentReadiness
+} from '@/lib/wiki-content-health'
 import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
 
@@ -147,6 +151,19 @@ export default async function StatusPage() {
     },
     { detailed: 0, brief: 0, draft: 0 }
   )
+  const contentBacklog = buildWikiContentBacklog(
+    pages.map((page) => ({
+      ...page,
+      status: wikiContentStatus(page)
+    })),
+    12
+  )
+  const contentReadiness = wikiContentReadiness(
+    pages.map((page) => ({
+      ...page,
+      status: wikiContentStatus(page)
+    }))
+  )
   const brandLogo = rootPage?.logo128
     ? resolveCachedAsset(rootPage.logo128)
     : rootPage?.logo
@@ -254,6 +271,61 @@ export default async function StatusPage() {
             <span>Notion 원문 보강을 기다리는 문서</span>
           </article>
         </div>
+
+        <section className="status-content-backlog" aria-labelledby="status-content-backlog-title">
+          <div className="status-section-head">
+            <div>
+              <p>CONTENT BACKLOG</p>
+              <h2 id="status-content-backlog-title">콘텐츠 보강 대기열</h2>
+              <span>
+                원문이 비어 있거나 설명이 짧은 문서를 자동으로 우선순위화합니다.
+                확인되지 않은 게임 정보는 자동 게시하지 않습니다.
+              </span>
+            </div>
+            <strong>{contentReadiness.percent}% 준비</strong>
+          </div>
+
+          <div className="status-readiness-track" aria-label={`사용 가능한 문서 ${contentReadiness.ready}개, 전체 ${contentReadiness.total}개`}>
+            <span>
+              <i style={{ width: `${contentReadiness.percent}%` }} />
+            </span>
+            <small>
+              상세 {contentReadiness.detailed} · 간단 {contentReadiness.brief} · 작성 중 {contentReadiness.draft}
+            </small>
+          </div>
+
+          <div className="status-backlog-list">
+            {contentBacklog.map((item, index) => (
+              <Link
+                key={item.pageId}
+                href={withBasePath(`/page/${item.pageId}/`)}
+                prefetch={false}
+                className="status-backlog-card"
+                data-stage={item.stage}
+              >
+                <span className="status-backlog-rank">{String(index + 1).padStart(2, '0')}</span>
+                <span className="status-backlog-copy">
+                  <span className="status-backlog-title">
+                    <strong>{item.title}</strong>
+                    <em>
+                      {item.stage === 'source-needed'
+                        ? '자료 확인 필요'
+                        : '내용 보강'}
+                    </em>
+                  </span>
+                  <small>
+                    {item.issues.join(' · ')}
+                  </small>
+                  <span>{item.nextAction}</span>
+                </span>
+                <span className="status-backlog-score">
+                  <small>우선도</small>
+                  <strong>{item.score}</strong>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
 
         <div className="status-services">
           <article data-tone={statusTone(syncWorkflow)}>
