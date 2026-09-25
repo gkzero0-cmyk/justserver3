@@ -1117,7 +1117,6 @@ export function WikiShell({
           onClose={closeSearch}
         />
       )}
-      )}
     </div>
   )
 }
