@@ -63,6 +63,18 @@ test.describe('desktop wiki journeys', () => {
     ).toBeVisible()
   })
 
+  test('document page exposes revision history', async ({ page }) => {
+    await page.goto('/guide/rules')
+
+    await expect(
+      page.getByText('문서 변경 이력', { exact: true })
+    ).toBeVisible()
+    await page.getByText('문서 변경 이력', { exact: true }).click()
+    await expect(
+      page.getByText('변경 이력 추적 시작', { exact: true })
+    ).toBeVisible()
+  })
+
   test('verified FAQ exposes source-backed answers', async ({ page }) => {
     await page.goto('/guide/faq')
 
