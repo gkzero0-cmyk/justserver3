@@ -24,6 +24,12 @@ import {
 } from '@/components/wiki-survival-widgets'
 import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import {
+  readWikiStateValue,
+  readWikiStringArray,
+  removeWikiStateValue,
+  writeWikiStateValue
+} from '@/lib/wiki-client-state'
+import {
   normalizeSurvivalRecord,
   recordSurvivalActivity,
   recordSurvivalDay,
@@ -69,11 +75,6 @@ const CORE_PREFETCH_TITLES = new Set([
   '기초설정(뉴비필독)',
   '채광'
 ])
-const RECENT_PAGES_KEY = 'justserver3-recent-pages-v1'
-const VISITED_PAGES_KEY = 'justserver3-visited-pages-v1'
-const READ_PAGES_KEY = 'justserver3-read-pages-v1'
-const READ_MIGRATION_KEY = 'justserver3-read-pages-migrated-v1'
-const SURVIVAL_RECORD_KEY = 'justserver3-survival-record-v1'
 
 function categoryLabel(title: string) {
   return categoryTitleForPage(title)
@@ -253,64 +254,40 @@ export function WikiShell({
   }, [currentCategory])
 
   useEffect(() => {
-    if (window.localStorage.getItem(READ_MIGRATION_KEY) === '1') return
+    if (readWikiStateValue('readMigration', false)) return
 
-    let legacyVisited: string[] = []
-    try {
-      const parsed = JSON.parse(
-        window.localStorage.getItem(VISITED_PAGES_KEY) || '[]'
-      )
-      legacyVisited = Array.isArray(parsed)
-        ? parsed.filter(
-            (value): value is string => typeof value === 'string'
-          )
-        : []
-    } catch {}
-
+    const legacyVisited = readWikiStringArray('visitedPages')
+    const existingRead = readWikiStringArray('readPages')
     const migrated = [
       ...new Set(
-        legacyVisited
+        [...existingRead, ...legacyVisited]
           .map((value) => value.replaceAll('-', '').trim())
           .filter(Boolean)
       )
     ]
-    window.localStorage.setItem(READ_PAGES_KEY, JSON.stringify(migrated))
-    window.localStorage.setItem(READ_MIGRATION_KEY, '1')
-    if (migrated.length) {
-      window.dispatchEvent(new Event('justserver3:read-pages'))
-    }
-  }, [])
 
-  useEffect(() => {
-    let record
-    try {
-      record = normalizeSurvivalRecord(
-        JSON.parse(
-          window.localStorage.getItem(SURVIVAL_RECORD_KEY) || 'null'
-        )
-      )
-    } catch {
-      record = normalizeSurvivalRecord(null)
-    }
-
-    const next = recordSurvivalDay(record, seoulDateKey())
-    window.localStorage.setItem(
-      SURVIVAL_RECORD_KEY,
-      JSON.stringify(next)
+    writeWikiStateValue(
+      'readPages',
+      migrated,
+      migrated.length ? 'justserver3:read-pages' : undefined
     )
-    window.dispatchEvent(new Event('justserver3:survival-record'))
+    writeWikiStateValue('readMigration', true)
   }, [])
 
   useEffect(() => {
-    let stored: string[] = []
-    try {
-      const parsed = JSON.parse(
-        window.localStorage.getItem(RECENT_PAGES_KEY) || '[]'
-      )
-      stored = Array.isArray(parsed)
-        ? parsed.filter((value): value is string => typeof value === 'string')
-        : []
-    } catch {}
+    const record = normalizeSurvivalRecord(
+      readWikiStateValue('survivalRecord', null)
+    )
+    const next = recordSurvivalDay(record, seoulDateKey())
+    writeWikiStateValue(
+      'survivalRecord',
+      next,
+      'justserver3:survival-record'
+    )
+  }, [])
+
+  useEffect(() => {
+    const stored = readWikiStringArray('recentPages')
 
     const next = currentPageId
       ? updateRecentPageIds(stored, currentPageId, 5)
@@ -320,41 +297,24 @@ export function WikiShell({
     setRecentReady(true)
 
     if (currentPageId) {
-      window.localStorage.setItem(RECENT_PAGES_KEY, JSON.stringify(next))
+      writeWikiStateValue('recentPages', next)
 
-      let visited: string[] = []
-      try {
-        const parsed = JSON.parse(
-          window.localStorage.getItem(VISITED_PAGES_KEY) || '[]'
-        )
-        visited = Array.isArray(parsed)
-          ? parsed.filter(
-              (value): value is string => typeof value === 'string'
-            )
-          : []
-      } catch {}
+      const visited = readWikiStringArray('visitedPages')
 
       const nextVisited = updateRecentPageIds(
         visited,
         currentPageId,
         Math.max(pages.length, 1)
       )
-      window.localStorage.setItem(
-        VISITED_PAGES_KEY,
-        JSON.stringify(nextVisited)
+      writeWikiStateValue(
+        'visitedPages',
+        nextVisited,
+        'justserver3:visited-pages'
       )
-      window.dispatchEvent(new Event('justserver3:visited-pages'))
 
-      let record
-      try {
-        record = normalizeSurvivalRecord(
-          JSON.parse(
-            window.localStorage.getItem(SURVIVAL_RECORD_KEY) || 'null'
-          )
-        )
-      } catch {
-        record = normalizeSurvivalRecord(null)
-      }
+      const record = normalizeSurvivalRecord(
+        readWikiStateValue('survivalRecord', null)
+      )
 
       const nextRecord = recordSurvivalActivity(
         record,
@@ -362,11 +322,11 @@ export function WikiShell({
         'visit',
         currentPageId
       )
-      window.localStorage.setItem(
-        SURVIVAL_RECORD_KEY,
-        JSON.stringify(nextRecord)
+      writeWikiStateValue(
+        'survivalRecord',
+        nextRecord,
+        'justserver3:survival-record'
       )
-      window.dispatchEvent(new Event('justserver3:survival-record'))
     }
   }, [currentPageId, pages.length])
 
@@ -385,7 +345,7 @@ export function WikiShell({
   )
 
   const clearRecentPages = () => {
-    window.localStorage.removeItem(RECENT_PAGES_KEY)
+    removeWikiStateValue('recentPages')
     setRecentPageIds([])
     setRecentReady(true)
     track('wiki_recent_history_clear')
@@ -708,40 +668,22 @@ export function WikiShell({
       if (!currentPageId || home || contentStatus === 'draft') return
 
       const normalizedPageId = currentPageId.replaceAll('-', '')
-      let readPages: string[] = []
-      try {
-        const parsed = JSON.parse(
-          window.localStorage.getItem(READ_PAGES_KEY) || '[]'
-        )
-        readPages = Array.isArray(parsed)
-          ? parsed.filter(
-              (value): value is string => typeof value === 'string'
-            )
-          : []
-      } catch {}
-
+      const readPages = readWikiStringArray('readPages')
       const normalized = readPages.map((value) => value.replaceAll('-', ''))
       const firstCompletion = !normalized.includes(normalizedPageId)
 
       if (firstCompletion) {
         const nextReadPages = [...readPages, normalizedPageId]
-        window.localStorage.setItem(
-          READ_PAGES_KEY,
-          JSON.stringify(nextReadPages)
+        writeWikiStateValue(
+          'readPages',
+          nextReadPages,
+          'justserver3:read-pages'
         )
-        window.dispatchEvent(new Event('justserver3:read-pages'))
       }
 
-      let record
-      try {
-        record = normalizeSurvivalRecord(
-          JSON.parse(
-            window.localStorage.getItem(SURVIVAL_RECORD_KEY) || 'null'
-          )
-        )
-      } catch {
-        record = normalizeSurvivalRecord(null)
-      }
+      const record = normalizeSurvivalRecord(
+        readWikiStateValue('survivalRecord', null)
+      )
 
       const nextRecord = recordSurvivalActivity(
         record,
@@ -749,11 +691,11 @@ export function WikiShell({
         'read',
         normalizedPageId
       )
-      window.localStorage.setItem(
-        SURVIVAL_RECORD_KEY,
-        JSON.stringify(nextRecord)
+      writeWikiStateValue(
+        'survivalRecord',
+        nextRecord,
+        'justserver3:survival-record'
       )
-      window.dispatchEvent(new Event('justserver3:survival-record'))
       track(
         firstCompletion
           ? 'wiki_read_complete'
