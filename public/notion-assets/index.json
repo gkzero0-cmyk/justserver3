@@ -1,6 +1,6 @@
 {
   "rootPageId": "3dad57d6a55c80469f3de9730cb88975",
-  "generatedAt": "2026-09-25T01:08:30.481Z",
+  "generatedAt": "2026-09-25T01:10:44.570Z",
   "pages": [
     {
       "pageId": "3dad57d6a55c80469f3de9730cb88975",
@@ -337,7 +337,7 @@
     "originalBytes": 122790098,
     "displayBytes": 17756778,
     "thumbnailBytes": 3400174,
-    "uniqueSourceImages": 75,
-    "duplicateMappings": 0
+    "uniqueSourceImages": 66,
+    "duplicateMappings": 9
   }
 }
