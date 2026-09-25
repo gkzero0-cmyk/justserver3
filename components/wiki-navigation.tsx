@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 
+import type { WikiContentStatus } from '@/lib/wiki-content-status'
 import { iconForTitle } from '@/lib/wiki-taxonomy'
 import { withBasePath } from '@/lib/url-utils'
 
@@ -11,6 +12,7 @@ export type WikiNavigationPage = {
   pageId: string
   title: string
   category?: string
+  status?: WikiContentStatus
 }
 
 export type WikiNavigationTocItem = {
@@ -131,16 +133,27 @@ export function WikiNavigation({
                         <Link
                           key={page.pageId}
                           href={withBasePath(`/page/${page.pageId}/`)}
-                          prefetch={PREFETCH_TITLES.has(page.title)}
+                          prefetch={
+                            page.status !== 'draft' &&
+                            PREFETCH_TITLES.has(page.title)
+                          }
                           onClick={onCloseMenu}
-                          className={`global-page-link ${current ? 'is-current' : ''}`}
+                          className={`global-page-link ${current ? 'is-current' : ''} ${page.status === 'draft' ? 'is-draft' : ''}`}
                           aria-current={current ? 'page' : undefined}
+                          aria-label={
+                            page.status === 'draft'
+                              ? `${page.title} — 준비 중인 문서`
+                              : undefined
+                          }
                         >
                           <span className="sidebar-page-icon" aria-hidden="true">
                             {iconForTitle(page.title)}
                           </span>
                           <span className="global-page-copy">
                             <strong>{page.title}</strong>
+                            {page.status === 'draft' && (
+                              <em className="sidebar-draft-badge">준비 중</em>
+                            )}
                           </span>
                         </Link>
                       )
