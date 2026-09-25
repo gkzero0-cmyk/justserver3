@@ -11,6 +11,7 @@ import {
 import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
 import { buildWikiFeedbackUrl } from '@/lib/wiki-ux'
+import verifiedFaqEntries from '@/data/wiki-verified-faq.json'
 
 export const revalidate = 300
 
@@ -455,6 +456,31 @@ export default async function StatusPage() {
               <span>
                 검색 열기 · 결과 이동 · 빠른 답변 · 0건 검색을 구분해 집계합니다.
                 검색어 원문은 분석 이벤트에 저장하지 않습니다.
+              </span>
+            </div>
+          </article>
+
+          <article data-tone="success">
+            <span className="status-service-icon">FAQ</span>
+            <div>
+              <small>검증형 FAQ</small>
+              <strong>{verifiedFaqEntries.length}개 확인됨</strong>
+              <span>
+                서버규칙에서 직접 확인되는 답변만 검색과 FAQ 페이지에 노출합니다.
+              </span>
+            </div>
+            <Link href={withBasePath('/guide/faq/')} prefetch={false}>
+              FAQ 확인 →
+            </Link>
+          </article>
+
+          <article data-tone="success">
+            <span className="status-service-icon">Aa</span>
+            <div>
+              <small>검색 인덱스 정제</small>
+              <strong>파일명 제거 활성</strong>
+              <span>
+                이미지 파일명 · 첨부 식별자 · UUID가 검색 문맥에 섞이지 않도록 생성 단계에서 정리합니다.
               </span>
             </div>
           </article>
