@@ -52,7 +52,7 @@ type ArchetypeId =
   | 'strategist'
   | 'collector'
 
-const VISITED_PAGES_KEY = 'justserver3-visited-pages-v1'
+const VISITED_PAGES_KEY = 'justserver3-read-pages-v1'
 const FORTUNE_KEY = 'justserver3-daily-fortune-v1'
 const FUN_STATS_KEY = 'justserver3-fun-stats-v1'
 const SURVIVAL_RECORD_KEY = 'justserver3-survival-record-v1'
@@ -490,10 +490,10 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
     const refreshVisited = () => setVisitedIds(readVisitedPages())
     refreshVisited()
     window.addEventListener('storage', refreshVisited)
-    window.addEventListener('justserver3:visited-pages', refreshVisited)
+    window.addEventListener('justserver3:read-pages', refreshVisited)
     return () => {
       window.removeEventListener('storage', refreshVisited)
-      window.removeEventListener('justserver3:visited-pages', refreshVisited)
+      window.removeEventListener('justserver3:read-pages', refreshVisited)
     }
   }, [])
 
@@ -745,7 +745,7 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
             <small>위키 탐험도</small>
             <strong>{exploration.percent}% 발견</strong>
             <em>
-              준비된 가이드 {exploration.count}/{exploration.total}개를 확인했습니다.
+              준비된 가이드 {exploration.count}/{exploration.total}개를 완독했습니다.
             </em>
             <span className="fun-progress-track" aria-hidden="true">
               <span style={{ width: `${exploration.percent}%` }} />
@@ -1063,7 +1063,7 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
                       >
                         <span>{visited ? '✓' : '○'}</span>
                         <strong>{page.title}</strong>
-                        <small>{visited ? '확인 완료' : '아직 안 봄'}</small>
+                        <small>{visited ? '완독 완료' : '아직 미완독'}</small>
                       </Link>
                     )
                   })}
@@ -1072,7 +1072,7 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
                 {exploration.total > 0 &&
                   exploration.count === exploration.total && (
                     <div className="exploration-complete">
-                      🏆 준비된 가이드를 전부 발견했습니다. 적자생존 탐험 완료!
+                      🏆 준비된 가이드를 전부 완독했습니다. 적자생존 탐험 완료!
                     </div>
                   )}
               </div>

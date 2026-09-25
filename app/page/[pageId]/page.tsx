@@ -6,6 +6,10 @@ import { NotionDocument } from '@/components/notion-document'
 import { WikiShell } from '@/components/wiki-shell'
 import { WikiPageNavigation } from '@/components/wiki-page-navigation'
 import { WikiDocumentFeedback } from '@/components/wiki-document-feedback'
+import {
+  WikiNextExploration,
+  WikiReadingQuiz
+} from '@/components/wiki-reading-game'
 import { getNotionPage, notionPublicUrl } from '@/lib/notion'
 import { readNotionAssetManifest, readNotionIndex, type NotionIndexPage } from '@/lib/notion-index'
 import {
@@ -19,6 +23,7 @@ import {
   wikiContentStatus
 } from '@/lib/wiki-content-status'
 import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
+import { buildReadingQuiz } from '@/lib/wiki-reading-game'
 
 export const dynamicParams = true
 export const revalidate = 60
@@ -191,6 +196,10 @@ export default async function NotionSubPage({
     ? wikiContentStatus(currentPage)
     : 'detailed'
   const draft = contentStatus === 'draft'
+  const readingQuiz =
+    currentPage && !draft
+      ? buildReadingQuiz(currentPage, readyNavigationPages)
+      : null
 
   const brandLogo = rootPage?.logo128
     ? resolveCachedAsset(rootPage.logo128)
@@ -328,67 +337,44 @@ export default async function NotionSubPage({
           </section>
 
           {currentPage && (
-            <WikiDocumentFeedback
-              pageId={currentPage.pageId}
-              title={currentPage.title}
-            />
+            <>
+              <WikiReadingQuiz
+                pageId={currentPage.pageId}
+                title={currentPage.title}
+                quiz={readingQuiz}
+              />
+              <WikiDocumentFeedback
+                pageId={currentPage.pageId}
+                title={currentPage.title}
+              />
+            </>
           )}
         </>
       )}
 
-      {related.length > 0 && (
-        <section className="related-docs" aria-labelledby="related-docs-title">
-          <div className="related-docs-head">
-            <p>RELATED GUIDES</p>
-            <h2 id="related-docs-title">같이 보면 좋은 가이드</h2>
-          </div>
-          <div className="related-docs-grid">
-            {related.map((page) => {
-              const image = [
-                page.thumbnailSmall,
-                deriveOptimizedVariant(page.thumbnail, 'thumb256'),
-                page.thumbnail
-              ].find(
-                (value) =>
-                  value &&
-                  (/\/optimized\/thumb256\//.test(value) ||
-                    /\/optimized\/thumb\//.test(value))
-              )
-              const resolvedImage = image ? resolveCachedAsset(image) : null
+      {currentPage && related.length > 0 && (
+        <WikiNextExploration
+          currentTitle={currentPage.title}
+          pages={related.map((page) => {
+            const image = [
+              page.thumbnailSmall,
+              deriveOptimizedVariant(page.thumbnail, 'thumb256'),
+              page.thumbnail
+            ].find(
+              (value) =>
+                value &&
+                (/\/optimized\/thumb256\//.test(value) ||
+                  /\/optimized\/thumb\//.test(value))
+            )
 
-              return (
-                <Link
-                  key={page.pageId}
-                  href={withBasePath(`/page/${page.pageId}/`)}
-                  className="related-doc-card"
-                  data-wiki-event="wiki_related_navigate"
-                  data-wiki-section="related-guides"
-                  data-wiki-target={page.title}
-                  data-wiki-status={wikiContentStatus(page)}
-                >
-                  <span className="related-doc-image">
-                    {resolvedImage && (
-                      <img
-                        src={resolvedImage}
-                        alt=""
-                        aria-hidden="true"
-                        loading="lazy"
-                        decoding="async"
-                        width="480"
-                        height="270"
-                      />
-                    )}
-                  </span>
-                  <span>
-                    <strong>{page.title}</strong>
-                    <small>상세 가이드 보기</small>
-                  </span>
-                  <b>→</b>
-                </Link>
-              )
-            })}
-          </div>
-        </section>
+            return {
+              pageId: page.pageId,
+              title: page.title,
+              category: categoryTitleForPage(page.title),
+              image: image ? resolveCachedAsset(image) : null
+            }
+          })}
+        />
       )}
 
       <WikiPageNavigation

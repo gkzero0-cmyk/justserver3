@@ -39,7 +39,7 @@ type SurvivalPage = {
   status?: WikiContentStatus
 }
 
-const VISITED_PAGES_KEY = 'justserver3-visited-pages-v1'
+const VISITED_PAGES_KEY = 'justserver3-read-pages-v1'
 const FUN_STATS_KEY = 'justserver3-fun-stats-v1'
 const SURVIVAL_RECORD_KEY = 'justserver3-survival-record-v1'
 const TREASURES_KEY = 'justserver3-treasures-v1'
@@ -50,13 +50,13 @@ const DAILY_LABELS: Record<
 > = {
   'visit-one': {
     icon: '📖',
-    title: '가이드 1개 확인',
-    description: '오늘 준비된 가이드 하나를 읽어보세요.'
+    title: '가이드 1개 완독',
+    description: '오늘 준비된 가이드 하나를 끝까지 읽어보세요.'
   },
   'visit-two': {
     icon: '🧭',
-    title: '가이드 2개 탐험',
-    description: '서로 다른 가이드 두 개를 확인해보세요.'
+    title: '가이드 2개 완독',
+    description: '서로 다른 가이드 두 개를 완독해보세요.'
   },
   fortune: {
     icon: '🔮',
@@ -81,8 +81,8 @@ const WEEKLY_LABELS: Record<
 > = {
   'week-visit-five': {
     icon: '🗺️',
-    title: '가이드 5개 탐험',
-    description: '이번 주 서로 다른 가이드 5개를 확인합니다.'
+    title: '가이드 5개 완독',
+    description: '이번 주 서로 다른 가이드 5개를 완독합니다.'
   },
   'week-fortune-three': {
     icon: '🔮',
@@ -178,7 +178,7 @@ export function WikiSurvivalLog({
 
     const events = [
       'storage',
-      'justserver3:visited-pages',
+      'justserver3:read-pages',
       'justserver3:fun-stats',
       'justserver3:survival-record',
       'justserver3:treasure'
@@ -312,7 +312,7 @@ export function WikiSurvivalLog({
           </div>
           <div>
             <strong>{exploration.percent}%</strong>
-            <small>위키 탐험도</small>
+            <small>완독 탐험도</small>
           </div>
           <div>
             <strong>{achievements.length}/9</strong>

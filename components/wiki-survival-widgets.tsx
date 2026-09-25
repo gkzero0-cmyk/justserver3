@@ -1,7 +1,7 @@
 'use client'
 
 import { track } from '@vercel/analytics'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   normalizeWikiFunStats,
@@ -24,7 +24,7 @@ type WidgetPage = {
   status?: WikiContentStatus
 }
 
-const VISITED_PAGES_KEY = 'justserver3-visited-pages-v1'
+const VISITED_PAGES_KEY = 'justserver3-read-pages-v1'
 const FUN_STATS_KEY = 'justserver3-fun-stats-v1'
 const SURVIVAL_RECORD_KEY = 'justserver3-survival-record-v1'
 const TREASURES_KEY = 'justserver3-treasures-v1'
@@ -94,11 +94,10 @@ export function WikiTreasureFind({
     )
   }, [normalizedCurrent])
 
-  if (!normalizedCurrent || targetIndex < 0 || found) return null
+  const collect = useCallback(() => {
+    if (!normalizedCurrent || targetIndex < 0) return
 
-  const icon = ['💎', '🪙', '🔑', '📜'][targetIndex % 4]
-
-  const collect = () => {
+    const icon = ['💎', '🪙', '🔑', '📜'][targetIndex % 4]
     const existing = readStringArray(TREASURES_KEY)
     const normalized = existing.map((id) => id.replaceAll('-', ''))
     if (!normalized.includes(normalizedCurrent)) {
@@ -135,25 +134,80 @@ export function WikiTreasureFind({
     track('wiki_treasure_found', {
       slot: String(targetIndex + 1)
     })
-  }
+  }, [normalizedCurrent, targetIndex])
+
+  useEffect(() => {
+    if (!normalizedCurrent || targetIndex < 0 || found) return
+
+    let inserted: HTMLButtonElement | null = null
+    let observer: MutationObserver | null = null
+
+    const placeTreasure = () => {
+      if (inserted?.isConnected) return true
+
+      const root = document.querySelector<HTMLElement>('.notion-page-content')
+      if (!root) return false
+
+      const candidates = Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'p, .notion-text, .notion-callout, ul, ol, h2, h3'
+        )
+      ).filter(
+        (element) =>
+          element.textContent?.trim() &&
+          !element.closest('.wiki-inline-treasure')
+      )
+      if (!candidates.length) return false
+
+      const base = Math.floor(candidates.length * 0.56)
+      const offset = (targetIndex % 3) - 1
+      const index = Math.max(
+        0,
+        Math.min(candidates.length - 1, base + offset)
+      )
+      const anchor = candidates[index]
+
+      const button = document.createElement('button')
+      button.type = 'button'
+      button.className = 'wiki-inline-treasure'
+      button.setAttribute('aria-label', '본문에 숨겨진 위키 보물 발견')
+      button.title = '뭔가 반짝입니다'
+      button.innerHTML =
+        '<span aria-hidden="true">✦</span><small>작은 반짝임 발견</small>'
+      button.addEventListener('click', collect)
+      anchor.insertAdjacentElement('afterend', button)
+      inserted = button
+      return true
+    }
+
+    if (!placeTreasure()) {
+      const documentCard = document.querySelector('.document-card')
+      if (documentCard) {
+        observer = new MutationObserver(() => {
+          if (placeTreasure()) observer?.disconnect()
+        })
+        observer.observe(documentCard, {
+          childList: true,
+          subtree: true
+        })
+      }
+    }
+
+    return () => {
+      observer?.disconnect()
+      if (inserted) {
+        inserted.removeEventListener('click', collect)
+        inserted.remove()
+      }
+    }
+  }, [collect, found, normalizedCurrent, targetIndex])
+
+  if (!notice) return null
 
   return (
-    <>
-      <button
-        className="wiki-treasure-find"
-        type="button"
-        onClick={collect}
-        aria-label="숨겨진 위키 보물 발견"
-        title="뭔가 반짝입니다"
-      >
-        <span aria-hidden="true">✦</span>
-      </button>
-      {notice && (
-        <div className="wiki-treasure-toast" role="status">
-          {notice}
-        </div>
-      )}
-    </>
+    <div className="wiki-treasure-toast" role="status">
+      {notice}
+    </div>
   )
 }
 
@@ -211,7 +265,7 @@ export function WikiAchievementNotifier({
 
     const events = [
       'storage',
-      'justserver3:visited-pages',
+      'justserver3:read-pages',
       'justserver3:fun-stats',
       'justserver3:survival-record',
       'justserver3:treasure'
