@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { categoryTitleForPage, iconForTitle } from '@/lib/wiki-taxonomy'
+import {
+  matchesKoreanInitials,
+  updateRecentPageIds
+} from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
 
 type TocItem = {
@@ -25,6 +29,7 @@ type SearchPage = WikiPageLink & {
 const SEARCH_INDEX_URL = withBasePath(
   '/api/notion-webhook?resource=search-index'
 )
+const RECENT_PAGES_KEY = 'justserver3-recent-pages-v1'
 
 function sectionIcon(text: string) {
   return iconForTitle(text)
@@ -150,6 +155,9 @@ export function WikiShell({
   const [toc, setToc] = useState<TocItem[]>([])
   const [query, setQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
+  const [mobileTocOpen, setMobileTocOpen] = useState(false)
+  const [openMobileCategories, setOpenMobileCategories] = useState<string[]>([])
+  const [recentPageIds, setRecentPageIds] = useState<string[]>([])
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
@@ -201,6 +209,63 @@ export function WikiShell({
         : 'expanded'
       return next
     })
+  }
+
+  const currentCategory = useMemo(() => {
+    const current = pages.find(
+      (page) =>
+        currentPageId &&
+        page.pageId.replaceAll('-', '') === currentPageId.replaceAll('-', '')
+    )
+    return current ? categoryLabel(current.title) : '시작하기'
+  }, [currentPageId, pages])
+
+  useEffect(() => {
+    setOpenMobileCategories([currentCategory])
+  }, [currentCategory])
+
+  useEffect(() => {
+    let stored: string[] = []
+    try {
+      const parsed = JSON.parse(
+        window.localStorage.getItem(RECENT_PAGES_KEY) || '[]'
+      )
+      stored = Array.isArray(parsed)
+        ? parsed.filter((value): value is string => typeof value === 'string')
+        : []
+    } catch {}
+
+    const next = currentPageId
+      ? updateRecentPageIds(stored, currentPageId, 5)
+      : stored.slice(0, 5)
+
+    setRecentPageIds(next)
+
+    if (currentPageId) {
+      window.localStorage.setItem(RECENT_PAGES_KEY, JSON.stringify(next))
+    }
+  }, [currentPageId])
+
+  const recentPages = useMemo(
+    () =>
+      recentPageIds
+        .map((pageId) =>
+          pages.find(
+            (page) =>
+              page.pageId.replaceAll('-', '') === pageId.replaceAll('-', '')
+          )
+        )
+        .filter((page): page is WikiPageLink => Boolean(page))
+        .slice(0, 5),
+    [pages, recentPageIds]
+  )
+
+  const toggleMobileCategory = (category: string) => {
+    setOpenMobileCategories((value) =>
+      value.includes(category)
+        ? value.filter((item) => item !== category)
+        : [...value, category]
+    )
   }
 
   useEffect(() => {
@@ -363,6 +428,7 @@ export function WikiShell({
         const matchingTerm =
           terms.find((term) => title.includes(term) || body.includes(term)) ||
           null
+        const initialMatch = matchesKoreanInitials(page.title, keyword)
         const fuzzyTitleMatch =
           keyword.length >= 3 &&
           title
@@ -374,7 +440,7 @@ export function WikiShell({
                 editDistance(word, keyword) <= 1
             )
 
-        if (!matchingTerm && !fuzzyTitleMatch) return null
+        if (!matchingTerm && !initialMatch && !fuzzyTitleMatch) return null
 
         const bodyIndex = matchingTerm ? body.indexOf(matchingTerm) : -1
         let snippet = ''
@@ -393,7 +459,15 @@ export function WikiShell({
         const titleMatch = terms.some((term) => title.includes(term))
         const score =
           (isDraftSearchPage(page) ? 1000 : 0) +
-          (titleExact ? 0 : titleMatch ? 10 : fuzzyTitleMatch ? 20 : 40) +
+          (titleExact
+            ? 0
+            : titleMatch
+              ? 10
+              : initialMatch
+                ? 15
+                : fuzzyTitleMatch
+                  ? 20
+                  : 40) +
           priorityOf(page)
 
         return { ...page, snippet, score }
@@ -493,6 +567,7 @@ export function WikiShell({
 
       if (event.key === 'Escape') {
         setSearchOpen(false)
+        setMobileTocOpen(false)
         setQuery('')
         modalSearchRef.current?.blur()
       }
@@ -508,7 +583,17 @@ export function WikiShell({
       block: 'start'
     })
     setMenuOpen(false)
+    setMobileTocOpen(false)
   }
+
+  useEffect(() => {
+    if (!mobileTocOpen) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [mobileTocOpen])
 
   return (
     <div className={`wiki-shell ${sidebarCollapsed ? 'is-sidebar-collapsed' : ''}`}>
@@ -614,11 +699,22 @@ export function WikiShell({
               if (!groupPages.length) return null
 
               return (
-                <section className="sidebar-category" key={group}>
-                  <div className="sidebar-category-head">
+                <section
+                  className={`sidebar-category ${openMobileCategories.includes(group) ? 'is-mobile-open' : ''}`}
+                  key={group}
+                >
+                  <button
+                    type="button"
+                    className="sidebar-category-head"
+                    aria-expanded={openMobileCategories.includes(group)}
+                    onClick={() => toggleMobileCategory(group)}
+                  >
                     <strong>{group}</strong>
-                    <span>{groupPages.length}</span>
-                  </div>
+                    <span className="sidebar-category-meta">
+                      <span>{groupPages.length}</span>
+                      <b aria-hidden="true">⌄</b>
+                    </span>
+                  </button>
                   <div className="sidebar-category-links">
                     {groupPages.map((page) => (
                       <Link
@@ -797,6 +893,31 @@ export function WikiShell({
           </div>
         </section>
 
+        {home && recentPages.length > 0 && (
+          <section className="recent-viewed" aria-labelledby="recent-viewed-title">
+            <div className="recent-viewed-head">
+              <div>
+                <p>RECENTLY VIEWED</p>
+                <h2 id="recent-viewed-title">최근 본 문서</h2>
+              </div>
+              <small>이 브라우저에만 저장됩니다.</small>
+            </div>
+            <div className="recent-viewed-list">
+              {recentPages.map((page) => (
+                <Link
+                  key={page.pageId}
+                  href={withBasePath(`/page/${page.pageId}/`)}
+                  className="recent-viewed-card"
+                >
+                  <span aria-hidden="true">{sectionIcon(page.title)}</span>
+                  <strong>{page.title}</strong>
+                  <b>→</b>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
         {children}
 
         <footer className="wiki-footer">
@@ -815,7 +936,7 @@ export function WikiShell({
       {!home && (
         <div className={`mobile-reading-tools ${readingProgress > 2 ? 'is-visible' : ''}`}>
           {toc.length > 0 && (
-            <button type="button" onClick={() => setMenuOpen(true)} aria-label="현재 문서 목차 열기">
+            <button type="button" onClick={() => setMobileTocOpen(true)} aria-label="현재 문서 목차 열기">
               ☷ <span>목차</span>
             </button>
           )}
@@ -826,6 +947,56 @@ export function WikiShell({
           >
             ↑ <span>위로</span>
           </button>
+        </div>
+      )}
+
+      {mobileTocOpen && (
+        <div
+          className="mobile-toc-backdrop"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.currentTarget === event.target) setMobileTocOpen(false)
+          }}
+        >
+          <section
+            className="mobile-toc-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="현재 문서 목차"
+          >
+            <div className="mobile-toc-handle" aria-hidden="true" />
+            <header>
+              <div>
+                <small>현재 문서</small>
+                <strong>목차</strong>
+              </div>
+              <button
+                type="button"
+                aria-label="목차 닫기"
+                onClick={() => setMobileTocOpen(false)}
+              >
+                ×
+              </button>
+            </header>
+            <div className="mobile-toc-progress">
+              <span>읽는 중</span>
+              <b>{readingProgress}%</b>
+            </div>
+            <nav>
+              {toc.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`mobile-toc-item level-${item.level} ${activeTocId === item.id ? 'is-active' : ''}`}
+                  aria-current={activeTocId === item.id ? 'location' : undefined}
+                  onClick={() => goTo(item.id)}
+                >
+                  <span>{sectionIcon(item.text)}</span>
+                  <strong>{item.text}</strong>
+                </button>
+              ))}
+            </nav>
+          </section>
         </div>
       )}
 
@@ -879,7 +1050,17 @@ export function WikiShell({
               role="listbox"
               aria-label="검색 결과"
             >
-              {filteredPages.length ? (
+              {searchLoading && !searchPages && !searchFailed ? (
+                <div className="search-loading-list" aria-label="검색 색인 불러오는 중">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <span className="search-loading-row" key={index}>
+                      <i />
+                      <b />
+                      <em />
+                    </span>
+                  ))}
+                </div>
+              ) : filteredPages.length ? (
                 filteredPages.map((page, index) => (
                   <Link
                     key={page.pageId}
