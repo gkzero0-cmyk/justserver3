@@ -10,6 +10,20 @@ export function withBasePath(pathname: string) {
   return `${BASE_PATH}${pathname}`
 }
 
+export function deriveOptimizedVariant(
+  pathname: string | null | undefined,
+  kind: 'thumb256' | 'hero768' | 'hero1280' | 'hero1600'
+) {
+  if (!pathname) return null
+
+  const match = pathname.match(
+    /\/notion-assets\/optimized\/(?:[^/]+\/)?([0-9a-f]{24})\.webp$/i
+  )
+  if (!match) return null
+
+  return `/notion-assets/optimized/${kind}/${match[1]}.webp`
+}
+
 export function resolveCachedAsset(pathname: string) {
   if (/^https?:\/\//i.test(pathname)) return pathname
   if (pathname.startsWith('/notion-assets/')) {
