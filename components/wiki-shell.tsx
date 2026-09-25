@@ -975,14 +975,7 @@ export function WikiShell({
 
         return { ...page, snippet, findTerm, score }
       })
-      .filter(
-        (
-          page
-        ): page is SearchPage & {
-          snippet: string
-          score: number
-        } => Boolean(page)
-      )
+      .filter((page) => page !== null)
       .sort((a, b) => a.score - b.score)
       .slice(0, 14)
   }, [pages, query, searchPages])
