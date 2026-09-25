@@ -57,6 +57,7 @@ const CORE_PREFETCH_TITLES = new Set([
   '채광'
 ])
 const RECENT_PAGES_KEY = 'justserver3-recent-pages-v1'
+const VISITED_PAGES_KEY = 'justserver3-visited-pages-v1'
 
 function categoryLabel(title: string) {
   return categoryTitleForPage(title)
@@ -254,8 +255,31 @@ export function WikiShell({
 
     if (currentPageId) {
       window.localStorage.setItem(RECENT_PAGES_KEY, JSON.stringify(next))
+
+      let visited: string[] = []
+      try {
+        const parsed = JSON.parse(
+          window.localStorage.getItem(VISITED_PAGES_KEY) || '[]'
+        )
+        visited = Array.isArray(parsed)
+          ? parsed.filter(
+              (value): value is string => typeof value === 'string'
+            )
+          : []
+      } catch {}
+
+      const nextVisited = updateRecentPageIds(
+        visited,
+        currentPageId,
+        Math.max(pages.length, 1)
+      )
+      window.localStorage.setItem(
+        VISITED_PAGES_KEY,
+        JSON.stringify(nextVisited)
+      )
+      window.dispatchEvent(new Event('justserver3:visited-pages'))
     }
-  }, [currentPageId])
+  }, [currentPageId, pages.length])
 
   const recentPages = useMemo(
     () =>
