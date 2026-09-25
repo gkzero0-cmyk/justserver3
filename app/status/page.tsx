@@ -157,10 +157,6 @@ export default async function StatusPage() {
     buildWorkflow.status !== 'completed' ||
     buildWorkflow.conclusion === 'success'
   const overallHealthy = syncHealthy && buildHealthy && productionHealth.ok
-  const generated = index.generatedAt ? new Date(index.generatedAt) : null
-  const nextSync = generated
-    ? new Date(generated.getTime() + 5 * 60 * 1000).toISOString()
-    : null
   const webhookSignatureReady = Boolean(
     process.env.NOTION_WEBHOOK_VERIFICATION_TOKEN
   )
@@ -171,7 +167,7 @@ export default async function StatusPage() {
     <WikiShell
       sourceUrl={notionPublicUrl(ROOT_PAGE_ID)}
       title="위키 상태"
-      pageCount={index.pages.length || 1}
+      pageCount={pages.length || 1}
       pages={pages.map(({ pageId, title }) => ({
         pageId,
         title
@@ -285,14 +281,18 @@ export default async function StatusPage() {
             <div>
               <small>Notion Webhook</small>
               <strong>
-                {webhookSignatureReady ? '실시간 연결됨' : '수신기 준비됨'}
+                {webhookSignatureReady
+                  ? instantAssetSyncReady
+                    ? '즉시 동기화 연결됨'
+                    : '본문 실시간 연결됨'
+                  : '5분 동기화 사용 중'}
               </strong>
               <span>
                 {webhookSignatureReady
                   ? instantAssetSyncReady
-                    ? '캐시 무효화 + 자산 동기화 즉시 실행'
-                    : '본문 즉시 갱신 · 자산은 5분 안전망'
-                  : 'Notion 구독 인증 후 실시간 이벤트 활성화'}
+                    ? 'Notion 이벤트 수신 후 캐시 무효화와 자산 동기화를 즉시 실행'
+                    : 'Notion 이벤트 수신 후 본문 갱신 · 이미지는 5분 안전망 사용'
+                  : 'Webhook 인증 전에는 GitHub Actions 5분 안전망으로 최신 내용을 확인'}
               </span>
             </div>
             <a href="/api/notion-webhook" target="_blank" rel="noreferrer">
@@ -304,8 +304,12 @@ export default async function StatusPage() {
             <span className="status-service-icon">◷</span>
             <div>
               <small>자동 동기화 안전망</small>
-              <strong>5분 주기</strong>
-              <span>다음 예상 {formatDate(nextSync)}</span>
+              <strong>약 5분 주기</strong>
+              <span>
+                {syncWorkflow?.updatedAt
+                  ? `최근 확인 ${formatDate(syncWorkflow.updatedAt)}`
+                  : 'GitHub Actions에서 주기적으로 최신 상태를 확인'}
+              </span>
             </div>
           </article>
         </div>
