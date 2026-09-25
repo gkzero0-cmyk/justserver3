@@ -6,6 +6,7 @@ import { WikiShell } from '@/components/wiki-shell'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
 import { readNotionIndex } from '@/lib/notion-index'
 import { isDraftPage } from '@/lib/wiki-content-status'
+import { relativeUpdateLabel } from '@/lib/wiki-ux'
 import {
   deriveOptimizedVariant,
   resolveCachedAsset,
@@ -113,11 +114,14 @@ export default async function HomePage() {
             <Link
               key={page.pageId}
               href={withBasePath(`/page/${page.pageId}/`)}
-              prefetch={false}
               className="recent-update-card"
             >
-              <span className="recent-update-date">
-                {formatDate(page.lastEdited)}
+              <span
+                className="recent-update-date"
+                title={formatDate(page.lastEdited)}
+              >
+                {relativeUpdateLabel(page.lastEdited)}
+                <small>{formatDate(page.lastEdited)}</small>
               </span>
               <strong>{page.title}</strong>
               {page.changeSummary && (
