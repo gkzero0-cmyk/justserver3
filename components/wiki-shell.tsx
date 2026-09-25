@@ -11,10 +11,14 @@ import {
   type ReadingTocItem
 } from '@/components/wiki-reading-widgets'
 import {
+  WikiNavigation,
+  type WikiNavigationPage
+} from '@/components/wiki-navigation'
+import {
   WikiSearchDialog,
   type WikiSearchResult
 } from '@/components/wiki-search-dialog'
-import { categoryTitleForPage, iconForTitle } from '@/lib/wiki-taxonomy'
+import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import {
   classifyWikiContent,
   matchesKoreanInitials,
@@ -27,11 +31,8 @@ import { withBasePath } from '@/lib/url-utils'
 
 type TocItem = ReadingTocItem
 
-type WikiPageLink = {
-  pageId: string
-  title: string
+type WikiPageLink = WikiNavigationPage & {
   status?: WikiContentStatus
-  category?: string
 }
 
 type SearchPage = WikiPageLink & {
@@ -42,10 +43,6 @@ const SEARCH_INDEX_URL = withBasePath(
   '/api/notion-webhook?resource=search-index'
 )
 const RECENT_PAGES_KEY = 'justserver3-recent-pages-v1'
-
-function sectionIcon(text: string) {
-  return iconForTitle(text)
-}
 
 function categoryLabel(title: string) {
   return categoryTitleForPage(title)
@@ -816,180 +813,24 @@ export function WikiShell({
         </div>
       </header>
 
-      <aside className={`wiki-sidebar ${menuOpen ? 'is-open' : ''}`}>
-        <div className="sidebar-head">
-          <strong>문서 탐색</strong>
-          <span>{pages.length}개</span>
-        </div>
-
-        {!home && (
-          <button
-            className="wiki-search wiki-search-trigger"
-            type="button"
-            aria-keyshortcuts="Control+K Meta+K /"
-            onClick={openSearch}
-          >
-            <span>⌕</span>
-            <span>전체 문서 검색</span>
-            <kbd>⌘K</kbd>
-          </button>
-        )}
-
-        <div className="sidebar-primary-links">
-          <Link className="sidebar-home" href={withBasePath('/')} prefetch={false} onClick={() => setMenuOpen(false)}>
-            <span>🏠</span>
-            위키 홈
-          </Link>
-        </div>
-
-        <nav className="toc-list">
-          <div className="global-page-list">
-            <span className="nav-section-label">전체 문서</span>
-            {['시작하기', '주요 콘텐츠', '성장 · 경제'].map((group) => {
-              const groupPages = pages.filter(
-                (page) => pageCategoryLabel(page) === group
-              )
-
-              if (!groupPages.length) return null
-
-              return (
-                <section
-                  className={`sidebar-category ${openMobileCategories.includes(group) ? 'is-mobile-open' : ''}`}
-                  key={group}
-                >
-                  <div className="sidebar-category-head sidebar-category-head-static">
-                    <strong>{group}</strong>
-                    <span className="sidebar-category-meta">
-                      <span>{groupPages.length}</span>
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    className="sidebar-category-head sidebar-category-head-toggle"
-                    aria-expanded={openMobileCategories.includes(group)}
-                    onClick={() => toggleMobileCategory(group)}
-                  >
-                    <strong>{group}</strong>
-                    <span className="sidebar-category-meta">
-                      <span>{groupPages.length}</span>
-                      <b aria-hidden="true">⌄</b>
-                    </span>
-                  </button>
-                  <div className="sidebar-category-links">
-                    {groupPages.map((page) => (
-                      <Link
-                        key={page.pageId}
-                        href={withBasePath(`/page/${page.pageId}/`)}
-                        prefetch={false}
-                        onClick={() => setMenuOpen(false)}
-                        className={`global-page-link ${
-                          currentPageId &&
-                          page.pageId.replaceAll('-', '') ===
-                            currentPageId.replaceAll('-', '')
-                            ? 'is-current'
-                            : ''
-                        }`}
-                        aria-current={
-                          currentPageId &&
-                          page.pageId.replaceAll('-', '') ===
-                            currentPageId.replaceAll('-', '')
-                            ? 'page'
-                            : undefined
-                        }
-                      >
-                        <span className="sidebar-page-icon" aria-hidden="true">
-                          {sectionIcon(page.title)}
-                        </span>
-                        <span className="global-page-copy">
-                          <strong>{page.title}</strong>
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              )
-            })}
-          </div>
-
-          <div className="current-toc mobile-current-toc">
-            <span className="nav-section-label">현재 페이지</span>
-            {toc.length ? (
-              toc.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={`toc-item level-${item.level} ${
-                    activeTocId === item.id ? 'is-active' : ''
-                  }`}
-                  aria-current={activeTocId === item.id ? 'location' : undefined}
-                  onClick={() => goTo(item.id)}
-                >
-                  <span>{sectionIcon(item.text)}</span>
-                  <span>{item.text}</span>
-                </button>
-              ))
-            ) : (
-              <p className="toc-empty">현재 페이지 목차가 없습니다.</p>
-            )}
-          </div>
-        </nav>
-
-        <div className="sidebar-foot">
-          <span className="live-dot" />
-          공식 가이드 문서
-        </div>
-      </aside>
-
-      <button
-        className="sidebar-edge-toggle"
-        type="button"
-        aria-label={sidebarCollapsed ? '문서 목록 펼치기' : '문서 목록 접기'}
-        aria-pressed={sidebarCollapsed}
-        title={sidebarCollapsed ? '문서 목록 펼치기' : '문서 목록 접기'}
-        onClick={toggleSidebar}
-      >
-        <span className="sidebar-toggle-expanded" aria-hidden="true">‹</span>
-        <span className="sidebar-toggle-collapsed" aria-hidden="true">
-          <b>☰</b><em>문서</em>
-        </span>
-      </button>
-
-      {menuOpen && (
-        <button
-          className="sidebar-backdrop"
-          type="button"
-          aria-label="메뉴 닫기"
-          onClick={() => setMenuOpen(false)}
-        />
-      )}
-
-      {!home && toc.length > 0 && (
-        <aside className="article-toc" aria-label="현재 문서 목차">
-          <div className="article-progress">
-            <span>읽는 중</span>
-            <strong>{readingProgress}%</strong>
-          </div>
-          <div className="article-progress-track" aria-hidden="true">
-            <span style={{ height: `${readingProgress}%` }} />
-          </div>
-          <span className="article-toc-label">이 페이지에서</span>
-          <nav>
-            {toc.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className={`article-toc-item level-${item.level} ${
-                  activeTocId === item.id ? 'is-active' : ''
-                }`}
-                aria-current={activeTocId === item.id ? 'location' : undefined}
-                onClick={() => goTo(item.id)}
-              >
-                {item.text}
-              </button>
-            ))}
-          </nav>
-        </aside>
-      )}
+      <WikiNavigation
+        pages={pages}
+        currentPageId={currentPageId}
+        currentCategory={currentCategory}
+        openMobileCategories={openMobileCategories}
+        onToggleMobileCategory={toggleMobileCategory}
+        menuOpen={menuOpen}
+        onCloseMenu={() => setMenuOpen(false)}
+        home={home}
+        toc={toc}
+        activeTocId={activeTocId}
+        onNavigateToc={goTo}
+        readingProgress={readingProgress}
+        sidebarCollapsed={sidebarCollapsed}
+        onToggleSidebar={toggleSidebar}
+        onOpenSearch={openSearch}
+        categoryForPage={pageCategoryLabel}
+      />
 
       <main
         className={`wiki-main ${!home && toc.length ? 'has-article-toc' : ''}`}
