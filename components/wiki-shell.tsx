@@ -8,6 +8,7 @@ import { categoryTitleForPage, iconForTitle } from '@/lib/wiki-taxonomy'
 import {
   classifyWikiContent,
   matchesKoreanInitials,
+  suggestFallbackPages,
   updateRecentPageIds
 } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
@@ -171,6 +172,7 @@ export function WikiShell({
   const [selectedResult, setSelectedResult] = useState(0)
   const modalSearchRef = useRef<HTMLInputElement>(null)
   const modalRef = useRef<HTMLElement>(null)
+  const mobileTocCloseRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     const saved = window.localStorage.getItem('justserver3-theme')
@@ -486,6 +488,13 @@ export function WikiShell({
       .slice(0, 14)
   }, [pages, query, searchPages])
 
+  const fallbackPages = useMemo(() => {
+    if (!query.trim() || filteredPages.length) return []
+    const source: SearchPage[] =
+      searchPages ?? pages.map((page) => ({ ...page, searchText: '' }))
+    return suggestFallbackPages(source, SEARCH_PRIORITY, 3)
+  }, [filteredPages.length, pages, query, searchPages])
+
   useEffect(() => {
     setSelectedResult(0)
   }, [query, filteredPages.length])
@@ -592,7 +601,10 @@ export function WikiShell({
     if (!mobileTocOpen) return
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    const frame = requestAnimationFrame(() => mobileTocCloseRef.current?.focus())
+
     return () => {
+      cancelAnimationFrame(frame)
       document.body.style.overflow = previousOverflow
     }
   }, [mobileTocOpen])
@@ -973,6 +985,7 @@ export function WikiShell({
                 <strong>목차</strong>
               </div>
               <button
+                ref={mobileTocCloseRef}
                 type="button"
                 aria-label="목차 닫기"
                 onClick={() => setMobileTocOpen(false)}
@@ -1110,9 +1123,32 @@ export function WikiShell({
                   </Link>
                 ))
               ) : (
-                <p className="search-empty">
-                  일치하는 문서가 없습니다. 다른 검색어를 입력해보세요.
-                </p>
+                <div className="search-empty-state">
+                  <p className="search-empty">
+                    일치하는 문서를 찾지 못했습니다.
+                  </p>
+                  {fallbackPages.length > 0 && (
+                    <div className="search-fallback">
+                      <span>대신 많이 찾는 문서를 확인해보세요.</span>
+                      <div>
+                        {fallbackPages.map((page) => (
+                          <Link
+                            key={page.pageId}
+                            href={withBasePath(`/page/${page.pageId}/`)}
+                            onClick={() => {
+                              setSearchOpen(false)
+                              setQuery('')
+                            }}
+                          >
+                            <span aria-hidden="true">{sectionIcon(page.title)}</span>
+                            <strong>{page.title}</strong>
+                            <b>→</b>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </section>
