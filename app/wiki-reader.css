@@ -2643,36 +2643,24 @@ html[data-theme="light"] .draft-state {
   order: 0;
 }
 
-.wiki-main.is-home-main > .starter-guide {
+.wiki-main.is-home-main > .recent-viewed {
   order: 1;
 }
 
-.wiki-main.is-home-main > .wiki-fun-zone {
+.wiki-main.is-home-main > .starter-guide {
   order: 2;
 }
 
-.wiki-main.is-home-main > .wiki-survival-log {
+.wiki-main.is-home-main > .wiki-directory {
   order: 3;
 }
 
-.wiki-main.is-home-main > .wiki-reading-explorer {
+.wiki-main.is-home-main > .recent-updates {
   order: 4;
 }
 
-.wiki-main.is-home-main > .wiki-adventure-hub {
+.wiki-main.is-home-main > .home-playground {
   order: 5;
-}
-
-.wiki-main.is-home-main > .recent-viewed {
-  order: 6;
-}
-
-.wiki-main.is-home-main > .wiki-directory {
-  order: 7;
-}
-
-.wiki-main.is-home-main > .recent-updates {
-  order: 8;
 }
 
 .wiki-main.is-home-main > .wiki-footer {
@@ -7360,5 +7348,134 @@ html[data-theme="light"] .adventure-unlock-toast strong {
 @media (prefers-reduced-motion: reduce) {
   .wiki-search-hit {
     scroll-margin-top: calc(var(--topbar) + 22px);
+  }
+}
+
+
+/* === 2026-09-26 adaptive home and section search === */
+.starter-guide.is-returning {
+  border-color: rgba(var(--accent-rgb), .13);
+  background:
+    radial-gradient(circle at 92% 0%, rgba(var(--accent-rgb), .075), transparent 30%),
+    rgba(255,255,255,.012);
+}
+
+.starter-guide.is-complete {
+  border-color: rgba(var(--gold-rgb), .13);
+}
+
+.starter-progress {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin: -2px 0 15px;
+}
+
+.starter-progress > span {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255,255,255,.055);
+}
+
+.starter-progress > span > i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(var(--accent-rgb), .88), rgba(var(--gold-rgb), .82));
+  transition: width .28s ease;
+}
+
+.starter-progress > small {
+  color: #958780;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.starter-step.is-complete {
+  opacity: .7;
+  background: rgba(255,255,255,.012);
+}
+
+.starter-step.is-complete .starter-number {
+  color: #86b797;
+}
+
+.starter-step.is-next {
+  border-color: rgba(var(--accent-rgb), .34);
+  background:
+    linear-gradient(135deg, rgba(var(--accent-rgb), .095), rgba(var(--gold-rgb), .035)),
+    rgba(255,255,255,.022);
+  box-shadow: inset 3px 0 0 rgba(var(--accent-rgb), .68);
+}
+
+.starter-step.is-next .starter-target em {
+  border-color: rgba(var(--accent-rgb), .24);
+  background: rgba(var(--accent-rgb), .09);
+  color: #d88379;
+}
+
+.search-result-section {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+  color: #c5aaa0;
+  font-size: 11px;
+  font-weight: 760;
+  line-height: 1.35;
+}
+
+.search-result-section > b {
+  color: #897771;
+  font-size: 10px;
+}
+
+.search-result-section mark {
+  border-radius: 3px;
+  background: rgba(var(--gold-rgb), .18);
+  color: inherit;
+}
+
+.article-change-summary {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  gap: 6px;
+}
+
+.article-change-summary em {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(var(--accent-rgb), .07);
+  color: #b98279;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.article-change-summary strong {
+  overflow: hidden;
+  max-width: min(620px, 64vw);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 620px) {
+  .starter-progress {
+    margin-bottom: 10px;
+  }
+
+  .article-change-summary {
+    width: 100%;
+  }
+
+  .article-change-summary strong {
+    max-width: calc(100vw - 132px);
+  }
+
+  .search-result-section {
+    font-size: 10px;
   }
 }
