@@ -14,6 +14,7 @@ export type WikiStateField =
   | 'seenStoryChapters'
   | 'seenBossWeeks'
   | 'readingQuizzes'
+  | 'enhancementLab'
 
 type WikiClientState = {
   version: 2
@@ -32,7 +33,8 @@ const LEGACY_KEYS: Record<WikiStateField, string> = {
   seenAchievements: 'justserver3-seen-achievements-v1',
   seenStoryChapters: 'justserver3-seen-story-chapters-v1',
   seenBossWeeks: 'justserver3-seen-boss-weeks-v1',
-  readingQuizzes: 'justserver3-reading-quizzes-v1'
+  readingQuizzes: 'justserver3-reading-quizzes-v1',
+  enhancementLab: 'justserver3-enhancement-lab-v1'
 }
 
 function parseStoredValue(raw: string) {
