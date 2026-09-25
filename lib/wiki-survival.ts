@@ -24,6 +24,8 @@ function uniqueNormalizedPageIds(values: string[]) {
 
 export type SurvivalActivity = {
   visits: string[]
+  reads: string[]
+  readingQuizzes: string[]
   fortune: number
   quiz: number
   random: number
@@ -51,6 +53,8 @@ export type WeeklyChallengeId =
 
 export const EMPTY_SURVIVAL_ACTIVITY: SurvivalActivity = {
   visits: [],
+  reads: [],
+  readingQuizzes: [],
   fortune: 0,
   quiz: 0,
   random: 0,
@@ -79,6 +83,20 @@ function normalizeDayActivity(value: unknown): SurvivalActivity {
     visits: uniqueNormalizedPageIds(
       Array.isArray(candidate.visits)
         ? candidate.visits.filter(
+            (item): item is string => typeof item === 'string'
+          )
+        : []
+    ),
+    reads: uniqueNormalizedPageIds(
+      Array.isArray(candidate.reads)
+        ? candidate.reads.filter(
+            (item): item is string => typeof item === 'string'
+          )
+        : []
+    ),
+    readingQuizzes: uniqueNormalizedPageIds(
+      Array.isArray(candidate.readingQuizzes)
+        ? candidate.readingQuizzes.filter(
             (item): item is string => typeof item === 'string'
           )
         : []
@@ -146,7 +164,14 @@ export function recordSurvivalDay(
 export function recordSurvivalActivity(
   record: SurvivalRecord,
   dateKey: string,
-  kind: 'visit' | 'fortune' | 'quiz' | 'random' | 'treasure',
+  kind:
+    | 'visit'
+    | 'read'
+    | 'reading-quiz'
+    | 'fortune'
+    | 'quiz'
+    | 'random'
+    | 'treasure',
   value?: string
 ): SurvivalRecord {
   const withDay = recordSurvivalDay(record, dateKey)
@@ -155,11 +180,20 @@ export function recordSurvivalActivity(
   const next: SurvivalActivity = {
     ...current,
     visits: [...current.visits],
+    reads: [...current.reads],
+    readingQuizzes: [...current.readingQuizzes],
     treasures: [...current.treasures]
   }
 
   if (kind === 'visit' && value) {
     next.visits = uniqueNormalizedPageIds([...next.visits, value])
+  } else if (kind === 'read' && value) {
+    next.reads = uniqueNormalizedPageIds([...next.reads, value])
+  } else if (kind === 'reading-quiz' && value) {
+    next.readingQuizzes = uniqueNormalizedPageIds([
+      ...next.readingQuizzes,
+      value
+    ])
   } else if (kind === 'treasure' && value) {
     next.treasures = uniqueNormalizedPageIds([...next.treasures, value])
   } else if (kind === 'fortune') {
@@ -252,10 +286,10 @@ export function dailyMissionProgress(
   activity: SurvivalActivity
 ) {
   if (id === 'visit-one') {
-    return { current: Math.min(activity.visits.length, 1), target: 1 }
+    return { current: Math.min(activity.reads.length, 1), target: 1 }
   }
   if (id === 'visit-two') {
-    return { current: Math.min(activity.visits.length, 2), target: 2 }
+    return { current: Math.min(activity.reads.length, 2), target: 2 }
   }
   if (id === 'fortune') {
     return { current: Math.min(activity.fortune, 1), target: 1 }
@@ -290,6 +324,7 @@ export function weeklyActivitySummary(
 ) {
   const start = dateKeyDayNumber(weekKey)
   const visits: string[] = []
+  const reads: string[] = []
   const treasures: string[] = []
   let fortune = 0
   let quiz = 0
@@ -301,6 +336,7 @@ export function weeklyActivitySummary(
     if (!activity) continue
 
     visits.push(...activity.visits)
+    reads.push(...activity.reads)
     treasures.push(...activity.treasures)
     fortune += activity.fortune
     quiz += activity.quiz
@@ -309,6 +345,7 @@ export function weeklyActivitySummary(
 
   return {
     visits: uniqueNormalizedPageIds(visits),
+    reads: uniqueNormalizedPageIds(reads),
     treasures: uniqueNormalizedPageIds(treasures),
     fortune,
     quiz,
@@ -321,7 +358,7 @@ export function weeklyChallengeProgress(
   summary: ReturnType<typeof weeklyActivitySummary>
 ) {
   if (id === 'week-visit-five') {
-    return { current: Math.min(summary.visits.length, 5), target: 5 }
+    return { current: Math.min(summary.reads.length, 5), target: 5 }
   }
   if (id === 'week-fortune-three') {
     return { current: Math.min(summary.fortune, 3), target: 3 }
