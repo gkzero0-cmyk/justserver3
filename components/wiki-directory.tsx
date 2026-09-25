@@ -163,13 +163,20 @@ export function WikiDirectory({
                   >
                     <span
                       className={`directory-media ${media ? 'has-image' : 'is-icon'}`}
-                      style={
-                        resolvedMedia
-                          ? { backgroundImage: `url("${resolvedMedia}")` }
-                          : undefined
-                      }
                     >
-                      {!media && iconForTitle(page.title)}
+                      {resolvedMedia ? (
+                        <img
+                          src={resolvedMedia}
+                          alt=""
+                          aria-hidden="true"
+                          loading="lazy"
+                          decoding="async"
+                          width="480"
+                          height="270"
+                        />
+                      ) : (
+                        iconForTitle(page.title)
+                      )}
                     </span>
 
                     <span className="directory-copy">
