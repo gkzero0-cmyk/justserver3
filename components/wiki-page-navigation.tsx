@@ -36,6 +36,8 @@ export function WikiPageNavigation({
   const updatedAt = formatDate(current.lastEdited)
 
   if (mode === 'siblings') {
+    if (!previous && !next) return null
+
     return (
       <nav className="page-siblings page-siblings-bottom" aria-label="이전 및 다음 문서">
         {previous ? (
