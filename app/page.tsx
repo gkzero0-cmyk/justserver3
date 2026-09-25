@@ -45,6 +45,16 @@ export default async function HomePage() {
   const brandLogo = rootPage?.icon ? resolveCachedAsset(rootPage.icon) : null
   const heroImage = rootPage?.cover ? resolveCachedAsset(rootPage.cover) : null
 
+  const siteUrl = 'https://justserver3.vercel.app'
+  const websiteJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: '그냥서버 : 적자생존 공식 위키',
+    url: siteUrl,
+    description:
+      '그냥서버 : 적자생존의 서버 규칙, 시스템, 콘텐츠와 성장 가이드를 모아보는 공식 위키입니다.'
+  }
+
   return (
     <WikiShell
       sourceUrl={notionPublicUrl(ROOT_PAGE_ID)}
@@ -60,6 +70,10 @@ export default async function HomePage() {
       heroImage={heroImage}
       home
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
       <StarterGuide pages={directoryPages} />
       <WikiDirectory pages={directoryPages} />
 
