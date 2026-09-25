@@ -47,6 +47,9 @@ type WikiPageLink = WikiNavigationPage & {
 
 type SearchPage = WikiPageLink & {
   searchText?: string
+  snippet?: string
+  findTerm?: string
+  score?: number
 }
 
 type SearchIndexPayload = {
@@ -577,6 +580,90 @@ export function WikiShell({
   }, [toc])
 
   useEffect(() => {
+    if (home || !currentPageId || !toc.length) return
+
+    const url = new URL(window.location.href)
+    const findTerm = url.searchParams.get('find')?.trim()
+    if (!findTerm) return
+
+    let cancelled = false
+    let timer = 0
+    let attempts = 0
+
+    const locateSearchMatch = () => {
+      if (cancelled) return
+
+      const root = document.querySelector<HTMLElement>('.notion-page-content')
+      if (!root) {
+        if (attempts++ < 12) {
+          timer = window.setTimeout(locateSearchMatch, 100)
+        }
+        return
+      }
+
+      const normalizedTerm = findTerm.toLocaleLowerCase('ko-KR')
+      const candidates = Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'h1, h2, h3, p, li, .notion-text, .notion-callout, .notion-quote'
+        )
+      ).filter((element) => {
+        if (element.closest('.heading-anchor-copy')) return false
+        const text = element.textContent?.replace(/\s+/g, ' ').trim()
+        return Boolean(
+          text &&
+          text.toLocaleLowerCase('ko-KR').includes(normalizedTerm)
+        )
+      })
+
+      const target = candidates[0]
+      if (!target) {
+        if (attempts++ < 12) {
+          timer = window.setTimeout(locateSearchMatch, 100)
+        }
+        return
+      }
+
+      const headings = toc
+        .map((item) => document.getElementById(item.id))
+        .filter((element): element is HTMLElement => Boolean(element))
+      const nearestHeading = headings
+        .filter(
+          (heading) =>
+            heading === target ||
+            Boolean(
+              heading.compareDocumentPosition(target) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+            )
+        )
+        .at(-1)
+
+      const scrollTarget = nearestHeading || target
+      scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+      target.classList.add('wiki-search-hit')
+      window.setTimeout(() => target.classList.remove('wiki-search-hit'), 2600)
+
+      if (nearestHeading?.id) {
+        url.hash = nearestHeading.id
+        window.history.replaceState(null, '', url)
+        handledHashRef.current = nearestHeading.id
+      }
+
+      track('wiki_search_match_reveal', {
+        anchored: Boolean(nearestHeading),
+        status: contentStatus || 'unknown'
+      })
+    }
+
+    timer = window.setTimeout(locateSearchMatch, 80)
+
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+    }
+  }, [contentStatus, currentPageId, home, toc])
+
+  useEffect(() => {
     if (home) return
 
     readingProgressRef.current = 0
@@ -876,9 +963,12 @@ export function WikiShell({
     if (!keyword) {
       return [...source]
         .sort((a, b) => {
-          const draftDiff =
-            Number(isDraftSearchPage(a)) - Number(isDraftSearchPage(b))
-          if (draftDiff) return draftDiff
+          const statusRank = (page: SearchPage) => {
+            const status = searchPageStatus(page)
+            return status === 'draft' ? 2 : status === 'brief' ? 1 : 0
+          }
+          const statusDiff = statusRank(a) - statusRank(b)
+          if (statusDiff) return statusDiff
           return priorityOf(a) - priorityOf(b)
         })
         .slice(0, 10)
@@ -922,8 +1012,14 @@ export function WikiShell({
 
         const titleExact = title === keyword
         const titleMatch = terms.some((term) => title.includes(term))
+        const status = searchPageStatus(page)
+        const statusPenalty =
+          status === 'draft' ? 1000 : status === 'brief' ? 80 : 0
+        const findTerm =
+          !titleMatch && bodyIndex >= 0 ? matchingTerm || keyword : ''
+
         const score =
-          (isDraftSearchPage(page) ? 1000 : 0) +
+          statusPenalty +
           (titleExact
             ? 0
             : titleMatch
@@ -935,7 +1031,7 @@ export function WikiShell({
                   : 40) +
           priorityOf(page)
 
-        return { ...page, snippet, score }
+        return { ...page, snippet, findTerm, score }
       })
       .filter(
         (
@@ -963,7 +1059,8 @@ export function WikiShell({
         title: page.title,
         category: pageCategoryLabel(page),
         status: searchPageStatus(page),
-        snippet: page.snippet
+        snippet: page.snippet,
+        findTerm: page.findTerm
       })),
     [filteredPages]
   )
@@ -985,7 +1082,7 @@ export function WikiShell({
     setQuery('')
   }
 
-  const navigateSearchResult = (pageId: string) => {
+  const navigateSearchResult = (pageId: string, findTerm?: string) => {
     const page = (searchPages ?? pages).find(
       (item) =>
         item.pageId.replaceAll('-', '') === pageId.replaceAll('-', '')
@@ -996,7 +1093,12 @@ export function WikiShell({
       status: page ? searchPageStatus(page) || 'unknown' : 'unknown'
     })
 
-    router.push(withBasePath(`/page/${pageId}/`))
+    const href = withBasePath(`/page/${pageId}/`)
+    router.push(
+      findTerm
+        ? `${href}?find=${encodeURIComponent(findTerm)}`
+        : href
+    )
     closeSearch()
   }
 
