@@ -14,12 +14,18 @@ const checks = [
     expect: ['서버규칙']
   },
   {
+    path: '/guide/faq/',
+    expect: ['빠르게 확인하는 서버 규칙', '11개 확인됨']
+  },
+  {
     path: '/notion-assets/search-index.json',
-    expect: ['"pages"', '"sections"']
+    expect: ['"pages"', '"sections"', '재입주할 수 있나요?']
   }
 ]
 
 let failed = false
+
+let searchIndexText = ''
 
 for (const check of checks) {
   const url = baseUrl + check.path
@@ -30,6 +36,7 @@ for (const check of checks) {
     }
   })
   const text = await response.text()
+  if (check.path.includes('search-index.json')) searchIndexText = text
   const missing = check.expect.filter((value) => !text.includes(value))
 
   if (!response.ok || missing.length) {
@@ -40,6 +47,17 @@ for (const check of checks) {
   } else {
     console.log(`PASS ${check.path} HTTP ${response.status}`)
   }
+}
+
+if (
+  /(?:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}|\\b\\d+)\\.(?:png|jpe?g|webp|gif|svg|avif|bmp)\\b/i.test(
+    searchIndexText
+  )
+) {
+  failed = true
+  console.error('FAIL search index contains raw image filenames')
+} else if (searchIndexText) {
+  console.log('PASS search index filename hygiene')
 }
 
 const oldRules =
