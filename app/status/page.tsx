@@ -412,6 +412,18 @@ export default async function StatusPage() {
             </a>
           </article>
 
+          <article data-tone="success">
+            <span className="status-service-icon">⌕</span>
+            <div>
+              <small>검색 UX 분석</small>
+              <strong>계측 활성</strong>
+              <span>
+                검색 열기 · 결과 이동 · 빠른 답변 · 0건 검색을 구분해 집계합니다.
+                검색어 원문은 분석 이벤트에 저장하지 않습니다.
+              </span>
+            </div>
+          </article>
+
           <article data-tone="working">
             <span className="status-service-icon">◷</span>
             <div>
