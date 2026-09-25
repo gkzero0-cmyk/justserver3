@@ -2,7 +2,7 @@ import { WikiShell } from '@/components/wiki-shell'
 import { readNotionAssetManifest } from '@/lib/notion-assets'
 import { readNotionIndex } from '@/lib/notion-index'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
-import { withBasePath } from '@/lib/url-utils'
+import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
 
 export const revalidate = 300
 
@@ -33,9 +33,14 @@ export default async function StatusPage() {
   ])
 
   const rootId = index.rootPageId.replaceAll('-', '')
+  const rootPage =
+    index.pages.find(
+      (page) => page.pageId.replaceAll('-', '') === rootId
+    ) ?? null
   const pages = index.pages.filter(
     (page) => page.pageId.replaceAll('-', '') !== rootId
   )
+  const brandLogo = rootPage?.icon ? resolveCachedAsset(rootPage.icon) : null
   const optimizedAssets = new Set(
     Object.values(manifest).filter((value) => value.includes('/optimized/'))
   )
@@ -59,6 +64,7 @@ export default async function StatusPage() {
         title,
         searchText
       }))}
+      brandLogo={brandLogo}
     >
       <section className="status-dashboard">
         <div className="status-summary">
