@@ -138,6 +138,10 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                     prefetch={PREFETCH_TITLES.has(page.title)}
                     className={`directory-card ${featured ? 'is-featured' : ''} ${status === 'brief' ? 'is-brief' : ''}`}
                     data-status={status}
+                    data-wiki-event="wiki_home_navigate"
+                    data-wiki-section="directory"
+                    data-wiki-target={page.title}
+                    data-wiki-status={status}
                   >
                     <span className={`directory-media ${media ? 'has-image' : 'is-icon'}`}>
                       {resolvedMedia ? (
@@ -189,6 +193,10 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                         aria-label={`${page.title} — 작성 중인 문서`}
                         className="directory-card is-draft"
                         data-status="draft"
+                        data-wiki-event="wiki_home_navigate"
+                        data-wiki-section="directory"
+                        data-wiki-target={page.title}
+                        data-wiki-status="draft"
                       >
                         <span className={`directory-media ${media ? 'has-image' : 'is-icon'}`}>
                           {resolvedMedia ? (
