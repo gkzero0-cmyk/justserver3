@@ -160,8 +160,12 @@ export default async function StatusPage() {
   const overallHealthy = syncHealthy && buildHealthy && productionHealth.ok
   const generated = index.generatedAt ? new Date(index.generatedAt) : null
   const nextSync = generated
-    ? new Date(generated.getTime() + 6 * 60 * 60 * 1000).toISOString()
+    ? new Date(generated.getTime() + 5 * 60 * 1000).toISOString()
     : null
+  const webhookSignatureReady = Boolean(
+    process.env.NOTION_WEBHOOK_VERIFICATION_TOKEN
+  )
+  const instantAssetSyncReady = Boolean(process.env.GITHUB_ACTIONS_TOKEN)
   const production = process.env.VERCEL_ENV === 'production'
 
   return (
@@ -278,12 +282,32 @@ export default async function StatusPage() {
             </a>
           </article>
 
+          <article data-tone={webhookSignatureReady ? 'success' : 'working'}>
+            <span className="status-service-icon">⚡</span>
+            <div>
+              <small>Notion Webhook</small>
+              <strong>
+                {webhookSignatureReady ? '실시간 연결됨' : '수신기 준비됨'}
+              </strong>
+              <span>
+                {webhookSignatureReady
+                  ? instantAssetSyncReady
+                    ? '캐시 무효화 + 자산 동기화 즉시 실행'
+                    : '본문 즉시 갱신 · 자산은 5분 안전망'
+                  : 'Notion 구독 인증 후 실시간 이벤트 활성화'}
+              </span>
+            </div>
+            <a href="/api/notion-webhook" target="_blank" rel="noreferrer">
+              수신기 상태 ↗
+            </a>
+          </article>
+
           <article data-tone="working">
             <span className="status-service-icon">◷</span>
             <div>
-              <small>다음 자산 동기화</small>
-              <strong>6시간 주기</strong>
-              <span>예상 {formatDate(nextSync)}</span>
+              <small>자동 동기화 안전망</small>
+              <strong>5분 주기</strong>
+              <span>다음 예상 {formatDate(nextSync)}</span>
             </div>
           </article>
         </div>
