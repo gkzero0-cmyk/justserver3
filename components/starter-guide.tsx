@@ -38,7 +38,7 @@ export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
 
       <div className="starter-steps">
         {steps.map(({ page, meta }) => {
-          const media = page!.cover || page!.icon
+          const media = page!.thumbnail || page!.cover || page!.icon
           const resolvedMedia = media ? resolveCachedAsset(media) : null
 
           return (
