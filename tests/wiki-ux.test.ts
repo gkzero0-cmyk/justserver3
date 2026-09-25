@@ -25,6 +25,13 @@ import {
   weeklyChallengeProgress
 } from '../lib/wiki-survival.ts'
 import {
+  buildReadingQuiz,
+  dailyExplorationQuest,
+  readingCollectionSets,
+  relatedReadingOrder,
+  unreadRecommendations
+} from '../lib/wiki-reading-game.ts'
+import {
   classifyWikiContent,
   extractKoreanInitials,
   matchesKoreanInitials,
@@ -239,7 +246,11 @@ test('records survival days and daily activity without duplicate visits', () => 
 
   assert.deepEqual(rolled.visitDays, [day])
   assert.deepEqual(rolled.activityByDay[day].visits, ['aabb'])
-  assert.equal(rolled.activityByDay[day].random, 1)
+  const read = recordSurvivalActivity(rolled, day, 'read', 'cc-dd')
+  const quiz = recordSurvivalActivity(read, day, 'reading-quiz', 'cc-dd')
+  assert.deepEqual(quiz.activityByDay[day].reads, ['ccdd'])
+  assert.deepEqual(quiz.activityByDay[day].readingQuizzes, ['ccdd'])
+  assert.equal(quiz.activityByDay[day].random, 1)
 })
 
 test('calculates consecutive Seoul visit streaks', () => {
@@ -266,7 +277,9 @@ test('daily missions are stable and report progress', () => {
   assert.equal(ids[0], 'visit-one')
 
   const progress = dailyMissionProgress('visit-two', {
-    visits: ['a', 'b'],
+    visits: ['opened-only'],
+    reads: ['a', 'b'],
+    readingQuizzes: [],
     fortune: 0,
     quiz: 0,
     random: 0,
@@ -322,5 +335,109 @@ test('treasure targets and collection progress stay deterministic', () => {
       { category: '시작하기', count: 1, total: 2, percent: 50 },
       { category: '성장 · 경제', count: 1, total: 1, percent: 100 }
     ]
+  )
+})
+
+
+test('reading collection sets award completion only from completed reads', () => {
+  const pages = [
+    { pageId: 'rules', title: '서버규칙', category: '시작하기' },
+    { pageId: 'newbie', title: '기초설정', category: '시작하기' },
+    { pageId: 'mine', title: '채광', category: '주요 콘텐츠' }
+  ]
+
+  assert.deepEqual(
+    readingCollectionSets(pages, ['rules', 'newbie']).map((set) => ({
+      title: set.title,
+      count: set.count,
+      total: set.total,
+      complete: set.complete
+    })),
+    [
+      {
+        title: '초보 생존 세트',
+        count: 2,
+        total: 2,
+        complete: true
+      },
+      {
+        title: '콘텐츠 탐험 세트',
+        count: 0,
+        total: 1,
+        complete: false
+      }
+    ]
+  )
+})
+
+test('daily exploration quest is stable for the same Seoul date', () => {
+  const pages = [
+    { pageId: 'a', title: '서버규칙', category: '시작하기' },
+    { pageId: 'b', title: '기초설정', category: '시작하기' },
+    { pageId: 'c', title: '채광', category: '주요 콘텐츠' },
+    { pageId: 'd', title: '낚시', category: '주요 콘텐츠' },
+    { pageId: 'e', title: '요리', category: '주요 콘텐츠' }
+  ]
+
+  const first = dailyExplorationQuest(pages, '2026-09-25')
+  const second = dailyExplorationQuest(pages, '2026-09-25')
+  assert.equal(first.id, second.id)
+  assert.deepEqual(
+    first.pages.map((page) => page.pageId),
+    second.pages.map((page) => page.pageId)
+  )
+  assert.ok(first.pages.length >= 1)
+  assert.ok(first.pages.length <= 3)
+})
+
+test('unread recommendations prioritize nearly completed collections', () => {
+  const pages = [
+    { pageId: 'a', title: '서버규칙', category: '시작하기' },
+    { pageId: 'b', title: '기초설정', category: '시작하기' },
+    { pageId: 'c', title: '채광', category: '주요 콘텐츠' },
+    { pageId: 'd', title: '낚시', category: '주요 콘텐츠' },
+    { pageId: 'e', title: '요리', category: '주요 콘텐츠' }
+  ]
+
+  assert.deepEqual(
+    unreadRecommendations(pages, ['a'], 2).map((page) => page.pageId),
+    ['b', 'c']
+  )
+})
+
+test('reading quiz answer always comes from the actual page text', () => {
+  const page = {
+    pageId: 'mine',
+    title: '채광',
+    category: '주요 콘텐츠',
+    searchText:
+      '채굴 도구를 준비한 뒤 광산에서 다이아몬드와 광물을 획득할 수 있습니다. 다이아몬드는 중요한 자원입니다.'
+  }
+  const quiz = buildReadingQuiz(page, [
+    page,
+    { pageId: 'casino', title: '카지노', category: '주요 콘텐츠' },
+    { pageId: 'credit', title: '신용등급', category: '성장 · 경제' }
+  ])
+
+  assert.ok(quiz)
+  assert.ok(page.searchText.includes(quiz!.answer))
+  assert.equal(quiz!.options.length, 3)
+  assert.ok(quiz!.options.includes(quiz!.answer))
+})
+
+test('related reading order places unread guides before completed ones', () => {
+  const related = [
+    { pageId: 'a', title: '장비수리', category: '성장 · 경제' },
+    { pageId: 'b', title: '장비강화', category: '성장 · 경제' }
+  ]
+  const fallback = [
+    { pageId: 'c', title: '신용등급', category: '성장 · 경제' }
+  ]
+
+  assert.deepEqual(
+    relatedReadingOrder(related, fallback, ['a'], 3).map(
+      (page) => page.pageId
+    ),
+    ['b', 'c', 'a']
   )
 })
