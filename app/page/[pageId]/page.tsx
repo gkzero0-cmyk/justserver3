@@ -52,6 +52,18 @@ const RELATED_BY_TITLE: Record<string, string[]> = {
   '많이 물어보는 것': ['서버규칙', '기초설정(뉴비필독)', '패치노트']
 }
 
+function formatUpdatedDate(value: string | null | undefined) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date)
+}
+
 function categoryKey(title: string) {
   const value = title.toLowerCase()
 
@@ -284,6 +296,19 @@ export default async function NotionSubPage({
       )}
 
       <WikiPageNavigation current={currentPage} pages={readyNavigationPages} />
+
+      {currentPage && (
+        <div className="article-status-strip" aria-label="문서 상태">
+          <span>
+            <b>{contentStatus === 'draft' ? '준비 중' : contentStatus === 'brief' ? '간단 안내' : '상세 가이드'}</b>
+          </span>
+          {currentPage.lastEdited && (
+            <span>
+              최근 수정 <strong>{formatUpdatedDate(currentPage.lastEdited)}</strong>
+            </span>
+          )}
+        </div>
+      )}
 
       {draft ? (
         <section className="draft-state" role="status" aria-labelledby="draft-state-title">
