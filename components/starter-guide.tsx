@@ -39,7 +39,6 @@ export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
             <Link
               key={page!.pageId}
               href={withBasePath(`/page/${page!.pageId}/`)}
-              prefetch={false}
               className="starter-step"
             >
               <span className="starter-number">{String(index + 1).padStart(2, '0')}</span>
