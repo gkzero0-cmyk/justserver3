@@ -165,7 +165,11 @@ export function WikiShell({
 
   useEffect(() => {
     const saved = window.localStorage.getItem('justserver3-sidebar-collapsed')
-    setSidebarCollapsed(saved === 'true')
+    const collapsed = saved === 'true'
+    setSidebarCollapsed(collapsed)
+    document.documentElement.dataset.sidebar = collapsed
+      ? 'collapsed'
+      : 'expanded'
   }, [])
 
   const toggleSidebar = () => {
@@ -175,6 +179,9 @@ export function WikiShell({
         'justserver3-sidebar-collapsed',
         String(next)
       )
+      document.documentElement.dataset.sidebar = next
+        ? 'collapsed'
+        : 'expanded'
       return next
     })
   }
@@ -457,20 +464,6 @@ export function WikiShell({
 
       <header className="wiki-topbar">
         <button
-          className="desktop-sidebar-toggle"
-          type="button"
-          aria-label={sidebarCollapsed ? '문서 목록 펼치기' : '문서 목록 접기'}
-          aria-pressed={sidebarCollapsed}
-          title={sidebarCollapsed ? '문서 목록 펼치기' : '문서 목록 접기'}
-          onClick={toggleSidebar}
-        >
-          <span aria-hidden="true">{sidebarCollapsed ? '☰' : '‹'}</span>
-          <span className="desktop-sidebar-toggle-label">
-            {sidebarCollapsed ? '문서' : '접기'}
-          </span>
-        </button>
-
-        <button
           className="menu-button"
           type="button"
           aria-label="메뉴 열기"
@@ -635,6 +628,20 @@ export function WikiShell({
         </div>
       </aside>
 
+      <button
+        className="sidebar-edge-toggle"
+        type="button"
+        aria-label={sidebarCollapsed ? '문서 목록 펼치기' : '문서 목록 접기'}
+        aria-pressed={sidebarCollapsed}
+        title={sidebarCollapsed ? '문서 목록 펼치기' : '문서 목록 접기'}
+        onClick={toggleSidebar}
+      >
+        <span className="sidebar-toggle-expanded" aria-hidden="true">‹</span>
+        <span className="sidebar-toggle-collapsed" aria-hidden="true">
+          <b>☰</b><em>문서</em>
+        </span>
+      </button>
+
       {menuOpen && (
         <button
           className="sidebar-backdrop"
@@ -714,11 +721,11 @@ export function WikiShell({
               {home ? 'JUST SERVER · SURVIVAL WIKI' : 'WIKI DOCUMENT'}
             </p>
             <h1>{title}</h1>
-            <p>
-              {home
-                ? '서버 규칙부터 돈벌이, 콘텐츠, 장비 성장까지 적자생존에 필요한 정보를 한곳에서 빠르게 찾아보세요.'
-                : '왼쪽 문서 목록과 오른쪽 목차를 이용해 필요한 내용을 빠르게 찾아보세요.'}
-            </p>
+            {home && (
+              <p>
+                서버 규칙부터 돈벌이, 콘텐츠, 장비 성장까지 적자생존에 필요한 정보를 한곳에서 빠르게 찾아보세요.
+              </p>
+            )}
             {home && (
               <button
                 className="hero-search-cta"
@@ -807,6 +814,7 @@ export function WikiShell({
                     className={`search-result-card ${
                       selectedResult === index ? 'is-selected' : ''
                     }`}
+                    data-category={categoryLabel(page.title)}
                     role="option"
                     aria-selected={selectedResult === index}
                     onMouseEnter={() => setSelectedResult(index)}
