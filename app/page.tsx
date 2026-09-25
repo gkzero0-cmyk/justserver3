@@ -4,8 +4,7 @@ import { StarterGuide } from '@/components/starter-guide'
 import { WikiDirectory } from '@/components/wiki-directory'
 import { WikiShell } from '@/components/wiki-shell'
 import { getNotionPage, notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
-import { readNotionAssetManifest } from '@/lib/notion-assets'
-import { readNotionIndex } from '@/lib/notion-index'
+import { readNotionAssetManifest, readNotionIndex } from '@/lib/notion-index'
 import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
 
 function formatDate(value: string | null) {
