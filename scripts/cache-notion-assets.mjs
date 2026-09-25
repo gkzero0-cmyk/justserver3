@@ -521,6 +521,177 @@ function changeSummaryFor(previous, current) {
   return '본문 내용 업데이트'
 }
 
+
+function changeDetailFor(previous, current) {
+  const summary = changeSummaryFor(previous, current)
+
+  if (!previous) {
+    return {
+      type: 'added',
+      summary,
+      added: compactChangeSnippet(current.searchText, 140),
+      removed: ''
+    }
+  }
+
+  if (previous.title !== current.title) {
+    return {
+      type: 'renamed',
+      summary,
+      added: current.title,
+      removed: previous.title
+    }
+  }
+
+  if (previous.searchText === current.searchText) {
+    if (previous.lastEdited !== current.lastEdited) {
+      return {
+        type: 'meta',
+        summary,
+        added: '',
+        removed: ''
+      }
+    }
+    return null
+  }
+
+  const oldText = previous.searchText || ''
+  const newText = current.searchText || ''
+  let prefix = 0
+  const maxPrefix = Math.min(oldText.length, newText.length)
+  while (prefix < maxPrefix && oldText[prefix] === newText[prefix]) prefix += 1
+
+  let oldEnd = oldText.length - 1
+  let newEnd = newText.length - 1
+  while (
+    oldEnd >= prefix &&
+    newEnd >= prefix &&
+    oldText[oldEnd] === newText[newEnd]
+  ) {
+    oldEnd -= 1
+    newEnd -= 1
+  }
+
+  const removed = compactChangeSnippet(oldText.slice(prefix, oldEnd + 1), 140)
+  const added = compactChangeSnippet(newText.slice(prefix, newEnd + 1), 140)
+
+  return {
+    type: added && removed ? 'updated' : added ? 'added-text' : 'removed-text',
+    summary,
+    added,
+    removed
+  }
+}
+
+function nextPageHistory(previous, current) {
+  const existing = Array.isArray(previous?.history) ? previous.history : []
+  const detail = changeDetailFor(previous, current)
+  if (!detail) return existing.slice(0, 8)
+
+  const at =
+    current.lastEdited ||
+    previous?.lastEdited ||
+    new Date().toISOString()
+
+  if (
+    existing[0]?.at === at &&
+    existing[0]?.summary === detail.summary
+  ) {
+    return existing.slice(0, 8)
+  }
+
+  return [
+    {
+      at,
+      type: detail.type,
+      summary: detail.summary,
+      added: detail.added || null,
+      removed: detail.removed || null
+    },
+    ...existing
+  ].slice(0, 8)
+}
+
+function buildFaqCandidates(pageIndex, verifiedFaq) {
+  const verifiedSources = new Set(
+    verifiedFaq
+      .filter((entry) => entry?.sourceTitle && entry?.sourceAnchor)
+      .map((entry) => `${entry.sourceTitle}:${entry.sourceAnchor}`)
+  )
+  const candidates = []
+
+  for (const page of pageIndex) {
+    if (page.title === '많이 물어보는 것') continue
+    const text = String(page.searchText || '').trim()
+    if (
+      text.length < 80 ||
+      /위키\s*업데이트\s*예정|내용\s*추가\s*예정|작성\s*중/i.test(text)
+    ) {
+      continue
+    }
+
+    for (const [index, section] of (page.sections || []).entries()) {
+      const heading = String(section.heading || '').trim()
+      const body = String(section.text || '').trim()
+      if (!heading || heading.length > 120) continue
+
+      const sourceKey = `${page.title}:${section.anchor || ''}`
+      if (verifiedSources.has(sourceKey)) continue
+
+      const ruleLike =
+        /금지|허용|가능|필수|보상|사용|거래|재입주|수수료|등급|강화|수리|방법|어떻게|몇|조건/i.test(
+          heading
+        )
+      const explanatory = body.length >= 35
+      if (!ruleLike && !explanatory) continue
+
+      candidates.push({
+        id: `${page.pageId}:${section.anchor || index + 1}`,
+        sourcePageId: page.pageId,
+        sourceTitle: page.title,
+        sourceAnchor: section.anchor || '',
+        sourceHeading: heading,
+        excerpt: compactChangeSnippet(body || heading, 160),
+        reason: ruleLike ? '규칙·조건형 소제목' : '설명형 소제목',
+        score: (ruleLike ? 30 : 12) + Math.min(20, Math.floor(body.length / 40))
+      })
+    }
+  }
+
+  return candidates
+    .sort((a, b) => b.score - a.score || a.sourceTitle.localeCompare(b.sourceTitle, 'ko'))
+    .slice(0, 24)
+}
+
+function buildReviewQueue(pageIndex, faqCandidates) {
+  const changes = pageIndex
+    .flatMap((page) => {
+      const latest = Array.isArray(page.history) ? page.history[0] : null
+      if (!latest) return []
+      return [{
+        id: `change:${page.pageId}:${latest.at}`,
+        kind: 'change',
+        title: page.title,
+        pageId: page.pageId,
+        summary: latest.summary,
+        at: latest.at
+      }]
+    })
+    .sort((a, b) => new Date(b.at || 0).getTime() - new Date(a.at || 0).getTime())
+    .slice(0, 8)
+
+  const faq = faqCandidates.slice(0, 8).map((candidate) => ({
+    id: `faq:${candidate.id}`,
+    kind: 'faq-candidate',
+    title: candidate.sourceTitle,
+    pageId: candidate.sourcePageId,
+    summary: candidate.sourceHeading,
+    at: null
+  }))
+
+  return [...changes, ...faq].slice(0, 14)
+}
+
 async function readExistingManifest() {
   try {
     return JSON.parse(await fs.readFile(MANIFEST_PATH, 'utf8'))
@@ -555,7 +726,8 @@ function stablePageSnapshot(page) {
     lastEdited: page.lastEdited || null,
     searchText: page.searchText || '',
     sections: page.sections || [],
-    changeSummary: page.changeSummary || null
+    changeSummary: page.changeSummary || null,
+    history: Array.isArray(page.history) ? page.history : []
   }
 }
 
@@ -652,11 +824,17 @@ async function main() {
       icon: resolveIndexedAsset(meta.icon, manifest),
       cover: resolveIndexedAsset(meta.cover, manifest)
     }
+    const previous = previousById.get(current.pageId)
+    const changeSummary = changeSummaryFor(previous, current)
     return {
       ...current,
-      changeSummary: changeSummaryFor(previousById.get(current.pageId), current)
+      changeSummary,
+      history: nextPageHistory(previous, current)
     }
   })
+
+  const faqCandidates = buildFaqCandidates(pageIndex, verifiedFaq)
+  const reviewQueue = buildReviewQueue(pageIndex, faqCandidates)
 
   const previousStablePages = (existingIndex.pages || []).map(stablePageSnapshot)
   const nextStablePages = pageIndex.map(stablePageSnapshot)
@@ -673,7 +851,9 @@ async function main() {
       {
         rootPageId: ROOT_PAGE_ID,
         generatedAt,
-        pages: pageIndex
+        pages: pageIndex,
+        faqCandidates,
+        reviewQueue
       },
       null,
       2
