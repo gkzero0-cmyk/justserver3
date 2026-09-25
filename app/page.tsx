@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import { StarterGuide } from '@/components/starter-guide'
 import { WikiFunZone } from '@/components/wiki-fun-zone'
+import { WikiSurvivalLog } from '@/components/wiki-survival-log'
 import { WikiDirectory } from '@/components/wiki-directory'
 import { WikiShell } from '@/components/wiki-shell'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
@@ -103,6 +104,14 @@ export default async function HomePage() {
       />
       <StarterGuide pages={directoryPages} />
       <WikiFunZone
+        pages={directoryPages.map((page) => ({
+          pageId: page.pageId,
+          title: page.title,
+          status: wikiContentStatus(page),
+          category: categoryTitleForPage(page.title)
+        }))}
+      />
+      <WikiSurvivalLog
         pages={directoryPages.map((page) => ({
           pageId: page.pageId,
           title: page.title,
