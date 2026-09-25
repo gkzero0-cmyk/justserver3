@@ -12,6 +12,7 @@ import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
 import { buildWikiFeedbackUrl } from '@/lib/wiki-ux'
 import verifiedFaqEntries from '@/data/wiki-verified-faq.json'
+import { buildTopicCoverage } from '@/lib/wiki-search-topics'
 
 export const revalidate = 300
 
@@ -146,6 +147,17 @@ export default async function StatusPage() {
   const pages = index.pages.filter(
     (page) => page.pageId.replaceAll('-', '') !== rootId
   )
+  const pagesWithStatus = pages.map((page) => ({
+    ...page,
+    status:
+      page.title === '많이 물어보는 것'
+        ? ('detailed' as const)
+        : wikiContentStatus(page)
+  }))
+  const topicCoverage = buildTopicCoverage(pagesWithStatus)
+  const faqCandidates = index.faqCandidates || []
+  const reviewQueue = index.reviewQueue || []
+
   const contentCounts = pages.reduce(
     (counts, page) => {
       counts[
@@ -157,25 +169,8 @@ export default async function StatusPage() {
     },
     { detailed: 0, brief: 0, draft: 0 }
   )
-  const contentBacklog = buildWikiContentBacklog(
-    pages.map((page) => ({
-      ...page,
-      status:
-          page.title === '많이 물어보는 것'
-            ? 'detailed'
-            : wikiContentStatus(page)
-    })),
-    12
-  )
-  const contentReadiness = wikiContentReadiness(
-    pages.map((page) => ({
-      ...page,
-      status:
-          page.title === '많이 물어보는 것'
-            ? 'detailed'
-            : wikiContentStatus(page)
-    }))
-  )
+  const contentBacklog = buildWikiContentBacklog(pagesWithStatus, 12)
+  const contentReadiness = wikiContentReadiness(pagesWithStatus)
   const brandLogo = rootPage?.logo128
     ? resolveCachedAsset(rootPage.logo128)
     : rootPage?.logo
@@ -374,6 +369,103 @@ export default async function StatusPage() {
             </div>
           </div>
           </div>
+        </section>
+
+        <section className="status-intelligence" aria-labelledby="status-demand-title">
+          <div className="status-section-head">
+            <div>
+              <p>SEARCH DEMAND SIGNALS</p>
+              <h2 id="status-demand-title">검색 수요 대응 우선순위</h2>
+              <span>
+                검색어 원문은 저장하지 않고 규칙·경제·장비·콘텐츠·API 주제 ID만
+                Vercel Analytics에 기록합니다. 아래 점수는 현재 문서 공백과
+                운영상 중요도를 결합한 대응 우선도입니다.
+              </span>
+            </div>
+            <strong>{topicCoverage.length}개 주제</strong>
+          </div>
+          <div className="status-topic-grid">
+            {topicCoverage.map((topic, index) => (
+              <article key={topic.id}>
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <div>
+                  <strong>{topic.label}</strong>
+                  <small>
+                    상세 {topic.detailed} · 간단 {topic.brief} · 작성 중 {topic.draft}
+                  </small>
+                </div>
+                <b>{topic.score}</b>
+              </article>
+            ))}
+          </div>
+          <p className="status-intelligence-note">
+            실제 검색량은 <code>wiki_search_topic</code> 이벤트의 <code>topic</code>
+            속성으로 집계되며, 사이트 내부에는 검색어 원문을 저장하지 않습니다.
+          </p>
+        </section>
+
+        <section className="status-intelligence" aria-labelledby="status-review-automation-title">
+          <div className="status-section-head">
+            <div>
+              <p>AUTOMATED REVIEW</p>
+              <h2 id="status-review-automation-title">변경 감지 · FAQ 후보 검토 큐</h2>
+              <span>
+                Notion 이전 스냅샷과 현재 스냅샷을 비교해 변경 이력을 누적하고,
+                검증된 FAQ에 없는 규칙·조건형 소제목만 후보로 올립니다.
+                후보는 자동 게시되지 않습니다.
+              </span>
+            </div>
+            <strong>{reviewQueue.length}개 검토</strong>
+          </div>
+
+          <div className="status-review-queue">
+            {reviewQueue.slice(0, 10).map((item) => (
+              <article key={item.id} data-kind={item.kind}>
+                <span>{item.kind === 'change' ? '변경' : 'FAQ 후보'}</span>
+                <div>
+                  <strong>{item.title}</strong>
+                  <small>{item.summary || '검토가 필요한 항목입니다.'}</small>
+                </div>
+                <a
+                  href={notionPublicUrl(item.pageId)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  원문 ↗
+                </a>
+              </article>
+            ))}
+            {!reviewQueue.length && (
+              <p className="status-empty-state">
+                새 변경이나 FAQ 후보가 생기면 다음 Notion 동기화에서 자동으로 표시됩니다.
+              </p>
+            )}
+          </div>
+
+          {faqCandidates.length > 0 && (
+            <details className="status-faq-candidates">
+              <summary>
+                <strong>FAQ 후보 전체 보기</strong>
+                <span>{faqCandidates.length}개</span>
+              </summary>
+              <div>
+                {faqCandidates.slice(0, 16).map((candidate) => (
+                  <a
+                    key={candidate.id}
+                    href={notionPublicUrl(candidate.sourcePageId)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <span>
+                      <strong>{candidate.sourceTitle}</strong>
+                      <small>{candidate.reason}</small>
+                    </span>
+                    <b>{candidate.sourceHeading}</b>
+                  </a>
+                ))}
+              </div>
+            </details>
+          )}
         </section>
 
         <div className="status-services">
