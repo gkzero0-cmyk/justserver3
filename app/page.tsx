@@ -3,7 +3,11 @@ import { WikiDirectory } from '@/components/wiki-directory'
 import { WikiShell } from '@/components/wiki-shell'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
 import { readNotionIndex } from '@/lib/notion-index'
-import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
+import {
+  deriveOptimizedVariant,
+  resolveCachedAsset,
+  withBasePath
+} from '@/lib/url-utils'
 
 export const revalidate = 60
 
@@ -45,19 +49,20 @@ export default async function HomePage() {
       : rootPage?.icon
         ? resolveCachedAsset(rootPage.icon)
         : null
-  const heroImage = rootPage?.hero1600
-    ? resolveCachedAsset(rootPage.hero1600)
-    : rootPage?.hero
-      ? resolveCachedAsset(rootPage.hero)
-      : rootPage?.cover
-        ? resolveCachedAsset(rootPage.cover)
-        : null
-  const heroImageMd = rootPage?.hero1280
-    ? resolveCachedAsset(rootPage.hero1280)
-    : heroImage
-  const heroImageSm = rootPage?.hero768
-    ? resolveCachedAsset(rootPage.hero768)
-    : heroImage
+  const heroBase = rootPage?.hero || rootPage?.cover || null
+  const hero1600 =
+    rootPage?.hero1600 || deriveOptimizedVariant(heroBase, 'hero1600')
+  const hero1280 =
+    rootPage?.hero1280 || deriveOptimizedVariant(heroBase, 'hero1280')
+  const hero768 =
+    rootPage?.hero768 || deriveOptimizedVariant(heroBase, 'hero768')
+  const heroImage = hero1600
+    ? resolveCachedAsset(hero1600)
+    : heroBase
+      ? resolveCachedAsset(heroBase)
+      : null
+  const heroImageMd = hero1280 ? resolveCachedAsset(hero1280) : heroImage
+  const heroImageSm = hero768 ? resolveCachedAsset(hero768) : heroImage
 
   const siteUrl = 'https://justserver3.vercel.app'
   const websiteJsonLd = {
