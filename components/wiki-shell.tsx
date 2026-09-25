@@ -368,7 +368,7 @@ export function WikiShell({
   }
 
   useEffect(() => {
-    if (!searchOpen || searchPages || searchLoading) return
+    if (!searchOpen || searchPages) return
 
     let cancelled = false
 
@@ -399,7 +399,7 @@ export function WikiShell({
     return () => {
       cancelled = true
     }
-  }, [searchOpen, searchPages, searchLoading])
+  }, [searchOpen, searchPages])
 
   const filteredPages = useMemo(() => {
     const source: SearchPage[] =
