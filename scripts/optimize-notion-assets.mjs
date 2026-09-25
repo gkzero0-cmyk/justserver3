@@ -35,6 +35,17 @@ async function ensureVariant({
   const outputDiskPath = path.join(OPTIMIZED_DIR, relative)
   const outputPublicPath = `/notion-assets/optimized/${relative.replaceAll('\\', '/')}`
 
+  try {
+    const stats = await fs.stat(outputDiskPath)
+    return {
+      publicPath: outputPublicPath,
+      bytes: stats.size,
+      relative: relative.replaceAll('\\', '/')
+    }
+  } catch {
+    // Variant is missing; generate it below.
+  }
+
   let bytes
   try {
     bytes = await sharp(sourceBytes)
