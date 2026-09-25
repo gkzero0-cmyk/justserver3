@@ -55,6 +55,12 @@ test.describe('desktop wiki journeys', () => {
     await expect(page.getByText('콘텐츠 보강 대기열', { exact: true })).toBeVisible()
     await expect(page.getByText('자료 검토 큐', { exact: true })).toBeVisible()
     await expect(page.getByText('검색 UX 분석', { exact: true })).toBeVisible()
+    await expect(
+      page.getByText('검색 수요 대응 우선순위', { exact: true })
+    ).toBeVisible()
+    await expect(
+      page.getByText('변경 감지 · FAQ 후보 검토 큐', { exact: true })
+    ).toBeVisible()
   })
 
   test('verified FAQ exposes source-backed answers', async ({ page }) => {
@@ -96,6 +102,12 @@ test.describe('mobile wiki journeys', () => {
     await expect(dialog.getByText('서버규칙', { exact: true })).toBeVisible()
     await expect(
       dialog.getByRole('button', { name: /질문이나 키워드 바로 검색/ })
+    ).toBeVisible()
+    await expect(
+      dialog.getByText('지금 바로 보는 핵심 규칙', { exact: true })
+    ).toBeVisible()
+    await expect(
+      dialog.getByText('개인당 최대 5개까지 허용됩니다.', { exact: true })
     ).toBeVisible()
   })
 
