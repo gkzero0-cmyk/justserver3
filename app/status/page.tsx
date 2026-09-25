@@ -1,6 +1,5 @@
 import { WikiShell } from '@/components/wiki-shell'
-import { readNotionAssetManifest } from '@/lib/notion-assets'
-import { readNotionIndex } from '@/lib/notion-index'
+import { readNotionAssetManifest, readNotionIndex } from '@/lib/notion-index'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
 import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
 
