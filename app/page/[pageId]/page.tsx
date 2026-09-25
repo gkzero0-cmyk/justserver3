@@ -175,6 +175,7 @@ export default async function NotionSubPage({
   const related = currentPage
     ? relatedPages(currentPage, navigationPages)
     : []
+  const draft = currentPage ? isDraftPage(currentPage) : false
 
   const brandLogo = rootPage?.logo128
     ? resolveCachedAsset(rootPage.logo128)
@@ -256,6 +257,16 @@ export default async function NotionSubPage({
       )}
 
       <WikiPageNavigation current={currentPage} pages={navigationPages} />
+
+      {draft && (
+        <aside className="draft-notice" role="status">
+          <span>작성 중</span>
+          <div>
+            <strong>이 문서는 아직 내용을 정리하고 있습니다.</strong>
+            <small>확정된 내용만 표시하며, Notion 원문이 보강되면 자동으로 반영됩니다.</small>
+          </div>
+        </aside>
+      )}
 
       <section className="document-card">
         <NotionDocument
