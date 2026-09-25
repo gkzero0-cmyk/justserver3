@@ -6,12 +6,26 @@ import { useEffect, useRef } from 'react'
 import { iconForTitle } from '@/lib/wiki-taxonomy'
 import type { WikiContentStatus } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
+import faqEntries from '@/data/wiki-verified-faq.json'
 
 type QuickPage = {
   pageId: string
   title: string
   status?: WikiContentStatus
 }
+
+const QUICK_RULE_QUESTIONS = [
+  '재입주할 수 있나요?',
+  '강화된 아이템을 다른 사람과 주고받아도 되나요?',
+  '무한용암은 몇 개까지 만들 수 있나요?',
+  '호퍼·팜·주민거래 같은 자동화가 가능한가요?'
+]
+
+const QUICK_RULES = QUICK_RULE_QUESTIONS
+  .map((question) =>
+    faqEntries.find((entry) => entry.question === question)
+  )
+  .filter(Boolean)
 
 const QUICK_TITLES = [
   '서버규칙',
@@ -114,6 +128,30 @@ export function WikiMobileQuickView({
             ×
           </button>
         </header>
+
+        <section className="mobile-quick-rules" aria-labelledby="mobile-quick-rules-title">
+          <div className="mobile-quick-rules-head">
+            <strong id="mobile-quick-rules-title">지금 바로 보는 핵심 규칙</strong>
+            <Link
+              href={withBasePath('/guide/faq/')}
+              onClick={onClose}
+              data-wiki-event="wiki_mobile_quick_faq"
+              data-wiki-section="mobile-quick-view"
+              data-wiki-target="faq"
+              data-wiki-status="verified"
+            >
+              전체 FAQ →
+            </Link>
+          </div>
+          <div className="mobile-quick-rule-grid">
+            {QUICK_RULES.map((entry) => (
+              <article key={entry!.question}>
+                <small>{entry!.question}</small>
+                <strong>{entry!.answer}</strong>
+              </article>
+            ))}
+          </div>
+        </section>
 
         <button
           type="button"
