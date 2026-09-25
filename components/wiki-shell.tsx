@@ -20,7 +20,7 @@ type SearchPage = WikiPageLink & {
 }
 
 const SEARCH_INDEX_URL =
-  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/search-index.json'
+  'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/search-index.json?v=20260925-2'
 
 function sectionIcon(text: string) {
   const value = text.toLowerCase()
