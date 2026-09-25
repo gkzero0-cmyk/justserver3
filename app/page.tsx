@@ -116,11 +116,9 @@ export default async function HomePage() {
                 {formatDate(page.lastEdited)}
               </span>
               <strong>{page.title}</strong>
-              {page.changeSummary && (
-                <small className="recent-update-summary">
-                  {page.changeSummary}
-                </small>
-              )}
+              <small className="recent-update-summary">
+                {page.changeSummary || '최근 문서 내용이 수정되었습니다.'}
+              </small>
               <span className="recent-update-arrow">→</span>
             </a>
           ))}
