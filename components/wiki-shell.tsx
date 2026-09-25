@@ -579,6 +579,8 @@ export function WikiShell({
   useEffect(() => {
     if (home) return
 
+    readingProgressRef.current = 0
+    setReadingProgress(0)
     let frame = 0
 
     const updateProgress = () => {
@@ -612,7 +614,7 @@ export function WikiShell({
       window.removeEventListener('scroll', updateProgress)
       window.removeEventListener('resize', updateProgress)
     }
-  }, [home])
+  }, [currentPageId, home])
 
   const markCurrentPageRead = useCallback(
     (method: 'scroll' | 'active-time') => {
@@ -672,7 +674,10 @@ export function WikiShell({
   )
 
   useEffect(() => {
-    if (readingProgress >= 55) {
+    if (
+      readingProgress >= 55 &&
+      readingProgressRef.current >= 55
+    ) {
       markCurrentPageRead('scroll')
     }
   }, [markCurrentPageRead, readingProgress])
