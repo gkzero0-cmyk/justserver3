@@ -68,6 +68,16 @@ export function WikiSearchDialog({
   const inputRef = useRef<HTMLInputElement>(null)
   const dialogRef = useRef<HTMLElement>(null)
 
+  const quickAnswer =
+    query.trim() && !loading
+      ? results.find(
+          (result) =>
+            result.status !== 'draft' &&
+            Boolean(result.snippet?.trim()) &&
+            Boolean(result.sectionTitle || result.findTerm)
+        ) || null
+      : null
+
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -183,6 +193,40 @@ export function WikiSearchDialog({
                 ? `${results.length}개의 검색 결과`
                 : '추천 문서 · ↑↓ 선택 · Enter 이동'}
         </div>
+
+        {quickAnswer && (
+          <button
+            type="button"
+            className="search-quick-answer"
+            onClick={() =>
+              onNavigate(
+                quickAnswer.pageId,
+                quickAnswer.findTerm,
+                quickAnswer.anchor
+              )
+            }
+          >
+            <span className="search-quick-answer-label">빠른 답변</span>
+            <span className="search-quick-answer-source">
+              <strong>{quickAnswer.title}</strong>
+              {quickAnswer.sectionTitle && (
+                <>
+                  <b aria-hidden="true">›</b>
+                  <span>{quickAnswer.sectionTitle}</span>
+                </>
+              )}
+            </span>
+            <span className="search-quick-answer-text">
+              <HighlightedText
+                text={quickAnswer.snippet || quickAnswer.sectionTitle || ''}
+                query={query}
+              />
+            </span>
+            <span className="search-quick-answer-action">
+              원문 위치로 이동 <b aria-hidden="true">→</b>
+            </span>
+          </button>
+        )}
 
         <div
           className="search-modal-results"
