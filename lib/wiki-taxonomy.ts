@@ -76,3 +76,11 @@ export function iconForTitle(title: string) {
 
   return '✦'
 }
+
+export function categoryTitleForPage(title: string) {
+  return WIKI_CATEGORIES[categoryForTitle(title)].title
+}
+
+export function categoryAnchorForTitle(title: string) {
+  return `category-${categoryForTitle(title)}`
+}
