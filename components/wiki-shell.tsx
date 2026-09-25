@@ -634,14 +634,16 @@ export function WikiShell({
       } catch {}
 
       const normalized = readPages.map((value) => value.replaceAll('-', ''))
-      if (normalized.includes(normalizedPageId)) return
+      const firstCompletion = !normalized.includes(normalizedPageId)
 
-      const nextReadPages = [...readPages, normalizedPageId]
-      window.localStorage.setItem(
-        READ_PAGES_KEY,
-        JSON.stringify(nextReadPages)
-      )
-      window.dispatchEvent(new Event('justserver3:read-pages'))
+      if (firstCompletion) {
+        const nextReadPages = [...readPages, normalizedPageId]
+        window.localStorage.setItem(
+          READ_PAGES_KEY,
+          JSON.stringify(nextReadPages)
+        )
+        window.dispatchEvent(new Event('justserver3:read-pages'))
+      }
 
       let record
       try {
@@ -665,10 +667,15 @@ export function WikiShell({
         JSON.stringify(nextRecord)
       )
       window.dispatchEvent(new Event('justserver3:survival-record'))
-      track('wiki_read_complete', {
-        method,
-        status: contentStatus || 'unknown'
-      })
+      track(
+        firstCompletion
+          ? 'wiki_read_complete'
+          : 'wiki_reread_complete',
+        {
+          method,
+          status: contentStatus || 'unknown'
+        }
+      )
     },
     [contentStatus, currentPageId, home]
   )
