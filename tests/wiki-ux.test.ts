@@ -33,6 +33,7 @@ import {
 } from '../lib/wiki-reading-game.ts'
 import {
   buildStoryChapters,
+  nextAdventureAction,
   passportProgress,
   recommendedSurvivalBuild,
   storyProgress,
@@ -548,4 +549,52 @@ test('weekly boss caps damage at full defeat', () => {
   assert.equal(boss.damage, 100)
   assert.equal(boss.remaining, 0)
   assert.equal(boss.defeated, true)
+})
+
+
+test('next adventure action prioritizes the active story chapter', () => {
+  const pages = [
+    { pageId: 'story', title: '스토리', category: '시작하기' },
+    { pageId: 'rules', title: '서버규칙', category: '시작하기' },
+    { pageId: 'mine', title: '채광', category: '주요 콘텐츠' },
+    { pageId: 'fish', title: '낚시', category: '주요 콘텐츠' },
+    { pageId: 'credit', title: '신용등급', category: '성장 · 경제' },
+    { pageId: 'land', title: '땅 구매', category: '성장 · 경제' }
+  ]
+  const chapters = buildStoryChapters(pages)
+  const story = storyProgress(chapters, [])
+  const action = nextAdventureAction(
+    story,
+    [{ pageId: 'mine', title: '채광', category: '주요 콘텐츠' }],
+    [],
+    pages
+  )
+
+  assert.equal(action?.kind, 'story')
+  assert.equal(action?.page.pageId, chapters[0].choices[0].pageId)
+})
+
+test('next adventure action falls back to build and reread goals', () => {
+  const pages = [
+    { pageId: 'a', title: '채광', category: '주요 콘텐츠' },
+    { pageId: 'b', title: '도감', category: '성장 · 경제' }
+  ]
+
+  const buildAction = nextAdventureAction(
+    [],
+    pages,
+    ['a'],
+    pages
+  )
+  assert.equal(buildAction?.kind, 'build')
+  assert.equal(buildAction?.page.pageId, 'b')
+
+  const rereadAction = nextAdventureAction(
+    [],
+    pages,
+    ['a', 'b'],
+    pages
+  )
+  assert.equal(rereadAction?.kind, 'reread')
+  assert.equal(rereadAction?.page.pageId, 'a')
 })
