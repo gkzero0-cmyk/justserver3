@@ -1660,70 +1660,6 @@
   ],
   "reviewQueue": [
     {
-      "id": "change:3e0d57d6a55c80c5a8afe20753a11db1:2026-09-21T09:50:00.998Z",
-      "kind": "change",
-      "title": "요리",
-      "pageId": "3e0d57d6a55c80c5a8afe20753a11db1",
-      "summary": "변경 이력 추적 시작",
-      "at": "2026-09-21T09:50:00.998Z"
-    },
-    {
-      "id": "change:3dad57d6a55c80f28689c7bebde648fe:2026-09-21T09:47:00.023Z",
-      "kind": "change",
-      "title": "API",
-      "pageId": "3dad57d6a55c80f28689c7bebde648fe",
-      "summary": "변경 이력 추적 시작",
-      "at": "2026-09-21T09:47:00.023Z"
-    },
-    {
-      "id": "change:3e0d57d6a55c80aa89daee3da173adf7:2026-09-19T21:23:02.352Z",
-      "kind": "change",
-      "title": "많이 물어보는 것",
-      "pageId": "3e0d57d6a55c80aa89daee3da173adf7",
-      "summary": "변경 이력 추적 시작",
-      "at": "2026-09-19T21:23:02.352Z"
-    },
-    {
-      "id": "change:3e0d57d6a55c80fc99eef96b991ea5df:2026-09-19T21:22:36.142Z",
-      "kind": "change",
-      "title": "장비강화",
-      "pageId": "3e0d57d6a55c80fc99eef96b991ea5df",
-      "summary": "변경 이력 추적 시작",
-      "at": "2026-09-19T21:22:36.142Z"
-    },
-    {
-      "id": "change:3e0d57d6a55c8066b139d896b3c40081:2026-09-19T21:22:33.597Z",
-      "kind": "change",
-      "title": "장비수리",
-      "pageId": "3e0d57d6a55c8066b139d896b3c40081",
-      "summary": "변경 이력 추적 시작",
-      "at": "2026-09-19T21:22:33.597Z"
-    },
-    {
-      "id": "change:3ddd57d6a55c80d1a126c09593be5d6e:2026-09-19T21:22:31.331Z",
-      "kind": "change",
-      "title": "신용등급",
-      "pageId": "3ddd57d6a55c80d1a126c09593be5d6e",
-      "summary": "변경 이력 추적 시작",
-      "at": "2026-09-19T21:22:31.331Z"
-    },
-    {
-      "id": "change:3e0d57d6a55c80f4bd26e6c22516eb8a:2026-09-19T21:22:28.617Z",
-      "kind": "change",
-      "title": "빚 갚기",
-      "pageId": "3e0d57d6a55c80f4bd26e6c22516eb8a",
-      "summary": "변경 이력 추적 시작",
-      "at": "2026-09-19T21:22:28.617Z"
-    },
-    {
-      "id": "change:3e0d57d6a55c80378750e502be28b30f:2026-09-19T21:22:17.972Z",
-      "kind": "change",
-      "title": "카지노",
-      "pageId": "3e0d57d6a55c80378750e502be28b30f",
-      "summary": "변경 이력 추적 시작",
-      "at": "2026-09-19T21:22:17.972Z"
-    },
-    {
       "id": "faq:3dad57d6a55c80c0b4adc2aa5676076b:또한-낮은-확률로-강화재료를-얻을-수-있습니다",
       "kind": "faq-candidate",
       "title": "낚시",
@@ -1769,6 +1705,22 @@
       "title": "서버규칙",
       "pageId": "3dad57d6a55c802aa11adaed7c2c98ff",
       "summary": "📌 X-ray 등 비인가 외부 프로그램 사용 금지",
+      "at": null
+    },
+    {
+      "id": "faq:3dad57d6a55c802aa11adaed7c2c98ff:일자굴파기-금지",
+      "kind": "faq-candidate",
+      "title": "서버규칙",
+      "pageId": "3dad57d6a55c802aa11adaed7c2c98ff",
+      "summary": "📌 일자굴파기 금지",
+      "at": null
+    },
+    {
+      "id": "faq:3dad57d6a55c802aa11adaed7c2c98ff:다른-서버에서-안되는-행동들은-여기서도-금지",
+      "kind": "faq-candidate",
+      "title": "서버규칙",
+      "pageId": "3dad57d6a55c802aa11adaed7c2c98ff",
+      "summary": "📌 다른 서버에서 안되는 행동들은 여기서도 금지",
       "at": null
     }
   ],
