@@ -135,7 +135,7 @@ export async function generateWikiPageMetadata(
       .slice(0, 155) || `${page.title} 가이드`
   const draft = isDraftPage(page)
   const siteUrl = getSiteUrl()
-  const canonical = `${siteUrl}/page/${page.pageId}`
+  const canonical = `${siteUrl}${wikiGuidePath(page)}`
   const image = page.cover || page.icon
   const resolvedImage = image ? resolveCachedAsset(image) : null
 
