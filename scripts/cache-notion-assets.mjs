@@ -15,6 +15,55 @@ const OUT_DIR = path.join(process.cwd(), 'public', 'notion-assets')
 const MANIFEST_PATH = path.join(OUT_DIR, 'manifest.json')
 const INDEX_PATH = path.join(OUT_DIR, 'index.json')
 const SEARCH_INDEX_PATH = path.join(OUT_DIR, 'search-index.json')
+const VERIFIED_FAQ_PATH = path.join(
+  process.cwd(),
+  'data',
+  'wiki-verified-faq.json'
+)
+
+function sanitizeSearchText(value) {
+  return String(value || '')
+    .replace(
+      /(?:^|\s)(?:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}|\d+|[\w.-]{3,})\.(?:png|jpe?g|webp|gif|svg|avif|bmp)(?=\s|$)/gi,
+      ' '
+    )
+    .replace(/attachment:[^\s]+/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+async function readVerifiedFaq() {
+  try {
+    const parsed = JSON.parse(await fs.readFile(VERIFIED_FAQ_PATH, 'utf8'))
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+function verifiedFaqSearchPayload(entries) {
+  const searchText = entries
+    .flatMap((entry) => [
+      entry.question,
+      entry.answer,
+      ...(Array.isArray(entry.keywords) ? entry.keywords : [])
+    ])
+    .filter(Boolean)
+    .join(' ')
+
+  return {
+    searchText: sanitizeSearchText(searchText),
+    sections: entries.map((entry, index) => ({
+      heading: entry.question || `FAQ ${index + 1}`,
+      anchor: `faq-${index + 1}`,
+      text: sanitizeSearchText(
+        [entry.answer, ...(Array.isArray(entry.keywords) ? entry.keywords : [])]
+          .filter(Boolean)
+          .join(' ')
+      )
+    }))
+  }
+}
 
 function canonicalUrl(value) {
   if (!value || typeof value !== 'string') return null
@@ -103,11 +152,7 @@ function collectSearchSections(recordMap, pageBlock) {
   let current = { heading: '', anchor: '', text: [] }
 
   const flush = () => {
-    const text = current.text
-      .join(' ')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, 5000)
+    const text = sanitizeSearchText(current.text.join(' ')).slice(0, 5000)
 
     if (current.heading || text) {
       sections.push({
@@ -125,7 +170,7 @@ function collectSearchSections(recordMap, pageBlock) {
       const block = byId.get(normalizeId(rawId))
       if (!block) continue
 
-      const text = getBlockTitle(block)
+      const text = sanitizeSearchText(getBlockTitle(block))
 
       if (headingTypes.has(block.type) && text) {
         flush()
@@ -194,11 +239,7 @@ function collectPlainText(recordMap) {
     visit(block.properties || {})
   }
 
-  return [...new Set(values)]
-    .join(' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, 18000)
+  return sanitizeSearchText([...new Set(values)].join(' ')).slice(0, 18000)
 }
 
 function toIsoDate(value) {
@@ -591,9 +632,23 @@ async function main() {
     'utf8'
   )
 
+  const verifiedFaq = await readVerifiedFaq()
+  const faqSearch = verifiedFaqSearchPayload(verifiedFaq)
+
   const pageIndex = pages.map(({ meta }) => {
     const current = {
       ...meta,
+      searchText:
+        meta.title === '많이 물어보는 것' && faqSearch.searchText
+          ? faqSearch.searchText
+          : sanitizeSearchText(meta.searchText),
+      sections:
+        meta.title === '많이 물어보는 것' && faqSearch.sections.length
+          ? faqSearch.sections
+          : (meta.sections || []).map((section) => ({
+              ...section,
+              text: sanitizeSearchText(section.text)
+            })),
       icon: resolveIndexedAsset(meta.icon, manifest),
       cover: resolveIndexedAsset(meta.cover, manifest)
     }
