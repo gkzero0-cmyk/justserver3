@@ -3450,3 +3450,403 @@ html[data-theme="light"] .exploration-list a {
     transition: none;
   }
 }
+
+
+/* === Play Zone expansion: random picks, achievements and secrets === */
+.fun-secret-trigger {
+  display: inline-block;
+  margin: 0 0 5px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #c69755;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  cursor: default;
+}
+
+.fun-zone-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.fun-card {
+  grid-column: span 2;
+}
+
+.fun-card:nth-child(4),
+.fun-card:nth-child(5) {
+  grid-column: span 3;
+  min-height: 148px;
+}
+
+.fun-card.is-random::before {
+  background: radial-gradient(circle at 0% 0%, rgba(93,135,187,.16), transparent 48%);
+}
+
+.fun-card.is-achievements::before {
+  background: radial-gradient(circle at 0% 0%, rgba(220,172,83,.18), transparent 48%);
+}
+
+.fun-secret-toast {
+  position: fixed;
+  z-index: 120;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  width: max-content;
+  max-width: min(90vw, 520px);
+  transform: translateX(-50%);
+  padding: 11px 15px;
+  border: 1px solid rgba(var(--gold-rgb),.24);
+  border-radius: 999px;
+  background: rgba(18,15,16,.96);
+  color: #dfc18e;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.4;
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0,0,0,.34);
+  backdrop-filter: blur(14px);
+  animation: funSecretToastIn .24s cubic-bezier(.2,.78,.25,1);
+}
+
+.fortune-secret-orb,
+.random-ready > span,
+.random-result-dice {
+  width: 82px;
+  height: 82px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 14px;
+  border: 1px solid rgba(var(--gold-rgb),.16);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(var(--accent-rgb),.18), transparent 45%),
+    rgba(var(--gold-rgb),.05);
+  box-shadow:
+    inset 0 0 22px rgba(var(--gold-rgb),.04),
+    0 15px 40px rgba(0,0,0,.16);
+  color: inherit;
+  font-size: 38px;
+}
+
+.fortune-secret-orb {
+  padding: 0;
+  cursor: default;
+}
+
+.random-ready,
+.random-result {
+  margin-top: 24px;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.random-ready > strong {
+  color: #f1e5df;
+  font-size: 17px;
+}
+
+.random-ready > small {
+  max-width: 430px;
+  margin-top: 8px;
+  color: #8f817b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.random-ready > button {
+  min-height: 44px;
+  margin-top: 19px;
+  padding: 0 18px;
+  border: 1px solid rgba(93,135,187,.28);
+  border-radius: 12px;
+  background: rgba(93,135,187,.09);
+  color: #b8cee9;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.random-ready > button:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
+.random-result > p {
+  margin: 0 0 6px;
+  color: #8ca8c8;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .08em;
+}
+
+.random-result > h3 {
+  margin: 0;
+  color: #eef5ff;
+  font-size: 27px;
+  letter-spacing: -.03em;
+}
+
+.random-result > small {
+  margin-top: 8px;
+  padding: 4px 8px;
+  border: 1px solid rgba(93,135,187,.14);
+  border-radius: 999px;
+  background: rgba(93,135,187,.05);
+  color: #9fb5d0;
+  font-size: 9px;
+}
+
+.random-result > strong {
+  max-width: 450px;
+  margin-top: 13px;
+  color: #c6d1df;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.fun-result-actions a,
+.fun-result-actions button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  border: 1px solid rgba(var(--gold-rgb),.14);
+  border-radius: 10px;
+  background: rgba(var(--gold-rgb),.055);
+  color: #c6ae89;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.fun-result-actions a:first-child,
+.fun-result-actions button:first-child {
+  border-color: rgba(var(--accent-rgb),.2);
+  background: rgba(var(--accent-rgb),.08);
+  color: #e39289;
+}
+
+.achievement-title-card {
+  margin-top: 22px;
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  padding: 19px 16px;
+  border: 1px solid rgba(var(--gold-rgb),.15);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 50% -30%, rgba(var(--gold-rgb),.16), transparent 62%),
+    rgba(var(--gold-rgb),.035);
+  text-align: center;
+}
+
+.achievement-title-card > span {
+  color: #918171;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+.achievement-title-card > strong {
+  color: #e3bd76;
+  font-size: 25px;
+  letter-spacing: -.025em;
+}
+
+.achievement-title-card > small {
+  color: #8f817b;
+  font-size: 10px;
+}
+
+.achievement-grid {
+  margin-top: 13px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 7px;
+}
+
+.achievement-grid article {
+  min-width: 0;
+  min-height: 74px;
+  display: grid;
+  grid-template-columns: 38px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 11px;
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 12px;
+  background: rgba(255,255,255,.012);
+  opacity: .58;
+}
+
+.achievement-grid article.is-unlocked {
+  border-color: rgba(var(--gold-rgb),.15);
+  background: rgba(var(--gold-rgb),.035);
+  opacity: 1;
+}
+
+.achievement-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: rgba(255,255,255,.035);
+  font-size: 19px;
+}
+
+.achievement-grid article.is-unlocked .achievement-icon {
+  background: rgba(var(--gold-rgb),.075);
+}
+
+.achievement-grid article > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.achievement-grid article strong {
+  color: #d8ccc5;
+  font-size: 11px;
+}
+
+.achievement-grid article small {
+  color: #7e726c;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.achievement-grid article b {
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.035);
+  color: #756a65;
+  font-size: 8px;
+}
+
+.achievement-grid article.is-unlocked b {
+  background: rgba(111,185,131,.08);
+  color: #83bc91;
+}
+
+.achievement-stats {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 6px;
+}
+
+.achievement-stats span {
+  min-width: 0;
+  padding: 8px 7px;
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 9px;
+  background: rgba(255,255,255,.012);
+  color: #8f817b;
+  font-size: 9px;
+  text-align: center;
+}
+
+@keyframes funSecretToastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+html[data-theme="light"] .fun-secret-trigger {
+  color: #8f652d;
+}
+
+html[data-theme="light"] .fun-secret-toast {
+  border-color: rgba(149,107,47,.18);
+  background: rgba(255,250,243,.97);
+  color: #7d5a2b;
+  box-shadow: 0 16px 44px rgba(74,48,33,.16);
+}
+
+html[data-theme="light"] .random-ready > strong,
+html[data-theme="light"] .random-result > h3,
+html[data-theme="light"] .achievement-title-card > strong {
+  color: #553b32;
+}
+
+html[data-theme="light"] .random-result > strong,
+html[data-theme="light"] .achievement-grid article strong {
+  color: #67534b;
+}
+
+html[data-theme="light"] .achievement-title-card,
+html[data-theme="light"] .achievement-grid article,
+html[data-theme="light"] .achievement-stats span {
+  border-color: rgba(118,84,55,.11);
+  background: rgba(255,255,255,.46);
+}
+
+html[data-theme="light"] .achievement-grid article.is-unlocked {
+  border-color: rgba(149,107,47,.18);
+  background: rgba(149,107,47,.055);
+}
+
+@media (max-width: 900px) {
+  .fun-zone-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fun-card,
+  .fun-card:nth-child(4),
+  .fun-card:nth-child(5) {
+    grid-column: auto;
+    min-height: 116px;
+  }
+}
+
+@media (max-width: 620px) {
+  .fun-card,
+  .fun-card:nth-child(4),
+  .fun-card:nth-child(5) {
+    min-height: 104px;
+  }
+
+  .fortune-secret-orb,
+  .random-ready > span,
+  .random-result-dice {
+    width: 72px;
+    height: 72px;
+    border-radius: 21px;
+    font-size: 33px;
+  }
+
+  .random-result > h3 {
+    font-size: 23px;
+  }
+
+  .achievement-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .achievement-stats {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+
+  .fun-secret-toast {
+    bottom: max(14px, env(safe-area-inset-bottom));
+    border-radius: 14px;
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fun-secret-toast {
+    animation: none;
+  }
+}

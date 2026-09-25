@@ -2,9 +2,13 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import {
+  EMPTY_WIKI_FUN_STATS,
   highestScoreKey,
+  normalizeWikiFunStats,
   seoulDateKey,
-  wikiExplorationProgress
+  unlockedWikiAchievementIds,
+  wikiExplorationProgress,
+  wikiTitleFromAchievements
 } from '../lib/wiki-fun.ts'
 import {
   classifyWikiContent,
@@ -153,4 +157,58 @@ test('keeps survival type tie results stable', () => {
     ),
     'miner'
   )
+})
+
+
+test('normalizes persisted play zone stats safely', () => {
+  assert.deepEqual(
+    normalizeWikiFunStats({
+      fortuneDraws: 2.9,
+      quizCompletions: -4,
+      randomRolls: 'bad',
+      eggs: ['play-zone', 'play-zone', 3, 'fortune-orb']
+    }),
+    {
+      fortuneDraws: 2,
+      quizCompletions: 0,
+      randomRolls: 0,
+      eggs: ['play-zone', 'fortune-orb']
+    }
+  )
+  assert.deepEqual(normalizeWikiFunStats(null), EMPTY_WIKI_FUN_STATS)
+})
+
+test('unlocks play zone achievements from exploration and activity', () => {
+  assert.deepEqual(
+    unlockedWikiAchievementIds(
+      { count: 3, total: 6, percent: 50 },
+      {
+        fortuneDraws: 1,
+        quizCompletions: 1,
+        randomRolls: 3,
+        eggs: ['play-zone']
+      }
+    ),
+    [
+      'first-step',
+      'guide',
+      'explorer',
+      'fortune',
+      'analyst',
+      'randomizer',
+      'secret-hunter'
+    ]
+  )
+})
+
+test('chooses the strongest unlocked wiki title deterministically', () => {
+  assert.equal(
+    wikiTitleFromAchievements(['first-step', 'guide', 'explorer']),
+    '적자생존 탐험가'
+  )
+  assert.equal(
+    wikiTitleFromAchievements(['egg-master', 'conqueror']),
+    '위키 정복자'
+  )
+  assert.equal(wikiTitleFromAchievements([]), '신입 생존자')
 })
