@@ -161,9 +161,11 @@ export default async function NotionSubPage({
   params: Promise<{ pageId: string }>
 }) {
   const { pageId } = await params
-  const recordMap = await getNotionPage(pageId)
-  const imageManifest = await readNotionAssetManifest()
-  const notionIndex = await readNotionIndex()
+  const [recordMap, imageManifest, notionIndex] = await Promise.all([
+    getNotionPage(pageId),
+    readNotionAssetManifest(),
+    readNotionIndex()
+  ])
   const rootId = notionIndex.rootPageId.replaceAll('-', '')
   const rootPage =
     notionIndex.pages.find(
