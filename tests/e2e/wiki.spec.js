@@ -1,8 +1,6 @@
 const { expect, test } = require('@playwright/test')
 
 test.describe('desktop wiki journeys', () => {
-  test.skip(({ project }) => project.name !== 'desktop-chromium')
-
   test('search opens from keyboard and navigates to a matched guide', async ({ page }) => {
     await page.goto('/')
     await page.keyboard.press('Control+K')
@@ -58,7 +56,7 @@ test.describe('desktop wiki journeys', () => {
 })
 
 test.describe('mobile wiki journeys', () => {
-  test.skip(({ project }) => project.name !== 'mobile-chromium')
+  test.use({ viewport: { width: 390, height: 844 } })
 
   test('quick info opens and core guide remains reachable', async ({ page }) => {
     await page.goto('/')
