@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import {
   buildStoryChapters,
+  nextAdventureAction,
   passportProgress,
   recommendedSurvivalBuild,
   storyProgress,
@@ -38,6 +39,8 @@ type AdventureTab = 'story' | 'passport' | 'build' | 'boss'
 const READ_PAGES_KEY = 'justserver3-read-pages-v1'
 const FUN_STATS_KEY = 'justserver3-fun-stats-v1'
 const SURVIVAL_RECORD_KEY = 'justserver3-survival-record-v1'
+const SEEN_STORY_KEY = 'justserver3-seen-story-chapters-v1'
+const SEEN_BOSS_KEY = 'justserver3-seen-boss-weeks-v1'
 
 const TAB_LABELS: Array<{
   id: AdventureTab
@@ -104,6 +107,12 @@ export function WikiAdventureHub({
     ...EMPTY_SURVIVAL_RECORD,
     activityByDay: {}
   })
+  const [notice, setNotice] = useState<{
+    icon: string
+    kicker: string
+    title: string
+    detail: string
+  } | null>(null)
 
   useEffect(() => {
     const refresh = () => {
@@ -157,10 +166,77 @@ export function WikiAdventureHub({
     () => weeklyWikiBoss(record.activityByDay, weekKey),
     [record.activityByDay, weekKey]
   )
+  const passportStamped = readyPages.filter((page) =>
+    readSet.has(normalize(page.pageId))
+  ).length
+  const storyPercent = story.length
+    ? Math.round((storyCompleted / story.length) * 100)
+    : 0
+  const nextAction = useMemo(
+    () => nextAdventureAction(story, build.pages, readIds, readyPages),
+    [build.pages, readIds, readyPages, story]
+  )
+  const activeTabIndex = TAB_LABELS.findIndex((tab) => tab.id === activeTab)
+
+  useEffect(() => {
+    const completed = story
+      .filter((chapter) => chapter.complete)
+      .map((chapter) => chapter.id)
+    const seen = readStringArray(SEEN_STORY_KEY)
+
+    if (!window.localStorage.getItem(SEEN_STORY_KEY)) {
+      window.localStorage.setItem(SEEN_STORY_KEY, JSON.stringify(completed))
+      return
+    }
+
+    const unlocked = completed.find((id) => !seen.includes(id))
+    if (!unlocked) return
+
+    const chapter = story.find((item) => item.id === unlocked)
+    window.localStorage.setItem(
+      SEEN_STORY_KEY,
+      JSON.stringify([...new Set([...seen, unlocked])])
+    )
+    setNotice({
+      icon: '🎬',
+      kicker: 'CHAPTER CLEARED',
+      title: chapter?.title || '스토리 챕터 완료',
+      detail: '다음 챕터가 열렸습니다.'
+    })
+    const timer = window.setTimeout(() => setNotice(null), 3000)
+    return () => window.clearTimeout(timer)
+  }, [story])
+
+  useEffect(() => {
+    if (!boss.defeated) return
+    const seen = readStringArray(SEEN_BOSS_KEY)
+    if (seen.includes(weekKey)) return
+
+    window.localStorage.setItem(
+      SEEN_BOSS_KEY,
+      JSON.stringify([...new Set([...seen, weekKey])])
+    )
+    setNotice({
+      icon: '🏆',
+      kicker: 'BOSS DEFEATED',
+      title: boss.name + ' 격파 완료',
+      detail: '이번 주 위키 보스를 쓰러뜨렸습니다.'
+    })
+    const timer = window.setTimeout(() => setNotice(null), 3400)
+    return () => window.clearTimeout(timer)
+  }, [boss.defeated, boss.name, weekKey])
 
   const changeTab = (tab: AdventureTab) => {
     setActiveTab(tab)
     track('wiki_adventure_tab', { tab })
+  }
+
+  const moveTab = (direction: -1 | 1) => {
+    const nextIndex = Math.min(
+      TAB_LABELS.length - 1,
+      Math.max(0, activeTabIndex + direction)
+    )
+    changeTab(TAB_LABELS[nextIndex].id)
   }
 
   return (
@@ -183,15 +259,75 @@ export function WikiAdventureHub({
         </strong>
       </div>
 
+      <div className="adventure-overview" aria-label="생존 어드벤처 진행 상황">
+        <span>
+          <small>STORY</small>
+          <strong>{storyCompleted}/{story.length}</strong>
+        </span>
+        <span>
+          <small>PASSPORT</small>
+          <strong>{passportStamped}/{readyPages.length}</strong>
+        </span>
+        <span>
+          <small>BUILD</small>
+          <strong>{buildCompleted}/{build.pages.length}</strong>
+        </span>
+        <span className={boss.defeated ? 'is-complete' : ''}>
+          <small>WEEKLY BOSS</small>
+          <strong>{boss.defeated ? '격파 ✓' : boss.remaining + ' HP'}</strong>
+        </span>
+      </div>
+
+      {nextAction && (
+        <Link
+          className="adventure-continue-card"
+          href={withBasePath('/page/' + nextAction.page.pageId + '/')}
+          onClick={() =>
+            track('wiki_adventure_continue', {
+              kind: nextAction.kind,
+              target: nextAction.page.title
+            })
+          }
+        >
+          <span className="adventure-continue-icon" aria-hidden="true">
+            ▶
+          </span>
+          <span className="adventure-continue-copy">
+            <small>{nextAction.eyebrow}</small>
+            <strong>{nextAction.title}</strong>
+            <em>{nextAction.description}</em>
+          </span>
+          <b>이어서 읽기 →</b>
+        </Link>
+      )}
+
       <div className="adventure-tabs" role="tablist" aria-label="생존 어드벤처">
-        {TAB_LABELS.map((tab) => (
+        {TAB_LABELS.map((tab, index) => (
           <button
             key={tab.id}
             type="button"
+            id={'adventure-tab-' + tab.id}
             role="tab"
+            aria-controls={'adventure-panel-' + tab.id}
             aria-selected={activeTab === tab.id}
+            tabIndex={activeTab === tab.id ? 0 : -1}
             className={activeTab === tab.id ? 'is-active' : ''}
             onClick={() => changeTab(tab.id)}
+            onKeyDown={(event) => {
+              if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
+                return
+              }
+              event.preventDefault()
+              const nextIndex =
+                event.key === 'ArrowRight'
+                  ? (index + 1) % TAB_LABELS.length
+                  : (index - 1 + TAB_LABELS.length) % TAB_LABELS.length
+              const next = TAB_LABELS[nextIndex]
+              changeTab(next.id)
+              window.requestAnimationFrame(() => {
+                document.getElementById('adventure-tab-' + next.id)?.focus()
+              })
+            }}
           >
             <span aria-hidden="true">{tab.icon}</span>
             <small>{tab.short}</small>
@@ -202,7 +338,12 @@ export function WikiAdventureHub({
 
       <div className="adventure-stage">
         {activeTab === 'story' && (
-          <div className="adventure-story" role="tabpanel">
+          <div
+            className="adventure-story"
+            id="adventure-panel-story"
+            role="tabpanel"
+            aria-labelledby="adventure-tab-story"
+          >
             <div className="adventure-story-intro">
               <span aria-hidden="true">🦁</span>
               <div>
@@ -215,13 +356,25 @@ export function WikiAdventureHub({
               </div>
             </div>
 
+            <div className="story-progress-strip" aria-label={'스토리 진행도 ' + storyPercent + '%'}>
+              <span>
+                <strong>{storyCompleted}/{story.length}</strong>
+                <small>CHAPTER</small>
+              </span>
+              <i aria-hidden="true">
+                <i style={{ width: storyPercent + '%' }} />
+              </i>
+              <b>{storyPercent}%</b>
+            </div>
+
             <div className="story-chapter-list">
               {story.map((chapter, index) => (
                 <article
                   key={chapter.id}
                   className={[
                     chapter.unlocked ? 'is-unlocked' : 'is-locked',
-                    chapter.complete ? 'is-complete' : ''
+                    chapter.complete ? 'is-complete' : '',
+                    chapter.unlocked && !chapter.complete ? 'is-current' : ''
                   ].join(' ')}
                 >
                   <div className="story-chapter-marker">
@@ -286,7 +439,12 @@ export function WikiAdventureHub({
         )}
 
         {activeTab === 'passport' && (
-          <div className="adventure-passport" role="tabpanel">
+          <div
+            className="adventure-passport"
+            id="adventure-panel-passport"
+            role="tabpanel"
+            aria-labelledby="adventure-tab-passport"
+          >
             <div className="passport-cover">
               <div className="passport-emblem" aria-hidden="true">🦁</div>
               <small>JUST SERVER · SURVIVAL PASSPORT</small>
@@ -316,6 +474,12 @@ export function WikiAdventureHub({
                         : group.count + '/' + group.total}
                     </b>
                   </header>
+                  {group.complete && (
+                    <span className="passport-special-seal" aria-hidden="true">
+                      <b>SURVIVED</b>
+                      <em>✓</em>
+                    </span>
+                  )}
                   <div className="passport-stamps">
                     {group.pages.map((page) => (
                       <Link
@@ -343,7 +507,12 @@ export function WikiAdventureHub({
         )}
 
         {activeTab === 'build' && (
-          <div className="adventure-build" role="tabpanel">
+          <div
+            className="adventure-build"
+            id="adventure-panel-build"
+            role="tabpanel"
+            aria-labelledby="adventure-tab-build"
+          >
             <header className="survival-build-head">
               <span aria-hidden="true">{build.icon}</span>
               <div>
@@ -407,7 +576,12 @@ export function WikiAdventureHub({
         )}
 
         {activeTab === 'boss' && (
-          <div className="adventure-boss" role="tabpanel">
+          <div
+            className="adventure-boss"
+            id="adventure-panel-boss"
+            role="tabpanel"
+            aria-labelledby="adventure-tab-boss"
+          >
             <div
               className={[
                 'weekly-boss-card',
@@ -419,6 +593,12 @@ export function WikiAdventureHub({
                 <div className="boss-icon" aria-hidden="true">
                   {boss.defeated ? '🏆' : boss.icon}
                 </div>
+                {boss.defeated && (
+                  <div className="boss-defeat-seal" aria-hidden="true">
+                    <span>DEFEATED</span>
+                    <b>WEEK CLEAR</b>
+                  </div>
+                )}
                 <small>WEEKLY WIKI BOSS</small>
                 <strong>
                   {boss.defeated
@@ -484,6 +664,22 @@ export function WikiAdventureHub({
                   </div>
                 </div>
 
+                <div className="boss-next-hit">
+                  <div>
+                    <small>NEXT HIT</small>
+                    <strong>
+                      {boss.defeated
+                        ? '이번 주 전투 완료'
+                        : '가이드 1개 완독 = +12 DAMAGE'}
+                    </strong>
+                  </div>
+                  {!boss.defeated && nextAction && (
+                    <Link href={withBasePath('/page/' + nextAction.page.pageId + '/')}>
+                      공격하러 가기 →
+                    </Link>
+                  )}
+                </div>
+
                 <p className="boss-help">
                   완독한 문서를 다시 읽어도 그날의 완독 기록으로 인정됩니다.
                   월요일마다 새로운 보스와 전투 기록이 시작됩니다.
@@ -492,7 +688,40 @@ export function WikiAdventureHub({
             </div>
           </div>
         )}
+
+        <div className="adventure-stage-nav" aria-label="어드벤처 탭 이동">
+          <button
+            type="button"
+            disabled={activeTabIndex <= 0}
+            onClick={() => moveTab(-1)}
+          >
+            ← 이전
+          </button>
+          <span>
+            {activeTabIndex + 1}/{TAB_LABELS.length}
+            <small>{TAB_LABELS[activeTabIndex]?.label}</small>
+          </span>
+          <button
+            type="button"
+            disabled={activeTabIndex >= TAB_LABELS.length - 1}
+            onClick={() => moveTab(1)}
+          >
+            다음 →
+          </button>
+        </div>
       </div>
+
+      {notice && (
+        <div className="adventure-unlock-toast" role="status">
+          <span aria-hidden="true">{notice.icon}</span>
+          <div>
+            <small>{notice.kicker}</small>
+            <strong>{notice.title}</strong>
+            <em>{notice.detail}</em>
+          </div>
+          <b>✓</b>
+        </div>
+      )}
     </section>
   )
 }
