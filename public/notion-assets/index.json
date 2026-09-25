@@ -1,6 +1,6 @@
 {
   "rootPageId": "3dad57d6a55c80469f3de9730cb88975",
-  "generatedAt": "2026-09-25T01:02:57.042Z",
+  "generatedAt": "2026-09-25T01:08:30.481Z",
   "pages": [
     {
       "pageId": "3dad57d6a55c80469f3de9730cb88975",
@@ -13,6 +13,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/b09673e524a534b5aa016381.webp",
       "hero": "/notion-assets/optimized/hero/b09673e524a534b5aa016381.webp",
+      "logo64": "/notion-assets/optimized/logo64/da97a92ed58d144e4aacf9ec.webp",
+      "logo128": "/notion-assets/optimized/logo128/da97a92ed58d144e4aacf9ec.webp",
       "logo": "/notion-assets/optimized/logo/da97a92ed58d144e4aacf9ec.webp"
     },
     {
@@ -26,6 +28,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/1945b1c3063b12e3c65d84e1.webp",
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -39,6 +43,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/686d4518773c9bde43dc3c5c.webp",
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -52,6 +58,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/0c90b8cd10051cddd69f483f.webp",
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -65,6 +73,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/1cbfebed088209f34e4ed712.webp",
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -78,6 +88,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/1cbfebed088209f34e4ed712.webp",
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -91,6 +103,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/0c90b8cd10051cddd69f483f.webp",
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -104,6 +118,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/75a3e00065c6268113f65030.webp",
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -117,6 +133,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/15cebc8916fa83a750030f7a.webp",
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -130,6 +148,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/96a29cdd6a8568e70ea0dced.webp",
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -143,6 +163,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/a226495c1f93dc827bde1ae3.webp",
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -156,6 +178,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/2eea11752af73e2d4527a67c.webp",
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -169,6 +193,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/969148cb6c4f63a3c5088811.webp",
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -182,6 +208,8 @@
       "changeSummary": null,
       "thumbnail": null,
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -195,6 +223,8 @@
       "changeSummary": null,
       "thumbnail": null,
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -208,6 +238,8 @@
       "changeSummary": null,
       "thumbnail": null,
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -221,6 +253,8 @@
       "changeSummary": null,
       "thumbnail": "/notion-assets/optimized/thumb/3b35f0881ae93962664ad10e.webp",
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -234,6 +268,8 @@
       "changeSummary": null,
       "thumbnail": null,
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -247,6 +283,8 @@
       "changeSummary": null,
       "thumbnail": null,
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -260,6 +298,8 @@
       "changeSummary": null,
       "thumbnail": null,
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -273,6 +313,8 @@
       "changeSummary": null,
       "thumbnail": null,
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     },
     {
@@ -286,6 +328,8 @@
       "changeSummary": null,
       "thumbnail": null,
       "hero": null,
+      "logo64": null,
+      "logo128": null,
       "logo": null
     }
   ],
