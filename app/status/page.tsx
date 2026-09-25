@@ -4,6 +4,7 @@ import { WikiShell } from '@/components/wiki-shell'
 import { readNotionAssetManifest, readNotionIndex } from '@/lib/notion-index'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
 import { wikiContentStatus } from '@/lib/wiki-content-status'
+import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
 
 export const revalidate = 300
@@ -185,9 +186,11 @@ export default async function StatusPage() {
       sourceUrl={notionPublicUrl(ROOT_PAGE_ID)}
       title="위키 상태"
       pageCount={pages.length || 1}
-      pages={pages.map(({ pageId, title }) => ({
-        pageId,
-        title
+      pages={pages.map((page) => ({
+        pageId: page.pageId,
+        title: page.title,
+        status: wikiContentStatus(page),
+        category: categoryTitleForPage(page.title)
       }))}
       brandLogo={brandLogo}
     >
