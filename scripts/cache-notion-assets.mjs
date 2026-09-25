@@ -14,6 +14,7 @@ const MAX_PAGES = Number(process.env.NOTION_ASSET_MAX_PAGES || 250)
 const OUT_DIR = path.join(process.cwd(), 'public', 'notion-assets')
 const MANIFEST_PATH = path.join(OUT_DIR, 'manifest.json')
 const INDEX_PATH = path.join(OUT_DIR, 'index.json')
+const SEARCH_INDEX_PATH = path.join(OUT_DIR, 'search-index.json')
 
 function canonicalUrl(value) {
   if (!value || typeof value !== 'string') return null
@@ -349,6 +350,36 @@ async function crawlPages() {
   return results
 }
 
+async function readExistingIndex() {
+  try {
+    return JSON.parse(await fs.readFile(INDEX_PATH, 'utf8'))
+  } catch {
+    return { pages: [] }
+  }
+}
+
+function changeSummaryFor(previous, current) {
+  if (!previous) return '새 가이드 추가'
+  if (previous.title !== current.title) return `문서명 변경 · ${current.title}`
+  if (previous.searchText === current.searchText) {
+    return previous.changeSummary || null
+  }
+
+  const oldText = previous.searchText || ''
+  const newText = current.searchText || ''
+  let index = 0
+  const max = Math.min(oldText.length, newText.length)
+  while (index < max && oldText[index] === newText[index]) index += 1
+
+  const start = Math.max(0, index - 24)
+  const end = Math.min(newText.length, index + 72)
+  const snippet = newText.slice(start, end).replace(/\s+/g, ' ').trim()
+
+  return snippet
+    ? `내용 변경 · ${start > 0 ? '…' : ''}${snippet}${end < newText.length ? '…' : ''}`
+    : '본문 내용 업데이트'
+}
+
 async function readExistingManifest() {
   try {
     return JSON.parse(await fs.readFile(MANIFEST_PATH, 'utf8'))
@@ -365,7 +396,8 @@ async function removeStaleFiles(activeFilenames) {
     if (
       entry.name === 'manifest.json' ||
       entry.name === 'display-manifest.json' ||
-      entry.name === 'index.json'
+      entry.name === 'index.json' ||
+      entry.name === 'search-index.json'
     ) continue
     if (activeFilenames.has(entry.name)) continue
 
@@ -377,6 +409,8 @@ async function removeStaleFiles(activeFilenames) {
 async function main() {
   await fs.mkdir(OUT_DIR, { recursive: true })
 
+  const existingIndex = await readExistingIndex()
+  const previousById = new Map((existingIndex.pages || []).map((page) => [page.pageId, page]))
   const pages = await crawlPages()
 
   if (!pages.length) {
@@ -441,19 +475,46 @@ async function main() {
     'utf8'
   )
 
-  const pageIndex = pages.map(({ meta }) => ({
-    ...meta,
-    icon: resolveIndexedAsset(meta.icon, manifest),
-    cover: resolveIndexedAsset(meta.cover, manifest)
-  }))
+  const pageIndex = pages.map(({ meta }) => {
+    const current = {
+      ...meta,
+      icon: resolveIndexedAsset(meta.icon, manifest),
+      cover: resolveIndexedAsset(meta.cover, manifest)
+    }
+    return {
+      ...current,
+      changeSummary: changeSummaryFor(previousById.get(current.pageId), current)
+    }
+  })
+
+  const generatedAt = new Date().toISOString()
 
   await fs.writeFile(
     INDEX_PATH,
     JSON.stringify(
       {
         rootPageId: ROOT_PAGE_ID,
-        generatedAt: new Date().toISOString(),
+        generatedAt,
         pages: pageIndex
+      },
+      null,
+      2
+    ) + '\n',
+    'utf8'
+  )
+
+  await fs.writeFile(
+    SEARCH_INDEX_PATH,
+    JSON.stringify(
+      {
+        generatedAt,
+        pages: pageIndex
+          .filter((page) => page.pageId !== ROOT_PAGE_ID)
+          .map(({ pageId, title, searchText }) => ({
+            pageId,
+            title,
+            searchText
+          }))
       },
       null,
       2
