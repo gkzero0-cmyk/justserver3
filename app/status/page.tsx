@@ -107,9 +107,11 @@ export default async function StatusPage() {
   const pages = index.pages.filter(
     (page) => page.pageId.replaceAll('-', '') !== rootId
   )
-  const brandLogo = rootPage?.logo
-    ? resolveCachedAsset(rootPage.logo)
-    : rootPage?.icon
+  const brandLogo = rootPage?.logo128
+    ? resolveCachedAsset(rootPage.logo128)
+    : rootPage?.logo
+      ? resolveCachedAsset(rootPage.logo)
+      : rootPage?.icon
       ? resolveCachedAsset(rootPage.icon)
       : null
   const recentPages = [...pages]
