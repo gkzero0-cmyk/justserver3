@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { categoryTitleForPage, iconForTitle } from '@/lib/wiki-taxonomy'
 import {
+  classifyWikiContent,
   matchesKoreanInitials,
   updateRecentPageIds
 } from '@/lib/wiki-ux'
@@ -63,12 +64,13 @@ const SEARCH_ALIASES: Record<string, string[]> = {
   질문: ['많이 물어보는 것', 'faq']
 }
 
-function isDraftSearchPage(page: SearchPage) {
+function searchPageStatus(page: SearchPage) {
   const text = (page.searchText || '').replace(/\s+/g, ' ').trim()
-  return Boolean(text) && (
-    /위키\s*업데이트\s*예정|내용\s*추가\s*예정|작성\s*중/i.test(text) ||
-    text.length < 80
-  )
+  return text ? classifyWikiContent(page) : null
+}
+
+function isDraftSearchPage(page: SearchPage) {
+  return searchPageStatus(page) === 'draft'
 }
 
 function editDistance(left: string, right: string) {
@@ -1086,8 +1088,11 @@ export function WikiShell({
                         <span className="search-result-category">
                           {categoryLabel(page.title)}
                         </span>
-                        {isDraftSearchPage(page) && (
+                        {searchPageStatus(page) === 'draft' && (
                           <em className="search-draft-badge">작성 중</em>
+                        )}
+                        {searchPageStatus(page) === 'brief' && (
+                          <em className="search-brief-badge">간단 안내</em>
                         )}
                       </span>
                       <strong>
