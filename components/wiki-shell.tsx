@@ -18,7 +18,17 @@ import {
   WikiSearchDialog,
   type WikiSearchResult
 } from '@/components/wiki-search-dialog'
+import {
+  WikiAchievementNotifier,
+  WikiTreasureFind
+} from '@/components/wiki-survival-widgets'
 import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
+import {
+  normalizeSurvivalRecord,
+  recordSurvivalActivity,
+  recordSurvivalDay,
+  seoulDateKey
+} from '@/lib/wiki-survival'
 import {
   classifyWikiContent,
   matchesKoreanInitials,
@@ -58,6 +68,7 @@ const CORE_PREFETCH_TITLES = new Set([
 ])
 const RECENT_PAGES_KEY = 'justserver3-recent-pages-v1'
 const VISITED_PAGES_KEY = 'justserver3-visited-pages-v1'
+const SURVIVAL_RECORD_KEY = 'justserver3-survival-record-v1'
 
 function categoryLabel(title: string) {
   return categoryTitleForPage(title)
@@ -236,6 +247,26 @@ export function WikiShell({
   }, [currentCategory])
 
   useEffect(() => {
+    let record
+    try {
+      record = normalizeSurvivalRecord(
+        JSON.parse(
+          window.localStorage.getItem(SURVIVAL_RECORD_KEY) || 'null'
+        )
+      )
+    } catch {
+      record = normalizeSurvivalRecord(null)
+    }
+
+    const next = recordSurvivalDay(record, seoulDateKey())
+    window.localStorage.setItem(
+      SURVIVAL_RECORD_KEY,
+      JSON.stringify(next)
+    )
+    window.dispatchEvent(new Event('justserver3:survival-record'))
+  }, [])
+
+  useEffect(() => {
     let stored: string[] = []
     try {
       const parsed = JSON.parse(
@@ -278,6 +309,29 @@ export function WikiShell({
         JSON.stringify(nextVisited)
       )
       window.dispatchEvent(new Event('justserver3:visited-pages'))
+
+      let record
+      try {
+        record = normalizeSurvivalRecord(
+          JSON.parse(
+            window.localStorage.getItem(SURVIVAL_RECORD_KEY) || 'null'
+          )
+        )
+      } catch {
+        record = normalizeSurvivalRecord(null)
+      }
+
+      const nextRecord = recordSurvivalActivity(
+        record,
+        seoulDateKey(),
+        'visit',
+        currentPageId
+      )
+      window.localStorage.setItem(
+        SURVIVAL_RECORD_KEY,
+        JSON.stringify(nextRecord)
+      )
+      window.dispatchEvent(new Event('justserver3:survival-record'))
     }
   }, [currentPageId, pages.length])
 
@@ -1076,6 +1130,13 @@ export function WikiShell({
           </div>
         </section>
 
+        {!home && (
+          <WikiTreasureFind
+            currentPageId={currentPageId}
+            pages={pages}
+          />
+        )}
+
         {home && recentReady && recentPages.length > 0 && (
           <RecentViewedSection
             ready
@@ -1098,6 +1159,8 @@ export function WikiShell({
           </nav>
         </footer>
       </main>
+
+      <WikiAchievementNotifier pages={pages} />
 
       {!home && (
         <div className={`mobile-reading-tools ${readingProgress > 2 ? 'is-visible' : ''}`}>

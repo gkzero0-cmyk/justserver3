@@ -15,6 +15,10 @@ import {
   type WikiAchievementId,
   type WikiFunStats
 } from '@/lib/wiki-fun'
+import {
+  normalizeSurvivalRecord,
+  recordSurvivalActivity
+} from '@/lib/wiki-survival'
 import type { WikiContentStatus } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
 
@@ -51,6 +55,7 @@ type ArchetypeId =
 const VISITED_PAGES_KEY = 'justserver3-visited-pages-v1'
 const FORTUNE_KEY = 'justserver3-daily-fortune-v1'
 const FUN_STATS_KEY = 'justserver3-fun-stats-v1'
+const SURVIVAL_RECORD_KEY = 'justserver3-survival-record-v1'
 
 const FORTUNES: Fortune[] = [
   {
@@ -378,6 +383,8 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
   const [secretZoneClicks, setSecretZoneClicks] = useState(0)
   const [fortuneOrbClicks, setFortuneOrbClicks] = useState(0)
   const [secretToast, setSecretToast] = useState('')
+  const [rouletteSpinning, setRouletteSpinning] = useState(false)
+  const [rouletteRotation, setRouletteRotation] = useState(0)
 
   const exploration = useMemo(
     () =>
@@ -410,6 +417,33 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
     const normalized = normalizeWikiFunStats(next)
     setStats(normalized)
     window.localStorage.setItem(FUN_STATS_KEY, JSON.stringify(normalized))
+    window.dispatchEvent(new Event('justserver3:fun-stats'))
+  }
+
+  const recordActivity = (
+    kind: 'fortune' | 'quiz' | 'random'
+  ) => {
+    let record
+    try {
+      record = normalizeSurvivalRecord(
+        JSON.parse(
+          window.localStorage.getItem(SURVIVAL_RECORD_KEY) || 'null'
+        )
+      )
+    } catch {
+      record = normalizeSurvivalRecord(null)
+    }
+
+    const next = recordSurvivalActivity(
+      record,
+      seoulDateKey(),
+      kind
+    )
+    window.localStorage.setItem(
+      SURVIVAL_RECORD_KEY,
+      JSON.stringify(next)
+    )
+    window.dispatchEvent(new Event('justserver3:survival-record'))
   }
 
   const unlockEgg = (id: string, message: string) => {
@@ -495,6 +529,7 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
       ...stats,
       fortuneDraws: stats.fortuneDraws + 1
     })
+    recordActivity('fortune')
     track('wiki_fun_complete', {
       feature: 'daily-fortune',
       result: String(index)
@@ -519,8 +554,10 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
       setQuizResult(result)
       persistStats({
         ...stats,
-        quizCompletions: stats.quizCompletions + 1
+        quizCompletions: stats.quizCompletions + 1,
+        lastQuizResult: result
       })
+      recordActivity('quiz')
       track('wiki_fun_complete', {
         feature: 'survival-type',
         result
@@ -572,7 +609,7 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
   }
 
   const rollRandom = () => {
-    if (!randomCandidates.length) return
+    if (!randomCandidates.length || rouletteSpinning) return
 
     const values = new Uint32Array(1)
     window.crypto.getRandomValues(values)
@@ -587,15 +624,25 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
     }
 
     const picked = randomCandidates[index]
-    setRecommendedPage(picked)
-    persistStats({
-      ...stats,
-      randomRolls: stats.randomRolls + 1
-    })
-    track('wiki_fun_complete', {
-      feature: 'random-guide',
-      category: picked.category || 'unknown'
-    })
+    const segment = 360 / Math.max(randomCandidates.length, 1)
+    setRouletteSpinning(true)
+    setRouletteRotation(
+      (value) => value + 1440 + (360 - index * segment)
+    )
+
+    window.setTimeout(() => {
+      setRecommendedPage(picked)
+      setRouletteSpinning(false)
+      persistStats({
+        ...stats,
+        randomRolls: stats.randomRolls + 1
+      })
+      recordActivity('random')
+      track('wiki_fun_complete', {
+        feature: 'random-guide',
+        category: picked.category || 'unknown'
+      })
+    }, 920)
   }
 
   const openProgress = () => {
@@ -894,15 +941,44 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
 
             {panel === 'random' && (
               <div className="fun-modal-content">
-                <span className="fun-modal-kicker">RANDOM PICK</span>
+                <span className="fun-modal-kicker">CONTENT ROULETTE</span>
                 <h2>오늘 뭐 하지?</h2>
 
-                {recommendedPage ? (
-                  <div className="random-result">
-                    <span className="random-result-dice" aria-hidden="true">🎲</span>
-                    <p>오늘의 랜덤 추천</p>
+                <div className="random-roulette-wrap">
+                  <span className="random-roulette-pointer" aria-hidden="true">
+                    ▼
+                  </span>
+                  <div
+                    className={`random-roulette ${rouletteSpinning ? 'is-spinning' : ''}`}
+                    style={{
+                      transform: `rotate(${rouletteRotation}deg)`
+                    }}
+                    aria-hidden="true"
+                  >
+                    {randomCandidates.slice(0, 8).map((page, index, list) => {
+                      const angle = (360 / Math.max(list.length, 1)) * index
+                      return (
+                        <span
+                          key={page.pageId}
+                          style={{
+                            transform: `rotate(${angle}deg) translateY(-66px) rotate(${-angle}deg)`
+                          }}
+                        >
+                          {index + 1}
+                        </span>
+                      )
+                    })}
+                    <b>🎲</b>
+                  </div>
+                </div>
+
+                {recommendedPage && !rouletteSpinning ? (
+                  <div className="random-result is-roulette-result">
+                    <p>룰렛이 고른 오늘의 콘텐츠</p>
                     <h3>{recommendedPage.title}</h3>
-                    <small>{recommendedPage.category || '적자생존 가이드'}</small>
+                    <small>
+                      {recommendedPage.category || '적자생존 가이드'}
+                    </small>
                     <strong>
                       고민은 여기까지. 오늘은 이 가이드에서 시작해보세요.
                     </strong>
@@ -922,24 +998,31 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
                       >
                         이 가이드 보러가기
                       </Link>
-                      <button type="button" onClick={rollRandom}>
-                        다시 뽑기
+                      <button
+                        type="button"
+                        onClick={rollRandom}
+                        disabled={rouletteSpinning}
+                      >
+                        다시 돌리기
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="random-ready">
-                    <span aria-hidden="true">🎲</span>
-                    <strong>무엇을 할지 고민 중인가요?</strong>
+                  <div className="random-ready is-roulette-ready">
+                    <strong>
+                      {rouletteSpinning
+                        ? '룰렛이 오늘의 콘텐츠를 고르는 중...'
+                        : '무엇을 할지 고민 중인가요?'}
+                    </strong>
                     <small>
-                      현재 준비가 끝난 가이드 중 하나를 무작위로 골라드립니다.
+                      작성이 끝난 가이드만 룰렛 후보에 들어갑니다.
                     </small>
                     <button
                       type="button"
                       onClick={rollRandom}
-                      disabled={!randomCandidates.length}
+                      disabled={!randomCandidates.length || rouletteSpinning}
                     >
-                      랜덤 추천 받기
+                      {rouletteSpinning ? '돌리는 중...' : '룰렛 돌리기'}
                     </button>
                   </div>
                 )}

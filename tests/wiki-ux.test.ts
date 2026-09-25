@@ -11,6 +11,20 @@ import {
   wikiTitleFromAchievements
 } from '../lib/wiki-fun.ts'
 import {
+  collectionProgress,
+  dailyMissionIds,
+  dailyMissionProgress,
+  normalizeSurvivalRecord,
+  recordSurvivalActivity,
+  recordSurvivalDay,
+  seoulWeekKey,
+  survivalVisitStreak,
+  treasurePageIds,
+  weeklyActivitySummary,
+  weeklyChallengeIds,
+  weeklyChallengeProgress
+} from '../lib/wiki-survival.ts'
+import {
   classifyWikiContent,
   extractKoreanInitials,
   matchesKoreanInitials,
@@ -172,7 +186,8 @@ test('normalizes persisted play zone stats safely', () => {
       fortuneDraws: 2,
       quizCompletions: 0,
       randomRolls: 0,
-      eggs: ['play-zone', 'fortune-orb']
+      eggs: ['play-zone', 'fortune-orb'],
+      lastQuizResult: null
     }
   )
   assert.deepEqual(normalizeWikiFunStats(null), EMPTY_WIKI_FUN_STATS)
@@ -186,7 +201,8 @@ test('unlocks play zone achievements from exploration and activity', () => {
         fortuneDraws: 1,
         quizCompletions: 1,
         randomRolls: 3,
-        eggs: ['play-zone']
+        eggs: ['play-zone'],
+        lastQuizResult: 'miner'
       }
     ),
     [
@@ -211,4 +227,100 @@ test('chooses the strongest unlocked wiki title deterministically', () => {
     '위키 정복자'
   )
   assert.equal(wikiTitleFromAchievements([]), '신입 생존자')
+})
+
+
+test('records survival days and daily activity without duplicate visits', () => {
+  const day = '2026-09-25'
+  const started = recordSurvivalDay(normalizeSurvivalRecord(null), day)
+  const visited = recordSurvivalActivity(started, day, 'visit', 'aa-bb')
+  const visitedAgain = recordSurvivalActivity(visited, day, 'visit', 'aabb')
+  const rolled = recordSurvivalActivity(visitedAgain, day, 'random')
+
+  assert.deepEqual(rolled.visitDays, [day])
+  assert.deepEqual(rolled.activityByDay[day].visits, ['aabb'])
+  assert.equal(rolled.activityByDay[day].random, 1)
+})
+
+test('calculates consecutive Seoul visit streaks', () => {
+  assert.equal(
+    survivalVisitStreak(
+      ['2026-09-22', '2026-09-23', '2026-09-24', '2026-09-25'],
+      '2026-09-25'
+    ),
+    4
+  )
+  assert.equal(
+    survivalVisitStreak(
+      ['2026-09-22', '2026-09-24', '2026-09-25'],
+      '2026-09-25'
+    ),
+    2
+  )
+})
+
+test('daily missions are stable and report progress', () => {
+  const ids = dailyMissionIds('2026-09-25')
+  assert.equal(ids.length, 3)
+  assert.equal(new Set(ids).size, 3)
+  assert.equal(ids[0], 'visit-one')
+
+  const progress = dailyMissionProgress('visit-two', {
+    visits: ['a', 'b'],
+    fortune: 0,
+    quiz: 0,
+    random: 0,
+    treasures: []
+  })
+  assert.deepEqual(progress, { current: 2, target: 2 })
+})
+
+test('weekly challenges use Seoul Monday and aggregate seven days', () => {
+  assert.equal(
+    seoulWeekKey(new Date('2026-09-25T12:00:00+09:00')),
+    '2026-09-21'
+  )
+
+  let record = normalizeSurvivalRecord(null)
+  record = recordSurvivalActivity(record, '2026-09-21', 'visit', 'a')
+  record = recordSurvivalActivity(record, '2026-09-22', 'visit', 'b')
+  record = recordSurvivalActivity(record, '2026-09-23', 'fortune')
+  record = recordSurvivalActivity(record, '2026-09-24', 'fortune')
+  record = recordSurvivalActivity(record, '2026-09-25', 'fortune')
+
+  const summary = weeklyActivitySummary(record, '2026-09-21')
+  assert.deepEqual(summary.visits, ['a', 'b'])
+  assert.equal(summary.fortune, 3)
+  assert.equal(
+    weeklyChallengeProgress('week-fortune-three', summary).current,
+    3
+  )
+  assert.equal(weeklyChallengeIds('2026-09-21').length, 3)
+})
+
+test('treasure targets and collection progress stay deterministic', () => {
+  const targets = treasurePageIds(
+    ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
+    4
+  )
+  assert.equal(targets.length, 4)
+  assert.deepEqual(
+    targets,
+    treasurePageIds(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'], 4)
+  )
+
+  assert.deepEqual(
+    collectionProgress(
+      [
+        { pageId: 'a', category: '시작하기' },
+        { pageId: 'b', category: '시작하기' },
+        { pageId: 'c', category: '성장 · 경제' }
+      ],
+      ['a', 'c']
+    ),
+    [
+      { category: '시작하기', count: 1, total: 2, percent: 50 },
+      { category: '성장 · 경제', count: 1, total: 1, percent: 100 }
+    ]
+  )
 })
