@@ -28,6 +28,14 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          REMOTE_SHA="$(git ls-remote origin refs/heads/main | cut -f1)"
+          LOCAL_SHA="$(git rev-parse HEAD)"
+          if [ "$REMOTE_SHA" != "$LOCAL_SHA" ]; then
+            echo "A newer main commit exists; its workflow will refresh the deploy bundle."
+            exit 0
+          fi
+
           git add .deploy/current.json
           if git diff --cached --quiet; then
             echo "Deploy bundle is already current."
