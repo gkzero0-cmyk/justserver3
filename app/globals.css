@@ -2786,16 +2786,6 @@ html[data-theme="light"] .global-page-link {
   }
 }
 
-@media (max-width: 1279px) {
-  .article-toc {
-    display: none;
-  }
-
-  .mobile-current-toc {
-    display: grid;
-  }
-}
-
 @media (max-width: 980px) {
   :root {
     --sidebar: 300px;
