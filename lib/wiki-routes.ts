@@ -22,13 +22,13 @@ const WIKI_ROUTE_ENTRIES = [
   ['3e0d57d6a55c80aa89daee3da173adf7', '많이 물어보는 것', 'faq']
 ] as const
 
-const slugById = new Map(
+const slugById = new Map<string, string>(
   WIKI_ROUTE_ENTRIES.map(([pageId, , slug]) => [pageId, slug])
 )
-const idBySlug = new Map(
+const idBySlug = new Map<string, string>(
   WIKI_ROUTE_ENTRIES.map(([pageId, , slug]) => [slug, pageId])
 )
-const slugByTitle = new Map(
+const slugByTitle = new Map<string, string>(
   WIKI_ROUTE_ENTRIES.map(([, title, slug]) => [title, slug])
 )
 
