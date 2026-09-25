@@ -31,6 +31,10 @@ import {
   type WeeklyChallengeId
 } from '@/lib/wiki-survival'
 import type { WikiContentStatus } from '@/lib/wiki-ux'
+import {
+  readWikiStateValue,
+  readWikiStringArray
+} from '@/lib/wiki-client-state'
 
 type SurvivalPage = {
   pageId: string
@@ -38,11 +42,6 @@ type SurvivalPage = {
   category?: string
   status?: WikiContentStatus
 }
-
-const VISITED_PAGES_KEY = 'justserver3-read-pages-v1'
-const FUN_STATS_KEY = 'justserver3-fun-stats-v1'
-const SURVIVAL_RECORD_KEY = 'justserver3-survival-record-v1'
-const TREASURES_KEY = 'justserver3-treasures-v1'
 
 const DAILY_LABELS: Record<
   DailyMissionId,
@@ -115,21 +114,10 @@ const QUIZ_LABELS: Record<string, string> = {
   collector: '도감 수집가형'
 }
 
-function readStringArray(key: string) {
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(key) || '[]')
-    return Array.isArray(parsed)
-      ? parsed.filter((value): value is string => typeof value === 'string')
-      : []
-  } catch {
-    return []
-  }
-}
-
 function readFunStats() {
   try {
     return normalizeWikiFunStats(
-      JSON.parse(window.localStorage.getItem(FUN_STATS_KEY) || 'null')
+      readWikiStateValue('funStats', null)
     )
   } catch {
     return { ...EMPTY_WIKI_FUN_STATS }
@@ -139,7 +127,7 @@ function readFunStats() {
 function readSurvivalRecord() {
   try {
     return normalizeSurvivalRecord(
-      JSON.parse(window.localStorage.getItem(SURVIVAL_RECORD_KEY) || 'null')
+      readWikiStateValue('survivalRecord', null)
     )
   } catch {
     return { ...EMPTY_SURVIVAL_RECORD, activityByDay: {} }
@@ -167,8 +155,8 @@ export function WikiSurvivalLog({
   const [shareState, setShareState] = useState('')
 
   const refresh = () => {
-    setVisitedIds(readStringArray(VISITED_PAGES_KEY))
-    setTreasureIds(readStringArray(TREASURES_KEY))
+    setVisitedIds(readWikiStringArray('readPages'))
+    setTreasureIds(readWikiStringArray('treasures'))
     setStats(readFunStats())
     setRecord(readSurvivalRecord())
   }
