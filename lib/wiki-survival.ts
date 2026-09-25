@@ -1,5 +1,7 @@
 import { seoulDateKey, uniqueNormalizedPageIds } from './wiki-fun'
 
+export { seoulDateKey }
+
 export type SurvivalActivity = {
   visits: string[]
   fortune: number
