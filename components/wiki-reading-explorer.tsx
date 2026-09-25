@@ -49,8 +49,18 @@ export function WikiReadingExplorer({
     [pages]
   )
   const [readIds, setReadIds] = useState<string[]>([])
+  const [dateKey, setDateKey] = useState('')
 
   useEffect(() => {
+    setDateKey(
+      new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).format(new Date())
+    )
+
     const refresh = () => setReadIds(readStoredPages())
     refresh()
     window.addEventListener('storage', refresh)
@@ -65,14 +75,10 @@ export function WikiReadingExplorer({
     () => new Set(readIds.map(normalize)),
     [readIds]
   )
-  const dateKey = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Seoul',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).format(new Date())
-
-  const quest = dailyExplorationQuest(readyPages, dateKey)
+  const quest = dailyExplorationQuest(
+    readyPages,
+    dateKey || 'loading'
+  )
   const questDone =
     quest.pages.length > 0 &&
     quest.pages.every((page) => readSet.has(normalize(page.pageId)))
@@ -94,7 +100,7 @@ export function WikiReadingExplorer({
           </span>
         </div>
         <b>
-          📚 {readSet.size}/{readyPages.length} 완독
+          📚 {readyPages.filter((page) => readSet.has(normalize(page.pageId))).length}/{readyPages.length} 완독
         </b>
       </div>
 
