@@ -171,7 +171,6 @@ export default async function StatusPage() {
     <WikiShell
       sourceUrl={notionPublicUrl(ROOT_PAGE_ID)}
       title="위키 상태"
-      assetCount={Object.keys(manifest).length}
       pageCount={index.pages.length || 1}
       pages={pages.map(({ pageId, title }) => ({
         pageId,
