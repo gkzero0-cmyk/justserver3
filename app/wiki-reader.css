@@ -8013,3 +8013,223 @@ html[data-theme="light"] .status-source-review-links > span {
     grid-column: 1 / -1;
   }
 }
+
+
+/* === 2026-09-26 verified FAQ === */
+.verified-faq {
+  display: grid;
+  gap: 16px;
+  margin: 18px 0 24px;
+  padding: 22px;
+  border: 1px solid rgba(var(--gold-rgb), .14);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(var(--gold-rgb), .07), transparent 30%),
+    rgba(255,255,255,.014);
+}
+
+.verified-faq-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.verified-faq-head > div {
+  display: grid;
+  gap: 4px;
+}
+
+.verified-faq-head p {
+  margin: 0;
+  color: var(--gold);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.verified-faq-head h2 {
+  margin: 0;
+  color: #dfd4cd;
+  font-size: clamp(19px, 2.3vw, 25px);
+}
+
+.verified-faq-head span {
+  max-width: 680px;
+  color: var(--text-subtle);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.verified-faq-head > strong {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(var(--gold-rgb), .075);
+  color: #c5a77c;
+  font-size: 10px;
+}
+
+.verified-faq-list {
+  display: grid;
+  gap: 7px;
+}
+
+.verified-faq-item {
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 12px;
+  background: rgba(255,255,255,.014);
+}
+
+.verified-faq-item summary {
+  min-height: 55px;
+  display: grid;
+  grid-template-columns: 34px minmax(0,1fr) 24px;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.verified-faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.verified-faq-number {
+  color: #776a64;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.verified-faq-item summary strong {
+  color: #cfc2bb;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.verified-faq-toggle {
+  color: #9f8e85;
+  font-size: 18px;
+  text-align: center;
+  transition: transform .18s ease;
+}
+
+.verified-faq-item[open] {
+  border-color: rgba(var(--gold-rgb), .16);
+  background: rgba(var(--gold-rgb), .022);
+}
+
+.verified-faq-item[open] .verified-faq-toggle {
+  transform: rotate(45deg);
+}
+
+.verified-faq-answer {
+  display: grid;
+  gap: 10px;
+  padding: 0 12px 13px 55px;
+}
+
+.verified-faq-answer p {
+  margin: 0;
+  color: #bcaea7;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.verified-faq-answer > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.verified-faq-answer span {
+  color: #786c66;
+  font-size: 9px;
+}
+
+.verified-faq-answer a {
+  color: #b99a72;
+  font-size: 9px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.verified-faq-answer a:hover,
+.verified-faq-answer a:focus-visible {
+  color: #d7b985;
+  text-decoration: underline;
+}
+
+.verified-faq-note {
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 11px;
+  background: rgba(var(--accent-rgb), .045);
+}
+
+.verified-faq-note strong {
+  color: #b98a83;
+  font-size: 10px;
+}
+
+.verified-faq-note span {
+  color: var(--text-subtle);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+html[data-theme="light"] .verified-faq {
+  border-color: rgba(118,84,55,.14);
+  background-color: rgba(255,250,243,.8);
+}
+
+html[data-theme="light"] .verified-faq-head h2,
+html[data-theme="light"] .verified-faq-item summary strong {
+  color: #5f5049;
+}
+
+html[data-theme="light"] .verified-faq-item {
+  border-color: rgba(118,84,55,.1);
+  background: rgba(255,255,255,.42);
+}
+
+html[data-theme="light"] .verified-faq-answer p {
+  color: #75645c;
+}
+
+@media (max-width: 620px) {
+  .verified-faq {
+    margin-top: 12px;
+    padding: 15px;
+    border-radius: 16px;
+  }
+
+  .verified-faq-head {
+    display: grid;
+    gap: 8px;
+  }
+
+  .verified-faq-head > strong {
+    width: max-content;
+  }
+
+  .verified-faq-item summary {
+    grid-template-columns: 26px minmax(0,1fr) 20px;
+    padding: 10px;
+  }
+
+  .verified-faq-answer {
+    padding: 0 10px 12px 45px;
+  }
+
+  .verified-faq-note {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
