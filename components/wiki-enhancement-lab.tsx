@@ -116,93 +116,167 @@ function playTone(
 
     const ctx = new AudioContextClass()
     const now = ctx.currentTime
+    const master = ctx.createGain()
+    const compressor = ctx.createDynamicsCompressor()
 
-    const beep = (
+    master.gain.setValueAtTime(0.72, now)
+    compressor.threshold.setValueAtTime(-20, now)
+    compressor.knee.setValueAtTime(16, now)
+    compressor.ratio.setValueAtTime(5, now)
+    compressor.attack.setValueAtTime(0.004, now)
+    compressor.release.setValueAtTime(0.2, now)
+    compressor.connect(master)
+    master.connect(ctx.destination)
+
+    const tone = (
       frequency: number,
       start: number,
       duration: number,
       gainValue: number,
-      type: OscillatorType = 'sine'
+      type: OscillatorType = 'sine',
+      endFrequency?: number
     ) => {
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
       osc.type = type
       osc.frequency.setValueAtTime(frequency, now + start)
+      if (endFrequency) {
+        osc.frequency.exponentialRampToValueAtTime(
+          Math.max(35, endFrequency),
+          now + start + duration
+        )
+      }
       gain.gain.setValueAtTime(0.0001, now + start)
-      gain.gain.exponentialRampToValueAtTime(gainValue, now + start + 0.015)
+      gain.gain.exponentialRampToValueAtTime(
+        Math.max(0.0002, gainValue),
+        now + start + 0.008
+      )
       gain.gain.exponentialRampToValueAtTime(
         0.0001,
         now + start + duration
       )
       osc.connect(gain)
-      gain.connect(ctx.destination)
+      gain.connect(compressor)
       osc.start(now + start)
       osc.stop(now + start + duration + 0.03)
     }
 
+    const noise = (
+      start: number,
+      duration: number,
+      gainValue: number,
+      filterType: BiquadFilterType,
+      frequency: number
+    ) => {
+      const frames = Math.max(1, Math.floor(ctx.sampleRate * duration))
+      const buffer = ctx.createBuffer(1, frames, ctx.sampleRate)
+      const data = buffer.getChannelData(0)
+      for (let index = 0; index < frames; index += 1) {
+        data[index] = Math.random() * 2 - 1
+      }
+
+      const source = ctx.createBufferSource()
+      const filter = ctx.createBiquadFilter()
+      const gain = ctx.createGain()
+      source.buffer = buffer
+      filter.type = filterType
+      filter.frequency.setValueAtTime(frequency, now + start)
+      filter.Q.setValueAtTime(0.8, now + start)
+      gain.gain.setValueAtTime(Math.max(0.0002, gainValue), now + start)
+      gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        now + start + duration
+      )
+      source.connect(filter)
+      filter.connect(gain)
+      gain.connect(compressor)
+      source.start(now + start)
+      source.stop(now + start + duration + 0.02)
+    }
+
+    const metalStrike = (
+      base: number,
+      start = 0,
+      strength = 0.045,
+      duration = 0.42
+    ) => {
+      const partials = [
+        [1, 1],
+        [1.47, 0.52],
+        [2.13, 0.31],
+        [2.73, 0.2]
+      ] as const
+      partials.forEach(([ratio, weight], index) => {
+        tone(
+          base * ratio,
+          start + index * 0.004,
+          duration * (1 - index * 0.08),
+          strength * weight,
+          index % 2 === 0 ? 'sine' : 'triangle'
+        )
+      })
+      noise(start, 0.055, strength * 0.34, 'highpass', 1700)
+    }
+
     if (kind === 'charge') {
-      beep(290, 0, .12, .055, 'triangle')
-      beep(390, .09, .15, .045, 'triangle')
-      beep(520, .19, .18, .04, 'sine')
+      metalStrike(165, 0, 0.035, 0.24)
+      tone(190, 0.04, 0.46, 0.023, 'sine', 390)
+      tone(285, 0.16, 0.34, 0.014, 'triangle', 570)
     } else if (kind === 'success') {
-      beep(520, 0, .18, .06)
-      beep(660, .08, .2, .055)
-      beep(880, .18, .28, .05)
+      metalStrike(330, 0, 0.05, 0.48)
+      tone(659, 0.07, 0.34, 0.032, 'sine')
+      tone(988, 0.16, 0.38, 0.021, 'sine')
     } else if (kind === 'max') {
-      beep(523, 0, .26, .065)
-      beep(659, .08, .28, .06)
-      beep(784, .18, .34, .06)
-      beep(1047, .34, .45, .055)
+      metalStrike(392, 0, 0.056, 0.58)
+      tone(523, 0.05, 0.5, 0.033, 'sine')
+      tone(784, 0.14, 0.56, 0.03, 'sine')
+      tone(1047, 0.28, 0.62, 0.025, 'sine')
+      noise(0.08, 0.18, 0.012, 'highpass', 2600)
     } else if (kind === 'down') {
-      beep(360, 0, .18, .055, 'sawtooth')
-      beep(250, .1, .24, .05, 'triangle')
+      metalStrike(180, 0, 0.045, 0.38)
+      tone(310, 0.03, 0.42, 0.026, 'triangle', 145)
     } else if (kind === 'destroy') {
-      beep(150, 0, .32, .075, 'sawtooth')
-      beep(92, .05, .5, .07, 'square')
-      beep(58, .18, .55, .055, 'triangle')
+      metalStrike(108, 0, 0.064, 0.5)
+      noise(0.02, 0.38, 0.052, 'lowpass', 1100)
+      noise(0.07, 0.24, 0.025, 'highpass', 2200)
+      tone(92, 0.02, 0.62, 0.038, 'sine', 48)
+      tone(58, 0.12, 0.72, 0.025, 'triangle')
     } else {
-      beep(250, 0, .14, .05, 'square')
-      beep(190, .08, .2, .04, 'triangle')
+      metalStrike(145, 0, 0.04, 0.32)
+      tone(178, 0.02, 0.28, 0.019, 'triangle', 132)
     }
 
     window.setTimeout(() => {
       void ctx.close()
-    }, 1200)
+    }, 1500)
   } catch {}
 }
 
-function PixelPickaxe() {
+function EnhancementPickaxe({
+  level,
+  broken
+}: {
+  level: number
+  broken: boolean
+}) {
+  const enchanted = level >= 10 && !broken
   return (
-    <svg
-      viewBox="0 0 160 160"
-      className="enhancement-pickaxe-svg"
-      role="img"
-      aria-label="픽셀풍 다이아몬드 곡괭이"
-    >
-      <g shapeRendering="crispEdges">
-        <path
-          d="M22 30h56v10H44v10H34v10H24V50H14V40h8z"
-          className="pickaxe-head-light"
-        />
-        <path
-          d="M78 30h30v10h12v10h10v10h-20V50H78z"
-          className="pickaxe-head-dark"
-        />
-        <path d="M67 45h18v18H67z" className="pickaxe-joint" />
-        <path
-          d="M73 59h14v14H73zM66 70h14v14H66zM59 81h14v14H59zM52 92h14v14H52zM45 103h14v14H45zM38 114h14v14H38z"
-          className="pickaxe-handle"
-        />
-        <path
-          d="M80 73h7v7h-7zM73 84h7v7h-7zM66 95h7v7h-7zM59 106h7v7h-7zM52 117h7v7h-7z"
-          className="pickaxe-handle-light"
-        />
-        <path
-          d="M22 40h44v8H32v8H22zM88 38h18v8h10v8h-20v-8h-8z"
-          className="pickaxe-shine"
-        />
-      </g>
-    </svg>
+    <img
+      className="enhancement-pickaxe-image"
+      src={withBasePath(
+        enchanted
+          ? '/enhancement-lab/enchanted-diamond-pickaxe.webp'
+          : '/enhancement-lab/diamond-pickaxe.png'
+      )}
+      alt={
+        enchanted
+          ? '인챈트된 다이아몬드 곡괭이'
+          : '다이아몬드 곡괭이'
+      }
+      draggable={false}
+      width={160}
+      height={160}
+    />
   )
 }
 
@@ -376,11 +450,10 @@ export function WikiEnhancementLab({
     >
       <header className="enhancement-lab-head">
         <div>
-          <p>ENHANCEMENT FORGE</p>
+          <p>MINIGAME · 장비강화</p>
           <h2 id="enhancement-lab-title">강화 체험소</h2>
           <span>
-            다이아몬드 곡괭이를 +15까지 강화해보세요. 성공·실패·하락·파괴가
-            기다리고 있습니다.
+            위키를 보다가 잠깐 즐길 수 있는 장비강화 체험입니다. +15까지 올려보세요.
           </span>
         </div>
         <div className="enhancement-head-actions">
@@ -390,7 +463,7 @@ export function WikiEnhancementLab({
             aria-pressed={soundOn}
             onClick={() => setSoundOn((value) => !value)}
           >
-            {soundOn ? '🔊 효과음 ON' : '🔇 효과음 OFF'}
+            {soundOn ? '효과음 켬' : '효과음 끔'}
           </button>
         </div>
       </header>
@@ -410,22 +483,41 @@ export function WikiEnhancementLab({
           <div className="enhancement-forge-grid" aria-hidden="true" />
 
           <div className="enhancement-level-row">
-            <span className="enhancement-level-label">CURRENT</span>
+            <span className="enhancement-level-label">강화 단계</span>
             <strong>+{stats.level}</strong>
             <span className="enhancement-item-name">다이아몬드 곡괭이</span>
           </div>
 
           <div className="enhancement-item-stage">
-            <div className="enhancement-aura" aria-hidden="true" />
-            <div className="enhancement-ring ring-one" aria-hidden="true" />
-            <div className="enhancement-ring ring-two" aria-hidden="true" />
             <div
-              className={
-                'enhancement-pickaxe ' + (broken ? 'is-broken' : '')
-              }
+              className="enhancement-slot-shell"
+              data-enchanted={stats.level >= 10 && !broken ? 'true' : 'false'}
             >
-              <PixelPickaxe />
+              <div className="enhancement-slot">
+                <div className="enhancement-slot-inner">
+                  <div
+                    className={
+                      'enhancement-pickaxe ' + (broken ? 'is-broken' : '')
+                    }
+                  >
+                    <EnhancementPickaxe
+                      level={stats.level}
+                      broken={broken}
+                    />
+                  </div>
+                  {stats.level >= 10 && !broken && (
+                    <div
+                      className="enhancement-enchant-sheen"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <span className="enhancement-slot-level">
+                    +{stats.level}
+                  </span>
+                </div>
+              </div>
             </div>
+
             <div className="enhancement-particles" aria-hidden="true">
               {Array.from({ length: 12 }, (_, index) => (
                 <i
@@ -434,6 +526,7 @@ export function WikiEnhancementLab({
                 />
               ))}
             </div>
+
             {broken && (
               <div className="enhancement-shards" aria-hidden="true">
                 {Array.from({ length: 9 }, (_, index) => (
@@ -444,6 +537,21 @@ export function WikiEnhancementLab({
                 ))}
               </div>
             )}
+
+            <div className="enhancement-item-tooltip">
+              <strong>
+                다이아몬드 곡괭이 +{stats.level}
+              </strong>
+              <span>
+                {broken
+                  ? '파괴됨 · 새 곡괭이를 받아 다시 도전할 수 있습니다.'
+                  : stats.level >= 15
+                    ? '최대 강화 · +15 달성'
+                    : stats.level >= 10
+                      ? '인챈트 활성 · 다음 성공 확률 ' + rule.success + '%'
+                      : danger.label + ' 단계 · 다음 성공 확률 ' + rule.success + '%'}
+              </span>
+            </div>
           </div>
 
           <div
