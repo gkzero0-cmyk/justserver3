@@ -7,7 +7,8 @@ import {
   matchesKoreanInitials,
   relativeUpdateLabel,
   suggestFallbackPages,
-  updateRecentPageIds
+  updateRecentPageIds,
+  wikiHeadingId
 } from '../lib/wiki-ux.ts'
 
 test('classifies placeholder and tiny pages as draft', () => {
@@ -68,5 +69,28 @@ test('suggests ready core guides when search has no direct result', () => {
       3
     ).map((page) => page.pageId),
     ['rules', 'mining', 'story']
+  )
+})
+
+
+test('creates stable readable heading ids including duplicate suffixes', () => {
+  assert.equal(wikiHeadingId('장비 강화 & 재료'), '장비-강화-재료')
+  assert.equal(wikiHeadingId('장비 강화 & 재료', 2), '장비-강화-재료-2')
+  assert.equal(wikiHeadingId('  API / 후원 연동  '), 'api-후원-연동')
+  assert.equal(wikiHeadingId('!!!'), 'section')
+})
+
+test('uses server-provided content status when search text is unavailable', () => {
+  const pages = [
+    { pageId: 'draft', title: '장비강화', status: 'draft' as const },
+    { pageId: 'rules', title: '서버규칙', status: 'detailed' as const },
+    { pageId: 'mining', title: '채광', status: 'brief' as const }
+  ]
+
+  assert.deepEqual(
+    suggestFallbackPages(pages, ['장비강화', '서버규칙', '채광'], 3).map(
+      (page) => page.pageId
+    ),
+    ['rules', 'mining']
   )
 })
