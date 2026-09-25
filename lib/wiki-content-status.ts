@@ -1,8 +1,25 @@
 import type { NotionIndexPage } from '@/lib/notion-index'
+import {
+  classifyWikiContent,
+  type WikiContentStatus
+} from '@/lib/wiki-ux'
 
-const PLACEHOLDER_PATTERN = /위키\s*업데이트\s*예정|내용\s*추가\s*예정|작성\s*중/i
+export type { WikiContentStatus }
+
+export function wikiContentStatus(
+  page: Pick<NotionIndexPage, 'searchText'>
+): WikiContentStatus {
+  return classifyWikiContent(page)
+}
 
 export function isDraftPage(page: Pick<NotionIndexPage, 'searchText'>) {
-  const text = (page.searchText || '').replace(/\s+/g, ' ').trim()
-  return PLACEHOLDER_PATTERN.test(text) || text.length < 80
+  return wikiContentStatus(page) === 'draft'
+}
+
+export function isBriefPage(page: Pick<NotionIndexPage, 'searchText'>) {
+  return wikiContentStatus(page) === 'brief'
+}
+
+export function isDetailedPage(page: Pick<NotionIndexPage, 'searchText'>) {
+  return wikiContentStatus(page) === 'detailed'
 }
