@@ -39,7 +39,7 @@ export function WikiPageNavigation({
     return (
       <nav className="page-siblings page-siblings-bottom" aria-label="이전 및 다음 문서">
         {previous ? (
-          <Link href={withBasePath(`/page/${previous.pageId}/`)} prefetch={false}>
+          <Link href={withBasePath(`/page/${previous.pageId}/`)}>
             <small>← 이전 문서</small>
             <strong>{previous.title}</strong>
           </Link>
@@ -50,7 +50,6 @@ export function WikiPageNavigation({
         {next ? (
           <Link
             href={withBasePath(`/page/${next.pageId}/`)}
-            prefetch={false}
             className="page-sibling-next"
           >
             <small>다음 문서 →</small>
