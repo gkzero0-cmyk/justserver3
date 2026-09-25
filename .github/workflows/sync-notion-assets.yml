@@ -9,7 +9,7 @@ on:
     paths:
       - 'scripts/cache-notion-assets.mjs'
       - 'scripts/optimize-notion-assets.mjs'
-      - 'lib/notion-assets.ts'
+      - 'lib/notion-index.ts'
       - 'components/notion-document.tsx'
       - 'package.json'
       - '.github/workflows/sync-notion-assets.yml'
