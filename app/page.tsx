@@ -42,9 +42,11 @@ export default async function HomePage() {
     )
     .slice(0, 5)
 
-  const brandLogo = rootPage?.logo
-    ? resolveCachedAsset(rootPage.logo)
-    : rootPage?.icon
+  const brandLogo = rootPage?.logo128
+    ? resolveCachedAsset(rootPage.logo128)
+    : rootPage?.logo
+      ? resolveCachedAsset(rootPage.logo)
+      : rootPage?.icon
       ? resolveCachedAsset(rootPage.icon)
       : null
   const heroImage = rootPage?.hero
