@@ -9,12 +9,25 @@ export type NotionIndexPage = {
   cover: string | null
   lastEdited: string | null
   searchText: string
+  changeSummary?: string | null
+  thumbnail?: string | null
+  hero?: string | null
+  logo?: string | null
+}
+
+export type NotionAssetStats = {
+  originalBytes: number
+  displayBytes: number
+  thumbnailBytes: number
+  uniqueSourceImages: number
+  duplicateMappings: number
 }
 
 export type NotionIndex = {
   rootPageId: string
   generatedAt: string | null
   pages: NotionIndexPage[]
+  assetStats?: NotionAssetStats
 }
 
 const REMOTE_INDEX =
