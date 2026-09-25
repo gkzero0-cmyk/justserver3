@@ -2,6 +2,34 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { cache } from 'react'
 
+export type NotionPageHistoryEntry = {
+  at: string
+  type: string
+  summary: string | null
+  added?: string | null
+  removed?: string | null
+}
+
+export type NotionFaqCandidate = {
+  id: string
+  sourcePageId: string
+  sourceTitle: string
+  sourceAnchor: string
+  sourceHeading: string
+  excerpt: string
+  reason: string
+  score: number
+}
+
+export type NotionReviewQueueItem = {
+  id: string
+  kind: 'change' | 'faq-candidate'
+  title: string
+  pageId: string
+  summary: string | null
+  at: string | null
+}
+
 export type NotionIndexPage = {
   pageId: string
   title: string
@@ -11,6 +39,7 @@ export type NotionIndexPage = {
   lastEdited: string | null
   searchText: string
   changeSummary?: string | null
+  history?: NotionPageHistoryEntry[]
   thumbnail?: string | null
   thumbnailSmall?: string | null
   hero?: string | null
@@ -37,6 +66,8 @@ export type NotionIndex = {
   generatedAt: string | null
   pages: NotionIndexPage[]
   assetStats?: NotionAssetStats
+  faqCandidates?: NotionFaqCandidate[]
+  reviewQueue?: NotionReviewQueueItem[]
 }
 
 const REMOTE_INDEX =
