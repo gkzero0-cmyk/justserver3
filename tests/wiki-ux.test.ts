@@ -2,6 +2,11 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import {
+  highestScoreKey,
+  seoulDateKey,
+  wikiExplorationProgress
+} from '../lib/wiki-fun.ts'
+import {
   classifyWikiContent,
   extractKoreanInitials,
   matchesKoreanInitials,
@@ -111,4 +116,41 @@ test('builds a prefilled feedback URL without leaking arbitrary user text', () =
   assert.match(url.searchParams.get('title') || '', /서버규칙/)
   assert.match(url.searchParams.get('body') || '', /abc123/)
   assert.match(url.searchParams.get('body') || '', /잘못된 정보/)
+})
+
+
+test('uses the Seoul calendar day for daily fun features', () => {
+  assert.equal(
+    seoulDateKey(new Date('2026-09-24T15:01:00Z')),
+    '2026-09-25'
+  )
+})
+
+test('calculates exploration only from currently available guides', () => {
+  assert.deepEqual(
+    wikiExplorationProgress(
+      ['aa-bb', 'cc', 'unknown', 'cc'],
+      ['aabb', 'cc', 'dd']
+    ),
+    {
+      count: 2,
+      total: 3,
+      percent: 67,
+      visited: ['aabb', 'cc']
+    }
+  )
+})
+
+test('keeps survival type tie results stable', () => {
+  assert.equal(
+    highestScoreKey(
+      {
+        miner: 2,
+        merchant: 2,
+        explorer: 1
+      },
+      'miner'
+    ),
+    'miner'
+  )
 })
