@@ -988,40 +988,42 @@ export function WikiShell({
         })
       }
 
-      const sectionMatches = (page.sections || [])
-        .map((section) => {
-          const heading = section.heading.toLowerCase()
-          const sectionText = section.text || ''
-          const sectionBody = sectionText.toLowerCase()
-          const headingTerm =
-            terms.find((term) => heading.includes(term)) || null
-          const bodyTerm =
-            terms.find((term) => sectionBody.includes(term)) || null
-          const term = headingTerm || bodyTerm
+      const sectionMatches: SearchPage[] = []
+      for (const section of page.sections || []) {
+        const heading = section.heading.toLowerCase()
+        const sectionText = section.text || ''
+        const sectionBody = sectionText.toLowerCase()
+        const headingTerm =
+          terms.find((term) => heading.includes(term)) || null
+        const bodyTerm =
+          terms.find((term) => sectionBody.includes(term)) || null
+        const term = headingTerm || bodyTerm
 
-          if (!term || (!section.heading && !section.anchor)) return null
+        if (!term || (!section.heading && !section.anchor)) continue
 
-          const headingExact = heading === keyword
-          const score =
-            statusPenalty +
-            (headingExact ? 4 : headingTerm ? 12 : 32) +
-            priorityOf(page)
+        const headingExact = heading === keyword
+        const score =
+          statusPenalty +
+          (headingExact ? 4 : headingTerm ? 12 : 32) +
+          priorityOf(page)
 
-          return {
-            ...page,
-            sectionTitle: section.heading || '본문',
-            anchor: section.anchor || undefined,
-            findTerm: term,
-            snippet: sectionText
-              ? snippetAround(sectionText, term)
-              : section.heading,
-            resultKey: `${page.pageId}:${section.anchor || section.heading}`,
-            score
-          } satisfies SearchPage
+        sectionMatches.push({
+          ...page,
+          sectionTitle: section.heading || '본문',
+          anchor: section.anchor || undefined,
+          findTerm: term,
+          snippet: sectionText
+            ? snippetAround(sectionText, term)
+            : section.heading,
+          resultKey: `${page.pageId}:${section.anchor || section.heading}`,
+          score
         })
-        .filter((result): result is SearchPage => Boolean(result))
-        .sort((a, b) => (a.score || 0) - (b.score || 0))
-        .slice(0, 3)
+      }
+
+      sectionMatches.sort(
+        (a, b) => (a.score || 0) - (b.score || 0)
+      )
+      sectionMatches.splice(3)
 
       results.push(...sectionMatches)
 
