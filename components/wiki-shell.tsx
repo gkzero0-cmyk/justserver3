@@ -76,7 +76,7 @@ function searchPageStatus(page: SearchPage) {
 }
 
 function pageCategoryLabel(page: WikiPageLink) {
-  return page.category || pageCategoryLabel(page)
+  return page.category || categoryLabel(page.title)
 }
 
 function isDraftSearchPage(page: SearchPage) {
