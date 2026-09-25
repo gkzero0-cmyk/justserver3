@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { track } from '@vercel/analytics'
 import { useEffect, useRef } from 'react'
 
 import { iconForTitle } from '@/lib/wiki-taxonomy'
@@ -97,6 +98,7 @@ export function MobileTocSheet({
   const returnFocusRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
+    track('wiki_mobile_toc_open')
     returnFocusRef.current =
       document.activeElement instanceof HTMLElement
         ? document.activeElement
@@ -186,7 +188,10 @@ export function MobileTocSheet({
               type="button"
               className={`mobile-toc-item level-${item.level} ${activeTocId === item.id ? 'is-active' : ''}`}
               aria-current={activeTocId === item.id ? 'location' : undefined}
-              onClick={() => onNavigate(item.id)}
+              onClick={() => {
+                track('wiki_mobile_toc_navigate')
+                onNavigate(item.id)
+              }}
             >
               <span>{iconForTitle(item.text)}</span>
               <strong>{item.text}</strong>
