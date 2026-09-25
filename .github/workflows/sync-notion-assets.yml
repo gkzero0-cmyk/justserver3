@@ -80,15 +80,3 @@ jobs:
           echo "Unable to push refreshed Notion assets after 3 attempts."
           exit 1
 
-
-      - name: Trigger Vercel production refresh when configured
-        if: success()
-        env:
-          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
-        run: |
-          if [ -n "$VERCEL_DEPLOY_HOOK" ]; then
-            curl --fail --silent --show-error -X POST "$VERCEL_DEPLOY_HOOK"
-            echo "Vercel production refresh requested."
-          else
-            echo "VERCEL_DEPLOY_HOOK is not configured; relying on Vercel Git integration."
-          fi
