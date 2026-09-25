@@ -14,6 +14,9 @@ export type WikiSearchResult = {
   status: WikiContentStatus | null
   snippet?: string
   findTerm?: string
+  sectionTitle?: string
+  anchor?: string
+  resultKey?: string
 }
 
 function HighlightedText({
@@ -59,7 +62,7 @@ export function WikiSearchDialog({
   selectedIndex: number
   onQueryChange: (value: string) => void
   onSelectedIndexChange: (index: number) => void
-  onNavigate: (pageId: string, findTerm?: string) => void
+  onNavigate: (pageId: string, findTerm?: string, anchor?: string) => void
   onClose: () => void
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -93,7 +96,8 @@ export function WikiSearchDialog({
         event.preventDefault()
         onNavigate(
           results[selectedIndex].pageId,
-          results[selectedIndex].findTerm
+          results[selectedIndex].findTerm,
+          results[selectedIndex].anchor
         )
         return
       }
@@ -197,14 +201,21 @@ export function WikiSearchDialog({
               ))}
             </div>
           ) : results.length ? (
-            results.map((page, index) => (
+            results.map((page, index) => {
+              const search = page.findTerm
+                ? `?find=${encodeURIComponent(page.findTerm)}`
+                : ''
+              const hash = page.anchor
+                ? `#${encodeURIComponent(page.anchor)}`
+                : ''
+              return (
               <Link
-                key={page.pageId}
-                href={`${withBasePath(`/page/${page.pageId}/`)}${page.findTerm ? `?find=${encodeURIComponent(page.findTerm)}` : ''}`}
+                key={page.resultKey || `${page.pageId}:${page.anchor || 'page'}`}
+                href={`${withBasePath(`/page/${page.pageId}/`)}${search}${hash}`}
                 prefetch={false}
                 onClick={(event) => {
                   event.preventDefault()
-                  onNavigate(page.pageId, page.findTerm)
+                  onNavigate(page.pageId, page.findTerm, page.anchor)
                 }}
                 className={`search-result-card ${selectedIndex === index ? 'is-selected' : ''}`}
                 data-category={page.category}
@@ -228,6 +239,12 @@ export function WikiSearchDialog({
                   <strong>
                     <HighlightedText text={page.title} query={query} />
                   </strong>
+                  {page.sectionTitle && (
+                    <span className="search-result-section">
+                      <b aria-hidden="true">↳</b>
+                      <HighlightedText text={page.sectionTitle} query={query} />
+                    </span>
+                  )}
                   <small>
                     {page.snippet ? (
                       <HighlightedText text={page.snippet} query={query} />
@@ -238,7 +255,8 @@ export function WikiSearchDialog({
                 </span>
                 <b>↗</b>
               </Link>
-            ))
+              )
+            })
           ) : (
             <div className="search-empty-state">
               <p className="search-empty">일치하는 문서를 찾지 못했습니다.</p>
