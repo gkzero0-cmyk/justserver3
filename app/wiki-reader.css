@@ -2659,16 +2659,20 @@ html[data-theme="light"] .draft-state {
   order: 4;
 }
 
-.wiki-main.is-home-main > .recent-viewed {
+.wiki-main.is-home-main > .wiki-adventure-hub {
   order: 5;
 }
 
-.wiki-main.is-home-main > .wiki-directory {
+.wiki-main.is-home-main > .recent-viewed {
   order: 6;
 }
 
-.wiki-main.is-home-main > .recent-updates {
+.wiki-main.is-home-main > .wiki-directory {
   order: 7;
+}
+
+.wiki-main.is-home-main > .recent-updates {
+  order: 8;
 }
 
 .wiki-main.is-home-main > .wiki-footer {
@@ -5417,6 +5421,944 @@ html[data-theme="light"] .wiki-inline-treasure {
   .reading-unread-list > a,
   .reading-map-nodes > a,
   .next-exploration-grid > a {
+    transition: none;
+  }
+}
+
+
+/* === Survival Adventure Hub === */
+.wiki-adventure-hub {
+  width: min(100%, var(--content-max));
+  margin: 0 auto;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(204,158,82,.08), transparent 30%),
+    radial-gradient(circle at 94% 0%, rgba(105,132,173,.07), transparent 28%),
+    rgba(16,14,15,.9);
+  box-shadow: 0 16px 48px rgba(0,0,0,.14);
+}
+
+.adventure-hub-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.adventure-hub-head p {
+  margin: 0 0 5px;
+  color: #c89d62;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+
+.adventure-hub-head h2 {
+  margin: 0;
+  color: #f1e7e2;
+  font-size: 21px;
+  letter-spacing: -.025em;
+}
+
+.adventure-hub-head span {
+  display: block;
+  margin-top: 6px;
+  color: #8b7e78;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.adventure-hub-head > strong {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border: 1px solid rgba(var(--gold-rgb),.16);
+  border-radius: 999px;
+  background: rgba(var(--gold-rgb),.045);
+  color: #b79a70;
+  font-size: 9px;
+}
+
+.adventure-tabs {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.adventure-tabs button {
+  min-width: 0;
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: 30px minmax(0,1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 8px;
+  padding: 9px 11px;
+  border: 1px solid rgba(255,255,255,.05);
+  border-radius: 12px;
+  background: rgba(255,255,255,.012);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .16s ease, border-color .16s ease, background .16s ease;
+}
+
+.adventure-tabs button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--gold-rgb),.14);
+  background: rgba(var(--gold-rgb),.022);
+}
+
+.adventure-tabs button.is-active {
+  border-color: rgba(var(--gold-rgb),.2);
+  background:
+    radial-gradient(circle at 0 0, rgba(var(--gold-rgb),.09), transparent 58%),
+    rgba(255,255,255,.02);
+  box-shadow: inset 0 -2px 0 rgba(var(--gold-rgb),.42);
+}
+
+.adventure-tabs button > span {
+  grid-row: 1 / 3;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(255,255,255,.028);
+  font-size: 15px;
+}
+
+.adventure-tabs small {
+  color: #766c67;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.adventure-tabs strong {
+  overflow: hidden;
+  color: #aaa09a;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adventure-tabs button.is-active small {
+  color: #b28e5b;
+}
+
+.adventure-tabs button.is-active strong {
+  color: #e0d5cf;
+}
+
+.adventure-stage {
+  min-height: 330px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 16px;
+  background: rgba(255,255,255,.01);
+}
+
+.adventure-story-intro {
+  display: grid;
+  grid-template-columns: 54px minmax(0,1fr);
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 13px;
+  border: 1px solid rgba(var(--gold-rgb),.08);
+  border-radius: 13px;
+  background:
+    linear-gradient(100deg, rgba(var(--gold-rgb),.045), transparent 58%);
+}
+
+.adventure-story-intro > span {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(var(--gold-rgb),.13);
+  border-radius: 50%;
+  background: rgba(var(--gold-rgb),.045);
+  font-size: 26px;
+}
+
+.adventure-story-intro > div {
+  display: grid;
+  gap: 3px;
+}
+
+.adventure-story-intro small,
+.story-chapter-copy > small,
+.passport-cover small,
+.passport-pages header small,
+.survival-build-head small,
+.boss-visual small,
+.boss-hp-row small {
+  color: #9b7d54;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .09em;
+}
+
+.adventure-story-intro strong,
+.story-chapter-copy > strong,
+.passport-pages header strong,
+.survival-build-head strong,
+.boss-visual strong {
+  color: #d9cec8;
+}
+
+.adventure-story-intro p,
+.story-chapter-copy > p,
+.survival-build-head p,
+.boss-visual p {
+  margin: 0;
+  color: #766c67;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.story-chapter-list {
+  display: grid;
+  gap: 0;
+}
+
+.story-chapter-list > article {
+  display: grid;
+  grid-template-columns: 42px minmax(0,1fr);
+  gap: 10px;
+}
+
+.story-chapter-marker {
+  position: relative;
+  display: grid;
+  justify-items: center;
+}
+
+.story-chapter-marker > span {
+  position: relative;
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 50%;
+  background: #151314;
+  color: #81746d;
+  font-size: 14px;
+}
+
+.story-chapter-marker > i {
+  position: absolute;
+  top: 34px;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255,255,255,.055);
+}
+
+.story-chapter-list article.is-complete .story-chapter-marker > span {
+  border-color: rgba(112,178,128,.17);
+  background: rgba(112,178,128,.06);
+  color: #8abe95;
+}
+
+.story-chapter-list article.is-locked .story-chapter-marker > span {
+  opacity: .48;
+  filter: grayscale(.5);
+}
+
+.story-chapter-copy {
+  min-width: 0;
+  padding: 2px 0 16px;
+}
+
+.story-chapter-copy > strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+}
+
+.story-chapter-copy > p {
+  margin-top: 3px;
+}
+
+.story-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.story-choice-grid > a {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 32px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 10px;
+  background: rgba(255,255,255,.012);
+  text-decoration: none;
+  transition: transform .16s ease, border-color .16s ease, background .16s ease;
+}
+
+.story-choice-grid > a:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--gold-rgb),.16);
+  background: rgba(var(--gold-rgb),.025);
+}
+
+.story-choice-grid > a.is-complete {
+  border-color: rgba(112,178,128,.13);
+  background: rgba(112,178,128,.022);
+}
+
+.story-choice-grid > a > span {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(255,255,255,.03);
+  font-size: 14px;
+}
+
+.story-choice-grid > a > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.story-choice-grid small {
+  color: #746963;
+  font-size: 7px;
+}
+
+.story-choice-grid strong {
+  overflow: hidden;
+  color: #c8bdb7;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.story-choice-grid b {
+  color: #9c805c;
+  font-size: 8px;
+}
+
+.story-choice-grid .is-complete b {
+  color: #7fb08a;
+}
+
+.story-locked-copy {
+  margin-top: 7px;
+  padding: 9px 10px;
+  border: 1px dashed rgba(255,255,255,.045);
+  border-radius: 9px;
+  color: #695f5a;
+  font-size: 8px;
+}
+
+.adventure-passport {
+  display: grid;
+  grid-template-columns: 220px minmax(0,1fr);
+  gap: 12px;
+}
+
+.passport-cover {
+  min-height: 310px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 8px;
+  padding: 20px;
+  border: 1px solid rgba(var(--gold-rgb),.16);
+  border-radius: 15px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(var(--gold-rgb),.1), transparent 35%),
+    linear-gradient(155deg, rgba(104,66,42,.22), rgba(48,30,26,.2)),
+    rgba(255,255,255,.016);
+  text-align: center;
+  box-shadow: inset 0 0 0 4px rgba(var(--gold-rgb),.025);
+}
+
+.passport-emblem {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(var(--gold-rgb),.24);
+  border-radius: 50%;
+  background: rgba(var(--gold-rgb),.055);
+  font-size: 34px;
+}
+
+.passport-cover > strong {
+  color: #dfccb0;
+  font-size: 17px;
+}
+
+.passport-cover > span {
+  padding: 5px 8px;
+  border: 1px solid rgba(var(--gold-rgb),.12);
+  border-radius: 999px;
+  color: #a68a65;
+  font-size: 8px;
+  letter-spacing: .08em;
+}
+
+.passport-pages {
+  display: grid;
+  gap: 8px;
+}
+
+.passport-pages > article {
+  padding: 11px;
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 12px;
+  background: rgba(255,255,255,.012);
+}
+
+.passport-pages > article.is-complete {
+  border-color: rgba(var(--gold-rgb),.14);
+  background: rgba(var(--gold-rgb),.018);
+}
+
+.passport-pages header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.passport-pages header > div {
+  display: grid;
+  gap: 2px;
+}
+
+.passport-pages header b {
+  color: #917b62;
+  font-size: 8px;
+}
+
+.passport-pages article.is-complete header b {
+  color: #c5a46c;
+}
+
+.passport-stamps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.passport-stamps > a {
+  width: 70px;
+  min-height: 70px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 2px;
+  padding: 5px;
+  border: 1px dashed rgba(255,255,255,.055);
+  border-radius: 50%;
+  color: #695f5a;
+  text-decoration: none;
+  text-align: center;
+  opacity: .55;
+}
+
+.passport-stamps > a.is-stamped {
+  border-style: solid;
+  border-color: rgba(var(--gold-rgb),.19);
+  background: rgba(var(--gold-rgb),.025);
+  color: #b18f5f;
+  opacity: 1;
+  transform: rotate(-2deg);
+}
+
+.passport-stamps span {
+  font-size: 18px;
+}
+
+.passport-stamps strong {
+  width: 56px;
+  overflow: hidden;
+  font-size: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.passport-stamps small {
+  font-size: 6px;
+  letter-spacing: .06em;
+}
+
+.survival-build-head {
+  display: grid;
+  grid-template-columns: 50px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(118,153,192,.09);
+  border-radius: 12px;
+  background: rgba(118,153,192,.02);
+}
+
+.survival-build-head > span {
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: rgba(118,153,192,.055);
+  font-size: 23px;
+}
+
+.survival-build-head > div {
+  display: grid;
+  gap: 2px;
+}
+
+.survival-build-head > b {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(118,153,192,.05);
+  color: #8ea6bd;
+  font-size: 9px;
+}
+
+.build-personalize-note,
+.build-complete-banner {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.build-personalize-note {
+  border: 1px dashed rgba(118,153,192,.11);
+  color: #7e8994;
+}
+
+.build-complete-banner {
+  border: 1px solid rgba(112,178,128,.12);
+  background: rgba(112,178,128,.025);
+  color: #8db497;
+  text-align: center;
+}
+
+.survival-build-route {
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr));
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.survival-build-route > a {
+  position: relative;
+  min-width: 0;
+  min-height: 122px;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 5px;
+  padding: 10px 8px;
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 11px;
+  background: rgba(255,255,255,.012);
+  text-decoration: none;
+}
+
+.survival-build-route > a.is-complete {
+  border-color: rgba(112,178,128,.13);
+  background: rgba(112,178,128,.022);
+}
+
+.build-step-number {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,.035);
+  color: #766a65;
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.survival-build-route .is-complete .build-step-number {
+  color: #7fae89;
+  background: rgba(112,178,128,.06);
+}
+
+.build-step-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  margin-top: 8px;
+  border-radius: 12px;
+  background: rgba(118,153,192,.045);
+  font-size: 19px;
+}
+
+.survival-build-route > a > div {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.survival-build-route small {
+  color: #6e6560;
+  font-size: 7px;
+}
+
+.survival-build-route strong {
+  width: 100%;
+  overflow: hidden;
+  color: #c4b9b3;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.survival-build-route em {
+  color: #8195a7;
+  font-size: 7px;
+  font-style: normal;
+}
+
+.build-route-line {
+  position: absolute;
+  top: 37px;
+  right: -8px;
+  width: 8px;
+  height: 1px;
+  background: rgba(255,255,255,.07);
+}
+
+.weekly-boss-card {
+  display: grid;
+  grid-template-columns: minmax(190px,.65fr) minmax(0,1.35fr);
+  gap: 12px;
+}
+
+.boss-visual,
+.boss-battle {
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 13px;
+  background: rgba(255,255,255,.012);
+}
+
+.boss-visual {
+  min-height: 270px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 5px;
+  padding: 18px;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(181,84,72,.08), transparent 35%),
+    rgba(255,255,255,.012);
+}
+
+.boss-week-label {
+  position: absolute;
+  align-self: start;
+  justify-self: end;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.025);
+  color: #716762;
+  font-size: 7px;
+}
+
+.boss-icon {
+  width: 82px;
+  height: 82px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(181,84,72,.14);
+  border-radius: 50%;
+  background: rgba(181,84,72,.035);
+  font-size: 42px;
+}
+
+.weekly-boss-card.is-defeated .boss-icon {
+  border-color: rgba(var(--gold-rgb),.18);
+  background: rgba(var(--gold-rgb),.04);
+}
+
+.boss-visual strong {
+  font-size: 14px;
+}
+
+.boss-battle {
+  padding: 15px;
+}
+
+.boss-hp-row {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.boss-hp-row > span {
+  display: grid;
+  gap: 2px;
+}
+
+.boss-hp-row strong {
+  color: #ded3cd;
+  font-size: 18px;
+}
+
+.boss-hp-row > b {
+  color: #ba746a;
+  font-size: 8px;
+}
+
+.weekly-boss-card.is-defeated .boss-hp-row > b {
+  color: #b99a66;
+}
+
+.boss-hp-track {
+  height: 9px;
+  margin-top: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255,255,255,.045);
+}
+
+.boss-hp-track > i {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: linear-gradient(90deg,#8d4d48,#c78e5a);
+  transition: width .35s ease;
+}
+
+.weekly-boss-card.is-defeated .boss-hp-track > i {
+  background: linear-gradient(90deg,#8a9d6a,#c9a45f);
+}
+
+.boss-damage-grid {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.boss-damage-grid > div {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 9px 5px;
+  border: 1px solid rgba(255,255,255,.04);
+  border-radius: 10px;
+  background: rgba(255,255,255,.012);
+}
+
+.boss-damage-grid span {
+  font-size: 16px;
+}
+
+.boss-damage-grid strong {
+  color: #c9bdb7;
+  font-size: 13px;
+}
+
+.boss-damage-grid small,
+.boss-damage-grid em {
+  color: #716762;
+  font-size: 7px;
+  font-style: normal;
+}
+
+.boss-help {
+  margin: 10px 0 0;
+  padding: 9px;
+  border-top: 1px solid rgba(255,255,255,.04);
+  color: #716762;
+  font-size: 8px;
+  line-height: 1.55;
+}
+
+html[data-theme="light"] .wiki-adventure-hub {
+  border-color: rgba(118,84,55,.1);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(149,107,47,.05), transparent 30%),
+    rgba(255,250,243,.8);
+}
+
+html[data-theme="light"] .adventure-hub-head h2,
+html[data-theme="light"] .adventure-tabs button.is-active strong,
+html[data-theme="light"] .adventure-story-intro strong,
+html[data-theme="light"] .story-chapter-copy > strong,
+html[data-theme="light"] .story-choice-grid strong,
+html[data-theme="light"] .passport-pages header strong,
+html[data-theme="light"] .survival-build-head strong,
+html[data-theme="light"] .survival-build-route strong,
+html[data-theme="light"] .boss-visual strong,
+html[data-theme="light"] .boss-hp-row strong {
+  color: #513832;
+}
+
+html[data-theme="light"] .adventure-stage,
+html[data-theme="light"] .adventure-tabs button,
+html[data-theme="light"] .adventure-story-intro,
+html[data-theme="light"] .story-choice-grid > a,
+html[data-theme="light"] .passport-pages > article,
+html[data-theme="light"] .survival-build-head,
+html[data-theme="light"] .survival-build-route > a,
+html[data-theme="light"] .boss-visual,
+html[data-theme="light"] .boss-battle,
+html[data-theme="light"] .boss-damage-grid > div {
+  border-color: rgba(118,84,55,.08);
+  background-color: rgba(255,255,255,.42);
+}
+
+html[data-theme="light"] .story-chapter-marker > span {
+  background: #fffaf3;
+  border-color: rgba(118,84,55,.09);
+}
+
+html[data-theme="light"] .passport-cover {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(149,107,47,.08), transparent 35%),
+    linear-gradient(155deg, rgba(164,116,77,.11), rgba(255,250,243,.6));
+}
+
+@media (max-width: 900px) {
+  .adventure-passport,
+  .weekly-boss-card {
+    grid-template-columns: 1fr;
+  }
+
+  .passport-cover {
+    min-height: 190px;
+  }
+
+  .survival-build-route {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+  }
+
+  .build-route-line {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .wiki-adventure-hub {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .adventure-hub-head {
+    align-items: flex-start;
+  }
+
+  .adventure-hub-head h2 {
+    font-size: 17px;
+  }
+
+  .adventure-tabs {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .adventure-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .adventure-tabs button {
+    flex: 0 0 138px;
+  }
+
+  .adventure-stage {
+    min-height: 300px;
+    padding: 11px;
+  }
+
+  .story-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .adventure-story-intro {
+    grid-template-columns: 42px minmax(0,1fr);
+  }
+
+  .adventure-story-intro > span {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
+
+  .story-chapter-list > article {
+    grid-template-columns: 34px minmax(0,1fr);
+  }
+
+  .story-chapter-marker > span {
+    width: 29px;
+    height: 29px;
+    font-size: 12px;
+  }
+
+  .story-chapter-marker > i {
+    top: 29px;
+  }
+
+  .passport-stamps > a {
+    width: 64px;
+    min-height: 64px;
+  }
+
+  .survival-build-head {
+    grid-template-columns: 42px minmax(0,1fr);
+  }
+
+  .survival-build-head > span {
+    width: 42px;
+    height: 42px;
+  }
+
+  .survival-build-head > b {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .survival-build-route {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  .boss-damage-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adventure-tabs button,
+  .story-choice-grid > a,
+  .boss-hp-track > i {
     transition: none;
   }
 }
