@@ -586,7 +586,19 @@ function changeDetailFor(previous, current) {
 function nextPageHistory(previous, current) {
   const existing = Array.isArray(previous?.history) ? previous.history : []
   const detail = changeDetailFor(previous, current)
-  if (!detail) return existing.slice(0, 8)
+
+  if (!detail) {
+    if (!existing.length && current.lastEdited) {
+      return [{
+        at: current.lastEdited,
+        type: 'baseline',
+        summary: '변경 이력 추적 시작',
+        added: null,
+        removed: null
+      }]
+    }
+    return existing.slice(0, 8)
+  }
 
   const at =
     current.lastEdited ||
