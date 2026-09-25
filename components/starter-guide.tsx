@@ -1,4 +1,5 @@
 import type { NotionIndexPage } from '@/lib/notion-index'
+import { isDraftPage } from '@/lib/wiki-content-status'
 import { withBasePath } from '@/lib/url-utils'
 
 const STEP_TITLES = ['서버규칙','기초설정(뉴비필독)','빚 갚기','채광','장비강화']
@@ -31,18 +32,28 @@ export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
       </div>
 
       <div className="starter-steps">
-        {steps.map(({ page, meta }) => (
-          <a key={page!.pageId} href={withBasePath(`/page/${page!.pageId}/`)} className="starter-step">
-            <span className="starter-number">{meta[0]}</span>
-            <span className="starter-icon" aria-hidden="true">{meta[1]}</span>
-            <span className="starter-copy">
-              <strong>{meta[2]}</strong>
-              <small>{meta[3]}</small>
-            </span>
-            <span className="starter-target">{page!.title}</span>
-            <span className="starter-arrow">→</span>
-          </a>
-        ))}
+        {steps.map(({ page, meta }) => {
+          const draft = isDraftPage(page!)
+          return (
+            <a
+              key={page!.pageId}
+              href={withBasePath(`/page/${page!.pageId}/`)}
+              className={`starter-step ${draft ? 'is-draft' : ''}`}
+            >
+              <span className="starter-number">{meta[0]}</span>
+              <span className="starter-icon" aria-hidden="true">{meta[1]}</span>
+              <span className="starter-copy">
+                <strong>{meta[2]}</strong>
+                <small>{meta[3]}</small>
+              </span>
+              <span className="starter-target">
+                <span>{page!.title}</span>
+                {draft && <em>작성 중</em>}
+              </span>
+              <span className="starter-arrow">→</span>
+            </a>
+          )
+        })}
       </div>
     </section>
   )
