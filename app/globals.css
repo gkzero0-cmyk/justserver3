@@ -2985,3 +2985,11 @@ html[data-theme="light"] .starter-step-shade {
     linear-gradient(90deg, rgba(255,250,243,.98) 0%, rgba(255,250,243,.91) 60%, rgba(255,250,243,.62) 100%),
     linear-gradient(0deg, rgba(255,250,243,.72), transparent 70%);
 }
+
+
+.brand-logo-svg {
+  width: 54px;
+  height: 54px;
+  overflow: visible;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,.36));
+}
