@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { track } from '@vercel/analytics'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   MobileTocSheet,
@@ -68,6 +68,8 @@ const CORE_PREFETCH_TITLES = new Set([
 ])
 const RECENT_PAGES_KEY = 'justserver3-recent-pages-v1'
 const VISITED_PAGES_KEY = 'justserver3-visited-pages-v1'
+const READ_PAGES_KEY = 'justserver3-read-pages-v1'
+const READ_MIGRATION_KEY = 'justserver3-read-pages-migrated-v1'
 const SURVIVAL_RECORD_KEY = 'justserver3-survival-record-v1'
 
 function categoryLabel(title: string) {
@@ -191,6 +193,7 @@ export function WikiShell({
   const handledHashRef = useRef('')
   const zeroSearchTrackedRef = useRef('')
   const searchRefreshAtRef = useRef(0)
+  const readingProgressRef = useRef(0)
 
   useEffect(() => {
     const saved = window.localStorage.getItem('justserver3-theme')
@@ -245,6 +248,35 @@ export function WikiShell({
   useEffect(() => {
     setOpenMobileCategories([currentCategory])
   }, [currentCategory])
+
+  useEffect(() => {
+    if (window.localStorage.getItem(READ_MIGRATION_KEY) === '1') return
+
+    let legacyVisited: string[] = []
+    try {
+      const parsed = JSON.parse(
+        window.localStorage.getItem(VISITED_PAGES_KEY) || '[]'
+      )
+      legacyVisited = Array.isArray(parsed)
+        ? parsed.filter(
+            (value): value is string => typeof value === 'string'
+          )
+        : []
+    } catch {}
+
+    const migrated = [
+      ...new Set(
+        legacyVisited
+          .map((value) => value.replaceAll('-', '').trim())
+          .filter(Boolean)
+      )
+    ]
+    window.localStorage.setItem(READ_PAGES_KEY, JSON.stringify(migrated))
+    window.localStorage.setItem(READ_MIGRATION_KEY, '1')
+    if (migrated.length) {
+      window.dispatchEvent(new Event('justserver3:read-pages'))
+    }
+  }, [])
 
   useEffect(() => {
     let record
@@ -565,7 +597,9 @@ export function WikiShell({
           Math.max(0, (window.scrollY - start) / Math.max(end - start, 1))
         )
 
-        setReadingProgress(Math.round(value * 100))
+        const percent = Math.round(value * 100)
+        readingProgressRef.current = percent
+        setReadingProgress(percent)
       })
     }
 
@@ -579,6 +613,92 @@ export function WikiShell({
       window.removeEventListener('resize', updateProgress)
     }
   }, [home])
+
+  const markCurrentPageRead = useCallback(
+    (method: 'scroll' | 'active-time') => {
+      if (!currentPageId || home || contentStatus === 'draft') return
+
+      const normalizedPageId = currentPageId.replaceAll('-', '')
+      let readPages: string[] = []
+      try {
+        const parsed = JSON.parse(
+          window.localStorage.getItem(READ_PAGES_KEY) || '[]'
+        )
+        readPages = Array.isArray(parsed)
+          ? parsed.filter(
+              (value): value is string => typeof value === 'string'
+            )
+          : []
+      } catch {}
+
+      const normalized = readPages.map((value) => value.replaceAll('-', ''))
+      if (normalized.includes(normalizedPageId)) return
+
+      const nextReadPages = [...readPages, normalizedPageId]
+      window.localStorage.setItem(
+        READ_PAGES_KEY,
+        JSON.stringify(nextReadPages)
+      )
+      window.dispatchEvent(new Event('justserver3:read-pages'))
+
+      let record
+      try {
+        record = normalizeSurvivalRecord(
+          JSON.parse(
+            window.localStorage.getItem(SURVIVAL_RECORD_KEY) || 'null'
+          )
+        )
+      } catch {
+        record = normalizeSurvivalRecord(null)
+      }
+
+      const nextRecord = recordSurvivalActivity(
+        record,
+        seoulDateKey(),
+        'read',
+        normalizedPageId
+      )
+      window.localStorage.setItem(
+        SURVIVAL_RECORD_KEY,
+        JSON.stringify(nextRecord)
+      )
+      window.dispatchEvent(new Event('justserver3:survival-record'))
+      track('wiki_read_complete', {
+        method,
+        status: contentStatus || 'unknown'
+      })
+    },
+    [contentStatus, currentPageId, home]
+  )
+
+  useEffect(() => {
+    if (readingProgress >= 55) {
+      markCurrentPageRead('scroll')
+    }
+  }, [markCurrentPageRead, readingProgress])
+
+  useEffect(() => {
+    if (!currentPageId || home || contentStatus === 'draft') return
+
+    let activeSeconds = 0
+    const requiredSeconds = contentStatus === 'brief' ? 8 : 20
+    const timer = window.setInterval(() => {
+      if (
+        document.visibilityState !== 'visible' ||
+        readingProgressRef.current < 10
+      ) {
+        return
+      }
+
+      activeSeconds += 1
+      if (activeSeconds >= requiredSeconds) {
+        markCurrentPageRead('active-time')
+        window.clearInterval(timer)
+      }
+    }, 1000)
+
+    return () => window.clearInterval(timer)
+  }, [contentStatus, currentPageId, home, markCurrentPageRead])
 
   const openSearch = () => {
     setSearchOpen(true)
