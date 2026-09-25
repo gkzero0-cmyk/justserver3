@@ -175,9 +175,11 @@ export default async function NotionSubPage({
     ? relatedPages(currentPage, navigationPages)
     : []
 
-  const brandLogo = rootPage?.logo
-    ? resolveCachedAsset(rootPage.logo)
-    : rootPage?.icon
+  const brandLogo = rootPage?.logo128
+    ? resolveCachedAsset(rootPage.logo128)
+    : rootPage?.logo
+      ? resolveCachedAsset(rootPage.logo)
+      : rootPage?.icon
       ? resolveCachedAsset(rootPage.icon)
       : null
   const siteUrl = getSiteUrl()
