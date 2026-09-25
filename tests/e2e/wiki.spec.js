@@ -3,6 +3,9 @@ const { expect, test } = require('@playwright/test')
 test.describe('desktop wiki journeys', () => {
   test('search opens from keyboard and navigates to a matched guide', async ({ page }) => {
     await page.goto('/')
+    await expect(
+      page.getByRole('button', { name: /문서 검색/ })
+    ).toBeVisible()
     await page.keyboard.press('Control+K')
 
     const search = page.getByRole('textbox', { name: /검색/i })
@@ -20,12 +23,12 @@ test.describe('desktop wiki journeys', () => {
       await page.getByRole('option').first().click()
     }
 
-    await expect(page).toHaveURL(/\/guide\/rules\//)
+    await expect(page).toHaveURL(/\/guide\/rules(?:[/?#]|$)/)
   })
 
   test('legacy page id permanently redirects to readable guide url', async ({ page }) => {
     await page.goto('/page/3dad57d6a55c802aa11adaed7c2c98ff')
-    await expect(page).toHaveURL(/\/guide\/rules\//)
+    await expect(page).toHaveURL(/\/guide\/rules(?:[/?#]|$)/)
     await expect(page.getByText('서버규칙', { exact: true }).first()).toBeVisible()
   })
 
