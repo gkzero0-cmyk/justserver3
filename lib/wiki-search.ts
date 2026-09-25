@@ -2,7 +2,7 @@ import {
   classifyWikiContent,
   matchesKoreanInitials,
   type WikiContentStatus
-} from './wiki-ux.ts'
+} from './wiki-ux'
 
 export type WikiSearchSection = {
   heading: string
