@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '그냥서버 : 적자생존 공식 위키',
     description:
-      '서버 규칙과 주요 시스템을 빠르게 찾아볼 수 있는 자동 동기화 공식 위키',
+      '서버 규칙과 주요 시스템을 빠르게 찾아볼 수 있는 그냥서버 : 적자생존 공식 위키',
     type: 'website',
     locale: 'ko_KR'
   }
@@ -30,15 +30,31 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  colorScheme: 'dark',
-  themeColor: '#0a0d12'
+  colorScheme: 'light dark',
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#09090a' },
+    { media: '(prefers-color-scheme: light)', color: '#f2ede5' }
+  ]
 }
+
+const themeScript = `
+  try {
+    const saved = localStorage.getItem('justserver3-theme');
+    const theme = saved === 'light' || saved === 'dark'
+      ? saved
+      : (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    document.documentElement.dataset.theme = theme;
+  } catch {}
+`
 
 export default function RootLayout({
   children
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>{children}</body>
     </html>
   )
