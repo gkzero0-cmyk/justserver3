@@ -76,6 +76,78 @@ function getBlockTitle(block) {
     .trim()
 }
 
+function wikiHeadingId(text, occurrence = 1) {
+  const base =
+    text
+      .normalize('NFKC')
+      .trim()
+      .toLowerCase()
+      .replace(/[^0-9a-z가-힣ㄱ-ㅎㅏ-ㅣ]+/g, '-')
+      .replace(/-{2,}/g, '-')
+      .replace(/^-|-$/g, '') || 'section'
+
+  return occurrence > 1 ? `${base}-${occurrence}` : base
+}
+
+function collectSearchSections(recordMap, pageBlock) {
+  if (!pageBlock) return []
+
+  const byId = new Map(
+    blocks(recordMap)
+      .filter((block) => block?.id)
+      .map((block) => [normalizeId(block.id), block])
+  )
+  const headingTypes = new Set(['header', 'sub_header', 'sub_sub_header'])
+  const occurrences = new Map()
+  const sections = []
+  let current = { heading: '', anchor: '', text: [] }
+
+  const flush = () => {
+    const text = current.text
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 5000)
+
+    if (current.heading || text) {
+      sections.push({
+        heading: current.heading,
+        anchor: current.anchor,
+        text
+      })
+    }
+
+    current = { heading: '', anchor: '', text: [] }
+  }
+
+  const visit = (ids) => {
+    for (const rawId of Array.isArray(ids) ? ids : []) {
+      const block = byId.get(normalizeId(rawId))
+      if (!block) continue
+
+      const text = getBlockTitle(block)
+
+      if (headingTypes.has(block.type) && text) {
+        flush()
+        const base = wikiHeadingId(text)
+        const occurrence = (occurrences.get(base) || 0) + 1
+        occurrences.set(base, occurrence)
+        current.heading = text
+        current.anchor = wikiHeadingId(text, occurrence)
+      } else if (text) {
+        current.text.push(text)
+      }
+
+      if (block.content?.length) visit(block.content)
+    }
+  }
+
+  visit(pageBlock.content)
+  flush()
+
+  return sections.slice(0, 80)
+}
+
 function collectPlainText(recordMap) {
   const values = []
   const seen = new WeakSet()
@@ -156,7 +228,8 @@ function getPageMeta(recordMap, pageId) {
       icon: null,
       cover: null,
       lastEdited: null,
-      searchText: collectPlainText(recordMap)
+      searchText: collectPlainText(recordMap),
+      sections: []
     }
   }
 
@@ -167,7 +240,8 @@ function getPageMeta(recordMap, pageId) {
     icon: pageBlock.format?.page_icon || null,
     cover: pageBlock.format?.page_cover || null,
     lastEdited: toIsoDate(pageBlock.last_edited_time),
-    searchText: collectPlainText(recordMap)
+    searchText: collectPlainText(recordMap),
+    sections: collectSearchSections(recordMap, pageBlock)
   }
 }
 
@@ -432,6 +506,7 @@ function stablePageSnapshot(page) {
     parentId: page.parentId || null,
     lastEdited: page.lastEdited || null,
     searchText: page.searchText || '',
+    sections: page.sections || [],
     changeSummary: page.changeSummary || null
   }
 }
@@ -551,10 +626,11 @@ async function main() {
         generatedAt,
         pages: pageIndex
           .filter((page) => page.pageId !== ROOT_PAGE_ID)
-          .map(({ pageId, title, searchText }) => ({
+          .map(({ pageId, title, searchText, sections }) => ({
             pageId,
             title,
-            searchText
+            searchText,
+            sections: sections || []
           }))
       },
       null,
