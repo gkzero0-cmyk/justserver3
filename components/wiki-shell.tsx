@@ -254,7 +254,7 @@ export function WikiShell({
 
       try {
         const response = await fetch(SEARCH_INDEX_URL, {
-          cache: 'force-cache'
+          cache: 'no-store'
         })
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
 
