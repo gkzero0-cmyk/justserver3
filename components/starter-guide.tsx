@@ -48,10 +48,15 @@ export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
               className="starter-step"
             >
               {resolvedMedia && (
-                <span
+                <img
                   className="starter-step-media"
-                  style={{ backgroundImage: `url("${resolvedMedia}")` }}
+                  src={resolvedMedia}
+                  alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                  width="480"
+                  height="270"
                 />
               )}
               <span className="starter-step-shade" aria-hidden="true" />
