@@ -133,6 +133,7 @@ export function WikiShell({
   const [toc, setToc] = useState<TocItem[]>([])
   const [query, setQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [activeTocId, setActiveTocId] = useState('')
@@ -161,6 +162,22 @@ export function WikiShell({
     document.documentElement.dataset.theme = theme
     window.localStorage.setItem('justserver3-theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem('justserver3-sidebar-collapsed')
+    setSidebarCollapsed(saved === 'true')
+  }, [])
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((value) => {
+      const next = !value
+      window.localStorage.setItem(
+        'justserver3-sidebar-collapsed',
+        String(next)
+      )
+      return next
+    })
+  }
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -433,12 +450,26 @@ export function WikiShell({
   }
 
   return (
-    <div className="wiki-shell">
+    <div className={`wiki-shell ${sidebarCollapsed ? 'is-sidebar-collapsed' : ''}`}>
       <a className="skip-link" href="#main-content">
         본문으로 건너뛰기
       </a>
 
       <header className="wiki-topbar">
+        <button
+          className="desktop-sidebar-toggle"
+          type="button"
+          aria-label={sidebarCollapsed ? '문서 목록 펼치기' : '문서 목록 접기'}
+          aria-pressed={sidebarCollapsed}
+          title={sidebarCollapsed ? '문서 목록 펼치기' : '문서 목록 접기'}
+          onClick={toggleSidebar}
+        >
+          <span aria-hidden="true">{sidebarCollapsed ? '☰' : '‹'}</span>
+          <span className="desktop-sidebar-toggle-label">
+            {sidebarCollapsed ? '문서' : '접기'}
+          </span>
+        </button>
+
         <button
           className="menu-button"
           type="button"
@@ -561,7 +592,9 @@ export function WikiShell({
                             : undefined
                         }
                       >
-                        <span>{sectionIcon(page.title)}</span>
+                        <span className="sidebar-page-icon" aria-hidden="true">
+                          {sectionIcon(page.title)}
+                        </span>
                         <span className="global-page-copy">
                           <strong>{page.title}</strong>
                         </span>

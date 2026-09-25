@@ -3934,3 +3934,252 @@ html[data-theme="light"] .global-page-link.is-current .global-page-copy strong {
   }
 }
 
+
+
+/* === Sidebar collapse and desktop composition refinement 2026-09-25 === */
+@media (min-width: 981px) {
+  .desktop-sidebar-toggle {
+    min-width: 68px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 10px;
+    border: 1px solid rgba(255,255,255,.075);
+    border-radius: 10px;
+    background: rgba(255,255,255,.025);
+    color: #aa9d97;
+    cursor: pointer;
+    transition:
+      border-color .18s ease,
+      background .18s ease,
+      color .18s ease;
+  }
+
+  .desktop-sidebar-toggle:hover {
+    border-color: rgba(214,168,95,.22);
+    background: rgba(214,168,95,.055);
+    color: #e3c28c;
+  }
+
+  .desktop-sidebar-toggle > span:first-child {
+    font-size: 19px;
+    line-height: 1;
+  }
+
+  .desktop-sidebar-toggle-label {
+    font-size: 11px;
+    font-weight: 750;
+  }
+
+  .wiki-sidebar {
+    transition:
+      transform .24s cubic-bezier(.2,.75,.25,1),
+      opacity .18s ease;
+  }
+
+  .wiki-main {
+    transition:
+      padding-left .24s cubic-bezier(.2,.75,.25,1),
+      padding-right .24s cubic-bezier(.2,.75,.25,1);
+  }
+
+  .wiki-shell.is-sidebar-collapsed .wiki-sidebar {
+    transform: translateX(calc(-100% - 8px));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .wiki-shell.is-sidebar-collapsed .wiki-main {
+    padding-left: 32px;
+  }
+
+  .wiki-shell.is-sidebar-collapsed .wiki-main.has-article-toc {
+    padding-left: 250px;
+  }
+}
+
+@media (max-width: 980px) {
+  .desktop-sidebar-toggle {
+    display: none;
+  }
+
+  .wiki-shell.is-sidebar-collapsed .wiki-sidebar {
+    transform: translateX(-105%);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .wiki-shell.is-sidebar-collapsed .wiki-sidebar.is-open {
+    transform: translateX(0);
+  }
+}
+
+/* The document list should stay visually quiet until the user interacts with it. */
+.toc-list {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(170,157,151,.22) transparent;
+}
+
+.toc-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.toc-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.toc-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(170,157,151,.16);
+}
+
+.toc-list:hover::-webkit-scrollbar-thumb {
+  background: rgba(214,168,95,.34);
+}
+
+.sidebar-category {
+  gap: 7px;
+  margin-top: 17px;
+}
+
+.sidebar-category-head {
+  padding: 0 9px 4px;
+}
+
+.sidebar-category-head strong {
+  color: #a49791;
+  font-size: 11px;
+  letter-spacing: .055em;
+}
+
+.sidebar-category-head span {
+  color: #756963;
+  font-size: 10px;
+}
+
+.nav-section-label {
+  font-size: 10px;
+  letter-spacing: .09em;
+}
+
+.global-page-link {
+  min-height: 38px;
+  gap: 9px;
+}
+
+.sidebar-page-icon {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(214,168,95,.08);
+  border-radius: 8px;
+  background: rgba(214,168,95,.035);
+  font-size: 13px;
+}
+
+.global-page-link:hover .sidebar-page-icon,
+.global-page-link.is-current .sidebar-page-icon {
+  border-color: rgba(217,83,69,.18);
+  background: rgba(217,83,69,.075);
+}
+
+.global-page-link.is-current {
+  box-shadow:
+    inset 3px 0 0 rgba(217,83,69,.92),
+    inset 0 0 0 1px rgba(217,83,69,.1),
+    0 5px 18px rgba(0,0,0,.08);
+}
+
+/* Give the home page a slightly tighter editorial rhythm. */
+.wiki-main {
+  gap: 21px;
+}
+
+.starter-guide,
+.wiki-directory,
+.recent-updates,
+.related-docs {
+  box-shadow: 0 8px 24px rgba(0,0,0,.11);
+}
+
+.starter-step,
+.directory-card,
+.recent-update-card,
+.related-doc-card {
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    background .18s ease,
+    box-shadow .18s ease;
+}
+
+.starter-step:hover {
+  transform: translateY(-2px);
+  border-color: rgba(217,83,69,.22);
+  box-shadow: 0 10px 22px rgba(0,0,0,.12);
+}
+
+.directory-card:not(.is-featured):hover,
+.recent-update-card:hover,
+.related-doc-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(214,168,95,.17);
+  background: rgba(214,168,95,.028);
+}
+
+.directory-card.is-featured:hover {
+  transform: translateY(-2px);
+  border-color: rgba(217,83,69,.36);
+  box-shadow:
+    inset 3px 0 0 rgba(217,83,69,.78),
+    0 12px 28px rgba(0,0,0,.14);
+}
+
+.starter-step:focus-visible,
+.directory-card:focus-visible,
+.recent-update-card:focus-visible,
+.related-doc-card:focus-visible,
+.desktop-sidebar-toggle:focus-visible {
+  outline: 2px solid rgba(214,168,95,.7);
+  outline-offset: 2px;
+}
+
+/* Five onboarding steps become one continuous row on wide desktop screens. */
+@media (min-width: 1380px) {
+  .starter-steps {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .starter-step,
+  .starter-step:nth-child(4),
+  .starter-step:nth-child(5),
+  .starter-step:last-child {
+    grid-column: auto;
+    min-height: 148px;
+  }
+}
+
+html[data-theme="light"] .desktop-sidebar-toggle {
+  border-color: rgba(95,68,51,.12);
+  background: rgba(255,255,255,.45);
+  color: #6e5c54;
+}
+
+html[data-theme="light"] .sidebar-page-icon {
+  border-color: rgba(149,107,47,.12);
+  background: rgba(149,107,47,.045);
+}
+
+html[data-theme="light"] .sidebar-category-head strong {
+  color: #77655e;
+}
+
+@media (max-width: 620px) {
+  .wiki-main {
+    gap: 16px;
+  }
+}
