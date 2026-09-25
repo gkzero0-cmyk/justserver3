@@ -12,6 +12,8 @@ export type NotionIndexPage = {
   changeSummary?: string | null
   thumbnail?: string | null
   hero?: string | null
+  logo64?: string | null
+  logo128?: string | null
   logo?: string | null
 }
 
