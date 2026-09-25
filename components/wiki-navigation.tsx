@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { iconForTitle } from '@/lib/wiki-taxonomy'
 import { withBasePath } from '@/lib/url-utils'
 
+const PREFETCH_TITLES = new Set(['서버규칙', '기초설정(뉴비필독)', '채광'])
+
 export type WikiNavigationPage = {
   pageId: string
   title: string
@@ -129,7 +131,7 @@ export function WikiNavigation({
                         <Link
                           key={page.pageId}
                           href={withBasePath(`/page/${page.pageId}/`)}
-                          prefetch={false}
+                          prefetch={PREFETCH_TITLES.has(page.title)}
                           onClick={onCloseMenu}
                           className={`global-page-link ${current ? 'is-current' : ''}`}
                           aria-current={current ? 'page' : undefined}
