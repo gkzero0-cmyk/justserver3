@@ -19,7 +19,13 @@ concurrency:
 
 jobs:
   verify:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (
+        github.event.workflow_run.conclusion == 'success' &&
+        !contains(github.event.workflow_run.head_commit.message, '[skip vercel]') &&
+        !contains(github.event.workflow_run.head_commit.message, 'Refresh deploy bundle [skip ci]')
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
@@ -45,8 +51,8 @@ jobs:
           )" || true
 
           if [[ "$VERCEL_STATUS_URL" == *"build-rate-limit"* ]]; then
-            echo "::warning::Vercel build-rate-limit is active. Code build passed, but Production verification is deferred."
-            exit 0
+            echo "::warning::Vercel build-rate-limit is active. Code build passed, but Production is not verified yet."
+            exit 1
           fi
 
           DEPLOYED_SHA="$(
