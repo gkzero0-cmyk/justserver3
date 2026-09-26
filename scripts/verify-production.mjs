@@ -18,9 +18,28 @@ const checks = [
     expect: ['빠르게 확인하는 서버 규칙', '11개 확인됨']
   },
   {
+    path: '/guide/upgrade/',
+    expect: ['장비강화', '강화 체험소', '원본 문서 연동']
+  },
+  {
     path: '/notion-assets/search-index.json',
     expect: ['"pages"', '"sections"', '재입주할 수 있나요?']
   }
+]
+
+const guidePaths = [
+  '/guide/story/',
+  '/guide/rules/',
+  '/guide/api/',
+  '/guide/newbie-guide/',
+  '/guide/mining/',
+  '/guide/fishing/',
+  '/guide/butchering/',
+  '/guide/hunting/',
+  '/guide/cooking/',
+  '/guide/parkour/',
+  '/guide/land/',
+  '/guide/faq/'
 ]
 
 let failed = false
