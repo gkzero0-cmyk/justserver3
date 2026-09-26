@@ -228,14 +228,14 @@ function playTone(
     const compressor = ctx.createDynamicsCompressor()
 
     const normalizedVolume = Math.max(0, Math.min(1, volume))
-    master.gain.setValueAtTime(0.88 * normalizedVolume, now)
-    compressor.threshold.setValueAtTime(-22, now)
-    compressor.knee.setValueAtTime(18, now)
-    compressor.ratio.setValueAtTime(7, now)
-    compressor.attack.setValueAtTime(0.002, now)
-    compressor.release.setValueAtTime(0.18, now)
-    compressor.connect(master)
-    master.connect(ctx.destination)
+    master.gain.setValueAtTime(1.32 * normalizedVolume, now)
+    compressor.threshold.setValueAtTime(-20, now)
+    compressor.knee.setValueAtTime(16, now)
+    compressor.ratio.setValueAtTime(8, now)
+    compressor.attack.setValueAtTime(0.0015, now)
+    compressor.release.setValueAtTime(0.16, now)
+    master.connect(compressor)
+    compressor.connect(ctx.destination)
 
     const resonator = (
       frequency: number,
@@ -265,7 +265,7 @@ function playTone(
         now + start + duration
       )
       osc.connect(gain)
-      gain.connect(compressor)
+      gain.connect(master)
       osc.start(now + start)
       osc.stop(now + start + duration + 0.03)
     }
@@ -299,7 +299,7 @@ function playTone(
       )
       source.connect(filter)
       filter.connect(gain)
-      gain.connect(compressor)
+      gain.connect(master)
       source.start(now + start)
       source.stop(now + start + duration + 0.025)
     }
@@ -329,41 +329,48 @@ function playTone(
     }
 
     if (kind === 'charge') {
-      // Preparation cue: metal placed on an anvil + a light tool tap.
-      // Keep it intentionally softer and shorter than every result sound.
-      impactNoise(0, 0.035, 0.026, 1380, 'bandpass')
-      resonator(118, 0, 0.12, 0.017, 'triangle', 92)
-      impactNoise(0.055, 0.05, 0.01, 1820, 'highpass')
+      // Anvil strike + short magical rise: physical first, enchantment second.
+      hammerHit(0, 0.72, 0.42, false)
+      resonator(164, 0.045, 0.24, 0.021, 'triangle', 238)
+      resonator(328, 0.07, 0.26, 0.012, 'sine', 486)
+      impactNoise(0.075, 0.09, 0.018, 1650, 'highpass')
       if (intensity >= 8) {
-        resonator(54, 0.09, 0.32, 0.007, 'sine', 62)
+        resonator(654, 0.1, 0.3, 0.009, 'sine', 780)
       }
     } else if (kind === 'success') {
-      // Clear forged result: crisp hammer hit with an open metallic ring.
-      hammerHit(0, 0.98, 1.05, false)
-      resonator(326, 0.018, 0.34, 0.012, 'sine', 342)
-      if (intensity >= 8) {
-        resonator(196, 0.08, 0.38, 0.008, 'sine', 214)
-      }
+      // Bright forged confirmation: clean strike, rising triad and short shimmer.
+      hammerHit(0, 1.08, 1.04, false)
+      resonator(392, 0.025, 0.34, 0.022, 'sine', 440)
+      resonator(494, 0.07, 0.34, 0.017, 'sine', 554)
+      resonator(659, 0.115, 0.38, 0.014, 'sine', 740)
+      impactNoise(0.045, 0.13, 0.018, 2200, 'highpass')
     } else if (kind === 'max') {
-      hammerHit(0, 1.14, 1.18, false)
-      hammerHit(0.17, 0.5, 0.72, false)
-      resonator(174, 0.09, 0.66, 0.014, 'sine', 205)
-      impactNoise(0.18, 0.22, 0.01, 720, 'bandpass')
+      // +15 reward: heavier impact followed by a distinct golden fanfare.
+      hammerHit(0, 1.24, 1.2, false)
+      resonator(262, 0.08, 0.52, 0.024, 'sine', 330)
+      resonator(392, 0.15, 0.52, 0.022, 'sine', 494)
+      resonator(523, 0.22, 0.58, 0.02, 'sine', 659)
+      resonator(784, 0.31, 0.64, 0.014, 'sine', 988)
+      impactNoise(0.03, 0.16, 0.022, 2450, 'highpass')
     } else if (kind === 'down') {
-      hammerHit(0, 0.78, 0.48, true)
-      resonator(142, 0.035, 0.5, 0.024, 'triangle', 58)
-      impactNoise(0.13, 0.12, 0.014, 260, 'lowpass')
+      // Downgrade: dull impact followed by an unmistakable descending sweep.
+      hammerHit(0, 0.86, 0.38, true)
+      resonator(246, 0.035, 0.48, 0.031, 'triangle', 82)
+      resonator(156, 0.09, 0.52, 0.022, 'sine', 52)
+      impactNoise(0.11, 0.16, 0.018, 310, 'lowpass')
     } else if (kind === 'destroy') {
-      hammerHit(0, 1.2, 0.46, true)
-      impactNoise(0.025, 0.34, 0.06, 940, 'bandpass')
-      impactNoise(0.06, 0.42, 0.045, 480, 'lowpass')
-      resonator(68, 0.015, 0.72, 0.042, 'sine', 38)
-      resonator(43, 0.09, 0.74, 0.024, 'triangle')
+      // Destruction: low impact, brittle crack and lingering sub hit.
+      hammerHit(0, 1.34, 0.38, true)
+      impactNoise(0.018, 0.16, 0.09, 1320, 'bandpass')
+      impactNoise(0.07, 0.38, 0.075, 560, 'lowpass')
+      resonator(72, 0.015, 0.74, 0.06, 'sine', 34)
+      resonator(46, 0.08, 0.78, 0.04, 'triangle', 30)
+      impactNoise(0.19, 0.22, 0.035, 2350, 'highpass')
     } else {
-      // Failure: a dead, closed hit with almost no ringing.
-      impactNoise(0, 0.065, 0.058, 430, 'lowpass')
-      resonator(92, 0.005, 0.18, 0.036, 'triangle', 58)
-      impactNoise(0.025, 0.07, 0.018, 760, 'bandpass')
+      // Failure: short dead thunk with no rewarding ring.
+      impactNoise(0, 0.075, 0.08, 380, 'lowpass')
+      resonator(88, 0.004, 0.2, 0.052, 'triangle', 56)
+      impactNoise(0.018, 0.07, 0.026, 690, 'bandpass')
     }
 
     activeEnhancementAudioCloseTimer = window.setTimeout(() => {
@@ -372,7 +379,7 @@ function playTone(
       }
       void ctx.close().catch(() => {})
       activeEnhancementAudioCloseTimer = null
-    }, 1700)
+    }, 2300)
   } catch {}
 }
 

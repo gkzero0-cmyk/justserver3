@@ -151,6 +151,10 @@ test.describe('desktop wiki journeys', () => {
     expect(levelSize).toBeGreaterThanOrEqual(32)
     expect(buttonSize).toBeGreaterThanOrEqual(14)
     expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewport + 1)
+
+    const buttonBox = await lab.locator('.enhancement-primary').boundingBox()
+    expect(buttonBox).not.toBeNull()
+    expect(buttonBox.y + buttonBox.height).toBeLessThanOrEqual(567)
   })
 
   test('enhancement lab scales up on wide desktop without panel imbalance', async ({ page }) => {
