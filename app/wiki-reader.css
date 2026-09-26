@@ -10817,3 +10817,419 @@ html[data-theme="light"] .enhancement-new-best {
     animation: none !important;
   }
 }
+
+
+/* === 2026-09-26 enhancement lab stability and alignment v5 === */
+.wiki-enhancement-lab {
+  --enhancement-action-height: 54px;
+  --enhancement-result-height: 44px;
+  --enhancement-run-result-height: 78px;
+}
+
+.enhancement-forge {
+  grid-template-rows:
+    auto
+    auto
+    minmax(220px, 1fr)
+    var(--enhancement-result-height)
+    var(--enhancement-action-height)
+    var(--enhancement-run-result-height)
+    auto;
+}
+
+/* Keep the primary interaction target in exactly the same place for every state. */
+.enhancement-result {
+  height: var(--enhancement-result-height);
+  min-height: var(--enhancement-result-height);
+  overflow: hidden;
+}
+
+.enhancement-result > strong {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.enhancement-action-zone {
+  width: 100%;
+  height: var(--enhancement-action-height);
+  min-height: var(--enhancement-action-height);
+}
+
+.enhancement-primary {
+  width: 100%;
+  height: var(--enhancement-action-height);
+  min-height: var(--enhancement-action-height);
+  margin: 0;
+}
+
+.enhancement-run-result-slot {
+  height: var(--enhancement-run-result-height);
+  min-height: var(--enhancement-run-result-height);
+  overflow: hidden;
+}
+
+.enhancement-run-result {
+  width: 100%;
+  height: 100%;
+  align-content: center;
+  box-sizing: border-box;
+}
+
+.enhancement-run-result-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.025);
+  border-radius: 6px;
+  background: rgba(255,255,255,.006);
+  visibility: hidden;
+}
+
+.enhancement-run-result-placeholder span {
+  font-size: 8px;
+}
+
+.enhancement-recent-log {
+  min-height: 59px;
+}
+
+.enhancement-log-list {
+  min-height: 35px;
+}
+
+.enhancement-log-list > span {
+  height: 35px;
+  box-sizing: border-box;
+}
+
+.enhancement-log-list > span.is-empty {
+  opacity: .34;
+  border-style: dashed;
+  background: transparent;
+}
+
+/* The artwork and every active visual effect now share the same local coordinate system. */
+.enhancement-slot,
+.enhancement-slot-inner {
+  overflow: visible;
+}
+
+.enhancement-pickaxe {
+  position: relative;
+  transform: translateY(-1px);
+  transform-origin: 50% 50%;
+  isolation: isolate;
+}
+
+.enhancement-pickaxe-art {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  grid-template-areas: "art";
+  pointer-events: none;
+}
+
+.enhancement-pickaxe-image,
+.enhancement-pickaxe-glint-image {
+  grid-area: art;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+  user-select: none;
+  pointer-events: none;
+}
+
+.enhancement-pickaxe-glint-image {
+  position: relative;
+  z-index: 3;
+  opacity: 0;
+  mix-blend-mode: screen;
+  filter:
+    brightness(1.42)
+    saturate(1.3)
+    hue-rotate(24deg)
+    drop-shadow(0 0 7px rgba(var(--forge-glow), .25));
+  animation: enhancementPickaxeGlint 2.8s ease-in-out infinite;
+}
+
+.enhancement-forge[data-tier="extreme"] .enhancement-pickaxe-glint-image {
+  animation-duration: 2s;
+  filter:
+    brightness(1.55)
+    saturate(1.45)
+    hue-rotate(42deg)
+    drop-shadow(0 0 9px rgba(var(--forge-glow), .34));
+}
+
+.enhancement-forge[data-tier="legendary"] .enhancement-pickaxe-glint-image {
+  animation-duration: 1.7s;
+  filter:
+    brightness(1.62)
+    saturate(1.3)
+    sepia(.14)
+    drop-shadow(0 0 10px rgba(var(--forge-glow), .4));
+}
+
+@keyframes enhancementPickaxeGlint {
+  0%, 14%, 100% { opacity: 0; transform: scale(1); }
+  38% { opacity: .14; transform: scale(1.01); }
+  52% { opacity: .36; transform: scale(1.025); }
+  68% { opacity: .1; transform: scale(1.01); }
+}
+
+.enhancement-pickaxe-runes {
+  z-index: 6;
+}
+
+/* Tight item-bound particles: no more effect origin floating away from the pickaxe. */
+.enhancement-particles {
+  left: 50%;
+  top: 48%;
+  z-index: 7;
+}
+
+.enhancement-particles i {
+  width: 4px;
+  height: 4px;
+  transform:
+    rotate(var(--angle))
+    translateX(48px)
+    rotate(calc(var(--angle) * -1));
+}
+
+@keyframes enhancementParticleCharge {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(58px) scale(.35);
+  }
+  45% { opacity: .75; }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(23px) scale(.95);
+  }
+}
+
+@keyframes enhancementParticleBurst {
+  0% {
+    opacity: .92;
+    transform: rotate(var(--angle)) translateX(22px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(64px) scale(.22);
+  }
+}
+
+/* Break the head upward/outward and the handle downward instead of a circular explosion. */
+.enhancement-break-pieces {
+  left: 50%;
+  top: 48%;
+  z-index: 11;
+}
+
+.enhancement-break-pieces i {
+  --dx: 0px;
+  --dy: 0px;
+  --turn: 90deg;
+  transform: translate(-50%, -50%);
+  animation-name: enhancementBreakPieceDirectional;
+}
+
+.enhancement-break-pieces i:nth-child(1) { --dx: -76px; --dy: -50px; --turn: -145deg; }
+.enhancement-break-pieces i:nth-child(2) { --dx: -38px; --dy: -74px; --turn: -80deg; }
+.enhancement-break-pieces i:nth-child(3) { --dx: 10px; --dy: -82px; --turn: 75deg; }
+.enhancement-break-pieces i:nth-child(4) { --dx: 52px; --dy: -58px; --turn: 132deg; }
+.enhancement-break-pieces i:nth-child(5) { --dx: 78px; --dy: -24px; --turn: 185deg; }
+.enhancement-break-pieces i:nth-child(6) { --dx: 34px; --dy: 64px; --turn: 125deg; }
+.enhancement-break-pieces i:nth-child(7) { --dx: 4px; --dy: 82px; --turn: 188deg; }
+.enhancement-break-pieces i:nth-child(8) { --dx: -34px; --dy: 68px; --turn: 238deg; }
+
+@keyframes enhancementBreakPieceDirectional {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.72) rotate(0deg);
+  }
+  12% { opacity: 1; }
+  66% { opacity: .94; }
+  100% {
+    opacity: 0;
+    transform:
+      translate(
+        calc(-50% + var(--dx)),
+        calc(-50% + var(--dy))
+      )
+      scale(.48)
+      rotate(var(--turn));
+  }
+}
+
+.enhancement-shards {
+  left: 50%;
+  top: 48%;
+  z-index: 10;
+}
+
+.enhancement-shards i {
+  width: 7px;
+  height: 5px;
+}
+
+@keyframes enhancementShard {
+  0% {
+    opacity: .9;
+    transform: rotate(var(--angle)) translateX(12px) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(72px) rotate(145deg);
+  }
+}
+
+/* Retire the old rectangular sheen; the duplicate item sprite is the glint mask now. */
+.enhancement-enchant-sheen {
+  display: none !important;
+}
+
+/* Related documents remain in the sidebar and never enter the repeated-click zone. */
+.enhancement-guide-recommendation {
+  display: grid;
+  gap: 2px;
+  padding: 7px 8px;
+  border: 1px solid rgba(var(--forge-glow), .09);
+  border-left: 2px solid rgba(var(--forge-glow), .32);
+  border-radius: 4px;
+  background: rgba(var(--forge-glow), .018);
+}
+
+.enhancement-guide-recommendation small {
+  color: #727779;
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.enhancement-guide-recommendation strong {
+  color: #9aa3a4;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+/* Results can change appearance, but not the geometry of the repeated interaction. */
+.enhancement-forge[data-state="destroy"] .enhancement-pickaxe {
+  transform: translateY(-1px) rotate(5deg) scale(.76);
+}
+
+.enhancement-forge[data-state="success"] .enhancement-pickaxe,
+.enhancement-forge[data-state="max"] .enhancement-pickaxe,
+.enhancement-forge[data-state="charging"] .enhancement-pickaxe,
+.enhancement-forge[data-state="fail"] .enhancement-pickaxe,
+.enhancement-forge[data-state="down"] .enhancement-pickaxe {
+  transform-origin: 50% 50%;
+}
+
+@media (min-width: 901px) and (max-height: 820px) {
+  .wiki-enhancement-lab {
+    --enhancement-action-height: 48px;
+    --enhancement-result-height: 36px;
+    --enhancement-run-result-height: 66px;
+  }
+
+  .enhancement-forge {
+    grid-template-rows:
+      auto
+      auto
+      minmax(164px, 1fr)
+      var(--enhancement-result-height)
+      var(--enhancement-action-height)
+      var(--enhancement-run-result-height)
+      auto;
+  }
+
+  .enhancement-recent-log {
+    min-height: 52px;
+  }
+
+  .enhancement-log-list,
+  .enhancement-log-list > span {
+    min-height: 31px;
+    height: 31px;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 700px) {
+  .wiki-enhancement-lab {
+    --enhancement-action-height: 46px;
+    --enhancement-result-height: 34px;
+    --enhancement-run-result-height: 58px;
+  }
+
+  .enhancement-run-result {
+    padding: 6px 8px;
+  }
+
+  .enhancement-run-result-stats > span {
+    padding: 4px 6px;
+  }
+}
+
+@media (max-width: 700px) {
+  .wiki-enhancement-lab {
+    --enhancement-action-height: 58px;
+    --enhancement-result-height: 46px;
+    --enhancement-run-result-height: 92px;
+  }
+
+  .enhancement-forge {
+    grid-template-rows:
+      auto
+      auto
+      minmax(210px, 1fr)
+      var(--enhancement-result-height)
+      var(--enhancement-action-height)
+      var(--enhancement-run-result-height)
+      auto;
+  }
+
+  .enhancement-primary {
+    touch-action: manipulation;
+  }
+
+  .enhancement-guide-recommendation {
+    padding: 8px;
+  }
+}
+
+html[data-theme="light"] .enhancement-run-result-placeholder {
+  border-color: rgba(78,68,62,.035);
+  background: rgba(255,255,255,.16);
+}
+
+html[data-theme="light"] .enhancement-guide-recommendation {
+  border-color: rgba(78,68,62,.09);
+  background: rgba(255,255,255,.4);
+}
+
+html[data-theme="light"] .enhancement-guide-recommendation strong {
+  color: #6c625d;
+}
+
+html[data-theme="light"] .enhancement-log-list > span.is-empty {
+  background: rgba(255,255,255,.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enhancement-pickaxe-glint-image,
+  .enhancement-pickaxe-runes i,
+  .enhancement-particles i,
+  .enhancement-break-pieces i,
+  .enhancement-shards i {
+    animation: none !important;
+  }
+}
