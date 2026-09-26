@@ -8,6 +8,7 @@ import {
   resolveCachedAsset,
   withBasePath
 } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 
 function badgeForTitle(title: string) {
   if (title === '서버규칙' || title.includes('뉴비필독')) return '필수'
@@ -134,7 +135,7 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                 return (
                   <Link
                     key={page.pageId}
-                    href={withBasePath(`/page/${page.pageId}/`)}
+                    href={withBasePath(wikiGuidePath(page))}
                     prefetch={PREFETCH_TITLES.has(page.title)}
                     className={`directory-card ${featured ? 'is-featured' : ''} ${status === 'brief' ? 'is-brief' : ''}`}
                     data-status={status}
@@ -188,7 +189,7 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                     return (
                       <Link
                         key={page.pageId}
-                        href={withBasePath(`/page/${page.pageId}/`)}
+                        href={withBasePath(wikiGuidePath(page))}
                         prefetch={false}
                         aria-label={`${page.title} — 작성 중인 문서`}
                         className="directory-card is-draft"
