@@ -58,6 +58,32 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<PlaygroundTab>('enhancement')
   const readyCount = pages.filter((page) => page.status !== 'draft').length
+  const tabIds: PlaygroundTab[] = ['enhancement', 'play', 'records']
+
+  const onTabKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement>,
+    current: PlaygroundTab
+  ) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+    event.preventDefault()
+
+    const currentIndex = tabIds.indexOf(current)
+    const nextIndex =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? tabIds.length - 1
+          : event.key === 'ArrowRight'
+            ? (currentIndex + 1) % tabIds.length
+            : (currentIndex - 1 + tabIds.length) % tabIds.length
+    const next = tabIds[nextIndex]
+    setActiveTab(next)
+
+    const nextButton = event.currentTarget.parentElement?.querySelector<HTMLButtonElement>(
+      `[data-playground-tab="${next}"]`
+    )
+    nextButton?.focus()
+  }
 
   useEffect(() => {
     const openFromHash = () => {
@@ -135,9 +161,14 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
           <div className="home-playground-tabs" role="tablist" aria-label="위키 탐험">
             <button
               type="button"
+              id="playground-tab-enhancement"
+              data-playground-tab="enhancement"
               role="tab"
+              aria-controls="home-playground-panel"
               aria-selected={activeTab === 'enhancement'}
+              tabIndex={activeTab === 'enhancement' ? 0 : -1}
               className={activeTab === 'enhancement' ? 'is-active' : ''}
+              onKeyDown={(event) => onTabKeyDown(event, 'enhancement')}
               onClick={() => setActiveTab('enhancement')}
             >
               <span aria-hidden="true">⚒️</span>
@@ -145,9 +176,14 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
             </button>
             <button
               type="button"
+              id="playground-tab-play"
+              data-playground-tab="play"
               role="tab"
+              aria-controls="home-playground-panel"
               aria-selected={activeTab === 'play'}
+              tabIndex={activeTab === 'play' ? 0 : -1}
               className={activeTab === 'play' ? 'is-active' : ''}
+              onKeyDown={(event) => onTabKeyDown(event, 'play')}
               onClick={() => setActiveTab('play')}
             >
               <span aria-hidden="true">🎲</span>
@@ -155,9 +191,14 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
             </button>
             <button
               type="button"
+              id="playground-tab-records"
+              data-playground-tab="records"
               role="tab"
+              aria-controls="home-playground-panel"
               aria-selected={activeTab === 'records'}
+              tabIndex={activeTab === 'records' ? 0 : -1}
               className={activeTab === 'records' ? 'is-active' : ''}
+              onKeyDown={(event) => onTabKeyDown(event, 'records')}
               onClick={() => setActiveTab('records')}
             >
               <span aria-hidden="true">🏆</span>
@@ -165,7 +206,12 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
             </button>
           </div>
 
-          <div className="home-playground-panel" role="tabpanel">
+          <div
+            className="home-playground-panel"
+            id="home-playground-panel"
+            role="tabpanel"
+            aria-labelledby={`playground-tab-${activeTab}`}
+          >
             {activeTab === 'enhancement' && <WikiEnhancementLab pages={pages} />}
             {activeTab === 'play' && <WikiFunZone pages={pages} />}
             {activeTab === 'records' && (

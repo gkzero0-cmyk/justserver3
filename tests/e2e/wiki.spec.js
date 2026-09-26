@@ -223,7 +223,10 @@ test.describe('desktop wiki journeys', () => {
     await page.getByRole('button', { name: '위키 탐험 시작' }).click()
 
     await expect(page.locator('#enhancement-lab')).toBeVisible()
-    await page.getByRole('tab', { name: /미니게임/ }).click()
+    const enhancementTab = page.getByRole('tab', { name: /강화/ })
+    await enhancementTab.focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(page.getByRole('tab', { name: /미니게임/ })).toBeFocused()
     await expect(page.getByRole('tab', { name: /미니게임/ })).toHaveAttribute('aria-selected', 'true')
     await expect(page.locator('#enhancement-lab')).toHaveCount(0)
 

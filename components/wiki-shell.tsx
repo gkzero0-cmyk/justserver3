@@ -1194,6 +1194,7 @@ export function WikiShell({
               aria-pressed={textSize === 'small'}
               onClick={() => changeTextSize('small')}
               title="글자 작게"
+              aria-label="글자 작게"
             >
               A−
             </button>
@@ -1203,6 +1204,7 @@ export function WikiShell({
               aria-pressed={textSize === 'default'}
               onClick={() => changeTextSize('default')}
               title="기본 글자 크기"
+              aria-label="기본 글자 크기"
             >
               A
             </button>
@@ -1212,6 +1214,7 @@ export function WikiShell({
               aria-pressed={textSize === 'large'}
               onClick={() => changeTextSize('large')}
               title="글자 크게"
+              aria-label="글자 크게"
             >
               A+
             </button>
