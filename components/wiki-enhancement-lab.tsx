@@ -216,16 +216,16 @@ function playTone(
     const master = ctx.createGain()
     const compressor = ctx.createDynamicsCompressor()
 
-    master.gain.setValueAtTime(0.42, now)
-    compressor.threshold.setValueAtTime(-24, now)
+    master.gain.setValueAtTime(0.38, now)
+    compressor.threshold.setValueAtTime(-22, now)
     compressor.knee.setValueAtTime(18, now)
-    compressor.ratio.setValueAtTime(6, now)
-    compressor.attack.setValueAtTime(0.006, now)
-    compressor.release.setValueAtTime(0.24, now)
+    compressor.ratio.setValueAtTime(7, now)
+    compressor.attack.setValueAtTime(0.002, now)
+    compressor.release.setValueAtTime(0.18, now)
     compressor.connect(master)
     master.connect(ctx.destination)
 
-    const tone = (
+    const resonator = (
       frequency: number,
       start: number,
       duration: number,
@@ -246,7 +246,7 @@ function playTone(
       gain.gain.setValueAtTime(0.0001, now + start)
       gain.gain.exponentialRampToValueAtTime(
         Math.max(0.0002, gainValue),
-        now + start + 0.008
+        now + start + 0.004
       )
       gain.gain.exponentialRampToValueAtTime(
         0.0001,
@@ -255,21 +255,22 @@ function playTone(
       osc.connect(gain)
       gain.connect(compressor)
       osc.start(now + start)
-      osc.stop(now + start + duration + 0.035)
+      osc.stop(now + start + duration + 0.03)
     }
 
-    const noise = (
+    const impactNoise = (
       start: number,
       duration: number,
       gainValue: number,
-      filterType: BiquadFilterType,
-      frequency: number
+      frequency: number,
+      filterType: BiquadFilterType = 'bandpass'
     ) => {
       const frames = Math.max(1, Math.floor(ctx.sampleRate * duration))
       const buffer = ctx.createBuffer(1, frames, ctx.sampleRate)
       const data = buffer.getChannelData(0)
       for (let index = 0; index < frames; index += 1) {
-        data[index] = Math.random() * 2 - 1
+        const decay = 1 - index / frames
+        data[index] = (Math.random() * 2 - 1) * decay
       }
 
       const source = ctx.createBufferSource()
@@ -278,7 +279,7 @@ function playTone(
       source.buffer = buffer
       filter.type = filterType
       filter.frequency.setValueAtTime(frequency, now + start)
-      filter.Q.setValueAtTime(0.9, now + start)
+      filter.Q.setValueAtTime(filterType === 'bandpass' ? 1.7 : 0.8, now + start)
       gain.gain.setValueAtTime(Math.max(0.0002, gainValue), now + start)
       gain.gain.exponentialRampToValueAtTime(
         0.0001,
@@ -291,53 +292,58 @@ function playTone(
       source.stop(now + start + duration + 0.025)
     }
 
-    const anvil = (
-      base: number,
+    const hammerHit = (
       start = 0,
-      strength = 0.042,
-      duration = 0.42
+      strength = 1,
+      ring = 1,
+      dull = false
     ) => {
-      tone(base, start, duration, strength, 'triangle')
-      tone(base * 1.42, start + 0.008, duration * 0.78, strength * 0.42)
-      tone(base * 1.93, start + 0.015, duration * 0.58, strength * 0.22)
-      noise(start, 0.065, strength * 0.36, 'bandpass', 920)
+      const body = 74 + Math.min(18, intensity * 1.15)
+      impactNoise(start, 0.045, 0.072 * strength, dull ? 610 : 980)
+      impactNoise(start + 0.004, 0.09, 0.03 * strength, 250, 'lowpass')
+      resonator(body, start, 0.2, 0.055 * strength, 'triangle')
+      const metallicPartials = dull
+        ? [238, 356, 514]
+        : [286, 431, 638, 917]
+      metallicPartials.forEach((frequency, index) => {
+        resonator(
+          frequency + intensity * (index + 1) * 1.8,
+          start + 0.006 + index * 0.003,
+          (0.22 + index * 0.07) * ring,
+          (0.022 / (index + 1)) * strength,
+          index % 2 ? 'triangle' : 'sine'
+        )
+      })
     }
 
     if (kind === 'charge') {
-      anvil(118 - Math.min(22, intensity), 0, 0.034, 0.28)
-      tone(72, 0.03, 0.5, 0.026, 'sine', 112)
-      noise(0.08, 0.26, 0.011, 'lowpass', 650)
+      hammerHit(0, 0.55, 0.45, true)
+      impactNoise(0.08, 0.12, 0.012, 540, 'lowpass')
       if (intensity >= 8) {
-        tone(54, 0.1, 0.62, 0.016, 'sine', 68)
-      }
-      if (intensity >= 12) {
-        noise(0.16, 0.48, 0.01, 'lowpass', 420)
-      }
-      if (intensity >= 14) {
-        tone(42, 0.26, 0.74, 0.017, 'triangle', 36)
+        resonator(58, 0.12, 0.48, 0.012, 'sine', 68)
       }
     } else if (kind === 'success') {
-      anvil(156, 0, 0.05, 0.48)
-      tone(228, 0.06, 0.42, 0.026, 'sine')
-      tone(326, 0.15, 0.38, 0.016, 'triangle')
+      hammerHit(0, 0.95, 1, false)
+      if (intensity >= 8) {
+        resonator(196, 0.08, 0.38, 0.009, 'sine', 214)
+      }
     } else if (kind === 'max') {
-      anvil(172, 0, 0.055, 0.58)
-      tone(238, 0.07, 0.56, 0.028, 'sine')
-      tone(342, 0.17, 0.58, 0.022, 'triangle')
-      tone(468, 0.29, 0.56, 0.014, 'sine')
-      noise(0.06, 0.34, 0.012, 'bandpass', 760)
+      hammerHit(0, 1.12, 1.2, false)
+      hammerHit(0.16, 0.48, 0.72, false)
+      resonator(174, 0.09, 0.66, 0.014, 'sine', 205)
+      impactNoise(0.18, 0.22, 0.01, 720, 'bandpass')
     } else if (kind === 'down') {
-      anvil(110, 0, 0.043, 0.4)
-      tone(152, 0.04, 0.44, 0.028, 'triangle', 72)
+      hammerHit(0, 0.82, 0.55, true)
+      resonator(146, 0.035, 0.46, 0.02, 'triangle', 72)
     } else if (kind === 'destroy') {
-      anvil(78, 0, 0.062, 0.5)
-      noise(0.015, 0.42, 0.055, 'lowpass', 820)
-      noise(0.05, 0.22, 0.022, 'bandpass', 1250)
-      tone(66, 0.02, 0.72, 0.044, 'sine', 38)
-      tone(45, 0.14, 0.76, 0.028, 'triangle')
+      hammerHit(0, 1.2, 0.46, true)
+      impactNoise(0.025, 0.34, 0.06, 940, 'bandpass')
+      impactNoise(0.06, 0.42, 0.045, 480, 'lowpass')
+      resonator(68, 0.015, 0.72, 0.042, 'sine', 38)
+      resonator(43, 0.09, 0.74, 0.024, 'triangle')
     } else {
-      anvil(102, 0, 0.039, 0.34)
-      tone(116, 0.03, 0.3, 0.021, 'triangle', 82)
+      hammerHit(0, 0.72, 0.32, true)
+      impactNoise(0.02, 0.11, 0.016, 470, 'lowpass')
     }
 
     activeEnhancementAudioCloseTimer = window.setTimeout(() => {
@@ -346,7 +352,7 @@ function playTone(
       }
       void ctx.close().catch(() => {})
       activeEnhancementAudioCloseTimer = null
-    }, 1500)
+    }, 1700)
   } catch {}
 }
 
@@ -358,23 +364,36 @@ function EnhancementPickaxe({
   broken: boolean
 }) {
   const enchanted = level >= 8 && !broken
+  const src = enchanted
+    ? 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/enhancement-lab/enchanted-diamond-pickaxe.webp?v=20260926b'
+    : 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/enhancement-lab/diamond-pickaxe.png?v=20260926b'
+
   return (
-    <img
-      className="enhancement-pickaxe-image"
-      src={
-        enchanted
-          ? 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/enhancement-lab/enchanted-diamond-pickaxe.webp?v=20260926b'
-          : 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/enhancement-lab/diamond-pickaxe.png?v=20260926b'
-      }
-      alt={
-        enchanted
-          ? '인챈트된 다이아몬드 곡괭이'
-          : '다이아몬드 곡괭이'
-      }
-      draggable={false}
-      width={160}
-      height={160}
-    />
+    <span className="enhancement-pickaxe-art">
+      <img
+        className="enhancement-pickaxe-image"
+        src={src}
+        alt={
+          enchanted
+            ? '인챈트된 다이아몬드 곡괭이'
+            : '다이아몬드 곡괭이'
+        }
+        draggable={false}
+        width={160}
+        height={160}
+      />
+      {enchanted && (
+        <img
+          className="enhancement-pickaxe-glint-image"
+          src={src}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          width={160}
+          height={160}
+        />
+      )}
+    </span>
   )
 }
 
@@ -697,6 +716,35 @@ export function WikiEnhancementLab({
                         <i />
                       </span>
                     )}
+                    <div className="enhancement-particles" aria-hidden="true">
+                      {Array.from({ length: 12 }, (_, index) => (
+                        <i
+                          key={index}
+                          style={{ '--i': index } as CSSProperties}
+                        />
+                      ))}
+                    </div>
+                    {broken && (
+                      <>
+                        <div className="enhancement-break-pieces" aria-hidden="true">
+                          {Array.from({ length: 8 }, (_, index) => (
+                            <i
+                              key={'piece-' + index}
+                              data-part={index < 5 ? 'diamond' : 'handle'}
+                              style={{ '--i': index } as CSSProperties}
+                            />
+                          ))}
+                        </div>
+                        <div className="enhancement-shards" aria-hidden="true">
+                          {Array.from({ length: 12 }, (_, index) => (
+                            <i
+                              key={index}
+                              style={{ '--i': index } as CSSProperties}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
                   <span
                     className="enhancement-tier-mark"
@@ -714,12 +762,6 @@ export function WikiEnhancementLab({
                               ? '강화광'
                               : '기본'}
                   </span>
-                  {stats.level >= 8 && !broken && (
-                    <div
-                      className="enhancement-enchant-sheen"
-                      aria-hidden="true"
-                    />
-                  )}
                   <span className="enhancement-slot-level">
                     +{stats.level}
                   </span>
@@ -727,36 +769,6 @@ export function WikiEnhancementLab({
               </div>
             </div>
 
-            <div className="enhancement-particles" aria-hidden="true">
-              {Array.from({ length: 12 }, (_, index) => (
-                <i
-                  key={index}
-                  style={{ '--i': index } as CSSProperties}
-                />
-              ))}
-            </div>
-
-            {broken && (
-              <>
-                <div className="enhancement-break-pieces" aria-hidden="true">
-                  {Array.from({ length: 8 }, (_, index) => (
-                    <i
-                      key={'piece-' + index}
-                      data-part={index < 5 ? 'diamond' : 'handle'}
-                      style={{ '--i': index } as CSSProperties}
-                    />
-                  ))}
-                </div>
-                <div className="enhancement-shards" aria-hidden="true">
-                  {Array.from({ length: 12 }, (_, index) => (
-                    <i
-                      key={index}
-                      style={{ '--i': index } as CSSProperties}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
 
             <div className="enhancement-item-tooltip">
               <strong>
@@ -799,92 +811,76 @@ export function WikiEnhancementLab({
             <strong>{message}</strong>
           </div>
 
-          {(broken || stats.level >= 15) && (
-            <section
-              className="enhancement-run-result"
-              data-outcome={broken ? 'destroy' : 'max'}
-              aria-label="이번 강화 도전 결과"
-            >
-              <div>
-                <small>{broken ? '도전 종료' : '도전 완료'}</small>
-                <strong>
-                  {broken
-                    ? '곡괭이가 파괴되었습니다'
-                    : '+15 강화에 성공했습니다'}
-                </strong>
-              </div>
-              <div className="enhancement-run-result-stats">
-                <span><small>총 시도</small><b>{stats.run.attempts}</b></span>
-                <span><small>최고 강화</small><b>+{stats.run.best}</b></span>
-                <span><small>성공</small><b>{stats.run.successes}</b></span>
-                <span><small>하락</small><b>{stats.run.downgrades}</b></span>
-              </div>
-            </section>
-          )}
-
-          {broken && repairPage ? (
-            <Link
-              className="enhancement-context-guide is-repair"
-              href={withBasePath('/page/' + repairPage.pageId + '/')}
-              data-wiki-event="wiki_enhancement_context_guide"
-              data-wiki-target="장비수리"
-            >
-              장비가 파괴됐어요 · 장비수리 가이드 보기 <b>→</b>
-            </Link>
-          ) : stats.level >= 8 && enhancementPage ? (
-            <Link
-              className="enhancement-context-guide"
-              href={withBasePath('/page/' + enhancementPage.pageId + '/')}
-              data-wiki-event="wiki_enhancement_context_guide"
-              data-wiki-target="장비강화"
-            >
-              고강화 구간입니다 · 장비강화 가이드 보기 <b>→</b>
-            </Link>
-          ) : null}
-
           <div className="enhancement-action-zone">
-            {broken ? (
-              <button
-                type="button"
-                className="enhancement-primary is-replace"
-                onClick={replaceBrokenPickaxe}
+            <button
+              type="button"
+              className={
+                'enhancement-primary' +
+                (broken ? ' is-replace' : '') +
+                (stats.level >= 15 ? ' is-max' : '')
+              }
+              data-risk={danger.tone}
+              disabled={!ready || animating}
+              onClick={
+                broken
+                  ? replaceBrokenPickaxe
+                  : stats.level >= 15
+                    ? startNewRun
+                    : enhance
+              }
+            >
+              {broken
+                ? '새 곡괭이 받기'
+                : stats.level >= 15
+                  ? '새 강화 도전 시작'
+                  : animating
+                    ? stats.level >= 12
+                      ? '판정 중…'
+                      : '강화 중…'
+                    : stats.level === 14
+                      ? '최종 강화 도전'
+                      : rule.destroy > 0
+                        ? '파괴 가능 · 강화하기'
+                        : stats.level >= 5
+                          ? '주의 · 강화하기'
+                          : '강화하기'}
+              <span>
+                {broken
+                  ? '0강부터 재도전'
+                  : stats.level >= 15
+                    ? '+15 달성 완료'
+                    : '+' + stats.level + ' → +' + (stats.level + 1) +
+                      (stats.level === 14 ? ' · +15 도전' : '')}
+              </span>
+            </button>
+          </div>
+
+          <div className="enhancement-run-result-slot" aria-live="polite">
+            {(broken || stats.level >= 15) ? (
+              <section
+                className="enhancement-run-result"
+                data-outcome={broken ? 'destroy' : 'max'}
+                aria-label="이번 강화 도전 결과"
               >
-                새 곡괭이 받기
-                <span>0강부터 재도전</span>
-              </button>
-            ) : stats.level >= 15 ? (
-              <button
-                type="button"
-                className="enhancement-primary is-max"
-                onClick={startNewRun}
-              >
-                +15 달성!
-                <span>새 강화 도전 시작</span>
-              </button>
+                <div>
+                  <small>{broken ? '도전 종료' : '도전 완료'}</small>
+                  <strong>
+                    {broken
+                      ? '곡괭이가 파괴되었습니다'
+                      : '+15 강화에 성공했습니다'}
+                  </strong>
+                </div>
+                <div className="enhancement-run-result-stats">
+                  <span><small>총 시도</small><b>{stats.run.attempts}</b></span>
+                  <span><small>최고 강화</small><b>+{stats.run.best}</b></span>
+                  <span><small>성공</small><b>{stats.run.successes}</b></span>
+                  <span><small>하락</small><b>{stats.run.downgrades}</b></span>
+                </div>
+              </section>
             ) : (
-              <button
-                type="button"
-                className="enhancement-primary"
-                data-risk={danger.tone}
-                disabled={!ready || animating}
-                onClick={enhance}
-              >
-                {animating
-                  ? stats.level >= 12
-                    ? '판정 중…'
-                    : '강화 중…'
-                  : stats.level === 14
-                    ? '최종 강화 도전'
-                    : rule.destroy > 0
-                      ? '파괴 가능 · 강화하기'
-                      : stats.level >= 5
-                        ? '주의 · 강화하기'
-                        : '강화하기'}
-                <span>
-                  +{stats.level} → +{stats.level + 1}
-                  {stats.level === 14 ? ' · +15 도전' : ''}
-                </span>
-              </button>
+              <div className="enhancement-run-result-placeholder" aria-hidden="true">
+                <span>이번 도전 결과가 여기에 표시됩니다.</span>
+              </div>
             )}
           </div>
 
@@ -893,9 +889,10 @@ export function WikiEnhancementLab({
               <strong>최근 강화 기록</strong>
               <span>최근 {Math.min(stats.history.length, 5)}회</span>
             </div>
-            {stats.history.length ? (
-              <div className="enhancement-log-list">
-                {stats.history.slice(0, 5).map((entry) => (
+            <div className="enhancement-log-list">
+              {Array.from({ length: 5 }, (_, index) => {
+                const entry = stats.history[index]
+                return entry ? (
                   <span
                     key={entry.id}
                     data-outcome={entry.outcome}
@@ -910,11 +907,18 @@ export function WikiEnhancementLab({
                           : '+' + entry.from + ' → +' + entry.to}
                     </small>
                   </span>
-                ))}
-              </div>
-            ) : (
-              <p>첫 강화 결과부터 이곳에 기록됩니다.</p>
-            )}
+                ) : (
+                  <span
+                    key={'empty-' + index}
+                    className="is-empty"
+                    aria-hidden="true"
+                  >
+                    <b>대기</b>
+                    <small>—</small>
+                  </span>
+                )
+              })}
+            </div>
           </div>
         </div>
 
@@ -1028,6 +1032,16 @@ export function WikiEnhancementLab({
               </div>
               <b>+</b>
             </summary>
+            <div className="enhancement-guide-recommendation" aria-live="polite">
+              <small>현재 단계 추천</small>
+              <strong>
+                {broken
+                  ? '장비수리 문서를 확인해보세요.'
+                  : stats.level >= 8
+                    ? '고강화 구간 · 장비강화 문서를 참고할 수 있어요.'
+                    : '강화 규칙이 궁금할 때 관련 문서를 확인하세요.'}
+              </strong>
+            </div>
             <div>
               {enhancementPage && (
                 <Link
