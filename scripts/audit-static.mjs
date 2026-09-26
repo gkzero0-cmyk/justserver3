@@ -20,6 +20,18 @@ const buildWorkflow = workflows['build.yml'] || ''
 
 const blocking = []
 const notes = []
+const baseline = {
+  missingDimensions: 0,
+  missingLoading: 3
+}
+
+const actionMajorMinimum = {
+  'actions/checkout': 7,
+  'actions/setup-node': 7,
+  'actions/upload-artifact': 7,
+  'actions/upload-pages-artifact': 5,
+  'actions/deploy-pages': 5
+}
 
 if (pkg.engines?.node !== '24.x') {
   blocking.push(`package.json engines.node is ${pkg.engines?.node || '(missing)'}, expected 24.x`)
@@ -42,6 +54,16 @@ for (const [name, source] of Object.entries(workflows)) {
   for (const version of versions) {
     if (version !== '24') {
       blocking.push(`${name} uses Node ${version}, expected Node 24`)
+    }
+  }
+
+  for (const [action, minimum] of Object.entries(actionMajorMinimum)) {
+    const pattern = new RegExp(`${action.replace('/', '\\/')}@v(\\d+)`, 'g')
+    for (const match of source.matchAll(pattern)) {
+      const major = Number(match[1])
+      if (major < minimum) {
+        blocking.push(`${name} uses ${action}@v${major}, expected v${minimum}+`)
+      }
     }
   }
 }
@@ -67,6 +89,7 @@ let missingDimensions = 0
 let missingLoading = 0
 let unsafeMarkup = 0
 const examples = []
+const loadingExamples = []
 
 for (const file of sourceFiles) {
   const source = await readFile(file, 'utf8')
@@ -83,7 +106,12 @@ for (const file of sourceFiles) {
         examples.push(`${relative(root, file)}: img missing explicit width/height`)
       }
     }
-    if (!hasLoading) missingLoading += 1
+    if (!hasLoading) {
+      missingLoading += 1
+      if (loadingExamples.length < 12) {
+        loadingExamples.push(`${relative(root, file)}: img without explicit loading attribute`)
+      }
+    }
   }
 
   const unsafe = source.match(/(?:href|src)\s*=\s*["'{]?(?:javascript|vbscript):/gi) || []
@@ -99,8 +127,20 @@ notes.push(`Image tags missing explicit dimensions: ${missingDimensions}`)
 notes.push(`Image tags without loading attribute: ${missingLoading}`)
 notes.push(`Unsafe URL-like markup findings: ${unsafeMarkup}`)
 
+if (missingDimensions > baseline.missingDimensions) {
+  blocking.push(
+    `image tags missing explicit dimensions increased above baseline ${baseline.missingDimensions}: ${missingDimensions}`
+  )
+}
+if (missingLoading > baseline.missingLoading) {
+  blocking.push(
+    `image tags without loading attribute increased above baseline ${baseline.missingLoading}: ${missingLoading}`
+  )
+}
+
 for (const note of notes) console.log(`INFO ${note}`)
 for (const example of examples) console.log(`AUDIT ${example}`)
+for (const example of loadingExamples) console.log(`AUDIT ${example}`)
 for (const item of blocking) console.error(`FAIL ${item}`)
 
 if (process.env.GITHUB_STEP_SUMMARY) {
@@ -112,7 +152,8 @@ if (process.env.GITHUB_STEP_SUMMARY) {
       ...notes.map((note) => `- ${note}`),
       `- Blocking configuration findings: ${blocking.length}`,
       '',
-      'Image findings are informational only; dynamic or above-the-fold images may intentionally omit loading attributes.',
+      `Image regression baseline: dimensions <= ${baseline.missingDimensions}, loading omissions <= ${baseline.missingLoading}.`,
+      'Existing intentional loading omissions are allowed, but increases fail the build.',
       ''
     ].join('\n')
   )

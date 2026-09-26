@@ -51,6 +51,25 @@ for (const file of files) {
 const tinyFonts = findings.filter((item) => item.type === 'tiny-font')
 const coolColors = findings.filter((item) => item.type === 'legacy-cool-color')
 
+const baseline = {
+  tinyFonts: 216,
+  coolColors: 15
+}
+
+let regressed = false
+if (tinyFonts.length > baseline.tinyFonts) {
+  regressed = true
+  console.error(
+    `FAIL sub-10px font declarations increased from ${baseline.tinyFonts} to ${tinyFonts.length}`
+  )
+}
+if (coolColors.length > baseline.coolColors) {
+  regressed = true
+  console.error(
+    `FAIL legacy cool-color declarations increased from ${baseline.coolColors} to ${coolColors.length}`
+  )
+}
+
 console.log(
   `CSS audit: ${tinyFonts.length} sub-10px font declarations, ${coolColors.length} legacy cool-color declarations`
 )
@@ -83,7 +102,8 @@ if (process.env.GITHUB_STEP_SUMMARY) {
       `- Sub-10px font declarations: ${tinyFonts.length}`,
       `- Legacy cool-color declarations: ${coolColors.length}`,
       '',
-      'This audit is informational and does not fail the build.',
+      `Baseline: <= ${baseline.tinyFonts} sub-10px declarations and <= ${baseline.coolColors} legacy colors.`,
+      'Existing debt is allowed, but new regressions fail the build.',
       '',
       '| Finding | Location | Value |',
       '| --- | --- | --- |',
@@ -92,3 +112,5 @@ if (process.env.GITHUB_STEP_SUMMARY) {
     ].join('\n')
   )
 }
+
+if (regressed) process.exitCode = 1
