@@ -103,6 +103,84 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       <StarterGuide pages={directoryPages} />
+
+      <section className="wiki-directory" aria-labelledby="quick-goals-title">
+        <div className="directory-heading">
+          <div>
+            <p>QUICK START</p>
+            <h2 id="quick-goals-title">지금 무엇을 하고 싶나요?</h2>
+            <span>목적을 고르면 필요한 가이드나 체험 기능으로 바로 이동합니다.</span>
+          </div>
+          <span>빠른 탐색</span>
+        </div>
+
+        <div className="directory-grid">
+          <Link
+            href={withBasePath('/guide/newbie-guide/')}
+            className="directory-card is-featured"
+            data-wiki-event="wiki_home_navigate"
+            data-wiki-section="quick-goals"
+            data-wiki-target="newbie-guide"
+            data-wiki-status="ready"
+          >
+            <span className="directory-media is-icon">🧭</span>
+            <span className="directory-copy">
+              <span className="directory-title-row"><strong>처음 왔어요</strong><em>추천</em></span>
+              <small>필수 설정과 서버 적응 순서부터 확인합니다.</small>
+            </span>
+            <span className="directory-arrow">→</span>
+          </Link>
+
+          <Link
+            href={withBasePath('/guide/mining/')}
+            className="directory-card"
+            data-wiki-event="wiki_home_navigate"
+            data-wiki-section="quick-goals"
+            data-wiki-target="mining"
+            data-wiki-status="ready"
+          >
+            <span className="directory-media is-icon">⛏️</span>
+            <span className="directory-copy">
+              <span className="directory-title-row"><strong>돈을 벌고 싶어요</strong></span>
+              <small>채광과 초반 수익 흐름을 빠르게 확인합니다.</small>
+            </span>
+            <span className="directory-arrow">→</span>
+          </Link>
+
+          <Link
+            href={withBasePath('/guide/upgrade/')}
+            className="directory-card"
+            data-wiki-event="wiki_home_navigate"
+            data-wiki-section="quick-goals"
+            data-wiki-target="upgrade"
+            data-wiki-status="draft"
+          >
+            <span className="directory-media is-icon">⚒️</span>
+            <span className="directory-copy">
+              <span className="directory-title-row"><strong>장비를 키우고 싶어요</strong><em>체험 가능</em></span>
+              <small>장비강화 안내에서 강화 체험소까지 바로 이어집니다.</small>
+            </span>
+            <span className="directory-arrow">→</span>
+          </Link>
+
+          <Link
+            href={withBasePath('/guide/faq/')}
+            className="directory-card"
+            data-wiki-event="wiki_home_navigate"
+            data-wiki-section="quick-goals"
+            data-wiki-target="faq"
+            data-wiki-status="ready"
+          >
+            <span className="directory-media is-icon">❓</span>
+            <span className="directory-copy">
+              <span className="directory-title-row"><strong>궁금한 게 있어요</strong></span>
+              <small>자주 묻는 질문과 확인된 답변부터 찾습니다.</small>
+            </span>
+            <span className="directory-arrow">→</span>
+          </Link>
+        </div>
+      </section>
+
       <WikiSinceVisit
         pages={directoryPages.map((page) => ({
           pageId: page.pageId,
