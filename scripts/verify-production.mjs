@@ -40,15 +40,19 @@ let failed = false
 
 let searchIndexText = ''
 
-for (const check of checks) {
-  const url = baseUrl + check.path
-  const response = await fetch(url, {
-    redirect: 'follow',
+async function fetchText(path, options = {}) {
+  const response = await fetch(baseUrl + path, {
+    redirect: options.redirect || 'follow',
     headers: {
-      'user-agent': 'justserver3-production-smoke/1.0'
+      'user-agent': 'justserver3-production-smoke/1.0',
+      ...(options.headers || {})
     }
   })
-  const text = await response.text()
+  return { response, text: await response.text() }
+}
+
+for (const check of checks) {
+  const { response, text } = await fetchText(check.path)
   if (check.path.includes('search-index.json')) searchIndexText = text
   const missing = check.expect.filter((value) => !text.includes(value))
 
@@ -130,6 +134,58 @@ for (const [pageId, slug] of legacyRoutes) {
     console.log(
       `PASS legacy redirect ${pageId} HTTP ${response.status} -> ${location}`
     )
+  }
+}
+
+
+
+const notFoundCheck = await fetchText('/guide/this-page-should-not-exist/')
+if (notFoundCheck.response.status !== 404) {
+  failed = true
+  console.error(
+    `FAIL unknown guide expected 404, got HTTP ${notFoundCheck.response.status}`
+  )
+} else if (!notFoundCheck.text.includes('문서를 찾을 수 없습니다.')) {
+  failed = true
+  console.error('FAIL custom 404 page is missing its expected heading')
+} else {
+  console.log('PASS unknown guide returns custom HTTP 404')
+}
+
+const metadataCheck = await fetchText('/guide/rules/')
+const metadataExpectations = [
+  /<title>[^<]*서버규칙[^<]*<\/title>/i,
+  /<meta[^>]+name=["']description["'][^>]+content=["'][^"']+/i,
+  /<link[^>]+rel=["']canonical["'][^>]+href=["'][^"']*\/guide\/rules\/?["']/i
+]
+for (const pattern of metadataExpectations) {
+  if (!pattern.test(metadataCheck.text)) {
+    failed = true
+    console.error(`FAIL metadata check did not match ${pattern}`)
+  }
+}
+if (metadataExpectations.every((pattern) => pattern.test(metadataCheck.text))) {
+  console.log('PASS rules page title, description, and canonical metadata')
+}
+
+const securityHeaders = {
+  'x-content-type-options': 'nosniff',
+  'referrer-policy': 'strict-origin-when-cross-origin',
+  'permissions-policy': ['camera=()', 'microphone=()', 'geolocation=()']
+}
+const homeHead = await fetch(baseUrl + '/', {
+  method: 'HEAD',
+  redirect: 'follow',
+  headers: { 'user-agent': 'justserver3-production-smoke/1.0' }
+})
+for (const [name, expected] of Object.entries(securityHeaders)) {
+  const value = homeHead.headers.get(name) || ''
+  const values = Array.isArray(expected) ? expected : [expected]
+  if (!values.every((item) => value.toLowerCase().includes(item.toLowerCase()))) {
+    failed = true
+    console.error(`FAIL security header ${name}: ${value || '(missing)'}`)
+  } else {
+    console.log(`PASS security header ${name}`)
   }
 }
 

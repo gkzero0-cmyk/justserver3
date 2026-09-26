@@ -26,6 +26,8 @@ jobs:
           cache-dependency-path: package-lock.json
       - run: npm ci
       - run: npm run build
+      - name: Audit CSS readability debt
+        run: npm run audit:css
 
       - name: Build current deploy bundle
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

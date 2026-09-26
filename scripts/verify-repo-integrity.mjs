@@ -1,4 +1,4 @@
-import { access, readFile, readdir, stat } from 'node:fs/promises'
+import { access, appendFile, readFile, readdir, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
 
@@ -142,9 +142,44 @@ if (await exists(optimizedDir)) {
     /\.(?:webp|avif|png|jpe?g)$/i.test(path)
   )
   const oversized = []
+  const measured = []
   for (const file of optimized) {
     const info = await stat(file)
+    measured.push({ file, size: info.size })
     if (info.size > 1024 * 1024) oversized.push({ file, size: info.size })
+  }
+
+  const totalBytes = measured.reduce((sum, item) => sum + item.size, 0)
+  const largest = [...measured].sort((a, b) => b.size - a.size).slice(0, 10)
+  console.log(
+    `INFO optimized assets: ${optimized.length} files, ${(totalBytes / 1024 / 1024).toFixed(2)} MB total`
+  )
+  for (const item of largest.slice(0, 5)) {
+    console.log(
+      `INFO large optimized asset: ${item.file.replace(root + '/', '')} ${(item.size / 1024).toFixed(0)} KB`
+    )
+  }
+
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    const lines = [
+      '## Repository integrity',
+      '',
+      `- Guide routes: ${WIKI_GUIDE_ROUTES.length}`,
+      `- Referenced Notion assets: ${referencedAssets.size}`,
+      `- Optimized display assets: ${optimized.length}`,
+      `- Optimized asset total: ${(totalBytes / 1024 / 1024).toFixed(2)} MB`,
+      '',
+      '### Largest optimized display assets',
+      '',
+      '| File | Size |',
+      '| --- | ---: |',
+      ...largest.map(
+        (item) =>
+          `| ${item.file.replace(root + '/', '')} | ${(item.size / 1024).toFixed(0)} KB |`
+      ),
+      ''
+    ]
+    await appendFile(process.env.GITHUB_STEP_SUMMARY, lines.join('\n'))
   }
   if (oversized.length) {
     for (const item of oversized) {
