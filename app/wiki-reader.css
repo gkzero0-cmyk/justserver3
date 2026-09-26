@@ -12469,3 +12469,142 @@ html[data-theme="light"] .enhancement-stage-tag {
     min-height: 62px;
   }
 }
+
+
+/* === 2026-09-26 enhancement lab desktop density refinement === */
+@media (min-width: 1100px) {
+  .enhancement-head-actions {
+    align-self: center;
+  }
+
+  .enhancement-sound-controls {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px;
+    border: 1px solid rgba(255,255,255,.055);
+    border-radius: 10px;
+    background: rgba(0,0,0,.1);
+  }
+
+  .enhancement-sound-controls > button {
+    border-color: transparent;
+    background: transparent;
+  }
+
+  .enhancement-sound-controls > button:hover,
+  .enhancement-sound-controls > button:focus-visible {
+    background: rgba(255,255,255,.035);
+  }
+
+  .enhancement-sound-controls > button:first-child {
+    gap: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .enhancement-volume-control {
+    border-left: 1px solid rgba(255,255,255,.055);
+    border-right: 1px solid rgba(255,255,255,.055);
+  }
+
+  .enhancement-side > section,
+  .enhancement-side > details {
+    border-radius: 10px;
+  }
+
+  .enhancement-odds-grid {
+    gap: clamp(7px, .55vw, 10px);
+  }
+
+  .enhancement-odds-grid > div,
+  .enhancement-record-grid > span,
+  .enhancement-run-strip > span {
+    min-height: 54px;
+    align-content: center;
+  }
+
+  .enhancement-probability .enhancement-panel-title {
+    margin-bottom: 1px;
+  }
+
+  .enhancement-record-grid,
+  .enhancement-run-strip {
+    gap: clamp(6px, .5vw, 9px);
+  }
+
+  .enhancement-links a {
+    min-height: 44px;
+  }
+}
+
+@media (min-width: 1100px) and (max-width: 1399px) {
+  .wiki-enhancement-lab {
+    padding: 20px;
+  }
+
+  .enhancement-main-grid {
+    grid-template-columns: minmax(0, 1.68fr) minmax(300px, .82fr);
+  }
+
+  .enhancement-forge {
+    padding: 19px;
+  }
+
+  .enhancement-side > section,
+  .enhancement-side > details {
+    padding: 14px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .enhancement-lab-head > div:first-child {
+    max-width: 60%;
+  }
+
+  .enhancement-head-actions {
+    max-width: 40%;
+  }
+}
+
+@media (min-width: 1700px) {
+  .enhancement-main-grid {
+    grid-template-columns: minmax(0, 2fr) minmax(390px, .9fr);
+  }
+
+  .enhancement-side {
+    gap: 14px;
+  }
+
+  .enhancement-side > section,
+  .enhancement-side > details {
+    padding: 19px;
+  }
+}
+
+@media (min-width: 1100px) and (max-height: 650px) {
+  .wiki-enhancement-lab {
+    padding-block: 16px;
+  }
+
+  .enhancement-lab-head {
+    padding-bottom: 10px;
+  }
+
+  .enhancement-lab-head > div:first-child > span {
+    display: none;
+  }
+
+  .enhancement-item-tooltip span {
+    display: none;
+  }
+
+  .enhancement-recent-log {
+    padding-top: 5px;
+  }
+
+  .enhancement-log-list > span {
+    padding-block: 5px;
+  }
+}
