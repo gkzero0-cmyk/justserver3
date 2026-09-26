@@ -129,6 +129,30 @@ test.describe('desktop wiki journeys', () => {
     await expect(search).not.toBeVisible()
   })
 
+  test('enhancement lab remains readable on compact desktop', async ({ page }) => {
+    await page.setViewportSize({ width: 1226, height: 567 })
+    await page.goto('/')
+    await page.getByRole('button', { name: '위키 탐험 시작' }).click()
+
+    const lab = page.locator('#enhancement-lab')
+    const box = await lab.boundingBox()
+    const levelSize = await lab.locator('.enhancement-level-row > strong').evaluate(
+      (element) => Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+    const buttonSize = await lab.locator('.enhancement-primary').evaluate(
+      (element) => Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+    const metrics = await page.evaluate(() => ({
+      viewport: window.innerWidth,
+      scrollWidth: document.documentElement.scrollWidth
+    }))
+
+    expect(box).not.toBeNull()
+    expect(levelSize).toBeGreaterThanOrEqual(32)
+    expect(buttonSize).toBeGreaterThanOrEqual(14)
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewport + 1)
+  })
+
   test('enhancement lab scales up on wide desktop without panel imbalance', async ({ page }) => {
     await page.setViewportSize({ width: 1585, height: 900 })
     await page.goto('/')
@@ -150,6 +174,21 @@ test.describe('desktop wiki journeys', () => {
     expect(pickaxeBox).not.toBeNull()
     expect(forgeBox.width).toBeGreaterThan(sideBox.width * 1.55)
     expect(pickaxeBox.width).toBeGreaterThanOrEqual(210)
+  })
+
+  test('enhancement lab expands further on full HD desktop', async ({ page }) => {
+    await page.setViewportSize({ width: 1920, height: 1080 })
+    await page.goto('/')
+    await page.getByRole('button', { name: '위키 탐험 시작' }).click()
+
+    const lab = page.locator('#enhancement-lab')
+    const pickaxe = await lab.locator('.enhancement-slot-shell').boundingBox()
+    const button = await lab.locator('.enhancement-primary').boundingBox()
+
+    expect(pickaxe).not.toBeNull()
+    expect(button).not.toBeNull()
+    expect(pickaxe.width).toBeGreaterThanOrEqual(270)
+    expect(button.height).toBeGreaterThanOrEqual(68)
   })
 
   test('enhancement lab starts with the louder default volume', async ({ page }) => {
