@@ -14,7 +14,7 @@
     "audit:css": "node scripts/audit-css.mjs",
     "audit:static": "node scripts/audit-static.mjs",
     "test:deploy-bundle": "node scripts/verify-deploy-bundle.mjs",
-    "preflight": "npm test && npm run test:integrity && npm run audit:css && npm run audit:static"
+    "preflight": "npm test && npm run test:integrity && npm run audit:css && npm run audit:static && npm run test:deploy-bundle"
   },
   "dependencies": {
     "next": "16.3.6",

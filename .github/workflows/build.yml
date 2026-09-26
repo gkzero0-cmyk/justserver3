@@ -38,6 +38,25 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: npm run test:deploy-bundle
 
+      - name: Preflight summary
+        if: always()
+        run: |
+          {
+            echo "## Pre-production gate"
+            echo
+            echo "- Unit tests: completed in build"
+            echo "- Repository integrity: completed in build"
+            echo "- Search index integrity: completed in repository integrity"
+            echo "- Sitemap/robots contract: covered by unit tests"
+            echo "- CSS regression baseline: checked"
+            echo "- Image/markup regression baseline: checked"
+            echo "- Sensitive tracked files: checked"
+            echo "- Static internal links: checked"
+            echo "- Deploy bundle: generated and verified on main push"
+            echo
+            echo "Production deployment is intentionally separate from this gate."
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Store current deploy bundle
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |

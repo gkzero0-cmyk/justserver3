@@ -47,8 +47,10 @@ for (const route of WIKI_GUIDE_ROUTES) {
 if (!failed) pass(`${WIKI_GUIDE_ROUTES.length} guide routes are unique and well formed`)
 
 const notionIndexPath = join(root, 'public/notion-assets/index.json')
+const searchIndexPath = join(root, 'public/notion-assets/search-index.json')
 const manifestPath = join(root, 'public/notion-assets/manifest.json')
 const notionIndex = JSON.parse(await readFile(notionIndexPath, 'utf8'))
+const searchIndex = JSON.parse(await readFile(searchIndexPath, 'utf8'))
 const manifest = JSON.parse(await readFile(manifestPath, 'utf8'))
 if (!/^[0-9a-f]{32}$/i.test(String(notionIndex.rootPageId || '').replaceAll('-', ''))) {
   fail(`invalid Notion rootPageId: ${notionIndex.rootPageId || '(missing)'}`)
@@ -88,6 +90,55 @@ const indexById = new Map(
     page
   ])
 )
+
+if (!searchIndex.generatedAt || Number.isNaN(new Date(searchIndex.generatedAt).getTime())) {
+  fail(`invalid search index generatedAt: ${searchIndex.generatedAt || '(missing)'}`)
+}
+
+if (!Array.isArray(searchIndex.pages) || searchIndex.pages.length === 0) {
+  fail('search index has no pages')
+}
+
+const searchIds = new Set()
+const searchTitles = new Set()
+const searchById = new Map()
+
+for (const page of searchIndex.pages || []) {
+  const normalizedId = String(page.pageId || '').replaceAll('-', '').toLowerCase()
+  if (!/^[0-9a-f]{32}$/i.test(normalizedId)) {
+    fail(`invalid search index pageId: ${page.pageId || '(missing)'}`)
+  }
+  if (!String(page.title || '').trim()) {
+    fail(`search index page ${normalizedId || '(unknown)'} has an empty title`)
+  }
+  if (typeof page.searchText !== 'string') {
+    fail(`search index page ${page.title || normalizedId} has invalid searchText`)
+  }
+  if (!Array.isArray(page.sections)) {
+    fail(`search index page ${page.title || normalizedId} has invalid sections`)
+  }
+  if (searchIds.has(normalizedId)) fail(`duplicate search index pageId: ${normalizedId}`)
+  if (searchTitles.has(page.title)) fail(`duplicate search index title: ${page.title}`)
+  searchIds.add(normalizedId)
+  searchTitles.add(page.title)
+  searchById.set(normalizedId, page)
+
+  const notionPage = indexById.get(normalizedId)
+  if (!notionPage) {
+    fail(`search index contains unknown page: ${page.title} (${normalizedId})`)
+  } else if (notionPage.title !== page.title) {
+    fail(`search/index title mismatch for ${normalizedId}: "${notionPage.title}" vs "${page.title}"`)
+  }
+}
+
+for (const route of WIKI_GUIDE_ROUTES) {
+  const page = searchById.get(route.pageId)
+  if (!page) {
+    fail(`search index is missing route ${route.slug} (${route.pageId})`)
+  } else if (page.title !== route.title) {
+    fail(`search index route title mismatch for ${route.slug}: expected "${route.title}", got "${page.title}"`)
+  }
+}
 
 for (const route of WIKI_GUIDE_ROUTES) {
   const page = indexById.get(route.pageId)
@@ -220,6 +271,7 @@ if (await exists(optimizedDir)) {
       '## Repository integrity',
       '',
       `- Guide routes: ${WIKI_GUIDE_ROUTES.length}`,
+      `- Search index pages: ${searchIndex.pages?.length || 0}`,
       `- Referenced Notion assets: ${referencedAssets.size}`,
       `- Optimized display assets: ${optimized.length}`,
       `- Optimized asset total: ${(totalBytes / 1024 / 1024).toFixed(2)} MB`,
