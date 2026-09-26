@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react'
 import { iconForTitle } from '@/lib/wiki-taxonomy'
 import type { WikiContentStatus } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 
 export type WikiSearchResult = {
   pageId: string
@@ -82,6 +83,10 @@ export function WikiSearchDialog({
             Boolean(result.sectionTitle || result.findTerm)
         ) || null
       : null
+
+  const showEnhancementShortcut =
+    Boolean(query.trim()) &&
+    /강화|곡괭이|인챈트|업글|장비/.test(query.toLocaleLowerCase('ko-KR'))
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
@@ -200,6 +205,21 @@ export function WikiSearchDialog({
                 : '추천 문서 · ↑↓ 선택 · Enter 이동'}
         </div>
 
+        {showEnhancementShortcut && (
+          <Link
+            href={withBasePath('/#enhancement-lab')}
+            className="search-tool-shortcut"
+            onClick={onClose}
+          >
+            <span aria-hidden="true">⚒️</span>
+            <span>
+              <strong>강화 체험소에서 직접 해보기</strong>
+              <small>+15강까지 성공·실패·하락·파괴 흐름을 체험할 수 있어요.</small>
+            </span>
+            <b aria-hidden="true">→</b>
+          </Link>
+        )}
+
         {quickAnswer && (
           <button
             type="button"
@@ -262,7 +282,7 @@ export function WikiSearchDialog({
               return (
               <Link
                 key={page.resultKey || `${page.pageId}:${page.anchor || 'page'}`}
-                href={`${withBasePath(`/page/${page.pageId}/`)}${search}${hash}`}
+                href={`${withBasePath(wikiGuidePath(page))}${search}${hash}`}
                 prefetch={false}
                 onClick={(event) => {
                   event.preventDefault()
@@ -318,7 +338,7 @@ export function WikiSearchDialog({
                     {fallbackPages.map((page) => (
                       <Link
                         key={page.pageId}
-                        href={withBasePath(`/page/${page.pageId}/`)}
+                        href={withBasePath(wikiGuidePath(page))}
                         onClick={onClose}
                       >
                         <span aria-hidden="true">{iconForTitle(page.title)}</span>
