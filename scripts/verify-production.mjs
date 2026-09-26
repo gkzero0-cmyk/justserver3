@@ -35,6 +35,7 @@ const criticalAssets = [
 const guidePaths = [
   '/guide/story/',
   '/guide/rules/',
+  '/guide/patch-notes/',
   '/guide/api/',
   '/guide/newbie-guide/',
   '/guide/mining/',
@@ -42,8 +43,16 @@ const guidePaths = [
   '/guide/butchering/',
   '/guide/hunting/',
   '/guide/cooking/',
+  '/guide/collection/',
   '/guide/parkour/',
+  '/guide/scratch-lottery/',
+  '/guide/racecourse/',
+  '/guide/casino/',
   '/guide/land/',
+  '/guide/debt/',
+  '/guide/credit/',
+  '/guide/repair/',
+  '/guide/upgrade/',
   '/guide/faq/'
 ]
 
@@ -70,6 +79,41 @@ for (const check of checks) {
     )
   } else {
     console.log(`PASS ${check.path} HTTP ${response.status}`)
+  }
+}
+
+for (const path of criticalAssets) {
+  const response = await fetch(baseUrl + path, {
+    redirect: 'follow',
+    headers: {
+      'user-agent': 'justserver3-production-smoke/1.0'
+    }
+  })
+  const contentType = response.headers.get('content-type') || ''
+
+  if (!response.ok || !contentType.startsWith('image/')) {
+    failed = true
+    console.error(
+      `FAIL critical asset ${path} HTTP ${response.status} type=${contentType || '(none)'}`
+    )
+  } else {
+    console.log(`PASS critical asset ${path} HTTP ${response.status}`)
+  }
+}
+
+for (const path of guidePaths) {
+  const response = await fetch(baseUrl + path, {
+    redirect: 'follow',
+    headers: {
+      'user-agent': 'justserver3-production-smoke/1.0'
+    }
+  })
+
+  if (!response.ok) {
+    failed = true
+    console.error(`FAIL guide route ${path} HTTP ${response.status}`)
+  } else {
+    console.log(`PASS guide route ${path} HTTP ${response.status}`)
   }
 }
 
