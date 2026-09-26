@@ -12149,3 +12149,43 @@ html[data-theme="light"] .enhancement-stage-tag {
     -webkit-line-clamp: 2;
   }
 }
+
+
+/* === 2026-09-26 enhancement lab pickaxe visual centering v8 === */
+/*
+ * The Minecraft pickaxe sprite is diagonally weighted toward the upper-right.
+ * Use the independent translate property so every child effect (runes, sparks,
+ * glint, break pieces) follows the same visual-center correction while the
+ * existing transform animations remain untouched.
+ */
+.enhancement-pickaxe {
+  --pickaxe-visual-x: -6px;
+  --pickaxe-visual-y: -2px;
+  translate: var(--pickaxe-visual-x) var(--pickaxe-visual-y);
+}
+
+/* Keep the subtle slot light centered on the corrected item, not the raw box. */
+.enhancement-slot-inner {
+  background:
+    radial-gradient(
+      circle at calc(50% - 6px) calc(46% - 2px),
+      rgba(var(--forge-glow), .025),
+      transparent 52%
+    ),
+    linear-gradient(135deg, rgba(255,255,255,.015), transparent 38%),
+    #101314;
+}
+
+@media (min-width: 901px) and (max-height: 760px) {
+  .enhancement-pickaxe {
+    --pickaxe-visual-x: -5px;
+    --pickaxe-visual-y: -2px;
+  }
+}
+
+@media (max-width: 700px) {
+  .enhancement-pickaxe {
+    --pickaxe-visual-x: -5px;
+    --pickaxe-visual-y: -2px;
+  }
+}
