@@ -11233,3 +11233,698 @@ html[data-theme="light"] .enhancement-log-list > span.is-empty {
     animation: none !important;
   }
 }
+
+
+/* === 2026-09-26 enhancement lab forge feedback v6 === */
+/*
+ * v6 focuses on three things:
+ * 1) no accidental vertical expansion / clipped lower controls,
+ * 2) forge-like impact feedback that matches the new metal sounds,
+ * 3) clearer odds and run information without adding visual noise.
+ */
+.wiki-enhancement-lab {
+  gap: 10px;
+  padding: 14px;
+  overflow: visible;
+}
+
+.enhancement-lab-head {
+  gap: 14px;
+  padding-bottom: 9px;
+}
+
+.enhancement-lab-head > div:first-child {
+  gap: 2px;
+}
+
+.enhancement-lab-head h2 {
+  font-size: clamp(20px, 2.4vw, 25px);
+}
+
+.enhancement-lab-head > div:first-child > span {
+  font-size: 9.5px;
+  line-height: 1.45;
+}
+
+/*
+ * Do not assign semantic children to numbered grid rows.
+ * The mobile odds row is display:none on desktop, which previously shifted
+ * every following child into the wrong explicit row and created a large
+ * empty band above the action button.
+ */
+.enhancement-forge {
+  min-height: 0;
+  grid-template-rows: none;
+  grid-auto-rows: auto;
+  gap: 7px;
+  padding: 12px;
+}
+
+.enhancement-item-stage {
+  min-height: 218px;
+  gap: 7px;
+  padding: 3px 0 1px;
+}
+
+.enhancement-slot-shell {
+  width: 156px;
+  height: 156px;
+  padding: 6px;
+}
+
+.enhancement-slot {
+  padding: 5px;
+}
+
+.enhancement-pickaxe {
+  width: 126px;
+  height: 126px;
+}
+
+.enhancement-item-tooltip {
+  width: min(320px, 88%);
+  gap: 2px;
+  padding: 6px 9px;
+}
+
+.enhancement-item-tooltip strong {
+  font-size: 9px;
+}
+
+.enhancement-item-tooltip span {
+  font-size: 7.5px;
+  line-height: 1.35;
+}
+
+.enhancement-level-row > strong {
+  font-size: 29px;
+}
+
+.enhancement-level-row {
+  min-height: 32px;
+}
+
+/* The post-run card lives below the fixed action button, so it can collapse safely. */
+.enhancement-run-result-slot {
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+.enhancement-run-result-placeholder {
+  display: none;
+}
+
+.enhancement-run-result {
+  min-height: 56px;
+  padding: 7px 9px;
+  gap: 5px;
+}
+
+.enhancement-run-result-stats > span {
+  padding: 4px 6px;
+}
+
+/* Compact, stable recent history: all five cells stay present but use less height. */
+.enhancement-recent-log {
+  min-height: 45px;
+  gap: 4px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(255,255,255,.035);
+}
+
+.enhancement-log-head strong {
+  font-size: 8px;
+}
+
+.enhancement-log-head span {
+  font-size: 7px;
+}
+
+.enhancement-log-list {
+  min-height: 27px;
+  gap: 4px;
+}
+
+.enhancement-log-list > span {
+  height: 27px;
+  min-height: 27px;
+  align-content: center;
+  padding: 3px 5px;
+  border-radius: 4px;
+}
+
+.enhancement-log-list b {
+  font-size: 7.5px;
+}
+
+.enhancement-log-list small {
+  font-size: 6.8px;
+}
+
+/* Near-button odds summary: readable without looking away to the right panel. */
+.enhancement-action-odds {
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 2px 7px;
+  color: #78716d;
+  font-size: 7.5px;
+  line-height: 1;
+}
+
+.enhancement-action-odds > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.enhancement-action-odds small {
+  color: #6f6966;
+  font-size: 7px;
+}
+
+.enhancement-action-odds b {
+  color: #a8a09b;
+  font-size: 8.5px;
+}
+
+.enhancement-action-odds > span:first-of-type b {
+  color: #7ccdd0;
+}
+
+.enhancement-action-odds > i {
+  color: #4c4947;
+  font-style: normal;
+}
+
+.enhancement-action-odds .is-danger b {
+  color: #d77f72;
+}
+
+.enhancement-action-odds > strong {
+  color: #d6bd7a;
+  font-size: 8.5px;
+}
+
+.enhancement-action-zone,
+.enhancement-primary {
+  --enhancement-action-height: 50px;
+  height: var(--enhancement-action-height);
+  min-height: var(--enhancement-action-height);
+}
+
+.enhancement-primary {
+  font-size: 13px;
+}
+
+.enhancement-primary span {
+  font-size: 8px;
+}
+
+/* Result feedback should be recognizable even before reading the sentence. */
+.enhancement-result {
+  --enhancement-result-height: 38px;
+  height: var(--enhancement-result-height);
+  min-height: var(--enhancement-result-height);
+  grid-template-columns: 22px minmax(0,1fr);
+  gap: 7px;
+  padding: 6px 9px;
+}
+
+.enhancement-result > span {
+  font-size: 15px;
+}
+
+.enhancement-result > strong {
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.enhancement-result[data-outcome="charging"] {
+  border-color: rgba(217,152,74,.18);
+  background:
+    linear-gradient(90deg, rgba(217,152,74,.055), rgba(255,255,255,.012));
+}
+
+.enhancement-result[data-outcome="charging"] > span {
+  color: #d19a59;
+}
+
+.enhancement-result[data-outcome="charging"] > strong {
+  color: #b9a58f;
+}
+
+.enhancement-result[data-outcome="fail"] {
+  border-color: rgba(171,164,158,.12);
+  background: rgba(150,143,138,.025);
+}
+
+.enhancement-result[data-outcome="fail"] > span {
+  color: #77716d;
+}
+
+.enhancement-result[data-outcome="fail"] > strong {
+  color: #a19a95;
+}
+
+/*
+ * Forge visual language:
+ * - warm, short sparks for physical hammer impacts
+ * - magical colour only becomes a secondary layer at high enhancement
+ * - effects stay attached to the pickaxe coordinate system
+ */
+.enhancement-pickaxe::after {
+  content: '';
+  position: absolute;
+  z-index: 8;
+  left: 50%;
+  top: 48%;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.45);
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,225,164,.72) 0 5%,
+      rgba(235,160,73,.27) 18%,
+      rgba(220,126,43,.08) 40%,
+      transparent 68%
+    );
+}
+
+.enhancement-particles i {
+  width: 9px;
+  height: 2px;
+  border-radius: 1px;
+  background: #e6a04d;
+  box-shadow:
+    0 0 4px rgba(230,160,77,.55),
+    0 0 8px rgba(220,112,42,.22);
+}
+
+.enhancement-forge[data-tier="high"] .enhancement-particles i {
+  background: linear-gradient(90deg, #e5a04d 0 62%, rgb(var(--forge-glow)) 63%);
+}
+
+.enhancement-forge[data-tier="extreme"] .enhancement-particles i {
+  background: linear-gradient(90deg, #e2a052 0 50%, rgb(var(--forge-glow)) 51%);
+}
+
+.enhancement-forge[data-tier="legendary"] .enhancement-particles i {
+  background: #edc36f;
+  box-shadow:
+    0 0 5px rgba(237,195,111,.68),
+    0 0 10px rgba(237,188,83,.26);
+}
+
+.enhancement-forge[data-state="charging"] .enhancement-pickaxe::after {
+  animation: enhancementForgeImpactFlash .52s ease-out both;
+}
+
+.enhancement-forge[data-state="success"] .enhancement-pickaxe::after,
+.enhancement-forge[data-state="max"] .enhancement-pickaxe::after {
+  animation: enhancementForgeResultFlash .58s ease-out both;
+}
+
+@keyframes enhancementForgeImpactFlash {
+  0%, 10% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.35);
+  }
+  18% {
+    opacity: .88;
+    transform: translate(-50%, -50%) scale(.72);
+  }
+  42% {
+    opacity: .2;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.24);
+  }
+}
+
+@keyframes enhancementForgeResultFlash {
+  0% {
+    opacity: .76;
+    transform: translate(-50%, -50%) scale(.46);
+  }
+  30% {
+    opacity: .5;
+    transform: translate(-50%, -50%) scale(.9);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.35);
+  }
+}
+
+/* Short physical recoil instead of a neon pulse. */
+.enhancement-forge[data-state="charging"] .enhancement-pickaxe {
+  animation: enhancementForgeStrike .52s cubic-bezier(.22,.8,.28,1);
+}
+
+@keyframes enhancementForgeStrike {
+  0%, 8% { transform: translateY(-1px) rotate(0); }
+  18% { transform: translateY(2px) rotate(-.65deg) scale(.985); }
+  30% { transform: translateY(-2px) rotate(.35deg) scale(1.01); }
+  52% { transform: translateY(0) rotate(-.15deg); }
+  100% { transform: translateY(-1px) rotate(0); }
+}
+
+.enhancement-forge[data-state="fail"] .enhancement-pickaxe {
+  animation: enhancementForgeDeadHit .34s ease-out;
+  filter:
+    grayscale(.34)
+    brightness(.8)
+    drop-shadow(0 7px 8px rgba(0,0,0,.42));
+}
+
+@keyframes enhancementForgeDeadHit {
+  0% { transform: translateY(-1px) scale(1); }
+  28% { transform: translateY(3px) scale(.975); }
+  62% { transform: translateY(1px) scale(.992); }
+  100% { transform: translateY(-1px) scale(1); }
+}
+
+/* High-tier progression: stronger silhouette treatment, not just more particles. */
+.enhancement-forge[data-tier="mid"] .enhancement-pickaxe {
+  filter:
+    drop-shadow(0 8px 9px rgba(0,0,0,.4))
+    drop-shadow(0 0 5px rgba(76,190,205,.12));
+}
+
+.enhancement-forge[data-tier="high"] .enhancement-pickaxe {
+  filter:
+    drop-shadow(0 8px 9px rgba(0,0,0,.4))
+    drop-shadow(0 0 5px rgba(91,143,224,.24))
+    drop-shadow(0 0 11px rgba(91,143,224,.09));
+}
+
+.enhancement-forge[data-tier="extreme"] .enhancement-pickaxe {
+  filter:
+    drop-shadow(0 8px 9px rgba(0,0,0,.42))
+    drop-shadow(0 0 6px rgba(174,111,222,.34))
+    drop-shadow(0 0 14px rgba(174,111,222,.12));
+}
+
+.enhancement-forge[data-tier="legendary"] .enhancement-pickaxe {
+  filter:
+    drop-shadow(0 8px 9px rgba(0,0,0,.42))
+    drop-shadow(0 0 5px rgba(235,190,90,.38))
+    drop-shadow(0 0 15px rgba(235,190,90,.15));
+}
+
+.enhancement-forge[data-tier="high"] .enhancement-slot-shell {
+  border-color: rgba(91,143,224,.24);
+}
+
+.enhancement-forge[data-tier="extreme"] .enhancement-slot-shell {
+  border-color: rgba(174,111,222,.32);
+  box-shadow:
+    inset 3px 3px 0 rgba(255,255,255,.035),
+    inset -3px -3px 0 rgba(0,0,0,.4),
+    0 9px 22px rgba(0,0,0,.28),
+    0 0 10px rgba(174,111,222,.09);
+}
+
+.enhancement-forge[data-tier="legendary"] .enhancement-slot-shell {
+  border-color: rgba(235,190,90,.38);
+  box-shadow:
+    inset 3px 3px 0 rgba(255,255,255,.04),
+    inset -3px -3px 0 rgba(0,0,0,.4),
+    0 9px 22px rgba(0,0,0,.28),
+    0 0 12px rgba(235,190,90,.12);
+}
+
+.enhancement-forge[data-tier="extreme"] .enhancement-tier-mark {
+  color: #c99ce8;
+}
+
+.enhancement-forge[data-tier="legendary"] .enhancement-tier-mark {
+  color: #e7c46f;
+}
+
+/* Right panel hierarchy: current level / run best / success rate first. */
+.enhancement-side {
+  gap: 7px;
+}
+
+.enhancement-side > section,
+.enhancement-side > details {
+  gap: 7px;
+  padding: 10px;
+}
+
+.enhancement-probability {
+  gap: 7px !important;
+}
+
+.enhancement-panel-title {
+  padding-bottom: 5px;
+}
+
+.enhancement-run-highlight {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 5px;
+}
+
+.enhancement-run-highlight > span {
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+  padding: 7px;
+  border: 1px solid rgba(255,255,255,.04);
+  border-radius: 5px;
+  background: rgba(0,0,0,.13);
+}
+
+.enhancement-run-highlight small {
+  color: #6f6966;
+  font-size: 7px;
+}
+
+.enhancement-run-highlight strong {
+  color: #c4bbb5;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.enhancement-run-highlight > span:first-child strong {
+  color: rgb(var(--forge-glow));
+}
+
+.enhancement-run-strip {
+  gap: 4px;
+}
+
+.enhancement-run-strip > span {
+  padding: 4px 6px;
+}
+
+.enhancement-run-strip small {
+  font-size: 7px;
+}
+
+.enhancement-run-strip strong {
+  font-size: 11px;
+}
+
+.enhancement-odds-grid {
+  gap: 5px;
+}
+
+.enhancement-odds-grid > div {
+  padding: 7px 8px;
+}
+
+.enhancement-odds-grid [data-kind="success"] strong {
+  font-size: 18px;
+}
+
+.enhancement-odds-grid [data-kind="fail"] strong,
+.enhancement-odds-grid [data-kind="down"] strong,
+.enhancement-odds-grid [data-kind="destroy"] strong {
+  font-size: 14px;
+}
+
+/* More aggressive height compaction for common 720–900px laptop viewports. */
+@media (min-width: 901px) and (max-height: 900px) {
+  .wiki-enhancement-lab {
+    padding: 11px 12px;
+    gap: 8px;
+  }
+
+  .enhancement-lab-head {
+    padding-bottom: 7px;
+  }
+
+  .enhancement-item-stage {
+    min-height: 184px;
+    gap: 5px;
+  }
+
+  .enhancement-slot-shell {
+    width: 138px;
+    height: 138px;
+  }
+
+  .enhancement-pickaxe {
+    width: 111px;
+    height: 111px;
+  }
+
+  .enhancement-item-tooltip {
+    padding: 5px 8px;
+  }
+
+  .enhancement-action-zone,
+  .enhancement-primary {
+    --enhancement-action-height: 46px;
+  }
+
+  .enhancement-result {
+    --enhancement-result-height: 34px;
+  }
+
+  .enhancement-action-odds {
+    min-height: 18px;
+  }
+
+  .enhancement-recent-log {
+    min-height: 39px;
+  }
+
+  .enhancement-log-list,
+  .enhancement-log-list > span {
+    min-height: 24px;
+    height: 24px;
+  }
+
+  .enhancement-side > section,
+  .enhancement-side > details {
+    padding: 8px;
+    gap: 5px;
+  }
+
+  .enhancement-run-highlight > span {
+    padding: 5px 6px;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 760px) {
+  .enhancement-lab-head > div:first-child > span {
+    display: none;
+  }
+
+  .enhancement-item-stage {
+    min-height: 156px;
+  }
+
+  .enhancement-slot-shell {
+    width: 122px;
+    height: 122px;
+  }
+
+  .enhancement-pickaxe {
+    width: 98px;
+    height: 98px;
+  }
+
+  .enhancement-item-tooltip span {
+    display: none;
+  }
+
+  .enhancement-item-tooltip {
+    width: min(250px, 78%);
+    padding: 4px 7px;
+  }
+
+  .enhancement-recent-log {
+    min-height: 34px;
+  }
+
+  .enhancement-log-head {
+    display: none;
+  }
+
+  .enhancement-log-list,
+  .enhancement-log-list > span {
+    min-height: 23px;
+    height: 23px;
+  }
+}
+
+@media (max-width: 700px) {
+  .wiki-enhancement-lab {
+    overflow: hidden;
+    padding: 11px;
+  }
+
+  .enhancement-item-stage {
+    min-height: 190px;
+  }
+
+  .enhancement-slot-shell {
+    width: 142px;
+    height: 142px;
+  }
+
+  .enhancement-pickaxe {
+    width: 114px;
+    height: 114px;
+  }
+
+  .enhancement-action-odds {
+    justify-content: flex-start;
+    min-height: 25px;
+    padding-inline: 3px;
+  }
+
+  .enhancement-action-zone,
+  .enhancement-primary {
+    --enhancement-action-height: 52px;
+  }
+
+  .enhancement-run-highlight > span {
+    padding: 6px;
+  }
+
+  .enhancement-run-highlight strong {
+    font-size: 13px;
+  }
+
+  .enhancement-recent-log {
+    overflow: hidden;
+  }
+}
+
+html[data-theme="light"] .enhancement-action-odds b,
+html[data-theme="light"] .enhancement-run-highlight strong {
+  color: #625b56;
+}
+
+html[data-theme="light"] .enhancement-run-highlight > span {
+  border-color: rgba(78,68,62,.08);
+  background: rgba(255,255,255,.45);
+}
+
+html[data-theme="light"] .enhancement-result[data-outcome="charging"] {
+  border-color: rgba(170,112,43,.18);
+  background: rgba(196,130,51,.045);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enhancement-pickaxe::after {
+    animation: none !important;
+  }
+}
