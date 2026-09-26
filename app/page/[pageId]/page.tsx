@@ -351,6 +351,18 @@ export async function renderWikiPage(pageId: string) {
               ? '실제 서버의 확정된 강화 정보는 Notion 원문이 보강되는 대로 같은 주소에 반영됩니다. 그 전까지 강화 체험소에서 +15강까지 강화 흐름과 성공·실패·하락·파괴 연출을 체험해보세요.'
               : '아직 확정된 내용이 충분하지 않아 빈 문서 대신 준비 상태를 표시합니다. Notion 원문이 보강되면 같은 주소에 자동으로 반영됩니다.'}
           </span>
+          {isEnhancementGuide && (
+            <div className="enhancement-guide-preview" aria-label="강화 체험소 규칙 요약">
+              <strong>강화 체험소 기준 위험 구간</strong>
+              <div>
+                <span><b>+0 ~ +4</b><small>실패 시 단계 유지</small></span>
+                <span><b>+5 ~ +6</b><small>하락 가능 구간</small></span>
+                <span><b>+7 ~ +14</b><small>하락·파괴 가능 구간</small></span>
+                <span><b>+15</b><small>체험소 최대 강화</small></span>
+              </div>
+              <p>체험용 시뮬레이션 규칙이며 실제 서버의 공식 강화 확률을 뜻하지 않습니다.</p>
+            </div>
+          )}
           <div className="state-actions">
             {isEnhancementGuide && (
               <Link
