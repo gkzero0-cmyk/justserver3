@@ -54,6 +54,7 @@ function PlaygroundLoading({ label }: { label: string }) {
 
 export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
   const [open, setOpen] = useState(false)
+  const [loadFunZone, setLoadFunZone] = useState(false)
   const [loadExtras, setLoadExtras] = useState(false)
   const readyCount = pages.filter((page) => page.status !== 'draft').length
 
@@ -92,13 +93,37 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
   }, [])
 
   useEffect(() => {
+    if (!open || loadFunZone) return
+
+    const schedule =
+      'requestIdleCallback' in window
+        ? window.requestIdleCallback(() => setLoadFunZone(true), { timeout: 500 })
+        : window.setTimeout(() => setLoadFunZone(true), 250)
+
+    return () => {
+      if ('cancelIdleCallback' in window && typeof schedule === 'number') {
+        window.cancelIdleCallback(schedule)
+      } else {
+        window.clearTimeout(schedule)
+      }
+    }
+  }, [loadFunZone, open])
+
+  useEffect(() => {
     if (!open || loadExtras) return
 
-    const timer = window.setTimeout(() => {
-      setLoadExtras(true)
-    }, 700)
+    const schedule =
+      'requestIdleCallback' in window
+        ? window.requestIdleCallback(() => setLoadExtras(true), { timeout: 1600 })
+        : window.setTimeout(() => setLoadExtras(true), 1200)
 
-    return () => window.clearTimeout(timer)
+    return () => {
+      if ('cancelIdleCallback' in window && typeof schedule === 'number') {
+        window.cancelIdleCallback(schedule)
+      } else {
+        window.clearTimeout(schedule)
+      }
+    }
   }, [loadExtras, open])
 
   return (
@@ -138,7 +163,7 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
       {open && (
         <div className="home-playground-content" id="home-playground-content">
           <WikiEnhancementLab pages={pages} />
-          <WikiFunZone pages={pages} />
+          {loadFunZone && <WikiFunZone pages={pages} />}
           {loadExtras ? (
             <>
               <WikiSurvivalLog pages={pages} />

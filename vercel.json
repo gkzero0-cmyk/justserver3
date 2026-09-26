@@ -2,5 +2,9 @@
   "framework": "nextjs",
   "cleanUrls": true,
   "installCommand": "npm ci",
-  "ignoreCommand": "git log -1 --pretty=%B | grep -F -q 'Refresh deploy bundle [skip ci]'"
+  "ignoreCommand": "git log -1 --pretty=%B | grep -F -q 'Refresh deploy bundle [skip ci]'",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": false
+  }
 }

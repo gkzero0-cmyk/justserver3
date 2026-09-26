@@ -16,7 +16,6 @@ import {
   type WikiNavigationPage
 } from '@/components/wiki-navigation'
 import type { WikiSearchResult } from '@/components/wiki-search-dialog'
-import { WikiTreasureFind } from '@/components/wiki-survival-widgets'
 import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import {
   readWikiStateValue,
@@ -85,6 +84,14 @@ const WikiMobileQuickView = dynamic(
   () =>
     import('@/components/wiki-mobile-quick-view').then(
       (mod) => mod.WikiMobileQuickView
+    ),
+  { ssr: false }
+)
+
+const WikiTreasureFind = dynamic(
+  () =>
+    import('@/components/wiki-survival-widgets').then(
+      (mod) => mod.WikiTreasureFind
     ),
   { ssr: false }
 )

@@ -63,8 +63,12 @@ test.describe('desktop wiki journeys', () => {
     ).toBeVisible()
   })
 
-  test('document page exposes revision history', async ({ page }) => {
+  test('document page exposes key summary, source status, and revision history', async ({ page }) => {
     await page.goto('/guide/rules')
+
+    await expect(page.getByText('이 문서 핵심', { exact: true })).toBeVisible()
+    await expect(page.getByText('원본 문서 연동', { exact: true })).toBeVisible()
+    await expect(page.getByText(/데이터 갱신/).first()).toBeVisible()
 
     await expect(
       page.getByText('문서 변경 이력', { exact: true })
@@ -135,7 +139,7 @@ test.describe('desktop wiki journeys', () => {
 
     const lab = page.locator('#enhancement-lab')
     const volume = lab.getByRole('slider', { name: '강화 효과음 볼륨' })
-    await expect(volume).toHaveValue('90')
+    await expect(volume).toHaveValue('100')
   })
 
   test('home guide links resolve without 404 responses', async ({ page, request }) => {
@@ -236,5 +240,32 @@ test.describe('mobile wiki journeys', () => {
     }))
 
     expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewport + 1)
+  })
+
+  test('primary mobile controls meet minimum touch target size', async ({ page }) => {
+    await page.goto('/')
+
+    const controls = [
+      page.getByRole('button', { name: /문서 검색/ }),
+      page.getByRole('button', { name: /라이트 모드로 전환|다크 모드로 전환/ })
+    ]
+
+    for (const control of controls) {
+      const box = await control.boundingBox()
+      expect(box).not.toBeNull()
+      expect(box.width).toBeGreaterThanOrEqual(36)
+      expect(box.height).toBeGreaterThanOrEqual(36)
+    }
+  })
+
+  test('reduced motion preference suppresses long transitions', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.goto('/')
+
+    const duration = await page.locator('.wiki-hero').evaluate((element) =>
+      getComputedStyle(element).transitionDuration
+    )
+
+    expect(duration === '0s' || duration.includes('0.001')).toBeTruthy()
   })
 })
