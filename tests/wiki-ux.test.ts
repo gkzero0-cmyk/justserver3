@@ -742,6 +742,9 @@ test('search aliases expand common player language', () => {
     expandedWikiSearchTerms('광질').sort(),
     ['광질', '채광'].sort()
   )
+  assert.ok(expandedWikiSearchTerms('다야').includes('채광'))
+  assert.ok(expandedWikiSearchTerms('곡괭이').includes('강화'))
+  assert.ok(expandedWikiSearchTerms('수선').includes('수리'))
 
   const results = buildWikiSearchResults(
     [
