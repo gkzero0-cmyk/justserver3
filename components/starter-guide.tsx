@@ -7,6 +7,8 @@ import type { NotionIndexPage } from '@/lib/notion-index'
 import { isDraftPage } from '@/lib/wiki-content-status'
 import { readWikiStringArray } from '@/lib/wiki-client-state'
 import { withBasePath } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 
 const STEP_TITLES = ['서버규칙','기초설정(뉴비필독)','빚 갚기','채광','장비강화']
 
@@ -127,7 +129,7 @@ export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
           return (
             <Link
               key={page.pageId}
-              href={withBasePath(`/page/${page.pageId}/`)}
+              href={withBasePath(wikiGuidePath(page))}
               className={`starter-step ${completed ? 'is-complete' : ''} ${isNext ? 'is-next' : ''}`}
               data-wiki-event="wiki_home_navigate"
               data-wiki-section={returning ? 'starter-returning' : 'starter-guide'}
