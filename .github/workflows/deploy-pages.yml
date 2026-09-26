@@ -14,6 +14,7 @@ concurrency:
 
 jobs:
   build:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     outputs:
       pages_enabled: ${{ steps.pages-status.outputs.enabled }}
@@ -64,6 +65,7 @@ jobs:
           path: ./out
 
   deploy:
+    timeout-minutes: 10
     if: needs.build.outputs.pages_enabled == 'true'
     environment:
       name: github-pages
