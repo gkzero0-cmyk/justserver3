@@ -84,9 +84,38 @@ export function WikiSearchDialog({
         ) || null
       : null
 
-  const showEnhancementShortcut =
-    Boolean(query.trim()) &&
-    /강화|곡괭이|인챈트|업글|장비/.test(query.toLocaleLowerCase('ko-KR'))
+  const normalizedQuery = query.trim().toLocaleLowerCase('ko-KR')
+  const toolShortcut = !normalizedQuery
+    ? null
+    : /강화|곡괭이|인챈트|업글|장비/.test(normalizedQuery)
+      ? {
+          href: '/#enhancement-lab',
+          icon: '⚒️',
+          title: '강화 체험소에서 직접 해보기',
+          description: '+15강까지 성공·실패·하락·파괴 흐름을 체험할 수 있어요.'
+        }
+      : /채광|광질|다야|다이아|광산/.test(normalizedQuery)
+        ? {
+            href: '/guide/mining/',
+            icon: '⛏️',
+            title: '채광 가이드 바로 보기',
+            description: '채광과 초반 수익 흐름을 정리한 가이드로 이동합니다.'
+          }
+        : /뉴비|초보|처음|기초|입문/.test(normalizedQuery)
+          ? {
+              href: '/guide/newbie-guide/',
+              icon: '🧭',
+              title: '뉴비 필독부터 시작하기',
+              description: '처음 접속했을 때 필요한 설정과 적응 순서를 확인합니다.'
+            }
+          : /faq|질문|규칙|가능|되나요|돼요/.test(normalizedQuery)
+            ? {
+                href: '/guide/faq/',
+                icon: '❓',
+                title: '자주 묻는 질문에서 빠르게 확인',
+                description: '확인된 서버 규칙과 자주 묻는 답변을 먼저 찾아봅니다.'
+              }
+            : null
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
@@ -205,16 +234,16 @@ export function WikiSearchDialog({
                 : '추천 문서 · ↑↓ 선택 · Enter 이동'}
         </div>
 
-        {showEnhancementShortcut && (
+        {toolShortcut && (
           <Link
-            href={withBasePath('/#enhancement-lab')}
+            href={withBasePath(toolShortcut.href)}
             className="search-tool-shortcut"
             onClick={onClose}
           >
-            <span aria-hidden="true">⚒️</span>
+            <span aria-hidden="true">{toolShortcut.icon}</span>
             <span>
-              <strong>강화 체험소에서 직접 해보기</strong>
-              <small>+15강까지 성공·실패·하락·파괴 흐름을 체험할 수 있어요.</small>
+              <strong>{toolShortcut.title}</strong>
+              <small>{toolShortcut.description}</small>
             </span>
             <b aria-hidden="true">→</b>
           </Link>
