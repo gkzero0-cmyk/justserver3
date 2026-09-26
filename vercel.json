@@ -2,5 +2,5 @@
   "framework": "nextjs",
   "cleanUrls": true,
   "installCommand": "npm ci",
-  "ignoreCommand": "git log -1 --pretty=%B | grep -q \"Refresh deploy bundle \\\[skip ci\\\]\""
+  "ignoreCommand": "git log -1 --pretty=%B | grep -F -q 'Refresh deploy bundle [skip ci]'"
 }
