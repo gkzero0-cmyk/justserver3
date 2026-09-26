@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react'
 
 import { iconForTitle } from '@/lib/wiki-taxonomy'
 import { withBasePath } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 
 export type ReadingTocItem = {
   id: string
@@ -62,7 +63,7 @@ export function RecentViewedSection({
           {pages.map((page, index) => (
             <Link
               key={page.pageId}
-              href={withBasePath(`/page/${page.pageId}/`)}
+              href={withBasePath(wikiGuidePath(page))}
               className={`recent-viewed-card ${index === 0 ? 'is-primary' : ''}`}
               data-wiki-event="wiki_home_navigate"
               data-wiki-section="recent-viewed"
