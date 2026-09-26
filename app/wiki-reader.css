@@ -11928,3 +11928,224 @@ html[data-theme="light"] .enhancement-result[data-outcome="charging"] {
     animation: none !important;
   }
 }
+
+
+/* === 2026-09-26 enhancement lab item focus and audio controls v7 === */
+/* Keep the pickaxe unobstructed; status information now lives outside the slot. */
+.enhancement-tier-mark,
+.enhancement-slot-level {
+  display: none !important;
+}
+
+.enhancement-level-row {
+  align-items: center;
+}
+
+.enhancement-stage-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 0 7px;
+  border: 1px solid rgba(var(--forge-glow), .17);
+  border-radius: 999px;
+  background: rgba(var(--forge-glow), .045);
+  color: rgb(var(--forge-glow));
+  font-size: 7.5px;
+  font-weight: 900;
+  letter-spacing: .02em;
+}
+
+.enhancement-stage-tag[data-tier="destroy"] {
+  border-color: rgba(213,86,73,.2);
+  background: rgba(213,86,73,.05);
+  color: #d98a82;
+}
+
+/* Let the item fill more of the slot now that corner labels are gone. */
+.enhancement-pickaxe {
+  width: 132px;
+  height: 132px;
+  filter:
+    contrast(1.035)
+    brightness(1.025)
+    drop-shadow(0 8px 9px rgba(0,0,0,.4))
+    drop-shadow(0 0 7px rgba(var(--forge-glow), .1));
+}
+
+.enhancement-slot-inner {
+  background:
+    radial-gradient(circle at 50% 46%, rgba(var(--forge-glow), .025), transparent 52%),
+    linear-gradient(135deg, rgba(255,255,255,.015), transparent 38%),
+    #101314;
+}
+
+.enhancement-item-tooltip {
+  width: min(300px, 84%);
+}
+
+.enhancement-item-tooltip strong {
+  letter-spacing: -.01em;
+}
+
+/* Sound controls: toggle, persisted volume, and one-shot preview. */
+.enhancement-head-actions {
+  align-items: stretch;
+}
+
+.enhancement-sound-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 8px;
+  background: rgba(0,0,0,.12);
+}
+
+.enhancement-sound-controls > button {
+  min-height: 28px;
+  padding: 0 8px;
+}
+
+.enhancement-sound-test {
+  color: #aba29c !important;
+}
+
+.enhancement-volume-control {
+  min-width: 145px;
+  display: grid;
+  grid-template-columns: 18px minmax(72px, 1fr) 34px;
+  align-items: center;
+  gap: 5px;
+  padding: 0 4px;
+}
+
+.enhancement-volume-control > span {
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  filter: saturate(.7);
+}
+
+.enhancement-volume-control > b {
+  color: #8e8782;
+  font-size: 8px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.enhancement-volume-control input[type="range"] {
+  width: 100%;
+  height: 18px;
+  margin: 0;
+  accent-color: #62c3c8;
+  cursor: pointer;
+}
+
+.enhancement-volume-control input[type="range"]:focus-visible {
+  outline: 1px solid rgba(98,195,200,.46);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* The wording is shorter now, so the feedback line can be a little tighter. */
+.enhancement-result > strong {
+  -webkit-line-clamp: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* High-tier labels are progressive and consistent, never drawn on the item itself. */
+.enhancement-stage-tag[data-tier="mid"] {
+  color: #7bcbd0;
+}
+
+.enhancement-stage-tag[data-tier="high"] {
+  color: #90ade7;
+  border-color: rgba(91,143,224,.22);
+  background: rgba(91,143,224,.045);
+}
+
+.enhancement-stage-tag[data-tier="extreme"] {
+  color: #c99ce8;
+  border-color: rgba(174,111,222,.24);
+  background: rgba(174,111,222,.045);
+}
+
+.enhancement-stage-tag[data-tier="legendary"] {
+  color: #e7c46f;
+  border-color: rgba(235,190,90,.26);
+  background: rgba(235,190,90,.05);
+}
+
+/* Light mode keeps the controls visible without turning them into bright chrome. */
+html[data-theme="light"] .enhancement-sound-controls {
+  border-color: rgba(78,68,62,.08);
+  background: rgba(255,255,255,.36);
+}
+
+html[data-theme="light"] .enhancement-volume-control > b {
+  color: #716863;
+}
+
+html[data-theme="light"] .enhancement-stage-tag {
+  background: rgba(var(--forge-glow), .035);
+}
+
+@media (min-width: 901px) and (max-height: 900px) {
+  .enhancement-pickaxe {
+    width: 117px;
+    height: 117px;
+  }
+
+  .enhancement-volume-control {
+    min-width: 128px;
+    grid-template-columns: 16px minmax(62px,1fr) 30px;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 760px) {
+  .enhancement-pickaxe {
+    width: 104px;
+    height: 104px;
+  }
+
+  .enhancement-sound-controls {
+    gap: 3px;
+  }
+
+  .enhancement-volume-control {
+    min-width: 116px;
+  }
+}
+
+@media (max-width: 700px) {
+  .enhancement-head-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .enhancement-sound-controls {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .enhancement-volume-control {
+    flex: 1 1 150px;
+    min-width: 140px;
+  }
+
+  .enhancement-sound-test {
+    flex: 0 0 auto;
+  }
+
+  .enhancement-pickaxe {
+    width: 120px;
+    height: 120px;
+  }
+
+  .enhancement-result > strong {
+    white-space: normal;
+    -webkit-line-clamp: 2;
+  }
+}
