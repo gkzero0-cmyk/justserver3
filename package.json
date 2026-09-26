@@ -12,7 +12,8 @@
     "test:production": "node scripts/verify-production.mjs",
     "test:integrity": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/verify-repo-integrity.mjs",
     "audit:css": "node scripts/audit-css.mjs",
-    "audit:static": "node scripts/audit-static.mjs"
+    "audit:static": "node scripts/audit-static.mjs",
+    "test:deploy-bundle": "node scripts/verify-deploy-bundle.mjs"
   },
   "dependencies": {
     "next": "16.3.6",

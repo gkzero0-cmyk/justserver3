@@ -5,8 +5,18 @@ import process from 'node:process'
 const root = process.cwd()
 const pkg = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
 const lock = JSON.parse(await readFile(join(root, 'package-lock.json'), 'utf8'))
-const deployPages = await readFile(join(root, '.github/workflows/deploy-pages.yml'), 'utf8')
-const buildWorkflow = await readFile(join(root, '.github/workflows/build.yml'), 'utf8')
+const workflowsDir = join(root, '.github', 'workflows')
+const workflowNames = (await readdir(workflowsDir)).filter((name) => /\.ya?ml$/i.test(name))
+const workflows = Object.fromEntries(
+  await Promise.all(
+    workflowNames.map(async (name) => [
+      name,
+      await readFile(join(workflowsDir, name), 'utf8')
+    ])
+  )
+)
+const deployPages = workflows['deploy-pages.yml'] || ''
+const buildWorkflow = workflows['build.yml'] || ''
 
 const blocking = []
 const notes = []
@@ -25,6 +35,15 @@ if (!/run:\s*npm ci\b/.test(deployPages)) {
 }
 if (!/node-version:\s*24\b/.test(buildWorkflow)) {
   blocking.push('build.yml is not using Node 24')
+}
+
+for (const [name, source] of Object.entries(workflows)) {
+  const versions = [...source.matchAll(/node-version:\s*['"]?(\d+)/g)].map((match) => match[1])
+  for (const version of versions) {
+    if (version !== '24') {
+      blocking.push(`${name} uses Node ${version}, expected Node 24`)
+    }
+  }
 }
 
 async function walk(dir) {
