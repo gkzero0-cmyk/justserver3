@@ -28,61 +28,32 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: node scripts/build-deploy-bundle.mjs
 
-      - name: Deploy production to Vercel
+      - name: Verify production release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        env:
-          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: team_h8qoVPaBVDEj8uuWhcVJIhtn
-          VERCEL_PROJECT_ID: prj_baolCn3gBLeW4o8DS7ZNeA96mg8k
         run: |
-          REMOTE_SHA="$(git ls-remote origin refs/heads/main | cut -f1)"
           LOCAL_SHA="$(git rev-parse HEAD)"
-          if [ "$REMOTE_SHA" != "$LOCAL_SHA" ]; then
-            echo "A newer main commit exists; skipping this superseded production deploy."
-            exit 0
-          fi
+          DEPLOYED_SHA=""
 
-          if [ -n "$VERCEL_TOKEN" ]; then
-            echo "Using Vercel CLI production deployment."
-            npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
-            echo "Production deployment completed; running smoke checks."
-            npm run test:production
-          elif [ -n "$VERCEL_DEPLOY_HOOK" ]; then
-            if [[ "$VERCEL_DEPLOY_HOOK" == *"?"* ]]; then
-              VERCEL_HOOK_URL="$VERCEL_DEPLOY_HOOK&buildCache=false"
-            else
-              VERCEL_HOOK_URL="$VERCEL_DEPLOY_HOOK?buildCache=false"
-            fi
-            curl --fail --silent --show-error -X POST "$VERCEL_HOOK_URL"
-            echo "Vercel production refresh requested through deploy hook (fresh build)."
+          for attempt in $(seq 1 90); do
+            DEPLOYED_SHA="$(
+              curl --fail --silent --show-error                 -H 'cache-control: no-cache'                 "https://justserver3.vercel.app/api/version?ts=$(date +%s)"               | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{process.stdout.write(JSON.parse(d).commit||'')}catch{}})"
+            )" || true
 
-            DEPLOYED_SHA=""
-            for attempt in $(seq 1 60); do
-              DEPLOYED_SHA="$(
-                curl --fail --silent --show-error                   -H 'cache-control: no-cache'                   "https://justserver3.vercel.app/api/version?ts=$(date +%s)"                 | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{process.stdout.write(JSON.parse(d).commit||'')}catch{}})"
-              )" || true
-
-              if [ "$DEPLOYED_SHA" = "$LOCAL_SHA" ]; then
-                echo "Production now serves commit $LOCAL_SHA."
-                break
-              fi
-
-              echo "Production is still on ${DEPLOYED_SHA:-unknown}; checking again."
-              sleep 10
-            done
-
-            if [ "$DEPLOYED_SHA" != "$LOCAL_SHA" ]; then
-              echo "::error::Production did not advance to commit $LOCAL_SHA."
-              exit 1
+            if [ "$DEPLOYED_SHA" = "$LOCAL_SHA" ]; then
+              echo "Production now serves commit $LOCAL_SHA."
+              break
             fi
 
-            npm run test:production
-          else
-            echo "::warning::No Vercel deployment credential is configured."
-            echo "::warning::Set VERCEL_TOKEN or VERCEL_DEPLOY_HOOK in GitHub Actions secrets."
-            echo "Build is valid, but production deployment cannot be triggered from GitHub yet."
+            echo "Production is still on ${DEPLOYED_SHA:-unknown}; checking again."
+            sleep 10
+          done
+
+          if [ "$DEPLOYED_SHA" != "$LOCAL_SHA" ]; then
+            echo "::error::Production did not advance to commit $LOCAL_SHA."
+            exit 1
           fi
+
+          npm run test:production
 
       - name: Store current deploy bundle
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
