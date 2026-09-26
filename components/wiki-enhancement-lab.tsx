@@ -469,11 +469,14 @@ export function WikiEnhancementLab({
     setStats(saved)
     setBroken(saved.broken)
 
-    const savedVolume = Number(
-      window.localStorage.getItem('justserver3:enhancement-volume')
+    const savedVolumeValue = window.localStorage.getItem(
+      'justserver3:enhancement-volume'
     )
-    if (Number.isFinite(savedVolume)) {
-      setSoundVolume(Math.max(0, Math.min(1, savedVolume)))
+    if (savedVolumeValue !== null) {
+      const savedVolume = Number(savedVolumeValue)
+      if (Number.isFinite(savedVolume)) {
+        setSoundVolume(Math.max(0, Math.min(1, savedVolume)))
+      }
     }
 
     const savedSoundOn = window.localStorage.getItem(
@@ -852,7 +855,7 @@ export function WikiEnhancementLab({
                       rule.success +
                       '%'}
               </span>
-            </div>            </div>
+            </div>
           </div>
 
           <div
