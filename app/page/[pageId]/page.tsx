@@ -324,6 +324,10 @@ export async function renderWikiPage(pageId: string) {
               최근 수정 <strong>{formatUpdatedDate(currentPage.lastEdited)}</strong>
             </span>
           )}
+          <span className="article-source-status">
+            <em>자료</em>
+            <strong>원본 문서 연동</strong>
+          </span>
           {currentPage.changeSummary && (
             <span className="article-change-summary">
               <em>최근 변경</em>
@@ -386,7 +390,7 @@ export async function renderWikiPage(pageId: string) {
             </Link>
             {related[0] && (
               <Link
-                href={withBasePath(`/page/${related[0].pageId}/`)}
+                href={withBasePath(wikiGuidePath(related[0]))}
                 data-wiki-event="wiki_draft_navigate"
                 data-wiki-section="draft-state"
                 data-wiki-target={related[0].title}
