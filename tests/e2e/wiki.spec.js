@@ -84,9 +84,9 @@ test.describe('desktop wiki journeys', () => {
 
     const lab = page.locator('#enhancement-lab')
     await expect(lab.getByText('강화 체험소', { exact: true })).toBeVisible()
-    await expect(
-      lab.getByText('다이아몬드 곡괭이', { exact: true })
-    ).toBeVisible()
+    await expect(lab.locator('.enhancement-item-name')).toHaveText(
+      '다이아몬드 곡괭이'
+    )
 
     const enhance = lab.getByRole('button', { name: /강화하기/ })
     await expect(enhance).toBeVisible()
@@ -101,7 +101,9 @@ test.describe('desktop wiki journeys', () => {
 
   test('search exposes contextual action shortcuts', async ({ page }) => {
     await page.goto('/')
-    await page.keyboard.press('Control+K')
+    const openSearch = page.getByRole('button', { name: /문서 검색/ })
+    await expect(openSearch).toBeVisible()
+    await openSearch.click()
 
     const search = page.getByRole('textbox', { name: /검색/i })
     await search.fill('곡괭이 강화')
@@ -202,7 +204,9 @@ test.describe('mobile wiki journeys', () => {
 
   test('search modal fits within phone width', async ({ page }) => {
     await page.goto('/')
-    await page.keyboard.press('Control+K')
+    const openSearch = page.getByRole('button', { name: /문서 검색/ })
+    await expect(openSearch).toBeVisible()
+    await openSearch.click()
     await page.getByRole('textbox', { name: /검색/i }).fill('강화')
 
     const metrics = await page.evaluate(() => ({
