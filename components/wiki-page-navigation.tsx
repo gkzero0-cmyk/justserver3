@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type { NotionIndexPage } from '@/lib/notion-index'
 import { categoryAnchorForTitle, categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import { withBasePath } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 
 function formatDate(value: string | null) {
   if (!value) return null
@@ -41,7 +42,7 @@ export function WikiPageNavigation({
     return (
       <nav className="page-siblings page-siblings-bottom" aria-label="이전 및 다음 문서">
         {previous ? (
-          <Link href={withBasePath(`/page/${previous.pageId}/`)}>
+          <Link href={withBasePath(wikiGuidePath(previous))}>
             <small>← 이전 문서</small>
             <strong>{previous.title}</strong>
           </Link>
@@ -51,7 +52,7 @@ export function WikiPageNavigation({
 
         {next ? (
           <Link
-            href={withBasePath(`/page/${next.pageId}/`)}
+            href={withBasePath(wikiGuidePath(next))}
             className="page-sibling-next"
           >
             <small>다음 문서 →</small>
