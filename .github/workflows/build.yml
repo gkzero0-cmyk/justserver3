@@ -54,8 +54,13 @@ jobs:
           VERCEL_PROJECT_ID: prj_baolCn3gBLeW4o8DS7ZNeA96mg8k
         run: |
           if [ -n "$VERCEL_DEPLOY_HOOK" ]; then
-            curl --fail --silent --show-error -X POST "$VERCEL_DEPLOY_HOOK"
-            echo "Vercel production refresh requested through deploy hook."
+            if [[ "$VERCEL_DEPLOY_HOOK" == *"?"* ]]; then
+              VERCEL_HOOK_URL="$VERCEL_DEPLOY_HOOK&buildCache=false"
+            else
+              VERCEL_HOOK_URL="$VERCEL_DEPLOY_HOOK?buildCache=false"
+            fi
+            curl --fail --silent --show-error -X POST "$VERCEL_HOOK_URL"
+            echo "Vercel production refresh requested through deploy hook (fresh build)."
           elif [ -n "$VERCEL_TOKEN" ]; then
             echo "Deploy hook is not configured; using Vercel CLI fallback."
             npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
