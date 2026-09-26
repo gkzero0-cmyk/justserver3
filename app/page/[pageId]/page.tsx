@@ -67,6 +67,40 @@ function formatUpdatedDate(value: string | null | undefined) {
   }).format(date)
 }
 
+function formatSyncDate(value: string | null | undefined) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  }).format(date)
+}
+
+function buildKeySummary(page: NotionIndexPage) {
+  const normalized = page.searchText
+    .replace(page.title, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  if (!normalized) return []
+
+  const candidates = normalized
+    .split(/(?<=[.!?。])\s+|\s*[•·]\s*/)
+    .map((item) => item.trim())
+    .filter((item) => item.length >= 18)
+    .filter((item, index, items) => items.indexOf(item) === index)
+    .slice(0, 3)
+
+  return candidates.map((item) =>
+    item.length > 150 ? item.slice(0, 147).trimEnd() + '…' : item
+  )
+}
+
 function categoryKey(title: string) {
   const value = title.toLowerCase()
 
@@ -224,6 +258,10 @@ export async function renderWikiPage(pageId: string) {
     currentPage && !draft && !hasVerifiedFaq
       ? buildReadingQuiz(currentPage, readyNavigationPages)
       : null
+  const keySummary =
+    currentPage && !draft && !hasVerifiedFaq
+      ? buildKeySummary(currentPage)
+      : []
 
   const brandLogo = rootPage?.logo128
     ? resolveCachedAsset(rootPage.logo128)
@@ -328,6 +366,11 @@ export async function renderWikiPage(pageId: string) {
             <em>자료</em>
             <strong>원본 문서 연동</strong>
           </span>
+          {notionIndex.generatedAt && (
+            <span className="article-sync-status">
+              데이터 갱신 <strong>{formatSyncDate(notionIndex.generatedAt)}</strong>
+            </span>
+          )}
           {currentPage.changeSummary && (
             <span className="article-change-summary">
               <em>최근 변경</em>
@@ -403,6 +446,20 @@ export async function renderWikiPage(pageId: string) {
         </section>
       ) : (
         <>
+          {keySummary.length > 0 && (
+            <section className="article-key-summary" aria-labelledby="article-key-summary-title">
+              <div>
+                <p>KEY POINTS</p>
+                <h2 id="article-key-summary-title">이 문서 핵심</h2>
+              </div>
+              <ul>
+                {keySummary.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {contentStatus === 'brief' && (
             <aside className="brief-notice" role="status">
               <span>간단 안내</span>
