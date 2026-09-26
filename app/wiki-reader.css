@@ -13091,3 +13091,53 @@ html[data-theme="light"] .home-playground-tabs {
   border-color: rgba(118,84,55,.13);
   background: rgba(255,250,243,.62);
 }
+
+
+/* === 2026-09-26 warm-neutral readability cleanup === */
+.search-tool-shortcut strong {
+  color: #eee4df;
+}
+
+.search-tool-shortcut small,
+.article-source-status strong,
+.wiki-sync-strip,
+.wiki-sync-strip small,
+.article-sync-status {
+  color: #968983;
+}
+
+.enhancement-guide-preview > strong {
+  color: #eadfd8;
+}
+
+.enhancement-guide-preview small,
+.enhancement-guide-preview p {
+  color: #8f827c;
+}
+
+.article-source-status em {
+  font-size: 10px;
+}
+
+.wiki-sync-strip {
+  font-size: 11px;
+}
+
+.wiki-sync-strip > span {
+  font-size: 9px;
+}
+
+html[data-theme="light"] .search-tool-shortcut strong,
+html[data-theme="light"] .article-source-status strong,
+html[data-theme="light"] .wiki-sync-strip strong {
+  color: #554842;
+}
+
+html[data-theme="light"] .search-tool-shortcut small,
+html[data-theme="light"] .wiki-sync-strip,
+html[data-theme="light"] .wiki-sync-strip small,
+html[data-theme="light"] .article-sync-status,
+html[data-theme="light"] .enhancement-guide-preview small,
+html[data-theme="light"] .enhancement-guide-preview p {
+  color: #6b5d57;
+}

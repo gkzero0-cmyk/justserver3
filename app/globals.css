@@ -3339,3 +3339,125 @@ html[data-theme="light"] .article-key-summary li {
     transform: none !important;
   }
 }
+
+
+/* === 2026-09-26 readability token cleanup: safe pre-production pass === */
+:root {
+  --font-micro: 10px;
+  --font-meta: 11px;
+  --font-small: 12px;
+  --font-body: 14px;
+  --warm-muted: #9b8d87;
+  --warm-muted-strong: #b8aaa4;
+  --warm-faint: #7f726d;
+}
+
+html[data-theme="light"] {
+  --warm-muted: #6f605a;
+  --warm-muted-strong: #574943;
+  --warm-faint: #7a6b65;
+}
+
+/* Keep supporting copy readable without changing card geometry. */
+.directory-copy small,
+.related-doc-card small,
+.recent-update-date,
+.recent-updates-head a,
+.article-toc-label,
+.article-toc-item,
+.search-result-meta,
+.search-result-card small,
+.page-updated,
+.nav-section-label,
+.sidebar-head span,
+.sidebar-foot,
+.directory-group-head small {
+  color: var(--warm-muted);
+}
+
+.directory-copy small,
+.related-doc-card small,
+.recent-updates-head a,
+.article-toc-item,
+.search-result-meta,
+.search-result-card small,
+.page-updated,
+.sidebar-foot,
+.directory-group-head small {
+  font-size: var(--font-meta);
+}
+
+.recent-update-date,
+.article-toc-label,
+.nav-section-label {
+  font-size: var(--font-micro);
+}
+
+/* Replace remaining cool blue-gray accents in primary navigation surfaces. */
+.quick-nav-arrow,
+.directory-arrow {
+  color: #8f6d66;
+}
+
+.wiki-footer,
+.wiki-footer a {
+  color: var(--warm-faint);
+}
+
+.wiki-footer strong {
+  color: var(--warm-muted-strong);
+}
+
+/* Light theme: slightly stronger boundaries and muted text contrast. */
+html[data-theme="light"] .starter-guide,
+html[data-theme="light"] .wiki-directory,
+html[data-theme="light"] .recent-updates,
+html[data-theme="light"] .related-docs,
+html[data-theme="light"] .document-card,
+html[data-theme="light"] .favorite-pages {
+  border-color: rgba(103,73,53,.20);
+}
+
+html[data-theme="light"] .directory-card,
+html[data-theme="light"] .starter-step,
+html[data-theme="light"] .recent-update-card,
+html[data-theme="light"] .related-doc-card,
+html[data-theme="light"] .favorite-page-card,
+html[data-theme="light"] .page-siblings a {
+  border-color: rgba(95,68,51,.17);
+}
+
+html[data-theme="light"] .directory-copy small,
+html[data-theme="light"] .related-doc-card small,
+html[data-theme="light"] .recent-update-date,
+html[data-theme="light"] .recent-updates-head a,
+html[data-theme="light"] .article-toc-label,
+html[data-theme="light"] .article-toc-item,
+html[data-theme="light"] .search-result-meta,
+html[data-theme="light"] .search-result-card small,
+html[data-theme="light"] .page-updated,
+html[data-theme="light"] .nav-section-label,
+html[data-theme="light"] .sidebar-head span,
+html[data-theme="light"] .sidebar-foot,
+html[data-theme="light"] .directory-group-head small {
+  color: #6f605a;
+}
+
+/* Preserve compact mobile layout while avoiding unreadably tiny labels. */
+@media (max-width: 620px) {
+  .brand small {
+    font-size: 9px;
+  }
+
+  .wiki-hero.is-home .hero-badge {
+    font-size: 10px;
+  }
+
+  .wiki-hero.is-home .hero-copy > p {
+    font-size: 12px;
+  }
+
+  .home-playground-tabs button {
+    font-size: 11px;
+  }
+}
