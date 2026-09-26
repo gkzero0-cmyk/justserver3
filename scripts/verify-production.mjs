@@ -128,28 +128,51 @@ if (
   console.log('PASS search index filename hygiene')
 }
 
-const oldRules =
-  baseUrl + '/page/3dad57d6a55c802aa11adaed7c2c98ff'
-const legacyResponse = await fetch(oldRules, {
-  redirect: 'manual',
-  headers: {
-    'user-agent': 'justserver3-production-smoke/1.0'
-  }
-})
+const legacyRoutes = [
+  ['3dad57d6a55c802a99dcf9704ef883f3', 'story'],
+  ['3dad57d6a55c802aa11adaed7c2c98ff', 'rules'],
+  ['3e0d57d6a55c80199479ddd73ea6ace4', 'patch-notes'],
+  ['3dad57d6a55c80f28689c7bebde648fe', 'api'],
+  ['3e0d57d6a55c80e5af78cf3a2ef9ef7e', 'newbie-guide'],
+  ['3dad57d6a55c807d8738ee94e33d7b13', 'mining'],
+  ['3dad57d6a55c80c0b4adc2aa5676076b', 'fishing'],
+  ['3e0d57d6a55c80449496e2d2e8c1d907', 'butchering'],
+  ['3e0d57d6a55c80918231cba5c2668bf9', 'hunting'],
+  ['3e0d57d6a55c80c5a8afe20753a11db1', 'cooking'],
+  ['3e0d57d6a55c80689cfed899c1dc67f6', 'collection'],
+  ['3e0d57d6a55c80acb206ece6646c102a', 'parkour'],
+  ['3e0d57d6a55c800a9fecf571a901c9bb', 'scratch-lottery'],
+  ['3e0d57d6a55c804dbcd3dff1fed6eb68', 'racecourse'],
+  ['3e0d57d6a55c80378750e502be28b30f', 'casino'],
+  ['3e0d57d6a55c80f89a7df3aabc93ca53', 'land'],
+  ['3e0d57d6a55c80f4bd26e6c22516eb8a', 'debt'],
+  ['3ddd57d6a55c80d1a126c09593be5d6e', 'credit'],
+  ['3e0d57d6a55c8066b139d896b3c40081', 'repair'],
+  ['3e0d57d6a55c80fc99eef96b991ea5df', 'upgrade'],
+  ['3e0d57d6a55c80aa89daee3da173adf7', 'faq']
+]
 
-const location = legacyResponse.headers.get('location') || ''
-if (
-  ![301, 302, 307, 308].includes(legacyResponse.status) ||
-  !location.includes('/guide/rules')
-) {
-  failed = true
-  console.error(
-    `FAIL legacy redirect HTTP ${legacyResponse.status} location=${location || '(none)'}`
-  )
-} else {
-  console.log(
-    `PASS legacy redirect HTTP ${legacyResponse.status} -> ${location}`
-  )
+for (const [pageId, slug] of legacyRoutes) {
+  const response = await fetch(baseUrl + `/page/${pageId}`, {
+    redirect: 'manual',
+    headers: {
+      'user-agent': 'justserver3-production-smoke/1.0'
+    }
+  })
+  const location = response.headers.get('location') || ''
+  if (
+    ![301, 302, 307, 308].includes(response.status) ||
+    !location.includes(`/guide/${slug}`)
+  ) {
+    failed = true
+    console.error(
+      `FAIL legacy redirect ${pageId} HTTP ${response.status} location=${location || '(none)'}`
+    )
+  } else {
+    console.log(
+      `PASS legacy redirect ${pageId} HTTP ${response.status} -> ${location}`
+    )
+  }
 }
 
 if (failed) process.exitCode = 1
