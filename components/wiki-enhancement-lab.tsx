@@ -10,6 +10,7 @@ import {
 } from '@/lib/wiki-client-state'
 import type { WikiContentStatus } from '@/lib/wiki-content-status'
 import { withBasePath } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 
 type EnhancementPage = {
   pageId: string
@@ -203,7 +204,7 @@ function randomPercent() {
 function playTone(
   kind: 'charge' | 'success' | 'fail' | 'down' | 'destroy' | 'max',
   level = 0,
-  volume = 0.75
+  volume = 0.9
 ) {
   try {
     const AudioContextClass = window.AudioContext
@@ -227,7 +228,7 @@ function playTone(
     const compressor = ctx.createDynamicsCompressor()
 
     const normalizedVolume = Math.max(0, Math.min(1, volume))
-    master.gain.setValueAtTime(0.58 * normalizedVolume, now)
+    master.gain.setValueAtTime(0.7 * normalizedVolume, now)
     compressor.threshold.setValueAtTime(-22, now)
     compressor.knee.setValueAtTime(18, now)
     compressor.ratio.setValueAtTime(7, now)
@@ -426,7 +427,7 @@ export function WikiEnhancementLab({
   const [animating, setAnimating] = useState(false)
   const [broken, setBroken] = useState(false)
   const [soundOn, setSoundOn] = useState(true)
-  const [soundVolume, setSoundVolume] = useState(0.75)
+  const [soundVolume, setSoundVolume] = useState(0.9)
   const [outcome, setOutcome] = useState<EnhancementOutcome | null>(null)
   const [message, setMessage] = useState(
     '강화 버튼을 눌러 +15에 도전해보세요.'
@@ -472,12 +473,21 @@ export function WikiEnhancementLab({
     const savedVolumeValue = window.localStorage.getItem(
       'justserver3:enhancement-volume'
     )
+    const volumePresetVersion = window.localStorage.getItem(
+      'justserver3:enhancement-volume-version'
+    )
     if (savedVolumeValue !== null) {
       const savedVolume = Number(savedVolumeValue)
       if (Number.isFinite(savedVolume)) {
-        setSoundVolume(Math.max(0, Math.min(1, savedVolume)))
+        const normalized = Math.max(0, Math.min(1, savedVolume))
+        const migrated =
+          volumePresetVersion !== '2' && Math.abs(normalized - 0.75) < 0.001
+            ? 0.9
+            : normalized
+        setSoundVolume(migrated)
       }
     }
+    window.localStorage.setItem('justserver3:enhancement-volume-version', '2')
 
     const savedSoundOn = window.localStorage.getItem(
       'justserver3:enhancement-sound-on'
@@ -1157,7 +1167,7 @@ export function WikiEnhancementLab({
             <div>
               {enhancementPage && (
                 <Link
-                  href={withBasePath('/page/' + enhancementPage.pageId + '/')}
+                  href={withBasePath(wikiGuidePath(enhancementPage))}
                   data-wiki-event="wiki_enhancement_guide"
                   data-wiki-section="enhancement-lab"
                   data-wiki-target="장비강화"
@@ -1170,7 +1180,7 @@ export function WikiEnhancementLab({
               )}
               {repairPage && (
                 <Link
-                  href={withBasePath('/page/' + repairPage.pageId + '/')}
+                  href={withBasePath(wikiGuidePath(repairPage))}
                   data-wiki-event="wiki_enhancement_guide"
                   data-wiki-section="enhancement-lab"
                   data-wiki-target="장비수리"
@@ -1183,7 +1193,7 @@ export function WikiEnhancementLab({
               )}
               {faqPage && (
                 <Link
-                  href={withBasePath('/page/' + faqPage.pageId + '/')}
+                  href={withBasePath(wikiGuidePath(faqPage))}
                   data-wiki-event="wiki_enhancement_guide"
                   data-wiki-section="enhancement-lab"
                   data-wiki-target="FAQ"
