@@ -52,7 +52,7 @@ jobs:
             echo "- Image/markup regression baseline: checked"
             echo "- Sensitive tracked files: checked"
             echo "- Static internal links: checked"
-            echo "- Deploy bundle: generated and verified on main push"
+            echo "- Deploy bundle: generated, source-matched, and SHA-256 fingerprinted on main push"
             echo
             echo "Production deployment is intentionally separate from this gate."
           } >> "$GITHUB_STEP_SUMMARY"

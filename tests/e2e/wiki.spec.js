@@ -294,7 +294,20 @@ test.describe('accessibility smoke', () => {
 
       for (const path of ['/', '/guide/rules/']) {
         await page.goto(path)
+        await expect(page.locator('html')).toHaveAttribute('data-theme', theme)
         await expect(page.locator('html')).toHaveAttribute('lang', 'ko')
+
+        const themeToggle = page.getByRole('button', {
+          name:
+            theme === 'dark'
+              ? '라이트 모드로 전환'
+              : '다크 모드로 전환'
+        })
+        await expect(themeToggle).toBeVisible()
+        await expect(themeToggle).toHaveAttribute(
+          'aria-pressed',
+          theme === 'light' ? 'true' : 'false'
+        )
         await expect(page.locator('main')).toHaveCount(1)
 
         const h1Count = await page.locator('h1').count()
