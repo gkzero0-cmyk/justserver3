@@ -98,13 +98,13 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
     const schedule =
       'requestIdleCallback' in window
         ? window.requestIdleCallback(() => setLoadFunZone(true), { timeout: 500 })
-        : window.setTimeout(() => setLoadFunZone(true), 250)
+        : globalThis.setTimeout(() => setLoadFunZone(true), 250)
 
     return () => {
       if ('cancelIdleCallback' in window && typeof schedule === 'number') {
         window.cancelIdleCallback(schedule)
       } else {
-        window.clearTimeout(schedule)
+        globalThis.clearTimeout(schedule)
       }
     }
   }, [loadFunZone, open])
@@ -115,13 +115,13 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
     const schedule =
       'requestIdleCallback' in window
         ? window.requestIdleCallback(() => setLoadExtras(true), { timeout: 1600 })
-        : window.setTimeout(() => setLoadExtras(true), 1200)
+        : globalThis.setTimeout(() => setLoadExtras(true), 1200)
 
     return () => {
       if ('cancelIdleCallback' in window && typeof schedule === 'number') {
         window.cancelIdleCallback(schedule)
       } else {
-        window.clearTimeout(schedule)
+        globalThis.clearTimeout(schedule)
       }
     }
   }, [loadExtras, open])
