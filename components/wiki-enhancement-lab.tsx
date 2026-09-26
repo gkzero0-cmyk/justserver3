@@ -156,12 +156,21 @@ function dangerLabel(level: number) {
   return { label: '극한', tone: 'extreme' }
 }
 
+function enhancementStageLabel(level: number, broken = false) {
+  if (broken) return '파괴'
+  if (level >= 15) return '최대강화'
+  if (level >= 12) return '극한강화'
+  if (level >= 8) return '고강화'
+  if (level >= 5) return '강화'
+  return '기본'
+}
+
 function resultMessage(outcome: EnhancementOutcome, from: number, to: number) {
   if (outcome === 'success') return '강화 성공 · +' + from + ' → +' + to
-  if (outcome === 'max') return '+15 달성 · 전설적인 강화에 성공했습니다!'
+  if (outcome === 'max') return '강화 성공 · +' + from + ' → +15 · 최대강화 달성'
   if (outcome === 'down') return '강화 하락 · +' + from + ' → +' + to
   if (outcome === 'destroy') {
-    return '장비 파괴 · +' + from + ' 곡괭이가 산산이 부서졌습니다'
+    return '장비 파괴 · +' + from + ' 곡괭이가 부서졌습니다'
   }
   return '강화 실패 · +' + from + ' 유지'
 }
@@ -193,7 +202,8 @@ function randomPercent() {
 
 function playTone(
   kind: 'charge' | 'success' | 'fail' | 'down' | 'destroy' | 'max',
-  level = 0
+  level = 0,
+  volume = 0.75
 ) {
   try {
     const AudioContextClass = window.AudioContext
@@ -216,7 +226,8 @@ function playTone(
     const master = ctx.createGain()
     const compressor = ctx.createDynamicsCompressor()
 
-    master.gain.setValueAtTime(0.38, now)
+    const normalizedVolume = Math.max(0, Math.min(1, volume))
+    master.gain.setValueAtTime(0.58 * normalizedVolume, now)
     compressor.threshold.setValueAtTime(-22, now)
     compressor.knee.setValueAtTime(18, now)
     compressor.ratio.setValueAtTime(7, now)
@@ -415,6 +426,7 @@ export function WikiEnhancementLab({
   const [animating, setAnimating] = useState(false)
   const [broken, setBroken] = useState(false)
   const [soundOn, setSoundOn] = useState(true)
+  const [soundVolume, setSoundVolume] = useState(0.75)
   const [outcome, setOutcome] = useState<EnhancementOutcome | null>(null)
   const [message, setMessage] = useState(
     '강화 버튼을 눌러 +15에 도전해보세요.'
@@ -456,6 +468,19 @@ export function WikiEnhancementLab({
     )
     setStats(saved)
     setBroken(saved.broken)
+
+    const savedVolume = Number(
+      window.localStorage.getItem('justserver3:enhancement-volume')
+    )
+    if (Number.isFinite(savedVolume)) {
+      setSoundVolume(Math.max(0, Math.min(1, savedVolume)))
+    }
+
+    const savedSoundOn = window.localStorage.getItem(
+      'justserver3:enhancement-sound-on'
+    )
+    if (savedSoundOn === 'false') setSoundOn(false)
+
     setReady(true)
     return () => {
       if (timerRef.current) window.clearTimeout(timerRef.current)
@@ -469,6 +494,18 @@ export function WikiEnhancementLab({
       }
     }
   }, [])
+
+  useEffect(() => {
+    if (!ready) return
+    window.localStorage.setItem(
+      'justserver3:enhancement-volume',
+      String(soundVolume)
+    )
+    window.localStorage.setItem(
+      'justserver3:enhancement-sound-on',
+      String(soundOn)
+    )
+  }, [ready, soundOn, soundVolume])
 
   const persist = (next: EnhancementStats) => {
     setStats(next)
@@ -513,8 +550,8 @@ export function WikiEnhancementLab({
 
     setAnimating(true)
     setOutcome(null)
-    setMessage('강화 에너지를 주입하는 중…')
-    if (soundOn) playTone('charge', from)
+    setMessage('강화 중… 장비를 담금질하고 있습니다.')
+    if (soundOn && soundVolume > 0) playTone('charge', from, soundVolume)
     vibrate(18)
 
     track('wiki_enhancement_attempt', {
@@ -587,7 +624,9 @@ export function WikiEnhancementLab({
         vibrate(nextOutcome === 'max' ? [25, 20, 25, 20, 70] : 35)
       }
 
-      if (soundOn) playTone(nextOutcome, from)
+      if (soundOn && soundVolume > 0) {
+        playTone(nextOutcome, from, soundVolume)
+      }
 
       track('wiki_enhancement_result', {
         result: nextOutcome,
@@ -659,13 +698,45 @@ export function WikiEnhancementLab({
         </div>
         <div className="enhancement-head-actions">
           <span className="enhancement-sim-badge">체험용 시뮬레이션</span>
-          <button
-            type="button"
-            aria-pressed={soundOn}
-            onClick={() => setSoundOn((value) => !value)}
-          >
-            {soundOn ? '효과음 켬' : '효과음 끔'}
-          </button>
+          <div className="enhancement-sound-controls">
+            <button
+              type="button"
+              aria-pressed={soundOn}
+              onClick={() => setSoundOn((value) => !value)}
+            >
+              {soundOn ? '효과음 켬' : '효과음 끔'}
+            </button>
+            <label className="enhancement-volume-control">
+              <span aria-hidden="true">{soundVolume === 0 || !soundOn ? '🔇' : '🔊'}</span>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="5"
+                value={Math.round(soundVolume * 100)}
+                aria-label="강화 효과음 볼륨"
+                aria-valuetext={Math.round(soundVolume * 100) + '%'}
+                onChange={(event) => {
+                  const nextVolume = Number(event.currentTarget.value) / 100
+                  setSoundVolume(nextVolume)
+                  if (nextVolume > 0 && !soundOn) setSoundOn(true)
+                }}
+              />
+              <b>{Math.round(soundVolume * 100)}%</b>
+            </label>
+            <button
+              type="button"
+              className="enhancement-sound-test"
+              onClick={() => {
+                if (!soundOn) setSoundOn(true)
+                if (soundVolume > 0) {
+                  playTone('success', Math.max(5, stats.level), soundVolume)
+                }
+              }}
+            >
+              소리 확인
+            </button>
+          </div>
         </div>
       </header>
 
@@ -696,6 +767,11 @@ export function WikiEnhancementLab({
             <span className="enhancement-level-label">강화 단계</span>
             <strong>+{stats.level}</strong>
             <span className="enhancement-item-name">다이아몬드 곡괭이</span>
+            {(broken || stats.level >= 5) && (
+              <span className="enhancement-stage-tag" data-tier={broken ? 'destroy' : glowTier}>
+                {enhancementStageLabel(stats.level, broken)}
+              </span>
+            )}
           </div>
 
           <div className="enhancement-mobile-odds" aria-label="현재 강화 확률">
@@ -759,48 +835,24 @@ export function WikiEnhancementLab({
                       </>
                     )}
                   </div>
-                  <span
-                    className="enhancement-tier-mark"
-                    data-tier={broken ? 'destroy' : glowTier}
-                  >
-                    {broken
-                      ? '파괴됨'
-                      : stats.level >= 15
-                        ? '최대 강화'
-                        : stats.level >= 12
-                          ? '과충전'
-                          : stats.level >= 8
-                            ? '인챈트'
-                            : stats.level >= 5
-                              ? '강화광'
-                              : '기본'}
-                  </span>
-                  <span className="enhancement-slot-level">
-                    +{stats.level}
-                  </span>
                 </div>
               </div>
             </div>
 
 
             <div className="enhancement-item-tooltip">
-              <strong>
-                다이아몬드 곡괭이 +{stats.level}
-              </strong>
+              <strong>다이아몬드 곡괭이</strong>
               <span>
                 {broken
-                  ? '파괴됨 · 새 곡괭이를 받아 0강부터 다시 도전합니다.'
+                  ? '파괴 상태 · 새 곡괭이를 받아 다시 도전합니다.'
                   : stats.level >= 15
-                    ? '최대 강화 · +15 달성'
-                    : stats.level >= 12
-                      ? '과충전 단계 · 보라빛 강화 효과 활성'
-                      : stats.level >= 8
-                        ? '인챈트 단계 · 청보라 강화 효과 활성'
-                        : stats.level >= 5
-                          ? '강화광 단계 · 청록빛 강화 효과 활성'
-                          : danger.label + ' 단계 · 다음 성공 확률 ' + rule.success + '%'}
+                    ? '최대강화 · +15 달성'
+                    : enhancementStageLabel(stats.level) +
+                      ' 단계 · 다음 강화 성공 확률 ' +
+                      rule.success +
+                      '%'}
               </span>
-            </div>
+            </div>            </div>
           </div>
 
           <div
