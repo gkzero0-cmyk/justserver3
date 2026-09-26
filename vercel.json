@@ -2,5 +2,7 @@
   "framework": "nextjs",
   "cleanUrls": true,
   "installCommand": "npm ci",
-  "ignoreCommand": "exit 1"
+  "git": {
+    "deploymentEnabled": false
+  }
 }
