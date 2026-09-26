@@ -219,6 +219,7 @@ export async function renderWikiPage(pageId: string) {
     : 'detailed'
   const contentStatus = hasVerifiedFaq ? 'detailed' : rawContentStatus
   const draft = contentStatus === 'draft'
+  const isEnhancementGuide = currentPage?.title === '장비강화'
   const readingQuiz =
     currentPage && !draft && !hasVerifiedFaq
       ? buildReadingQuiz(currentPage, readyNavigationPages)
@@ -339,13 +340,29 @@ export async function renderWikiPage(pageId: string) {
       {draft ? (
         <section className="draft-state" role="status" aria-labelledby="draft-state-title">
           <div className="draft-state-icon" aria-hidden="true">🛠️</div>
-          <p>PREPARING GUIDE</p>
-          <h2 id="draft-state-title">{title} 가이드를 정리하고 있습니다.</h2>
+          <p>{isEnhancementGuide ? 'ENHANCEMENT GUIDE' : 'PREPARING GUIDE'}</p>
+          <h2 id="draft-state-title">
+            {isEnhancementGuide
+              ? '장비강화 정보는 정리 중이지만, 강화 체험소는 지금 이용할 수 있습니다.'
+              : `${title} 가이드를 정리하고 있습니다.`}
+          </h2>
           <span>
-            아직 확정된 내용이 충분하지 않아 빈 문서 대신 준비 상태를 표시합니다.
-            Notion 원문이 보강되면 같은 주소에 자동으로 반영됩니다.
+            {isEnhancementGuide
+              ? '실제 서버의 확정된 강화 정보는 Notion 원문이 보강되는 대로 같은 주소에 반영됩니다. 그 전까지 강화 체험소에서 +15강까지 강화 흐름과 성공·실패·하락·파괴 연출을 체험해보세요.'
+              : '아직 확정된 내용이 충분하지 않아 빈 문서 대신 준비 상태를 표시합니다. Notion 원문이 보강되면 같은 주소에 자동으로 반영됩니다.'}
           </span>
           <div className="state-actions">
+            {isEnhancementGuide && (
+              <Link
+                href={withBasePath('/#enhancement-lab')}
+                data-wiki-event="wiki_draft_navigate"
+                data-wiki-section="draft-state"
+                data-wiki-target="enhancement-lab"
+                data-wiki-status="ready"
+              >
+                ⚒️ 강화 체험소 열기
+              </Link>
+            )}
             <Link
               href={withBasePath(`/#category-${currentPage ? categoryKey(currentPage.title) : 'start'}`)}
               data-wiki-event="wiki_draft_navigate"
