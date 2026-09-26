@@ -12860,3 +12860,13 @@ html[data-theme="light"] .enhancement-stage-tag {
     animation: none !important;
   }
 }
+
+
+/* Production freshness is intentionally visible to operators on /status. */
+.status-services article[data-tone="warning"] strong {
+  color: #e3a06f;
+}
+
+.status-services article[data-tone="warning"] .status-service-icon {
+  color: #e3a06f;
+}

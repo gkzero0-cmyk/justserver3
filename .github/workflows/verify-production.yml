@@ -1,0 +1,88 @@
+name: Production Verify
+
+on:
+  workflow_run:
+    workflows: ['Build']
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: Commit SHA expected in Production
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wiki-production-verify
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit_sha || github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: npm ci
+
+      - name: Wait for matching Vercel Production
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LOCAL_SHA="$(git rev-parse HEAD)"
+
+          VERCEL_STATUS_URL="$(
+            curl --fail --silent --show-error               -H "authorization: Bearer $GH_TOKEN"               -H "accept: application/vnd.github+json"               "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$LOCAL_SHA/status"             | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{const j=JSON.parse(d);const s=(j.statuses||[]).find(x=>x.context==='Vercel');process.stdout.write(s?.target_url||'')}catch{}})"
+          )" || true
+
+          if [[ "$VERCEL_STATUS_URL" == *"build-rate-limit"* ]]; then
+            echo "::warning::Vercel build-rate-limit is active. Code build passed, but Production verification is deferred."
+            exit 0
+          fi
+
+          DEPLOYED_SHA="$(
+            curl --fail --silent --show-error               -H 'cache-control: no-cache'               "https://justserver3.vercel.app/api/version?ts=$(date +%s)"             | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{process.stdout.write(JSON.parse(d).commit||'')}catch{}})"
+          )" || true
+
+          if [ "$DEPLOYED_SHA" != "$LOCAL_SHA" ] && [ -n "$VERCEL_DEPLOY_HOOK" ]; then
+            if [[ "$VERCEL_DEPLOY_HOOK" == *"?"* ]]; then
+              VERCEL_HOOK_URL="$VERCEL_DEPLOY_HOOK&buildCache=false"
+            else
+              VERCEL_HOOK_URL="$VERCEL_DEPLOY_HOOK?buildCache=false"
+            fi
+            curl --fail --silent --show-error -X POST "$VERCEL_HOOK_URL" || true
+            echo "Production was stale, so a single deploy-hook recovery was requested."
+          fi
+
+          DEPLOYED_SHA=""
+
+          for attempt in $(seq 1 90); do
+            DEPLOYED_SHA="$(
+              curl --fail --silent --show-error                 -H 'cache-control: no-cache'                 "https://justserver3.vercel.app/api/version?ts=$(date +%s)"               | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{process.stdout.write(JSON.parse(d).commit||'')}catch{}})"
+            )" || true
+
+            if [ "$DEPLOYED_SHA" = "$LOCAL_SHA" ]; then
+              echo "Production now serves commit $LOCAL_SHA."
+              break
+            fi
+
+            echo "Production is still on ${DEPLOYED_SHA:-unknown}; checking again."
+            sleep 10
+          done
+
+          if [ "$DEPLOYED_SHA" != "$LOCAL_SHA" ]; then
+            echo "::error::Production did not advance to commit $LOCAL_SHA."
+            exit 1
+          fi
+
+      - name: Run production smoke checks
+        run: npm run test:production

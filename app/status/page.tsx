@@ -37,6 +37,13 @@ type WorkflowState = {
 type ProductionHealth = {
   ok: boolean
   status: number | null
+  deployedSha: string | null
+  mainSha: string | null
+}
+
+function shortSha(value: string | null) {
+  if (!value || value === 'unknown') return '확인 불가'
+  return value.slice(0, 7)
 }
 
 async function getWorkflowState(workflow: string): Promise<WorkflowState | null> {
@@ -79,19 +86,41 @@ async function getWorkflowState(workflow: string): Promise<WorkflowState | null>
 
 async function getProductionHealth(): Promise<ProductionHealth> {
   try {
-    const response = await fetch('https://justserver3.vercel.app/', {
-      method: 'HEAD',
-      next: { revalidate: 300 }
-    })
+    const [healthResponse, versionResponse, branchResponse] = await Promise.all([
+      fetch('https://justserver3.vercel.app/', {
+        method: 'HEAD',
+        next: { revalidate: 300 }
+      }),
+      fetch('https://justserver3.vercel.app/api/version', {
+        next: { revalidate: 300 }
+      }),
+      fetch('https://api.github.com/repos/gkzero0-cmyk/justserver3/branches/main', {
+        headers: {
+          Accept: 'application/vnd.github+json'
+        },
+        next: { revalidate: 300 }
+      })
+    ])
+
+    const version = versionResponse.ok
+      ? ((await versionResponse.json()) as { commit?: string | null })
+      : null
+    const branch = branchResponse.ok
+      ? ((await branchResponse.json()) as { commit?: { sha?: string | null } })
+      : null
 
     return {
-      ok: response.ok,
-      status: response.status
+      ok: healthResponse.ok,
+      status: healthResponse.status,
+      deployedSha: version?.commit || null,
+      mainSha: branch?.commit?.sha || null
     }
   } catch {
     return {
       ok: false,
-      status: null
+      status: null,
+      deployedSha: null,
+      mainSha: null
     }
   }
 }
@@ -130,14 +159,21 @@ function statusTone(state: WorkflowState | null) {
 }
 
 export default async function StatusPage() {
-  const [index, manifest, syncWorkflow, buildWorkflow, productionHealth] =
-    await Promise.all([
-      readNotionIndex(),
-      readNotionAssetManifest(),
-      getWorkflowState('sync-notion-assets.yml'),
-      getWorkflowState('build.yml'),
-      getProductionHealth()
-    ])
+  const [
+    index,
+    manifest,
+    syncWorkflow,
+    buildWorkflow,
+    productionVerifyWorkflow,
+    productionHealth
+  ] = await Promise.all([
+    readNotionIndex(),
+    readNotionAssetManifest(),
+    getWorkflowState('sync-notion-assets.yml'),
+    getWorkflowState('build.yml'),
+    getWorkflowState('verify-production.yml'),
+    getProductionHealth()
+  ])
 
   const rootId = index.rootPageId.replaceAll('-', '')
   const rootPage =
@@ -198,7 +234,12 @@ export default async function StatusPage() {
     !buildWorkflow ||
     buildWorkflow.status !== 'completed' ||
     buildWorkflow.conclusion === 'success'
-  const overallHealthy = syncHealthy && buildHealthy && productionHealth.ok
+  const deploymentCurrent =
+    Boolean(productionHealth.mainSha) &&
+    Boolean(productionHealth.deployedSha) &&
+    productionHealth.mainSha === productionHealth.deployedSha
+  const overallHealthy =
+    syncHealthy && buildHealthy && productionHealth.ok && deploymentCurrent
   const webhookSignatureReady = Boolean(
     process.env.NOTION_WEBHOOK_VERIFICATION_TOKEN
   )
@@ -501,22 +542,28 @@ export default async function StatusPage() {
 
           <article
             data-tone={
-              productionHealth.ok ? 'success' : production ? 'warning' : 'working'
+              productionHealth.ok && deploymentCurrent
+                ? 'success'
+                : production
+                  ? 'warning'
+                  : 'working'
             }
           >
             <span className="status-service-icon">▲</span>
             <div>
               <small>Vercel Production</small>
               <strong>
-                {productionHealth.ok
-                  ? '정상 응답'
-                  : production
+                {!productionHealth.ok
+                  ? production
                     ? '응답 확인 필요'
-                    : 'Preview / Local'}
+                    : 'Preview / Local'
+                  : deploymentCurrent
+                    ? '최신 main 반영됨'
+                    : '배포 대기 중'}
               </strong>
               <span>
                 {productionHealth.status
-                  ? `HTTP ${productionHealth.status} · justserver3.vercel.app`
+                  ? `HTTP ${productionHealth.status} · main ${shortSha(productionHealth.mainSha)} · prod ${shortSha(productionHealth.deployedSha)}`
                   : '운영 URL 응답을 확인하지 못했습니다.'}
               </span>
             </div>
@@ -527,6 +574,26 @@ export default async function StatusPage() {
             >
               운영 사이트 ↗
             </a>
+          </article>
+
+          <article data-tone={statusTone(productionVerifyWorkflow)}>
+            <span className="status-service-icon">↗</span>
+            <div>
+              <small>Production 검증</small>
+              <strong>{statusLabel(productionVerifyWorkflow)}</strong>
+              <span>
+                {productionVerifyWorkflow?.title || 'Build 이후 실제 운영 반영 확인'}
+              </span>
+            </div>
+            {productionVerifyWorkflow?.url && (
+              <a
+                href={productionVerifyWorkflow.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                검증 기록 ↗
+              </a>
+            )}
           </article>
 
           <article data-tone={webhookSignatureReady ? 'success' : 'working'}>

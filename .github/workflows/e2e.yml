@@ -2,7 +2,7 @@ name: Browser E2E
 
 on:
   workflow_run:
-    workflows: ['Build']
+    workflows: ['Production Verify']
     types: [completed]
   schedule:
     - cron: '17 2 * * 1'
