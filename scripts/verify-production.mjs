@@ -27,6 +27,11 @@ const checks = [
   }
 ]
 
+const criticalAssets = [
+  '/enhancement-lab/diamond-pickaxe.png',
+  '/enhancement-lab/enchanted-diamond-pickaxe.webp'
+]
+
 const guidePaths = [
   '/guide/story/',
   '/guide/rules/',
