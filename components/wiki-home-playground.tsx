@@ -54,6 +54,7 @@ function PlaygroundLoading({ label }: { label: string }) {
 
 export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
   const [open, setOpen] = useState(false)
+  const [loadExtras, setLoadExtras] = useState(false)
   const readyCount = pages.filter((page) => page.status !== 'draft').length
 
   useEffect(() => {
@@ -67,6 +68,13 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
         hash === '#wiki-adventure-title'
       ) {
         setOpen(true)
+        if (
+          hash === '#wiki-survival-log-title' ||
+          hash === '#reading-explorer-title' ||
+          hash === '#wiki-adventure-title'
+        ) {
+          setLoadExtras(true)
+        }
         if (hash !== '#wiki-explore') {
           window.setTimeout(() => {
             document.querySelector(hash)?.scrollIntoView({
@@ -82,6 +90,16 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
     window.addEventListener('hashchange', openFromHash)
     return () => window.removeEventListener('hashchange', openFromHash)
   }, [])
+
+  useEffect(() => {
+    if (!open || loadExtras) return
+
+    const timer = window.setTimeout(() => {
+      setLoadExtras(true)
+    }, 700)
+
+    return () => window.clearTimeout(timer)
+  }, [loadExtras, open])
 
   return (
     <section
@@ -121,9 +139,15 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
         <div className="home-playground-content" id="home-playground-content">
           <WikiEnhancementLab pages={pages} />
           <WikiFunZone pages={pages} />
-          <WikiSurvivalLog pages={pages} />
-          <WikiReadingExplorer pages={pages} />
-          <WikiAdventureHub pages={pages} />
+          {loadExtras ? (
+            <>
+              <WikiSurvivalLog pages={pages} />
+              <WikiReadingExplorer pages={pages} />
+              <WikiAdventureHub pages={pages} />
+            </>
+          ) : (
+            <PlaygroundLoading label="추가 탐험 기능을 여유 시간에 불러오는 중" />
+          )}
         </div>
       )}
     </section>
