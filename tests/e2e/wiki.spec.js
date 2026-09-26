@@ -129,6 +129,29 @@ test.describe('desktop wiki journeys', () => {
     await expect(search).not.toBeVisible()
   })
 
+  test('enhancement lab scales up on wide desktop without panel imbalance', async ({ page }) => {
+    await page.setViewportSize({ width: 1585, height: 900 })
+    await page.goto('/')
+    await page.getByRole('button', { name: '위키 탐험 시작' }).click()
+
+    const lab = page.locator('#enhancement-lab')
+    const forge = lab.locator('.enhancement-forge')
+    const side = lab.locator('.enhancement-side')
+    const pickaxe = lab.locator('.enhancement-slot-shell')
+
+    const [forgeBox, sideBox, pickaxeBox] = await Promise.all([
+      forge.boundingBox(),
+      side.boundingBox(),
+      pickaxe.boundingBox()
+    ])
+
+    expect(forgeBox).not.toBeNull()
+    expect(sideBox).not.toBeNull()
+    expect(pickaxeBox).not.toBeNull()
+    expect(forgeBox.width).toBeGreaterThan(sideBox.width * 1.55)
+    expect(pickaxeBox.width).toBeGreaterThanOrEqual(210)
+  })
+
   test('enhancement lab starts with the louder default volume', async ({ page }) => {
     await page.addInitScript(() => {
       localStorage.removeItem('justserver3:enhancement-volume')

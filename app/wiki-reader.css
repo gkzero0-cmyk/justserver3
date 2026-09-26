@@ -12189,3 +12189,283 @@ html[data-theme="light"] .enhancement-stage-tag {
     --pickaxe-visual-y: -2px;
   }
 }
+
+
+/* === 2026-09-26 enhancement lab responsive desktop scale === */
+@media (min-width: 1100px) {
+  .wiki-enhancement-lab {
+    gap: clamp(16px, 1.2vw, 22px);
+    padding: clamp(20px, 1.45vw, 28px);
+  }
+
+  .enhancement-lab-head {
+    gap: clamp(18px, 1.5vw, 28px);
+    padding-bottom: clamp(14px, 1vw, 19px);
+  }
+
+  .enhancement-lab-head p {
+    font-size: clamp(10px, .68vw, 12px);
+  }
+
+  .enhancement-lab-head h2 {
+    font-size: clamp(28px, 2vw, 36px);
+  }
+
+  .enhancement-lab-head > div:first-child > span {
+    font-size: clamp(12px, .78vw, 14px);
+  }
+
+  .enhancement-head-actions {
+    gap: 9px;
+  }
+
+  .enhancement-sim-badge,
+  .enhancement-head-actions button {
+    min-height: clamp(36px, 2.5vw, 42px);
+    padding-inline: clamp(11px, .85vw, 15px);
+    font-size: clamp(10px, .65vw, 12px);
+  }
+
+  .enhancement-volume-control {
+    min-height: clamp(36px, 2.5vw, 42px);
+    padding-inline: 10px;
+  }
+
+  .enhancement-volume-control input {
+    width: clamp(110px, 8vw, 155px);
+  }
+
+  .enhancement-volume-control b {
+    min-width: 36px;
+    font-size: clamp(9px, .62vw, 11px);
+  }
+
+  .enhancement-main-grid {
+    grid-template-columns: minmax(0, 1.82fr) minmax(330px, .92fr);
+    gap: clamp(14px, 1vw, 20px);
+  }
+
+  .enhancement-forge {
+    min-height: clamp(560px, 39vw, 690px);
+    gap: clamp(11px, .8vw, 15px);
+    padding: clamp(20px, 1.45vw, 28px);
+  }
+
+  .enhancement-level-row {
+    gap: 10px;
+  }
+
+  .enhancement-level-label {
+    font-size: clamp(9px, .62vw, 11px);
+  }
+
+  .enhancement-level-row > strong {
+    font-size: clamp(38px, 2.7vw, 50px);
+  }
+
+  .enhancement-item-name {
+    font-size: clamp(11px, .75vw, 14px);
+  }
+
+  .enhancement-stage-tag {
+    min-height: 24px;
+    padding-inline: 8px;
+    font-size: clamp(8px, .55vw, 10px);
+  }
+
+  .enhancement-item-stage {
+    min-height: clamp(330px, 23vw, 410px);
+    gap: clamp(13px, .9vw, 18px);
+    padding-block: 16px 8px;
+  }
+
+  .enhancement-slot-shell {
+    width: clamp(215px, 15vw, 270px);
+    height: clamp(215px, 15vw, 270px);
+    padding: clamp(8px, .55vw, 10px);
+  }
+
+  .enhancement-pickaxe {
+    width: clamp(176px, 12.2vw, 220px);
+    height: clamp(176px, 12.2vw, 220px);
+  }
+
+  .enhancement-item-tooltip {
+    width: min(430px, 92%);
+    padding: 11px 14px;
+  }
+
+  .enhancement-item-tooltip strong {
+    font-size: clamp(11px, .72vw, 13px);
+  }
+
+  .enhancement-item-tooltip span {
+    font-size: clamp(9px, .62vw, 11px);
+  }
+
+  .enhancement-result {
+    min-height: clamp(50px, 3.6vw, 60px);
+    grid-template-columns: 31px minmax(0,1fr);
+    padding: 11px 14px;
+  }
+
+  .enhancement-result > span {
+    font-size: clamp(18px, 1.35vw, 23px);
+  }
+
+  .enhancement-result > strong {
+    font-size: clamp(11px, .72vw, 13px);
+  }
+
+  .enhancement-action-odds {
+    font-size: clamp(9px, .62vw, 11px);
+  }
+
+  .enhancement-primary {
+    min-height: clamp(68px, 4.8vw, 82px);
+    font-size: clamp(16px, 1.05vw, 19px);
+  }
+
+  .enhancement-primary span {
+    font-size: clamp(10px, .66vw, 12px);
+  }
+
+  .enhancement-side {
+    gap: clamp(11px, .8vw, 15px);
+  }
+
+  .enhancement-side > section,
+  .enhancement-side > details {
+    padding: clamp(15px, 1.05vw, 20px);
+  }
+
+  .enhancement-panel-title small,
+  .enhancement-log-head span {
+    font-size: clamp(8px, .54vw, 10px);
+  }
+
+  .enhancement-panel-title strong,
+  .enhancement-log-head strong {
+    font-size: clamp(11px, .76vw, 14px);
+  }
+
+  .enhancement-odds-grid strong {
+    font-size: clamp(18px, 1.3vw, 24px);
+  }
+
+  .enhancement-record-grid strong,
+  .enhancement-run-strip strong {
+    font-size: clamp(14px, 1vw, 18px);
+  }
+
+  .enhancement-record-grid small,
+  .enhancement-run-strip small,
+  .enhancement-odds-grid small {
+    font-size: clamp(8px, .55vw, 10px);
+  }
+
+  .enhancement-log-list {
+    gap: clamp(6px, .45vw, 9px);
+  }
+
+  .enhancement-log-list > span {
+    padding: 8px 9px;
+  }
+
+  .enhancement-log-list b {
+    font-size: clamp(9px, .6vw, 11px);
+  }
+
+  .enhancement-log-list small {
+    font-size: clamp(8px, .55vw, 10px);
+  }
+}
+
+@media (min-width: 1440px) {
+  .wiki-main.is-home-main {
+    --content-max: min(1320px, calc(100vw - var(--sidebar) - 86px));
+  }
+
+  html[data-sidebar="collapsed"] .wiki-main.is-home-main,
+  .wiki-shell.is-sidebar-collapsed .wiki-main.is-home-main {
+    --content-max: min(1460px, calc(100vw - 100px));
+  }
+
+  .home-playground.is-open {
+    margin-inline: auto;
+    width: min(100%, var(--content-max));
+  }
+
+  .enhancement-main-grid {
+    grid-template-columns: minmax(0, 1.9fr) minmax(350px, .9fr);
+  }
+}
+
+@media (min-width: 1600px) {
+  .wiki-main.is-home-main {
+    --content-max: min(1420px, calc(100vw - var(--sidebar) - 96px));
+  }
+
+  html[data-sidebar="collapsed"] .wiki-main.is-home-main,
+  .wiki-shell.is-sidebar-collapsed .wiki-main.is-home-main {
+    --content-max: min(1540px, calc(100vw - 116px));
+  }
+
+  .wiki-enhancement-lab {
+    border-radius: 19px;
+  }
+
+  .enhancement-main-grid {
+    grid-template-columns: minmax(0, 1.92fr) minmax(370px, .9fr);
+  }
+}
+
+@media (min-width: 1920px) {
+  .wiki-main.is-home-main {
+    --content-max: min(1520px, calc(100vw - var(--sidebar) - 120px));
+  }
+
+  html[data-sidebar="collapsed"] .wiki-main.is-home-main,
+  .wiki-shell.is-sidebar-collapsed .wiki-main.is-home-main {
+    --content-max: min(1660px, calc(100vw - 140px));
+  }
+
+  .enhancement-forge {
+    min-height: 700px;
+  }
+
+  .enhancement-slot-shell {
+    width: 280px;
+    height: 280px;
+  }
+
+  .enhancement-pickaxe {
+    width: 230px;
+    height: 230px;
+  }
+}
+
+@media (min-width: 1100px) and (max-height: 760px) {
+  .enhancement-forge {
+    min-height: 520px;
+  }
+
+  .enhancement-item-stage {
+    min-height: 286px;
+    padding-block: 8px 4px;
+  }
+
+  .enhancement-slot-shell {
+    width: clamp(190px, 13vw, 220px);
+    height: clamp(190px, 13vw, 220px);
+  }
+
+  .enhancement-pickaxe {
+    width: clamp(156px, 10.5vw, 180px);
+    height: clamp(156px, 10.5vw, 180px);
+  }
+
+  .enhancement-primary {
+    min-height: 62px;
+  }
+}

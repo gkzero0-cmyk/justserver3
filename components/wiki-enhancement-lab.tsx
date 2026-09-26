@@ -719,7 +719,8 @@ export function WikiEnhancementLab({
               aria-pressed={soundOn}
               onClick={() => setSoundOn((value) => !value)}
             >
-              {soundOn ? '효과음 켬' : '효과음 끔'}
+              <span aria-hidden="true">{soundOn ? '🔊' : '🔇'}</span>
+              {soundOn ? '효과음' : '음소거'}
             </button>
             <label className="enhancement-volume-control">
               <span aria-hidden="true">{soundVolume === 0 || !soundOn ? '🔇' : '🔊'}</span>
