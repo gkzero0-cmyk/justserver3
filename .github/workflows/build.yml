@@ -77,6 +77,28 @@ jobs:
             fi
             curl --fail --silent --show-error -X POST "$VERCEL_HOOK_URL"
             echo "Vercel production refresh requested through deploy hook (fresh build)."
+
+            DEPLOYED_SHA=""
+            for attempt in $(seq 1 60); do
+              DEPLOYED_SHA="$(
+                curl --fail --silent --show-error                   -H 'cache-control: no-cache'                   "https://justserver3.vercel.app/api/version?ts=$(date +%s)"                 | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{process.stdout.write(JSON.parse(d).commit||'')}catch{}})"
+              )" || true
+
+              if [ "$DEPLOYED_SHA" = "$LOCAL_SHA" ]; then
+                echo "Production now serves commit $LOCAL_SHA."
+                break
+              fi
+
+              echo "Production is still on ${DEPLOYED_SHA:-unknown}; checking again."
+              sleep 10
+            done
+
+            if [ "$DEPLOYED_SHA" != "$LOCAL_SHA" ]; then
+              echo "::error::Production did not advance to commit $LOCAL_SHA."
+              exit 1
+            fi
+
+            npm run test:production
           else
             echo "::warning::No Vercel deployment credential is configured."
             echo "::warning::Set VERCEL_TOKEN or VERCEL_DEPLOY_HOOK in GitHub Actions secrets."
