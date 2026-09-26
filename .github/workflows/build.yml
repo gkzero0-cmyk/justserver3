@@ -60,6 +60,8 @@ jobs:
           if [ -n "$VERCEL_TOKEN" ]; then
             echo "Using Vercel CLI production deployment."
             npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
+            echo "Production deployment completed; running smoke checks."
+            npm run test:production
           elif [ -n "$VERCEL_DEPLOY_HOOK" ]; then
             if [[ "$VERCEL_DEPLOY_HOOK" == *"?"* ]]; then
               VERCEL_HOOK_URL="$VERCEL_DEPLOY_HOOK&buildCache=false"
