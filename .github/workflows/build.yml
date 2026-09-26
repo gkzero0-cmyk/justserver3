@@ -30,8 +30,24 @@ jobs:
 
       - name: Verify production release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
         run: |
           LOCAL_SHA="$(git rev-parse HEAD)"
+          DEPLOYED_SHA="$(
+            curl --fail --silent --show-error               -H 'cache-control: no-cache'               "https://justserver3.vercel.app/api/version?ts=$(date +%s)"             | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{process.stdout.write(JSON.parse(d).commit||'')}catch{}})"
+          )" || true
+
+          if [ "$DEPLOYED_SHA" != "$LOCAL_SHA" ] && [ -n "$VERCEL_DEPLOY_HOOK" ]; then
+            if [[ "$VERCEL_DEPLOY_HOOK" == *"?"* ]]; then
+              VERCEL_HOOK_URL="$VERCEL_DEPLOY_HOOK&buildCache=false"
+            else
+              VERCEL_HOOK_URL="$VERCEL_DEPLOY_HOOK?buildCache=false"
+            fi
+            curl --fail --silent --show-error -X POST "$VERCEL_HOOK_URL"
+            echo "Production was stale, so a single deploy-hook recovery was requested."
+          fi
+
           DEPLOYED_SHA=""
 
           for attempt in $(seq 1 90); do
