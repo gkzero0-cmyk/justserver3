@@ -15,6 +15,7 @@ import {
   resolveCachedAsset,
   withBasePath
 } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 
 export const revalidate = 60
 
@@ -26,6 +27,20 @@ function formatDate(value: string | null) {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
+  }).format(date)
+}
+
+function formatSyncDate(value: string | null) {
+  if (!value) return '최근 동기화 확인 중'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return '최근 동기화 확인 중'
+  return new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
   }).format(date)
 }
 
@@ -102,8 +117,6 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
-      <StarterGuide pages={directoryPages} />
-
       <section className="wiki-directory" aria-labelledby="quick-goals-title">
         <div className="directory-heading">
           <div>
@@ -181,15 +194,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <WikiSinceVisit
-        pages={directoryPages.map((page) => ({
-          pageId: page.pageId,
-          title: page.title,
-          lastEdited: page.lastEdited,
-          summary: page.changeSummary
-        }))}
-      />
-      <WikiDirectory pages={directoryPages} />
+      <div className="wiki-sync-strip" role="status" aria-label="위키 데이터 갱신 상태">
+        <span aria-hidden="true">●</span>
+        <strong>원본 문서 자동 연동</strong>
+        <small>{formatSyncDate(notionIndex.generatedAt)} 기준</small>
+      </div>
+
+      <StarterGuide pages={directoryPages} />
 
       <section className="recent-updates" aria-labelledby="recent-updates-title">
         <div className="recent-updates-head">
@@ -204,7 +215,7 @@ export default async function HomePage() {
           {recentPages.map((page) => (
             <Link
               key={page.pageId}
-              href={withBasePath(`/page/${page.pageId}/`)}
+              href={withBasePath(wikiGuidePath(page))}
               className="recent-update-card"
               data-wiki-event="wiki_home_navigate"
               data-wiki-section="recent-updates"
@@ -229,6 +240,18 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      <WikiSinceVisit
+        pages={directoryPages.map((page) => ({
+          pageId: page.pageId,
+          title: page.title,
+          lastEdited: page.lastEdited,
+          summary: page.changeSummary
+        }))}
+      />
+      <WikiDirectory pages={directoryPages} />
+
+
 
       <WikiHomePlayground
         pages={directoryPages.map((page) => ({
