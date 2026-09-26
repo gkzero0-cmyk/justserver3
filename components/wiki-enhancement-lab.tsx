@@ -317,24 +317,30 @@ function playTone(
     }
 
     if (kind === 'charge') {
-      hammerHit(0, 0.55, 0.45, true)
-      impactNoise(0.08, 0.12, 0.012, 540, 'lowpass')
+      // Preparation cue: metal placed on an anvil + a light tool tap.
+      // Keep it intentionally softer and shorter than every result sound.
+      impactNoise(0, 0.035, 0.026, 1380, 'bandpass')
+      resonator(118, 0, 0.12, 0.017, 'triangle', 92)
+      impactNoise(0.055, 0.05, 0.01, 1820, 'highpass')
       if (intensity >= 8) {
-        resonator(58, 0.12, 0.48, 0.012, 'sine', 68)
+        resonator(54, 0.09, 0.32, 0.007, 'sine', 62)
       }
     } else if (kind === 'success') {
-      hammerHit(0, 0.95, 1, false)
+      // Clear forged result: crisp hammer hit with an open metallic ring.
+      hammerHit(0, 0.98, 1.05, false)
+      resonator(326, 0.018, 0.34, 0.012, 'sine', 342)
       if (intensity >= 8) {
-        resonator(196, 0.08, 0.38, 0.009, 'sine', 214)
+        resonator(196, 0.08, 0.38, 0.008, 'sine', 214)
       }
     } else if (kind === 'max') {
-      hammerHit(0, 1.12, 1.2, false)
-      hammerHit(0.16, 0.48, 0.72, false)
+      hammerHit(0, 1.14, 1.18, false)
+      hammerHit(0.17, 0.5, 0.72, false)
       resonator(174, 0.09, 0.66, 0.014, 'sine', 205)
       impactNoise(0.18, 0.22, 0.01, 720, 'bandpass')
     } else if (kind === 'down') {
-      hammerHit(0, 0.82, 0.55, true)
-      resonator(146, 0.035, 0.46, 0.02, 'triangle', 72)
+      hammerHit(0, 0.78, 0.48, true)
+      resonator(142, 0.035, 0.5, 0.024, 'triangle', 58)
+      impactNoise(0.13, 0.12, 0.014, 260, 'lowpass')
     } else if (kind === 'destroy') {
       hammerHit(0, 1.2, 0.46, true)
       impactNoise(0.025, 0.34, 0.06, 940, 'bandpass')
@@ -342,8 +348,10 @@ function playTone(
       resonator(68, 0.015, 0.72, 0.042, 'sine', 38)
       resonator(43, 0.09, 0.74, 0.024, 'triangle')
     } else {
-      hammerHit(0, 0.72, 0.32, true)
-      impactNoise(0.02, 0.11, 0.016, 470, 'lowpass')
+      // Failure: a dead, closed hit with almost no ringing.
+      impactNoise(0, 0.065, 0.058, 430, 'lowpass')
+      resonator(92, 0.005, 0.18, 0.036, 'triangle', 58)
+      impactNoise(0.025, 0.07, 0.018, 760, 'bandpass')
     }
 
     activeEnhancementAudioCloseTimer = window.setTimeout(() => {
@@ -436,6 +444,11 @@ export function WikiEnhancementLab({
     () => (stats.level >= 15 ? 'MAX' : String(rule.success) + '%'),
     [rule.success, stats.level]
   )
+
+  const runSuccessRate = useMemo(() => {
+    if (!stats.run.attempts) return 0
+    return Math.round((stats.run.successes / stats.run.attempts) * 100)
+  }, [stats.run.attempts, stats.run.successes])
 
   useEffect(() => {
     const saved = normalizeStats(
@@ -792,13 +805,15 @@ export function WikiEnhancementLab({
 
           <div
             className="enhancement-result"
-            data-outcome={outcome || 'idle'}
+            data-outcome={animating ? 'charging' : outcome || 'idle'}
             aria-live="polite"
           >
             <span aria-hidden="true">
-              {outcome === 'max'
-                ? '✦'
-                : outcome === 'success'
+              {animating
+                ? '⚒'
+                : outcome === 'max'
+                  ? '✦'
+                  : outcome === 'success'
                   ? '◆'
                   : outcome === 'down'
                     ? '↓'
@@ -809,6 +824,34 @@ export function WikiEnhancementLab({
                         : '◇'}
             </span>
             <strong>{message}</strong>
+          </div>
+
+          <div
+            className="enhancement-action-odds"
+            data-risk={danger.tone}
+            aria-label="이번 강화 핵심 확률"
+          >
+            {stats.level >= 15 ? (
+              <strong>+15 최대 강화 달성</strong>
+            ) : (
+              <>
+                <span><small>성공</small><b>{rule.success}%</b></span>
+                <i aria-hidden="true">·</i>
+                <span><small>실패</small><b>{rule.fail}%</b></span>
+                {rule.down > 0 && (
+                  <>
+                    <i aria-hidden="true">·</i>
+                    <span><small>하락</small><b>{rule.down}%</b></span>
+                  </>
+                )}
+                {rule.destroy > 0 && (
+                  <>
+                    <i aria-hidden="true">·</i>
+                    <span className="is-danger"><small>파괴</small><b>{rule.destroy}%</b></span>
+                  </>
+                )}
+              </>
+            )}
           </div>
 
           <div className="enhancement-action-zone">
@@ -977,7 +1020,21 @@ export function WikiEnhancementLab({
                 <small>이번 도전</small>
                 <strong>현재 곡괭이 기록</strong>
               </div>
-              <b>최고 +{stats.run.best}</b>
+              <span data-tone={danger.tone}>{danger.label}</span>
+            </div>
+            <div className="enhancement-run-highlight">
+              <span>
+                <small>현재 강화</small>
+                <strong>+{stats.level}</strong>
+              </span>
+              <span>
+                <small>이번 최고</small>
+                <strong>+{stats.run.best}</strong>
+              </span>
+              <span>
+                <small>성공률</small>
+                <strong>{runSuccessRate}%</strong>
+              </span>
             </div>
             <div className="enhancement-run-strip">
               <span><small>시도</small><strong>{stats.run.attempts}</strong></span>
