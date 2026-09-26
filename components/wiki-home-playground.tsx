@@ -12,6 +12,8 @@ type PlaygroundPage = {
   status?: WikiContentStatus
 }
 
+type PlaygroundTab = 'enhancement' | 'play' | 'records'
+
 const WikiEnhancementLab = dynamic(
   () =>
     import('@/components/wiki-enhancement-lab').then(
@@ -54,13 +56,13 @@ function PlaygroundLoading({ label }: { label: string }) {
 
 export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
   const [open, setOpen] = useState(false)
-  const [loadFunZone, setLoadFunZone] = useState(false)
-  const [loadExtras, setLoadExtras] = useState(false)
+  const [activeTab, setActiveTab] = useState<PlaygroundTab>('enhancement')
   const readyCount = pages.filter((page) => page.status !== 'draft').length
 
   useEffect(() => {
     const openFromHash = () => {
       const hash = window.location.hash
+
       if (
         hash === '#wiki-explore' ||
         hash === '#enhancement-lab' ||
@@ -69,20 +71,23 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
         hash === '#wiki-adventure-title'
       ) {
         setOpen(true)
+
+        if (hash === '#enhancement-lab') setActiveTab('enhancement')
         if (
           hash === '#wiki-survival-log-title' ||
           hash === '#reading-explorer-title' ||
           hash === '#wiki-adventure-title'
         ) {
-          setLoadExtras(true)
+          setActiveTab('records')
         }
+
         if (hash !== '#wiki-explore') {
           window.setTimeout(() => {
             document.querySelector(hash)?.scrollIntoView({
               behavior: 'smooth',
               block: 'start'
             })
-          }, 120)
+          }, 180)
         }
       }
     }
@@ -91,40 +96,6 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
     window.addEventListener('hashchange', openFromHash)
     return () => window.removeEventListener('hashchange', openFromHash)
   }, [])
-
-  useEffect(() => {
-    if (!open || loadFunZone) return
-
-    const schedule =
-      'requestIdleCallback' in window
-        ? window.requestIdleCallback(() => setLoadFunZone(true), { timeout: 500 })
-        : globalThis.setTimeout(() => setLoadFunZone(true), 250)
-
-    return () => {
-      if ('cancelIdleCallback' in window && typeof schedule === 'number') {
-        window.cancelIdleCallback(schedule)
-      } else {
-        globalThis.clearTimeout(schedule)
-      }
-    }
-  }, [loadFunZone, open])
-
-  useEffect(() => {
-    if (!open || loadExtras) return
-
-    const schedule =
-      'requestIdleCallback' in window
-        ? window.requestIdleCallback(() => setLoadExtras(true), { timeout: 1600 })
-        : globalThis.setTimeout(() => setLoadExtras(true), 1200)
-
-    return () => {
-      if ('cancelIdleCallback' in window && typeof schedule === 'number') {
-        window.cancelIdleCallback(schedule)
-      } else {
-        globalThis.clearTimeout(schedule)
-      }
-    }
-  }, [loadExtras, open])
 
   return (
     <section
@@ -138,14 +109,13 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
           <p>WIKI ADVENTURE</p>
           <h2 id="home-playground-title">가이드를 읽으면서 같이 놀아보세요</h2>
           <span>
-            운세·성향 테스트·미션·완독 기록·보물찾기·주간 보스를 하나의 탐험 기록으로 연결했습니다.
+            강화 체험·미니게임·완독 기록을 탭으로 나눠 필요한 기능만 빠르게 불러옵니다.
           </span>
           <div className="home-playground-chips" aria-label="위키 탐험 기능">
             <b>📚 {readyCount}개 공개 가이드</b>
-            <b>🏆 완독·업적</b>
             <b>⚒️ 강화 체험소</b>
             <b>🎲 PLAY ZONE</b>
-            <b>⚔️ 주간 보스</b>
+            <b>🏆 기록·업적</b>
           </div>
         </div>
         <button
@@ -162,17 +132,50 @@ export function WikiHomePlayground({ pages }: { pages: PlaygroundPage[] }) {
 
       {open && (
         <div className="home-playground-content" id="home-playground-content">
-          <WikiEnhancementLab pages={pages} />
-          {loadFunZone && <WikiFunZone pages={pages} />}
-          {loadExtras ? (
-            <>
-              <WikiSurvivalLog pages={pages} />
-              <WikiReadingExplorer pages={pages} />
-              <WikiAdventureHub pages={pages} />
-            </>
-          ) : (
-            <PlaygroundLoading label="추가 탐험 기능을 여유 시간에 불러오는 중" />
-          )}
+          <div className="home-playground-tabs" role="tablist" aria-label="위키 탐험">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'enhancement'}
+              className={activeTab === 'enhancement' ? 'is-active' : ''}
+              onClick={() => setActiveTab('enhancement')}
+            >
+              <span aria-hidden="true">⚒️</span>
+              강화
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'play'}
+              className={activeTab === 'play' ? 'is-active' : ''}
+              onClick={() => setActiveTab('play')}
+            >
+              <span aria-hidden="true">🎲</span>
+              미니게임
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'records'}
+              className={activeTab === 'records' ? 'is-active' : ''}
+              onClick={() => setActiveTab('records')}
+            >
+              <span aria-hidden="true">🏆</span>
+              탐험 기록
+            </button>
+          </div>
+
+          <div className="home-playground-panel" role="tabpanel">
+            {activeTab === 'enhancement' && <WikiEnhancementLab pages={pages} />}
+            {activeTab === 'play' && <WikiFunZone pages={pages} />}
+            {activeTab === 'records' && (
+              <>
+                <WikiSurvivalLog pages={pages} />
+                <WikiReadingExplorer pages={pages} />
+                <WikiAdventureHub pages={pages} />
+              </>
+            )}
+          </div>
         </div>
       )}
     </section>

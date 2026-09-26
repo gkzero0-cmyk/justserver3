@@ -32,6 +32,15 @@ test.describe('desktop wiki journeys', () => {
     await expect(page.getByText('서버규칙', { exact: true }).first()).toBeVisible()
   })
 
+  test('text size control persists after reload', async ({ page }) => {
+    await page.goto('/')
+    const large = page.getByRole('button', { name: 'A+' })
+    await large.click()
+    await expect(page.locator('html')).toHaveAttribute('data-text-size', 'large')
+    await page.reload()
+    await expect(page.locator('html')).toHaveAttribute('data-text-size', 'large')
+  })
+
   test('theme selection persists after reload', async ({ page }) => {
     await page.goto('/')
 
@@ -133,6 +142,7 @@ test.describe('desktop wiki journeys', () => {
     await page.setViewportSize({ width: 1226, height: 567 })
     await page.goto('/')
     await page.getByRole('button', { name: '위키 탐험 시작' }).click()
+    await expect(page.getByRole('tab', { name: /강화/ })).toHaveAttribute('aria-selected', 'true')
 
     const lab = page.locator('#enhancement-lab')
     const box = await lab.boundingBox()
@@ -206,6 +216,30 @@ test.describe('desktop wiki journeys', () => {
     const lab = page.locator('#enhancement-lab')
     const volume = lab.getByRole('slider', { name: '강화 효과음 볼륨' })
     await expect(volume).toHaveValue('100')
+  })
+
+  test('playground tabs load only the selected feature group', async ({ page }) => {
+    await page.goto('/')
+    await page.getByRole('button', { name: '위키 탐험 시작' }).click()
+
+    await expect(page.locator('#enhancement-lab')).toBeVisible()
+    await page.getByRole('tab', { name: /미니게임/ }).click()
+    await expect(page.getByRole('tab', { name: /미니게임/ })).toHaveAttribute('aria-selected', 'true')
+    await expect(page.locator('#enhancement-lab')).toHaveCount(0)
+
+    await page.getByRole('tab', { name: /탐험 기록/ }).click()
+    await expect(page.getByRole('tab', { name: /탐험 기록/ })).toHaveAttribute('aria-selected', 'true')
+  })
+
+  test('favorite document persists and appears on home', async ({ page }) => {
+    await page.goto('/guide/rules/')
+    const favorite = page.getByRole('button', { name: /즐겨찾기/ })
+    await favorite.click()
+    await expect(favorite).toHaveAttribute('aria-pressed', 'true')
+
+    await page.goto('/')
+    await expect(page.getByText('즐겨찾기', { exact: true })).toBeVisible()
+    await expect(page.getByRole('link', { name: /서버규칙/ }).first()).toBeVisible()
   })
 
   test('home guide links resolve without 404 responses', async ({ page, request }) => {
@@ -319,8 +353,26 @@ test.describe('mobile wiki journeys', () => {
     for (const control of controls) {
       const box = await control.boundingBox()
       expect(box).not.toBeNull()
-      expect(box.width).toBeGreaterThanOrEqual(36)
-      expect(box.height).toBeGreaterThanOrEqual(36)
+      expect(box.width).toBeGreaterThanOrEqual(44)
+      expect(box.height).toBeGreaterThanOrEqual(44)
+    }
+  })
+
+  test('captures key responsive layouts for visual review', async ({ page }) => {
+    const viewports = [
+      { width: 1226, height: 567, name: 'compact-desktop' },
+      { width: 1585, height: 738, name: 'wide-desktop' },
+      { width: 1920, height: 1080, name: 'full-hd' }
+    ]
+
+    for (const viewport of viewports) {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height })
+      await page.goto('/')
+      await page.getByRole('button', { name: '위키 탐험 시작' }).click()
+      await page.screenshot({
+        path: `test-results/visual/${viewport.name}.png`,
+        fullPage: true
+      })
     }
   })
 

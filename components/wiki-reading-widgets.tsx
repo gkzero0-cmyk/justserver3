@@ -19,6 +19,59 @@ type RecentPage = {
   title: string
 }
 
+export function FavoritePagesSection({
+  pages,
+  onRemove
+}: {
+  pages: RecentPage[]
+  onRemove: (pageId: string) => void
+}) {
+  if (!pages.length) return null
+
+  return (
+    <section
+      className="favorite-pages"
+      aria-labelledby="favorite-pages-title"
+    >
+      <div className="recent-viewed-head">
+        <div>
+          <p>FAVORITES</p>
+          <h2 id="favorite-pages-title">즐겨찾기</h2>
+        </div>
+        <div className="recent-viewed-actions">
+          <small>자주 보는 문서를 이 브라우저에 저장합니다.</small>
+        </div>
+      </div>
+
+      <div className="favorite-pages-list">
+        {pages.map((page) => (
+          <div className="favorite-page-card" key={page.pageId}>
+            <Link
+              href={withBasePath(wikiGuidePath(page))}
+              data-wiki-event="wiki_home_navigate"
+              data-wiki-section="favorites"
+              data-wiki-target={page.title}
+              data-wiki-status="ready"
+            >
+              <span aria-hidden="true">{iconForTitle(page.title)}</span>
+              <strong>{page.title}</strong>
+              <b>→</b>
+            </Link>
+            <button
+              type="button"
+              aria-label={`${page.title} 즐겨찾기 해제`}
+              title="즐겨찾기 해제"
+              onClick={() => onRemove(page.pageId)}
+            >
+              ★
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 export function RecentViewedSection({
   ready,
   pages,

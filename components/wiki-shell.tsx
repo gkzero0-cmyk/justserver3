@@ -7,6 +7,7 @@ import { track } from '@vercel/analytics'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
+  FavoritePagesSection,
   RecentViewedSection,
   type ReadingTocItem
 } from '@/components/wiki-reading-widgets'
@@ -152,6 +153,9 @@ export function WikiShell({
   const [openMobileCategories, setOpenMobileCategories] = useState<string[]>([])
   const [recentPageIds, setRecentPageIds] = useState<string[]>([])
   const [recentReady, setRecentReady] = useState(false)
+  const [favoritePageIds, setFavoritePageIds] = useState<string[]>([])
+  const [favoritesReady, setFavoritesReady] = useState(false)
+  const [textSize, setTextSize] = useState<'small' | 'default' | 'large'>('default')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
@@ -184,6 +188,29 @@ export function WikiShell({
     document.documentElement.dataset.theme = theme
     window.localStorage.setItem('justserver3-theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem('justserver3-text-size')
+    const next =
+      saved === 'small' || saved === 'large' || saved === 'default'
+        ? saved
+        : 'default'
+    setTextSize(next)
+    document.documentElement.dataset.textSize = next
+  }, [])
+
+  const changeTextSize = (next: 'small' | 'default' | 'large') => {
+    setTextSize(next)
+    document.documentElement.dataset.textSize = next
+    window.localStorage.setItem('justserver3-text-size', next)
+    track('wiki_text_size_change', { size: next })
+  }
+
+  useEffect(() => {
+    const favorites = readWikiStringArray('favoritePages')
+    setFavoritePageIds(favorites)
+    setFavoritesReady(true)
+  }, [])
 
   useEffect(() => {
     const saved = window.localStorage.getItem('justserver3-sidebar-collapsed')
@@ -317,6 +344,47 @@ export function WikiShell({
     setRecentPageIds([])
     setRecentReady(true)
     track('wiki_recent_history_clear')
+  }
+
+  const favoritePages = useMemo(
+    () =>
+      favoritePageIds
+        .map((pageId) =>
+          pages.find(
+            (page) =>
+              page.pageId.replaceAll('-', '') === pageId.replaceAll('-', '')
+          )
+        )
+        .filter((page): page is WikiPageLink => Boolean(page))
+        .slice(0, 8),
+    [favoritePageIds, pages]
+  )
+
+  const isCurrentFavorite = Boolean(
+    currentPageId &&
+      favoritePageIds.some(
+        (pageId) =>
+          pageId.replaceAll('-', '') === currentPageId.replaceAll('-', '')
+      )
+  )
+
+  const toggleFavoritePage = (pageId: string) => {
+    const normalized = pageId.replaceAll('-', '')
+    setFavoritePageIds((current) => {
+      const exists = current.some(
+        (item) => item.replaceAll('-', '') === normalized
+      )
+      const next = exists
+        ? current.filter((item) => item.replaceAll('-', '') !== normalized)
+        : [normalized, ...current].slice(0, 8)
+      writeWikiStateValue(
+        'favoritePages',
+        next,
+        'justserver3:favorite-pages'
+      )
+      track(exists ? 'wiki_favorite_remove' : 'wiki_favorite_add')
+      return next
+    })
   }
 
   const toggleMobileCategory = (category: string) => {
@@ -1119,6 +1187,36 @@ export function WikiShell({
             <kbd>Ctrl K</kbd>
           </button>
 
+          <div className="text-size-control" role="group" aria-label="글자 크기">
+            <button
+              type="button"
+              className={textSize === 'small' ? 'is-active' : ''}
+              aria-pressed={textSize === 'small'}
+              onClick={() => changeTextSize('small')}
+              title="글자 작게"
+            >
+              A−
+            </button>
+            <button
+              type="button"
+              className={textSize === 'default' ? 'is-active' : ''}
+              aria-pressed={textSize === 'default'}
+              onClick={() => changeTextSize('default')}
+              title="기본 글자 크기"
+            >
+              A
+            </button>
+            <button
+              type="button"
+              className={textSize === 'large' ? 'is-active' : ''}
+              aria-pressed={textSize === 'large'}
+              onClick={() => changeTextSize('large')}
+              title="글자 크게"
+            >
+              A+
+            </button>
+          </div>
+
           <button
             className="theme-toggle"
             type="button"
@@ -1220,6 +1318,17 @@ export function WikiShell({
                 서버 규칙부터 돈벌이, 콘텐츠, 장비 성장까지 적자생존에 필요한 정보를 한곳에서 빠르게 찾아보세요.
               </p>
             )}
+            {!home && currentPageId && favoritesReady && (
+              <button
+                type="button"
+                className={`article-favorite-button ${isCurrentFavorite ? 'is-active' : ''}`}
+                aria-pressed={isCurrentFavorite}
+                onClick={() => toggleFavoritePage(currentPageId)}
+              >
+                <span aria-hidden="true">{isCurrentFavorite ? '★' : '☆'}</span>
+                {isCurrentFavorite ? '즐겨찾기됨' : '즐겨찾기'}
+              </button>
+            )}
             {home && (
               <button
                 className="hero-search-cta"
@@ -1239,6 +1348,13 @@ export function WikiShell({
           <WikiTreasureFind
             currentPageId={currentPageId}
             pages={pages}
+          />
+        )}
+
+        {home && favoritesReady && favoritePages.length > 0 && (
+          <FavoritePagesSection
+            pages={favoritePages}
+            onRemove={toggleFavoritePage}
           />
         )}
 

@@ -12870,3 +12870,224 @@ html[data-theme="light"] .enhancement-stage-tag {
 .status-services article[data-tone="warning"] .status-service-icon {
   color: #e3a06f;
 }
+
+
+/* === Reader controls, favorites and playground tabs === */
+.text-size-control {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  background: rgba(255,255,255,.018);
+}
+
+.text-size-control button {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #8f837d;
+  font-size: 11px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.text-size-control button:hover,
+.text-size-control button:focus-visible {
+  color: #e6d5cd;
+  background: rgba(255,255,255,.045);
+}
+
+.text-size-control button.is-active {
+  color: #efc781;
+  background: rgba(var(--gold-rgb),.11);
+}
+
+html[data-text-size="small"] .notion-page-content {
+  font-size: 94%;
+}
+
+html[data-text-size="large"] .notion-page-content {
+  font-size: 110%;
+}
+
+html[data-text-size="large"] .notion-page-content p,
+html[data-text-size="large"] .notion-page-content li,
+html[data-text-size="large"] .notion-page-content td,
+html[data-text-size="large"] .notion-page-content th,
+html[data-text-size="large"] .notion-page-content .notion-text {
+  line-height: 1.72;
+}
+
+html[data-text-size="large"] .article-key-summary,
+html[data-text-size="large"] .document-status,
+html[data-text-size="large"] .draft-notice {
+  font-size: 1.06em;
+}
+
+.article-favorite-button {
+  width: max-content;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 11px;
+  padding: 0 13px;
+  border: 1px solid rgba(var(--gold-rgb),.18);
+  border-radius: 10px;
+  background: rgba(var(--gold-rgb),.045);
+  color: #b8a99e;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.article-favorite-button.is-active {
+  border-color: rgba(225,177,83,.34);
+  background: rgba(225,177,83,.1);
+  color: #e6bf72;
+}
+
+.favorite-pages {
+  width: min(100%, var(--content-max));
+  margin: 0 auto;
+  display: grid;
+  gap: 11px;
+  padding: 15px;
+  border: 1px solid rgba(var(--gold-rgb),.12);
+  border-radius: 15px;
+  background: rgba(var(--gold-rgb),.018);
+}
+
+.favorite-pages-list {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 8px;
+}
+
+.favorite-page-card {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 38px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.05);
+  border-radius: 11px;
+  background: rgba(255,255,255,.018);
+}
+
+.favorite-page-card > a {
+  min-width: 0;
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 24px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  color: #b9ada7;
+  text-decoration: none;
+}
+
+.favorite-page-card > a strong {
+  overflow: hidden;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.favorite-page-card > button {
+  border: 0;
+  border-left: 1px solid rgba(255,255,255,.045);
+  background: transparent;
+  color: #e2b866;
+  cursor: pointer;
+}
+
+.home-playground-tabs {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 7px;
+  padding: 5px;
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 12px;
+  background: rgba(0,0,0,.14);
+}
+
+.home-playground-tabs button {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: #928781;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.home-playground-tabs button:hover,
+.home-playground-tabs button:focus-visible {
+  background: rgba(255,255,255,.035);
+  color: #d7cac4;
+}
+
+.home-playground-tabs button.is-active {
+  border-color: rgba(var(--gold-rgb),.18);
+  background: rgba(var(--gold-rgb),.08);
+  color: #e7c17b;
+}
+
+.home-playground-panel {
+  display: grid;
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .favorite-pages-list {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .text-size-control {
+    display: none;
+  }
+
+  .favorite-pages-list {
+    grid-template-columns: 1fr;
+  }
+
+  .favorite-page-card > a,
+  .favorite-page-card > button,
+  .home-playground-tabs button,
+  .mobile-bottom-nav > a,
+  .mobile-bottom-nav > button,
+  .mobile-reading-tools button,
+  .article-favorite-button {
+    min-height: 44px;
+  }
+
+  .home-playground-tabs {
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .home-playground-tabs button {
+    font-size: 10px;
+  }
+}
+
+html[data-theme="light"] .text-size-control,
+html[data-theme="light"] .favorite-pages,
+html[data-theme="light"] .favorite-page-card,
+html[data-theme="light"] .home-playground-tabs {
+  border-color: rgba(118,84,55,.13);
+  background: rgba(255,250,243,.62);
+}
