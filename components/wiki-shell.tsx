@@ -1,29 +1,22 @@
 'use client'
 
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { track } from '@vercel/analytics'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
-  MobileTocSheet,
   RecentViewedSection,
   type ReadingTocItem
 } from '@/components/wiki-reading-widgets'
-import { WikiMobileQuickView } from '@/components/wiki-mobile-quick-view'
 import { WikiMobileNavigation } from '@/components/wiki-mobile-navigation'
 import {
   WikiNavigation,
   type WikiNavigationPage
 } from '@/components/wiki-navigation'
-import {
-  WikiSearchDialog,
-  type WikiSearchResult
-} from '@/components/wiki-search-dialog'
-import {
-  WikiAchievementNotifier,
-  WikiTreasureFind
-} from '@/components/wiki-survival-widgets'
+import type { WikiSearchResult } from '@/components/wiki-search-dialog'
+import { WikiTreasureFind } from '@/components/wiki-survival-widgets'
 import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import {
   readWikiStateValue,
@@ -71,6 +64,38 @@ const CORE_PREFETCH_TITLES = new Set([
   '기초설정(뉴비필독)',
   '채광'
 ])
+
+const WikiSearchDialog = dynamic(
+  () =>
+    import('@/components/wiki-search-dialog').then(
+      (mod) => mod.WikiSearchDialog
+    ),
+  { ssr: false }
+)
+
+const MobileTocSheet = dynamic(
+  () =>
+    import('@/components/wiki-reading-widgets').then(
+      (mod) => mod.MobileTocSheet
+    ),
+  { ssr: false }
+)
+
+const WikiMobileQuickView = dynamic(
+  () =>
+    import('@/components/wiki-mobile-quick-view').then(
+      (mod) => mod.WikiMobileQuickView
+    ),
+  { ssr: false }
+)
+
+const WikiAchievementNotifier = dynamic(
+  () =>
+    import('@/components/wiki-survival-widgets').then(
+      (mod) => mod.WikiAchievementNotifier
+    ),
+  { ssr: false }
+)
 
 function categoryLabel(title: string) {
   return categoryTitleForPage(title)
