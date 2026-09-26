@@ -28,6 +28,8 @@ jobs:
       - run: npm run build
       - name: Audit CSS readability debt
         run: npm run audit:css
+      - name: Audit runtime configuration and markup
+        run: npm run audit:static
 
       - name: Build current deploy bundle
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

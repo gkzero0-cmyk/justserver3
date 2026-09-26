@@ -50,6 +50,38 @@ const notionIndexPath = join(root, 'public/notion-assets/index.json')
 const manifestPath = join(root, 'public/notion-assets/manifest.json')
 const notionIndex = JSON.parse(await readFile(notionIndexPath, 'utf8'))
 const manifest = JSON.parse(await readFile(manifestPath, 'utf8'))
+if (!/^[0-9a-f]{32}$/i.test(String(notionIndex.rootPageId || '').replaceAll('-', ''))) {
+  fail(`invalid Notion rootPageId: ${notionIndex.rootPageId || '(missing)'}`)
+}
+
+if (!notionIndex.generatedAt || Number.isNaN(new Date(notionIndex.generatedAt).getTime())) {
+  fail(`invalid Notion generatedAt: ${notionIndex.generatedAt || '(missing)'}`)
+}
+
+if (!Array.isArray(notionIndex.pages) || notionIndex.pages.length === 0) {
+  fail('Notion index has no pages')
+}
+
+const notionIds = new Set()
+const notionTitles = new Set()
+for (const page of notionIndex.pages || []) {
+  const normalizedId = String(page.pageId || '').replaceAll('-', '').toLowerCase()
+  if (!/^[0-9a-f]{32}$/i.test(normalizedId)) {
+    fail(`invalid Notion pageId: ${page.pageId || '(missing)'}`)
+  }
+  if (!String(page.title || '').trim()) {
+    fail(`Notion page ${normalizedId || '(unknown)'} has an empty title`)
+  }
+  if (notionIds.has(normalizedId)) fail(`duplicate Notion pageId: ${normalizedId}`)
+  if (notionTitles.has(page.title)) fail(`duplicate Notion title: ${page.title}`)
+  notionIds.add(normalizedId)
+  notionTitles.add(page.title)
+
+  if (page.lastEdited && Number.isNaN(new Date(page.lastEdited).getTime())) {
+    fail(`invalid lastEdited for ${page.title}: ${page.lastEdited}`)
+  }
+}
+
 const indexById = new Map(
   (notionIndex.pages || []).map((page) => [
     String(page.pageId || '').replaceAll('-', '').toLowerCase(),
@@ -85,11 +117,34 @@ const assetFields = [
   'logo'
 ]
 
+const unsafeUrlPattern = /^(?:javascript|data|vbscript):/i
+
 for (const page of notionIndex.pages || []) {
   for (const field of assetFields) {
     const value = page[field]
-    if (typeof value === 'string' && value.startsWith('/notion-assets/')) {
+    if (typeof value !== 'string' || !value) continue
+
+    if (unsafeUrlPattern.test(value)) {
+      fail(`unsafe asset URL in ${page.title}.${field}: ${value.slice(0, 80)}`)
+      continue
+    }
+
+    if (value.startsWith('/notion-assets/')) {
       referencedAssets.add(value)
+    } else if (!value.startsWith('/') && !/^https:\/\//i.test(value)) {
+      fail(`unsupported asset URL in ${page.title}.${field}: ${value.slice(0, 80)}`)
+    }
+  }
+}
+
+for (const [source, target] of Object.entries(manifest)) {
+  for (const [kind, value] of [['source', source], ['target', target]]) {
+    if (typeof value !== 'string' || !value) {
+      fail(`manifest contains empty ${kind} URL`)
+      continue
+    }
+    if (unsafeUrlPattern.test(value)) {
+      fail(`manifest contains unsafe ${kind} URL: ${value.slice(0, 80)}`)
     }
   }
 }

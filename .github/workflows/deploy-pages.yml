@@ -24,7 +24,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Check Pages activation
         id: pages-status
@@ -45,7 +47,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.pages-status.outputs.enabled == 'true'
-        run: npm install --ignore-scripts
+        run: npm ci
 
       - name: Build static wiki
         if: steps.pages-status.outputs.enabled == 'true'
