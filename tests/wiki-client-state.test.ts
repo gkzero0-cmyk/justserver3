@@ -118,3 +118,51 @@ test('string-array reads discard malformed persisted entries', () => {
     assert.deepEqual(readWikiStringArray('favoritePages'), ['rules', 'mining'])
   })
 })
+
+
+test('corrupted consolidated JSON falls back to valid legacy arrays', () => {
+  withWindow((storage) => {
+    storage.setItem(WIKI_STATE_KEY, '{not-valid-json')
+    storage.setItem(
+      'justserver3-recent-pages-v1',
+      JSON.stringify(['rules', 'mining'])
+    )
+    storage.setItem(
+      'justserver3-read-pages-v1',
+      JSON.stringify(['rules'])
+    )
+
+    assert.deepEqual(readWikiStringArray('recentPages'), ['rules', 'mining'])
+    assert.deepEqual(readWikiStringArray('readPages'), ['rules'])
+
+    const repaired = JSON.parse(storage.getItem(WIKI_STATE_KEY) || '{}')
+    assert.deepEqual(repaired.values.recentPages, ['rules', 'mining'])
+    assert.deepEqual(repaired.values.readPages, ['rules'])
+  })
+})
+
+test('malformed legacy array values fail closed instead of crashing', () => {
+  withWindow((storage) => {
+    storage.setItem('justserver3-recent-pages-v1', '{broken')
+    storage.setItem('justserver3-read-pages-v1', 'not-json')
+
+    assert.deepEqual(readWikiStringArray('recentPages'), [])
+    assert.deepEqual(readWikiStringArray('readPages'), [])
+  })
+})
+
+test('unrelated client state survives favorite updates', () => {
+  withWindow(() => {
+    writeWikiStateValue('recentPages', ['rules'])
+    writeWikiStateValue('readPages', ['rules', 'mining'])
+    writeWikiStateValue('enhancementLab', { level: 7, attempts: 18 })
+    writeWikiStateValue('favoritePages', ['upgrade'])
+
+    assert.deepEqual(readWikiStringArray('recentPages'), ['rules'])
+    assert.deepEqual(readWikiStringArray('readPages'), ['rules', 'mining'])
+    assert.deepEqual(readWikiStateValue('enhancementLab', null), {
+      level: 7,
+      attempts: 18
+    })
+  })
+})

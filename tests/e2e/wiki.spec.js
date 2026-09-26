@@ -285,6 +285,55 @@ test.describe('desktop wiki journeys', () => {
   })
 })
 
+test.describe('accessibility smoke', () => {
+  for (const theme of ['dark', 'light']) {
+    test(`${theme} theme keeps core semantics and accessible controls`, async ({ page }) => {
+      await page.addInitScript((selectedTheme) => {
+        localStorage.setItem('justserver3-theme', selectedTheme)
+      }, theme)
+
+      for (const path of ['/', '/guide/rules/']) {
+        await page.goto(path)
+        await expect(page.locator('html')).toHaveAttribute('lang', 'ko')
+        await expect(page.locator('main')).toHaveCount(1)
+
+        const h1Count = await page.locator('h1').count()
+        expect(h1Count, `${path} should expose one page-level h1`).toBe(1)
+
+        const imageAltIssues = await page.locator('img').evaluateAll((images) =>
+          images
+            .filter((image) => !image.hasAttribute('alt'))
+            .map((image) => image.getAttribute('src') || '(unknown image)')
+        )
+        expect(imageAltIssues, `${path} images missing alt attributes`).toEqual([])
+
+        const unnamedControls = await page
+          .locator('button, a[href], input, select, textarea')
+          .evaluateAll((elements) =>
+            elements
+              .filter((element) => {
+                if (element.getAttribute('aria-hidden') === 'true') return false
+                const aria = element.getAttribute('aria-label')?.trim()
+                const labelledBy = element.getAttribute('aria-labelledby')?.trim()
+                const title = element.getAttribute('title')?.trim()
+                const text = element.textContent?.trim()
+                const value =
+                  element instanceof HTMLInputElement
+                    ? element.value || element.placeholder
+                    : ''
+                return !aria && !labelledBy && !title && !text && !value
+              })
+              .map((element) => ({
+                tag: element.tagName.toLowerCase(),
+                className: element.getAttribute('class') || ''
+              }))
+          )
+        expect(unnamedControls, `${path} unnamed interactive controls`).toEqual([])
+      }
+    })
+  }
+})
+
 test.describe('mobile wiki journeys', () => {
   test.use({ viewport: { width: 390, height: 844 } })
 

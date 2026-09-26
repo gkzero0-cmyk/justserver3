@@ -11,7 +11,6 @@ on:
       - 'scripts/optimize-notion-assets.mjs'
       - 'lib/notion-index.ts'
       - 'components/notion-document.tsx'
-      - 'package.json'
       - '.github/workflows/sync-notion-assets.yml'
 
 permissions:
