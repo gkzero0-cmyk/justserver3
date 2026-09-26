@@ -3190,3 +3190,152 @@ html[data-theme="light"] .toc-item.is-active {
   color: #aab6a5;
   font-weight: 650;
 }
+
+
+/* 2026-09-26 final polish: freshness, summaries, touch targets */
+.wiki-sync-strip {
+  width: min(100%, var(--content-max));
+  margin: -6px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  color: #7f8d79;
+  font-size: 10px;
+}
+
+.wiki-sync-strip > span {
+  color: var(--accent);
+  font-size: 8px;
+  text-shadow: 0 0 10px rgba(var(--accent-rgb), .35);
+}
+
+.wiki-sync-strip strong {
+  color: #aeb9a9;
+  font-weight: 700;
+}
+
+.wiki-sync-strip small {
+  color: #778172;
+}
+
+.article-sync-status {
+  color: #83907e;
+}
+
+.article-key-summary {
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(150px, .34fr) minmax(0, 1fr);
+  gap: 22px;
+  padding: 20px 22px;
+  border: 1px solid rgba(var(--accent-rgb), .14);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(var(--accent-rgb), .055), transparent 58%),
+    rgba(255,255,255,.018);
+}
+
+.article-key-summary p {
+  margin: 0 0 4px;
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .12em;
+}
+
+.article-key-summary h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.article-key-summary ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.article-key-summary li {
+  position: relative;
+  padding-left: 16px;
+  color: #abb5a6;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.article-key-summary li::before {
+  content: "•";
+  position: absolute;
+  left: 2px;
+  color: var(--accent);
+}
+
+html[data-theme="light"] .article-key-summary {
+  border-color: rgba(92,122,72,.16);
+  background: rgba(255,255,255,.58);
+}
+
+html[data-theme="light"] .article-key-summary li {
+  color: #5f685b;
+}
+
+@media (max-width: 640px) {
+  .wiki-sync-strip {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-top: -8px;
+    padding-inline: 2px;
+    font-size: 9px;
+  }
+
+  .article-key-summary {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .article-key-summary h2 {
+    font-size: 16px;
+  }
+
+  .article-key-summary li {
+    font-size: 10px;
+  }
+
+  .header-search-button,
+  .theme-toggle,
+  .sidebar-toggle,
+  .home-playground-toggle,
+  .mobile-nav-button,
+  .enhancement-sound-controls button,
+  .enhancement-primary,
+  .search-modal-input button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enhancement-particles,
+  .enhancement-pickaxe-runes,
+  .enhancement-break-pieces,
+  .enhancement-shards,
+  .enhancement-pickaxe-glint-image {
+    animation: none !important;
+  }
+
+  .enhancement-particles,
+  .enhancement-pickaxe-runes {
+    opacity: .25 !important;
+  }
+
+  .enhancement-forge,
+  .enhancement-pickaxe,
+  .enhancement-slot-shell {
+    transform: none !important;
+  }
+}
