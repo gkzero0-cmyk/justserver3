@@ -92,11 +92,64 @@ test.describe('desktop wiki journeys', () => {
     await expect(enhance).toBeVisible()
     await enhance.click()
 
-    await expect(lab.getByText('강화 에너지를 주입하는 중…')).toBeVisible()
+    await expect(lab.getByText('강화 중… 장비를 담금질하고 있습니다.')).toBeVisible()
     await expect(
       lab.getByText(/강화 성공|강화 실패|강화 하락|장비 파괴|\+15 달성/)
     ).toBeVisible({ timeout: 3000 })
     await expect(lab.getByText('총 시도', { exact: true })).toBeVisible()
+  })
+
+  test('search exposes contextual action shortcuts', async ({ page }) => {
+    await page.goto('/')
+    await page.keyboard.press('Control+K')
+
+    const search = page.getByRole('textbox', { name: /검색/i })
+    await search.fill('곡괭이 강화')
+    await expect(
+      page.getByRole('link', { name: /강화 체험소에서 직접 해보기/ })
+    ).toBeVisible()
+
+    await search.fill('광질')
+    await expect(
+      page.getByRole('link', { name: /채광 가이드 바로 보기/ })
+    ).toBeVisible()
+
+    await search.fill('초보')
+    await expect(
+      page.getByRole('link', { name: /뉴비 필독부터 시작하기/ })
+    ).toBeVisible()
+
+    await page.keyboard.press('Escape')
+    await expect(search).not.toBeVisible()
+  })
+
+  test('enhancement lab starts with the louder default volume', async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.removeItem('justserver3:enhancement-volume')
+      localStorage.removeItem('justserver3:enhancement-volume-version')
+    })
+    await page.goto('/')
+    await page.getByRole('button', { name: '위키 탐험 시작' }).click()
+
+    const lab = page.locator('#enhancement-lab')
+    const volume = lab.getByRole('slider', { name: '강화 효과음 볼륨' })
+    await expect(volume).toHaveValue('90')
+  })
+
+  test('home guide links resolve without 404 responses', async ({ page, request }) => {
+    await page.goto('/')
+    const hrefs = await page
+      .locator('a[href^="/guide/"]')
+      .evaluateAll((links) =>
+        [...new Set(links.map((link) => link.getAttribute('href')).filter(Boolean))]
+      )
+
+    expect(hrefs.length).toBeGreaterThan(3)
+
+    for (const href of hrefs) {
+      const response = await request.get(href)
+      expect(response.status(), href).toBeLessThan(400)
+    }
   })
 
   test('verified FAQ exposes source-backed answers', async ({ page }) => {
@@ -145,6 +198,30 @@ test.describe('mobile wiki journeys', () => {
     await expect(
       dialog.getByText('개인당 최대 5개까지 허용됩니다.', { exact: true })
     ).toBeVisible()
+  })
+
+  test('search modal fits within phone width', async ({ page }) => {
+    await page.goto('/')
+    await page.keyboard.press('Control+K')
+    await page.getByRole('textbox', { name: /검색/i }).fill('강화')
+
+    const metrics = await page.evaluate(() => ({
+      viewport: window.innerWidth,
+      scrollWidth: document.documentElement.scrollWidth
+    }))
+
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewport + 1)
+  })
+
+  test('upgrade guide has no horizontal overflow at phone width', async ({ page }) => {
+    await page.goto('/guide/upgrade/')
+    const metrics = await page.evaluate(() => ({
+      viewport: window.innerWidth,
+      scrollWidth: document.documentElement.scrollWidth
+    }))
+
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewport + 1)
+    await expect(page.getByText('강화 체험소', { exact: false }).first()).toBeVisible()
   })
 
   test('home has no horizontal overflow at phone width', async ({ page }) => {
