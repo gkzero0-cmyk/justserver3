@@ -53,7 +53,10 @@ jobs:
           VERCEL_ORG_ID: team_h8qoVPaBVDEj8uuWhcVJIhtn
           VERCEL_PROJECT_ID: prj_baolCn3gBLeW4o8DS7ZNeA96mg8k
         run: |
-          if [ -n "$VERCEL_DEPLOY_HOOK" ]; then
+          if [ -n "$VERCEL_TOKEN" ]; then
+            echo "Using Vercel CLI production deployment."
+            npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
+          elif [ -n "$VERCEL_DEPLOY_HOOK" ]; then
             if [[ "$VERCEL_DEPLOY_HOOK" == *"?"* ]]; then
               VERCEL_HOOK_URL="$VERCEL_DEPLOY_HOOK&buildCache=false"
             else
@@ -61,11 +64,8 @@ jobs:
             fi
             curl --fail --silent --show-error -X POST "$VERCEL_HOOK_URL"
             echo "Vercel production refresh requested through deploy hook (fresh build)."
-          elif [ -n "$VERCEL_TOKEN" ]; then
-            echo "Deploy hook is not configured; using Vercel CLI fallback."
-            npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
           else
             echo "::warning::No Vercel deployment credential is configured."
-            echo "::warning::Set VERCEL_DEPLOY_HOOK or VERCEL_TOKEN in GitHub Actions secrets."
+            echo "::warning::Set VERCEL_TOKEN or VERCEL_DEPLOY_HOOK in GitHub Actions secrets."
             echo "Build is valid, but production deployment cannot be triggered from GitHub yet."
           fi
