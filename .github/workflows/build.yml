@@ -57,6 +57,13 @@ jobs:
           VERCEL_ORG_ID: team_h8qoVPaBVDEj8uuWhcVJIhtn
           VERCEL_PROJECT_ID: prj_baolCn3gBLeW4o8DS7ZNeA96mg8k
         run: |
+          REMOTE_SHA="$(git ls-remote origin refs/heads/main | cut -f1)"
+          LOCAL_SHA="$(git rev-parse HEAD)"
+          if [ "$REMOTE_SHA" != "$LOCAL_SHA" ]; then
+            echo "A newer main commit exists; skipping this superseded production deploy."
+            exit 0
+          fi
+
           if [ -n "$VERCEL_TOKEN" ]; then
             echo "Using Vercel CLI production deployment."
             npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
