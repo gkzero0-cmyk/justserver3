@@ -268,23 +268,13 @@ test.describe('desktop wiki journeys', () => {
     }
   })
 
-  test('document share and site feedback controls stay inside the wiki', async ({ page }) => {
+  test('document sharing stays available without feedback UI', async ({ page }) => {
     await page.goto('/guide/rules/')
 
     const actions = page.locator('#document-feedback')
     await expect(actions.getByRole('button', { name: /공유하기/ })).toBeVisible()
-    await expect(actions.getByRole('button', { name: /제보하기/ })).toBeVisible()
-    await expect(actions.locator('a[href*="github.com"]')).toHaveCount(0)
-
-    await actions.getByRole('button', { name: /제보하기/ }).click()
-    const dialog = page.getByRole('dialog', { name: '제보하기' })
-    await expect(dialog).toBeVisible()
-    await expect(dialog.getByRole('combobox')).toBeVisible()
-    await expect(dialog.getByRole('textbox').first()).toBeVisible()
-    await expect(dialog.getByRole('button', { name: '제보 창 닫기' })).toBeFocused()
-
-    await page.keyboard.press('Escape')
-    await expect(dialog).toBeHidden()
+    await expect(actions.getByRole('button', { name: /제보하기/ })).toHaveCount(0)
+    await expect(page.getByRole('dialog', { name: '제보하기' })).toHaveCount(0)
   })
 
   test('verified FAQ exposes source-backed answers', async ({ page }) => {
@@ -489,6 +479,12 @@ test.describe('mobile wiki journeys', () => {
         path: `test-results/visual/${viewport.name}.png`,
         fullPage: false
       })
+      const layoutFitsViewport = await page.evaluate(
+        () =>
+          document.documentElement.scrollWidth <=
+          document.documentElement.clientWidth + 1
+      )
+      expect(layoutFitsViewport, viewport.name).toBeTruthy()
     }
   })
 
