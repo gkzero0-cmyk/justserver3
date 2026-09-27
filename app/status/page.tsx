@@ -109,12 +109,9 @@ async function getWorkflowStates(): Promise<
 
 async function getProductionHealth(): Promise<ProductionHealth> {
   try {
-    const [healthResponse, versionResponse, branchResponse] = await Promise.all([
+    const [healthResponse, branchResponse] = await Promise.all([
       fetch('https://justserver3.vercel.app/', {
         method: 'HEAD',
-        next: { revalidate: 300 }
-      }),
-      fetch('https://justserver3.vercel.app/api/version', {
         next: { revalidate: 300 }
       }),
       fetch('https://api.github.com/repos/gkzero0-cmyk/justserver3/branches/main', {
@@ -125,9 +122,6 @@ async function getProductionHealth(): Promise<ProductionHealth> {
       })
     ])
 
-    const version = versionResponse.ok
-      ? ((await versionResponse.json()) as { commit?: string | null })
-      : null
     const branch = branchResponse.ok
       ? ((await branchResponse.json()) as {
           commit?: {
@@ -138,11 +132,15 @@ async function getProductionHealth(): Promise<ProductionHealth> {
         })
       : null
     const branchCommit = branch?.commit
+    const deployedSha =
+      process.env.VERCEL_GIT_COMMIT_SHA ||
+      process.env.GITHUB_SHA ||
+      null
 
     return {
       ok: healthResponse.ok,
       status: healthResponse.status,
-      deployedSha: version?.commit || null,
+      deployedSha,
       mainSha: resolveDeployableMainSha({
         sha: branchCommit?.sha || null,
         message: branchCommit?.commit?.message || null,
@@ -153,7 +151,10 @@ async function getProductionHealth(): Promise<ProductionHealth> {
     return {
       ok: false,
       status: null,
-      deployedSha: null,
+      deployedSha:
+        process.env.VERCEL_GIT_COMMIT_SHA ||
+        process.env.GITHUB_SHA ||
+        null,
       mainSha: null
     }
   }
