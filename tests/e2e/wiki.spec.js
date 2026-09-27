@@ -77,7 +77,7 @@ test.describe('desktop wiki journeys', () => {
 
     await expect(page.getByText('이 문서 핵심', { exact: true })).toBeVisible()
     await expect(page.getByText('원본 문서 연동', { exact: true })).toBeVisible()
-    await expect(page.getByText(/데이터 갱신/).first()).toBeVisible()
+    await expect(page.getByText(/동기화/).first()).toBeVisible()
 
     await expect(
       page.getByText('문서 변경 이력', { exact: true })
@@ -85,6 +85,26 @@ test.describe('desktop wiki journeys', () => {
     await page.getByText('문서 변경 이력', { exact: true }).click()
     await expect(
       page.getByText('변경 이력 추적 시작', { exact: true })
+    ).toBeVisible()
+  })
+
+  test('content maturity UI avoids duplicate summaries and exposes the enhancement experience', async ({ page }) => {
+    await page.goto('/guide/mining/')
+    await expect(page.getByText('간단 안내', { exact: true }).first()).toBeVisible()
+    await expect(page.getByText('이 문서 핵심', { exact: true })).toHaveCount(0)
+
+    await page.goto('/guide/upgrade/')
+    await expect(page.getByText('체험 가이드', { exact: true })).toBeVisible()
+    await expect(
+      page.getByText('강화 체험소는 지금 이용할 수 있습니다.', { exact: true })
+    ).toBeVisible()
+
+    await page.goto('/')
+    await expect(
+      page.getByText(/준비 중인 문서 \d+개/).first()
+    ).toBeVisible()
+    await expect(
+      page.getByText('처음 시작 순서 보기', { exact: true })
     ).toBeVisible()
   })
 
