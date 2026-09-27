@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+import './status.css'
+
 import { WikiShell } from '@/components/wiki-shell'
 import { readNotionIndex } from '@/lib/notion-index'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'

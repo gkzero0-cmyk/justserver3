@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+import './home.css'
+
 import { StarterGuide } from '@/components/starter-guide'
 import { WikiHomePlayground } from '@/components/wiki-home-playground'
 import { WikiDirectory } from '@/components/wiki-directory'
