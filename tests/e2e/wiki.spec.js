@@ -271,7 +271,14 @@ test.describe('desktop wiki journeys', () => {
         button.boundingBox(),
         lab.boundingBox()
       ])
-      return { forgeBox, sideBox, buttonBox, labBox }
+      return {
+        forgeBox,
+        sideBox,
+        buttonBox,
+        labBox,
+        buttonRelativeY:
+          forgeBox && buttonBox ? buttonBox.y - forgeBox.y : null
+      }
     }
 
     const before = await geometry()
@@ -305,8 +312,10 @@ test.describe('desktop wiki journeys', () => {
     ).toBeVisible()
 
     const charging = await geometry()
+    expect(before.buttonRelativeY).not.toBeNull()
+    expect(charging.buttonRelativeY).not.toBeNull()
     expect(
-      Math.abs(charging.buttonBox.y - before.buttonBox.y)
+      Math.abs(charging.buttonRelativeY - before.buttonRelativeY)
     ).toBeLessThanOrEqual(2)
     expect(
       Math.abs(charging.labBox.height - before.labBox.height)
@@ -318,8 +327,9 @@ test.describe('desktop wiki journeys', () => {
     )
 
     const after = await geometry()
+    expect(after.buttonRelativeY).not.toBeNull()
     expect(
-      Math.abs(after.buttonBox.y - before.buttonBox.y)
+      Math.abs(after.buttonRelativeY - before.buttonRelativeY)
     ).toBeLessThanOrEqual(2)
     expect(
       Math.abs(after.labBox.height - before.labBox.height)
