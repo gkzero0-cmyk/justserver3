@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import process from 'node:process'
 
-const files = ['app/globals.css', 'app/wiki-reader.css']
+const files = ['app/globals.css', 'app/wiki-reader.css', 'components/wiki-enhancement-lab.css']
 const legacyCoolColors = new Set([
   '#718096',
   '#627083',
@@ -52,7 +52,7 @@ const tinyFonts = findings.filter((item) => item.type === 'tiny-font')
 const coolColors = findings.filter((item) => item.type === 'legacy-cool-color')
 
 const baseline = {
-  tinyFonts: 216,
+  tinyFonts: 0,
   coolColors: 15
 }
 
@@ -103,7 +103,7 @@ if (process.env.GITHUB_STEP_SUMMARY) {
       `- Legacy cool-color declarations: ${coolColors.length}`,
       '',
       `Baseline: <= ${baseline.tinyFonts} sub-10px declarations and <= ${baseline.coolColors} legacy colors.`,
-      'Existing debt is allowed, but new regressions fail the build.',
+      'Sub-10px text is not allowed; legacy color debt may remain but cannot regress.',
       '',
       '| Finding | Location | Value |',
       '| --- | --- | --- |',

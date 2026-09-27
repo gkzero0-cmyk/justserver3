@@ -1163,6 +1163,7 @@ export function WikiShell({
                 aria-hidden="true"
                 width="54"
                 height="54"
+                loading="eager"
                 decoding="async"
               />
             ) : (

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import './wiki-enhancement-lab.css'
 import { track } from '@vercel/analytics'
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 
@@ -408,6 +409,8 @@ function EnhancementPickaxe({
         draggable={false}
         width={160}
         height={160}
+        loading="eager"
+        decoding="async"
       />
       {enchanted && (
         <img
@@ -418,6 +421,8 @@ function EnhancementPickaxe({
           draggable={false}
           width={160}
           height={160}
+          loading="eager"
+          decoding="async"
         />
       )}
     </span>

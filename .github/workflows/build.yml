@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: wiki-build-${{ github.ref }}
@@ -31,9 +31,6 @@ jobs:
       - name: Audit runtime configuration and markup
         run: npm run audit:static
 
-      - name: Build current deploy bundle
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: node scripts/build-deploy-bundle.mjs
       - name: Verify current deploy bundle
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: npm run test:deploy-bundle
@@ -52,28 +49,8 @@ jobs:
             echo "- Image/markup regression baseline: checked"
             echo "- Sensitive tracked files: checked"
             echo "- Static internal links: checked"
-            echo "- Deploy bundle: generated, source-matched, and SHA-256 fingerprinted on main push"
+            echo "- Deploy bundle: generated ephemerally, source-matched, and SHA-256 fingerprinted on main push"
             echo
             echo "Production deployment is intentionally separate from this gate."
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Store current deploy bundle
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          REMOTE_SHA="$(git ls-remote origin refs/heads/main | cut -f1)"
-          LOCAL_SHA="$(git rev-parse HEAD)"
-          if [ "$REMOTE_SHA" != "$LOCAL_SHA" ]; then
-            echo "A newer main commit exists; its workflow will refresh the deploy bundle."
-            exit 0
-          fi
-
-          git add .deploy/current.json
-          if git diff --cached --quiet; then
-            echo "Deploy bundle is already current."
-          else
-            git commit -m "Refresh deploy bundle [skip ci]"
-            git push
-          fi

@@ -657,7 +657,7 @@ input {
   border-radius: 6px;
   background: rgba(var(--accent-rgb),.075);
   color: rgba(200,247,172,.65);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: .12em;
   pointer-events: none;
@@ -1074,7 +1074,7 @@ input {
   display: block;
   padding: 8px 9px 5px;
   color: #637083;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -1181,7 +1181,7 @@ input {
   border-radius: 5px;
   background: rgba(255,255,255,.035);
   color: #64748b;
-  font-size: 9px;
+  font-size: 10px;
   font-family: inherit;
 }
 
@@ -1411,7 +1411,7 @@ input {
 
 .page-siblings small {
   color: #657489;
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .page-siblings strong {
@@ -1530,7 +1530,7 @@ input {
 
 .sidebar-status-link > span:first-child {
   color: var(--accent);
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .footer-links {
@@ -1649,7 +1649,7 @@ input {
 
 .status-grid small {
   color: #6f7e92;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: .08em;
 }
 
@@ -1678,7 +1678,7 @@ input {
 .status-section-head p {
   margin: 0 0 4px;
   color: var(--accent);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: .14em;
 }
@@ -1874,7 +1874,7 @@ body {
 .brand small {
   margin-top: 2px;
   color: var(--gold);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: .14em;
 }
@@ -1914,7 +1914,7 @@ body {
   border: 1px solid rgba(255,255,255,.08);
   border-radius: 6px;
   color: #968a85;
-  font-size: 9px;
+  font-size: 10px;
   font-family: inherit;
 }
 
@@ -2357,7 +2357,7 @@ body {
 .recent-updates-head p,
 .related-docs-head p {
   margin: 0 0 4px;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 850;
 }
 
@@ -2405,7 +2405,7 @@ body {
 
 .recent-update-date {
   color: #806f68;
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .recent-update-card strong {
@@ -2490,7 +2490,7 @@ body {
   display: block;
   margin-bottom: 8px;
   color: #756762;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 850;
   letter-spacing: .12em;
 }
@@ -2572,7 +2572,7 @@ body {
   border-radius: 6px;
   background: rgba(255,255,255,.025);
   color: #82756f;
-  font-size: 9px;
+  font-size: 10px;
   cursor: pointer;
 }
 
@@ -2845,7 +2845,7 @@ html[data-theme="light"] .global-page-link {
 
   .brand small {
     display: block;
-    font-size: 8px;
+    font-size: 10px;
   }
 
   .theme-toggle {
@@ -3112,13 +3112,13 @@ html[data-theme="light"] .toc-item.is-active {
 
 .enhancement-guide-preview small {
   color: #879184;
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .enhancement-guide-preview p {
   margin: 10px 0 0;
   color: #7f897c;
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.5;
 }
 
@@ -3137,7 +3137,7 @@ html[data-theme="light"] .toc-item.is-active {
   .wiki-hero.is-home .hero-badge {
     min-height: 24px;
     padding: 4px 8px;
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .wiki-hero.is-home .hero-badge.is-muted {
@@ -3181,7 +3181,7 @@ html[data-theme="light"] .toc-item.is-active {
   border-radius: 999px;
   background: rgba(var(--accent-rgb), .06);
   color: var(--accent);
-  font-size: 9px;
+  font-size: 10px;
   font-style: normal;
   font-weight: 800;
 }
@@ -3206,7 +3206,7 @@ html[data-theme="light"] .toc-item.is-active {
 
 .wiki-sync-strip > span {
   color: var(--accent);
-  font-size: 8px;
+  font-size: 10px;
   text-shadow: 0 0 10px rgba(var(--accent-rgb), .35);
 }
 
@@ -3240,7 +3240,7 @@ html[data-theme="light"] .toc-item.is-active {
 .article-key-summary p {
   margin: 0 0 4px;
   color: var(--accent);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 850;
   letter-spacing: .12em;
 }
@@ -3288,7 +3288,7 @@ html[data-theme="light"] .article-key-summary li {
     flex-wrap: wrap;
     margin-top: -8px;
     padding-inline: 2px;
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .article-key-summary {
@@ -3446,7 +3446,7 @@ html[data-theme="light"] .directory-group-head small {
 /* Preserve compact mobile layout while avoiding unreadably tiny labels. */
 @media (max-width: 620px) {
   .brand small {
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .wiki-hero.is-home .hero-badge {
