@@ -315,7 +315,7 @@ test.describe('accessibility smoke', () => {
           'aria-pressed',
           theme === 'light' ? 'true' : 'false'
         )
-        await expect(page.locator('main:visible')).toHaveCount(1)
+        await expect(page.getByRole('main')).toHaveCount(1)
 
         const h1Count = await page.locator('h1:visible').count()
         expect(h1Count, `${path} should expose one page-level h1`).toBe(1)
