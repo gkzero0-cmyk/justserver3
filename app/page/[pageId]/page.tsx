@@ -274,7 +274,7 @@ export async function renderWikiPage(pageId: string) {
     currentPage?.title === '채광' && contentStatus === 'brief'
   const miningSections =
     isMiningBrief && currentPage
-      ? currentPage.sections
+      ? (currentPage.sections ?? [])
           .filter((section) => section.heading?.trim())
           .slice(0, 6)
       : []
