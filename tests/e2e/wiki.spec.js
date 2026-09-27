@@ -775,6 +775,77 @@ test.describe('desktop wiki journeys', () => {
   })
 })
 
+test.describe('core wiki quality regressions', () => {
+  test('highest-traffic routes render a single usable page heading', async ({ page }) => {
+    for (const path of [
+      '/guide/newbie-guide/',
+      '/guide/rules/',
+      '/guide/mining/',
+      '/guide/upgrade/',
+      '/guide/faq/'
+    ]) {
+      await page.goto(path)
+      await expect(page.locator('h1:visible')).toHaveCount(1)
+      await expect(page.locator('main')).toBeVisible()
+    }
+  })
+
+  test('source-backed brief guides expose verified summaries', async ({ page }) => {
+    const cases = [
+      ['/guide/mining/', '원문에서 확인된 채광 핵심'],
+      ['/guide/fishing/', '원문에서 확인된 낚시 핵심'],
+      ['/guide/cooking/', '원문에서 확인된 요리 핵심']
+    ]
+
+    for (const [path, heading] of cases) {
+      await page.goto(path)
+      await expect(page.getByRole('heading', { name: heading })).toBeVisible()
+      await expect(page.locator('.verified-brief-guide li').first()).toBeVisible()
+    }
+  })
+
+  test('freshness labels separate sync time from document edit time', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByText(/마지막 동기화/).first()).toBeVisible()
+    await expect(page.getByText(/최근 문서 수정/).first()).toBeVisible()
+
+    await page.goto('/guide/rules/')
+    await expect(page.getByText(/마지막 동기화/).first()).toBeVisible()
+    await expect(page.getByText(/문서 수정/).first()).toBeVisible()
+  })
+
+  test('draft search results are visibly identified as preparing', async ({ page }) => {
+    await page.goto('/')
+    await page.getByRole('button', { name: /문서 검색/ }).click()
+    const search = page.getByRole('textbox', { name: /검색/i })
+    await search.fill('카지노')
+
+    const draft = page.locator('.search-result-card[data-status="draft"]').first()
+    await expect(draft).toBeVisible()
+    await expect(draft.getByText('준비 중', { exact: true })).toBeVisible()
+  })
+
+  test('core response payloads stay within the current performance budget', async ({ request }) => {
+    const budgets = [
+      ['/guide/newbie-guide/', 400_000],
+      ['/guide/api/', 550_000]
+    ]
+
+    for (const [path, maxChars] of budgets) {
+      const response = await request.get(path)
+      expect(response.status(), path).toBe(200)
+      const body = await response.text()
+      expect(body.length, path).toBeLessThan(maxChars)
+    }
+  })
+
+  test('security headers prevent third-party framing', async ({ request }) => {
+    const response = await request.get('/')
+    expect(response.headers()['x-frame-options']).toBe('DENY')
+    expect(response.headers()['content-security-policy']).toContain("frame-ancestors 'none'")
+  })
+})
+
 test.describe('accessibility smoke', () => {
   for (const theme of ['dark', 'light']) {
     test(`${theme} theme keeps core semantics and accessible controls`, async ({ page }) => {
