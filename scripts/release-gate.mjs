@@ -38,6 +38,17 @@ if (trackedChanges) {
 }
 
 const bundlePath = path.join(root, '.deploy', 'current.json')
+
+try {
+  execFileSync(process.execPath, ['scripts/build-deploy-bundle.mjs'], {
+    cwd: root,
+    stdio: 'inherit'
+  })
+  pass('ephemeral deploy bundle generated for release verification')
+} catch {
+  fail('deploy bundle generation failed')
+}
+
 if (!fs.existsSync(bundlePath)) {
   fail('.deploy/current.json is missing')
 }
