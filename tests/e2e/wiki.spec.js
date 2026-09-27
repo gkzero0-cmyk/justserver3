@@ -549,7 +549,31 @@ test.describe('desktop wiki journeys', () => {
     expect(impactBox).not.toBeNull()
     expect(impactBox.width).toBeGreaterThan(slotBox.width * 1.5)
     expect(impactBox.height).toBeGreaterThan(slotBox.height * 1.5)
-    await expect(lab.locator('.enhancement-forge-hammer')).toHaveCount(1)
+
+    const hammer = lab.locator('.enhancement-forge-hammer')
+    await expect(hammer).toHaveCount(1)
+    const hammerArt = await hammer.evaluate((element) => {
+      const style = getComputedStyle(element)
+      const head = getComputedStyle(element, '::before')
+      const impact = element.parentElement?.getBoundingClientRect()
+      const left = Number.parseFloat(style.left)
+      const top = Number.parseFloat(style.top)
+      return {
+        handleHeight: Number.parseFloat(style.height),
+        headWidth: Number.parseFloat(head.width),
+        leftRatio: impact?.width ? left / impact.width : 0,
+        topRatio: impact?.height ? top / impact.height : 0,
+        transformOrigin: style.transformOrigin
+      }
+    })
+    expect(hammerArt.handleHeight).toBeGreaterThanOrEqual(60)
+    expect(hammerArt.headWidth).toBeGreaterThanOrEqual(48)
+    expect(hammerArt.leftRatio).toBeGreaterThan(.54)
+    expect(hammerArt.leftRatio).toBeLessThan(.64)
+    expect(hammerArt.topRatio).toBeGreaterThan(.38)
+    expect(hammerArt.topRatio).toBeLessThan(.48)
+    expect(hammerArt.transformOrigin).toContain('100%')
+
     await expect(lab.locator('.enhancement-run-result-slot')).toHaveCount(0)
 
     await writeState(true)
