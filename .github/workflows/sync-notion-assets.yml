@@ -45,12 +45,21 @@ jobs:
         id: notion_diff
         shell: bash
         run: |
-          if git diff --quiet -- public/notion-assets; then
+          # cache-notion-assets rewrites index.json without the derived
+          # thumbnail/hero fields that optimize-notion-assets restores later.
+          # Ignore that transient index-only diff; manifest/search-index/image
+          # changes still trigger the full optimization path.
+          if git diff --quiet -- \
+            public/notion-assets \
+            ':(exclude)public/notion-assets/index.json'; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No source asset changes detected."
+            echo "No meaningful Notion source changes detected."
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "Notion source assets changed."
+            echo "Meaningful Notion source changes detected:"
+            git diff --name-only -- \
+              public/notion-assets \
+              ':(exclude)public/notion-assets/index.json'
           fi
 
       - name: Optimize display images
