@@ -111,7 +111,9 @@ test.describe('desktop wiki journeys', () => {
     ).toHaveText(/강화 성공|강화 실패|강화 하락|장비 파괴|최대강화 달성/, {
       timeout: 3000
     })
-    await expect(lab.getByText('총 시도', { exact: true })).toBeVisible()
+    const runAttempts = lab.locator('.enhancement-run-strip > span').first()
+    await expect(runAttempts.getByText('시도', { exact: true })).toBeVisible()
+    await expect(runAttempts.locator('strong')).toHaveText('1')
   })
 
   test('search exposes contextual action shortcuts', async ({ page }) => {
