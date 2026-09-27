@@ -6,7 +6,6 @@ const root = process.cwd()
 const bundlePath = path.join(root, '.deploy', 'current.json')
 
 const rootFiles = [
-  'next-env.d.ts',
   'next.config.ts',
   'package.json',
   'package-lock.json',
