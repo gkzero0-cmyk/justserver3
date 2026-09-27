@@ -274,9 +274,6 @@ export async function renderWikiPage(pageId: string) {
   const canonical = currentPage
     ? `${siteUrl}${wikiGuidePath(currentPage)}`
     : `${siteUrl}/page/${pageId.replaceAll('-', '')}`
-  const siteFeedbackEnabled = Boolean(process.env.GITHUB_FEEDBACK_TOKEN)
-  const discordFeedbackUrl =
-    process.env.NEXT_PUBLIC_DISCORD_FEEDBACK_URL || null
   const jsonLd = currentPage
     ? {
         '@context': 'https://schema.org',
@@ -511,8 +508,6 @@ export async function renderWikiPage(pageId: string) {
           pageId={currentPage.pageId}
           title={currentPage.title}
           canonicalUrl={canonical}
-          siteSubmissionEnabled={siteFeedbackEnabled}
-          discordUrl={discordFeedbackUrl}
         />
       )}
 
