@@ -119,8 +119,6 @@ export async function POST(request: Request) {
   }
 
   if (payload.verification_token) {
-    console.info('[notion-webhook] verification received')
-
     return Response.json({
       ok: true,
       verificationReceived: true
