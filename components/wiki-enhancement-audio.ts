@@ -150,12 +150,29 @@ export function playEnhancementTone(
     }
 
     if (kind === 'charge') {
-      hammerHit(0, 0.92, 0.72, false)
-      hammerHit(0.17, 0.82, 0.62, false)
-      hammerHit(0.34, 1.06, 0.94, false)
-      impactNoise(0.345, 0.08, 0.03, 1850, 'highpass')
-      resonator(874 + intensity * 4, 0.35, 0.38, 0.016, 'sine')
-      resonator(1320 + intensity * 7, 0.365, 0.29, 0.01, 'sine')
+      const strikeDuration =
+        intensity >= 14
+          ? 1.45
+          : intensity >= 12
+            ? 1.2
+            : intensity >= 8
+              ? 0.98
+              : intensity >= 5
+                ? 0.8
+                : 0.65
+      const firstHit = strikeDuration * 0.24
+      const mainHit = strikeDuration * 0.52
+      const finalHit = strikeDuration * 0.8
+
+      // Match the visible blacksmith swing: light setup hit, heavy main hit,
+      // then a shorter finishing hit. Keeping all three in one audio context
+      // prevents later hits from cutting the earlier metal resonance off.
+      hammerHit(firstHit, 0.76, 0.5, false)
+      hammerHit(mainHit, 1.12, 0.92, false)
+      hammerHit(finalHit, 0.88, 0.62, false)
+      impactNoise(mainHit + 0.006, 0.07, 0.032, 1780, 'highpass')
+      resonator(846 + intensity * 4, mainHit + 0.012, 0.32, 0.014, 'sine')
+      resonator(1260 + intensity * 6, mainHit + 0.026, 0.24, 0.009, 'sine')
     } else if (kind === 'success') {
       hammerHit(0, 1.18, 1.16, false)
       impactNoise(0.012, 0.07, 0.034, 1750, 'highpass')

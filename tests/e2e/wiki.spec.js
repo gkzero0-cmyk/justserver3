@@ -457,10 +457,10 @@ test.describe('desktop wiki journeys', () => {
       }
     )
     expect(strikeMotion.animationName).toContain(
-      'enhancementBlacksmithHammerPhysical'
+      'enhancementBlacksmithHammerCombo'
     )
     expect(strikeMotion.iterationCount).toBe('1')
-    expect(strikeMotion.duration).toBeGreaterThanOrEqual(.6)
+    expect(strikeMotion.duration).toBeGreaterThanOrEqual(.65)
 
     const charging = await geometry()
     expect(before.buttonRelativeY).not.toBeNull()
@@ -584,11 +584,11 @@ test.describe('desktop wiki journeys', () => {
     })
     expect(hammerArt.handleHeight).toBeGreaterThanOrEqual(60)
     expect(hammerArt.headWidth).toBeGreaterThanOrEqual(48)
-    expect(hammerArt.leftRatio).toBeGreaterThan(.51)
-    expect(hammerArt.leftRatio).toBeLessThan(.59)
-    expect(hammerArt.topRatio).toBeGreaterThan(.39)
-    expect(hammerArt.topRatio).toBeLessThan(.46)
-    expect(hammerArt.transformOrigin).toContain('100%')
+    expect(hammerArt.leftRatio).toBeGreaterThan(.62)
+    expect(hammerArt.leftRatio).toBeLessThan(.70)
+    expect(hammerArt.topRatio).toBeGreaterThan(.18)
+    expect(hammerArt.topRatio).toBeLessThan(.28)
+    expect(hammerArt.transformOrigin).not.toContain('100%')
 
     await expect(lab.locator('.enhancement-run-result-slot')).toHaveCount(0)
 
