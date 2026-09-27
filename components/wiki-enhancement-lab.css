@@ -4791,3 +4791,446 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
   }
 }
 
+/* === 2026-09-28 blacksmith impact + state-stable controls v11 === */
+/*
+ * The post-run summary used to appear only after destruction/+15 and pushed
+ * the recent-history row down. The same statistics already live in the right
+ * panel, so the forge keeps one six-row geometry for every button state.
+ */
+.enhancement-run-result-slot {
+  display: none !important;
+}
+
+@media (min-width: 901px) {
+  .enhancement-forge {
+    grid-template-rows:
+      auto
+      minmax(220px, 1fr)
+      46px
+      24px
+      68px
+      54px;
+    grid-auto-rows: unset;
+  }
+
+  .enhancement-result,
+  .enhancement-action-odds,
+  .enhancement-action-zone,
+  .enhancement-primary,
+  .enhancement-recent-log {
+    min-height: 0;
+    height: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (min-width: 1100px) and (max-height: 800px) {
+  .enhancement-forge {
+    grid-template-rows:
+      auto
+      minmax(174px, 1fr)
+      36px
+      18px
+      50px
+      33px;
+  }
+}
+
+@media (min-width: 1100px) and (max-height: 700px) {
+  .enhancement-forge {
+    grid-template-rows:
+      auto
+      minmax(156px, 1fr)
+      34px
+      17px
+      46px
+      30px;
+  }
+}
+
+@media (max-width: 900px) {
+  .enhancement-forge {
+    grid-template-rows: none;
+    grid-auto-rows: auto;
+  }
+}
+
+/*
+ * A second visual layer sits outside the pixel-art frame. This makes the
+ * action read as an anvil strike instead of a tiny glow inside the item.
+ */
+.enhancement-slot-shell,
+.enhancement-item-stage {
+  overflow: visible;
+}
+
+.enhancement-slot-shell {
+  position: relative;
+}
+
+.enhancement-forge-impact {
+  --forge-impact-rgb: 238, 164, 78;
+  position: absolute;
+  z-index: 24;
+  left: 68%;
+  top: 37%;
+  width: 178%;
+  height: 178%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  overflow: visible;
+  filter: drop-shadow(0 0 5px rgba(var(--forge-impact-rgb), .18));
+}
+
+.enhancement-forge[data-tier="high"] .enhancement-forge-impact {
+  --forge-impact-rgb: 111, 207, 224;
+}
+
+.enhancement-forge[data-tier="extreme"] .enhancement-forge-impact {
+  --forge-impact-rgb: 153, 129, 238;
+}
+
+.enhancement-forge[data-tier="legendary"] .enhancement-forge-impact {
+  --forge-impact-rgb: 238, 196, 95;
+}
+
+.enhancement-forge[data-state="destroy"] .enhancement-forge-impact {
+  --forge-impact-rgb: 229, 91, 74;
+}
+
+.enhancement-forge-hammer {
+  position: absolute;
+  z-index: 5;
+  left: 57%;
+  top: 16%;
+  width: 10px;
+  height: 72px;
+  border-radius: 4px 4px 7px 7px;
+  opacity: 0;
+  transform-origin: 50% 88%;
+  transform: translate(-50%, -50%) rotate(43deg) translateY(-42px);
+  background:
+    linear-gradient(90deg, #4d3520 0 22%, #8b6138 23% 54%, #53371f 55% 100%);
+  box-shadow:
+    inset 1px 0 rgba(255,255,255,.1),
+    0 4px 8px rgba(0,0,0,.34);
+}
+
+.enhancement-forge-hammer::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -9px;
+  width: 48px;
+  height: 21px;
+  border-radius: 4px;
+  transform: translateX(-50%);
+  background:
+    linear-gradient(180deg, #b9b0a4 0 15%, #6f6a64 18% 54%, #3d3a38 58% 100%);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow:
+    inset 0 2px rgba(255,255,255,.13),
+    0 5px 10px rgba(0,0,0,.42);
+}
+
+.enhancement-forge-hammer::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  width: 17px;
+  height: 13px;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  background: rgba(224,218,208,.2);
+}
+
+.enhancement-forge-impact-ring,
+.enhancement-forge-impact-core {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 52%;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.2);
+}
+
+.enhancement-forge-impact-ring {
+  width: 46%;
+  height: 46%;
+  border: 2px solid rgba(var(--forge-impact-rgb), .88);
+  box-shadow:
+    0 0 18px rgba(var(--forge-impact-rgb), .48),
+    inset 0 0 12px rgba(var(--forge-impact-rgb), .22);
+}
+
+.enhancement-forge-impact-core {
+  width: 23%;
+  height: 23%;
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,246,218,.96) 0 8%,
+      rgba(var(--forge-impact-rgb), .82) 9% 30%,
+      rgba(var(--forge-impact-rgb), .18) 48%,
+      transparent 72%
+    );
+  filter: blur(.25px);
+}
+
+.enhancement-forge-sparks {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 52%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.enhancement-forge-sparks i {
+  --forge-angle: calc(var(--i) * 22.5deg);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+  opacity: 0;
+  transform-origin: 0 50%;
+  transform:
+    rotate(var(--forge-angle))
+    translateX(10px)
+    scaleX(.3);
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,246,216,.98),
+      rgba(var(--forge-impact-rgb), .95) 45%,
+      rgba(var(--forge-impact-rgb), 0)
+    );
+  box-shadow: 0 0 6px rgba(var(--forge-impact-rgb), .54);
+}
+
+.enhancement-forge[data-state="charging"] .enhancement-forge-hammer {
+  animation: enhancementBlacksmithHammer .24s cubic-bezier(.2,.78,.25,1) 3;
+}
+
+.enhancement-forge[data-state="charging"] .enhancement-forge-impact-ring {
+  animation: enhancementBlacksmithRing .24s ease-out 3;
+}
+
+.enhancement-forge[data-state="charging"] .enhancement-forge-impact-core {
+  animation: enhancementBlacksmithCore .24s ease-out 3;
+}
+
+.enhancement-forge[data-state="charging"] .enhancement-forge-sparks i {
+  animation: enhancementBlacksmithSpark .24s ease-out 3;
+  animation-delay: calc(var(--i) * -0.002s);
+}
+
+.enhancement-forge[data-state="success"] .enhancement-forge-impact-ring,
+.enhancement-forge[data-state="max"] .enhancement-forge-impact-ring {
+  animation: enhancementBlacksmithResultRing .48s ease-out 1;
+}
+
+.enhancement-forge[data-state="success"] .enhancement-forge-impact-core,
+.enhancement-forge[data-state="max"] .enhancement-forge-impact-core {
+  animation: enhancementBlacksmithResultCore .38s ease-out 1;
+}
+
+.enhancement-forge[data-state="success"] .enhancement-forge-sparks i,
+.enhancement-forge[data-state="max"] .enhancement-forge-sparks i,
+.enhancement-forge[data-state="down"] .enhancement-forge-sparks i,
+.enhancement-forge[data-state="destroy"] .enhancement-forge-sparks i {
+  animation: enhancementBlacksmithResultSpark .42s ease-out 1;
+  animation-delay: calc(var(--i) * .002s);
+}
+
+.enhancement-forge[data-state="down"] .enhancement-forge-impact-ring {
+  animation: enhancementBlacksmithDownRing .38s ease-out 1;
+}
+
+.enhancement-forge[data-state="destroy"] .enhancement-forge-impact-ring {
+  animation: enhancementBlacksmithDestroyRing .5s ease-out 1;
+}
+
+.enhancement-forge[data-state="destroy"] .enhancement-forge-impact-core {
+  animation: enhancementBlacksmithDestroyCore .36s ease-out 1;
+}
+
+@keyframes enhancementBlacksmithHammer {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(43deg) translateY(-46px);
+  }
+  22% {
+    opacity: .96;
+  }
+  55% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-8deg) translateY(2px);
+  }
+  62% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-12deg) translateY(5px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(24deg) translateY(-30px);
+  }
+}
+
+@keyframes enhancementBlacksmithRing {
+  0%, 42% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.22);
+  }
+  56% {
+    opacity: .92;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+}
+
+@keyframes enhancementBlacksmithCore {
+  0%, 42% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.18);
+  }
+  55% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.7);
+  }
+}
+
+@keyframes enhancementBlacksmithSpark {
+  0%, 45% {
+    opacity: 0;
+    transform:
+      rotate(var(--forge-angle))
+      translateX(8px)
+      scaleX(.25);
+  }
+  56% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform:
+      rotate(var(--forge-angle))
+      translateX(94px)
+      scaleX(1);
+  }
+}
+
+@keyframes enhancementBlacksmithResultRing {
+  0% {
+    opacity: .95;
+    transform: translate(-50%, -50%) scale(.3);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.85);
+  }
+}
+
+@keyframes enhancementBlacksmithResultCore {
+  0% {
+    opacity: .98;
+    transform: translate(-50%, -50%) scale(.35);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.1);
+  }
+}
+
+@keyframes enhancementBlacksmithResultSpark {
+  0% {
+    opacity: .96;
+    transform:
+      rotate(var(--forge-angle))
+      translateX(12px)
+      scaleX(.35);
+  }
+  100% {
+    opacity: 0;
+    transform:
+      rotate(var(--forge-angle))
+      translateX(118px)
+      scaleX(1.15);
+  }
+}
+
+@keyframes enhancementBlacksmithDownRing {
+  0% {
+    opacity: .72;
+    transform: translate(-50%, -50%) scale(.38);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.28);
+  }
+}
+
+@keyframes enhancementBlacksmithDestroyRing {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(.28);
+  }
+  55% {
+    opacity: .88;
+    transform: translate(-50%, -50%) scale(1.3);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.05);
+  }
+}
+
+@keyframes enhancementBlacksmithDestroyCore {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(.25);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.5);
+  }
+}
+
+@media (max-width: 700px) {
+  .enhancement-forge-impact {
+    width: 150%;
+    height: 150%;
+  }
+
+  .enhancement-forge-hammer {
+    height: 58px;
+  }
+
+  .enhancement-forge-hammer::before {
+    width: 40px;
+    height: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enhancement-forge-hammer,
+  .enhancement-forge-impact-ring,
+  .enhancement-forge-impact-core,
+  .enhancement-forge-sparks i {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+

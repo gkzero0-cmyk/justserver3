@@ -339,6 +339,121 @@ test.describe('desktop wiki journeys', () => {
     ).toBeLessThanOrEqual(2)
   })
 
+  test('enhancement replace state keeps button and history coordinates fixed with a forge-wide impact layer', async ({ page }) => {
+    await page.setViewportSize({ width: 1584, height: 740 })
+
+    const writeState = async (broken) => {
+      await page.evaluate((isBroken) => {
+        localStorage.setItem(
+          'justserver3-state-v2',
+          JSON.stringify({
+            version: 2,
+            values: {
+              enhancementLab: {
+                level: 11,
+                attempts: 19,
+                successes: 14,
+                failures: 1,
+                downgrades: 3,
+                destroyed: isBroken ? 1 : 0,
+                best: 12,
+                maxWins: 0,
+                broken: isBroken,
+                history: [],
+                run: {
+                  attempts: 19,
+                  successes: 14,
+                  failures: 1,
+                  downgrades: 3,
+                  destroyed: isBroken ? 1 : 0,
+                  best: 12
+                }
+              }
+            }
+          })
+        )
+      }, broken)
+    }
+
+    await page.goto('/')
+    await writeState(false)
+    await page.reload()
+    await page.getByRole('button', { name: '위키 탐험 시작' }).click()
+
+    const lab = page.locator('#enhancement-lab')
+    const forge = lab.locator('.enhancement-forge')
+    const button = lab.locator('.enhancement-primary')
+    const recent = lab.locator('.enhancement-recent-log')
+    const slot = lab.locator('.enhancement-slot-shell')
+    const impact = lab.locator('.enhancement-forge-impact')
+
+    const geometry = async () => {
+      const [forgeBox, buttonBox, recentBox] = await Promise.all([
+        forge.boundingBox(),
+        button.boundingBox(),
+        recent.boundingBox()
+      ])
+      return {
+        forgeBox,
+        buttonBox,
+        recentBox,
+        buttonRelativeY:
+          forgeBox && buttonBox ? buttonBox.y - forgeBox.y : null,
+        recentRelativeY:
+          forgeBox && recentBox ? recentBox.y - forgeBox.y : null
+      }
+    }
+
+    const normal = await geometry()
+    const [slotBox, impactBox] = await Promise.all([
+      slot.boundingBox(),
+      impact.boundingBox()
+    ])
+
+    expect(slotBox).not.toBeNull()
+    expect(impactBox).not.toBeNull()
+    expect(impactBox.width).toBeGreaterThan(slotBox.width * 1.5)
+    expect(impactBox.height).toBeGreaterThan(slotBox.height * 1.5)
+    await expect(lab.locator('.enhancement-forge-hammer')).toHaveCount(1)
+    await expect(lab.locator('.enhancement-run-result-slot')).toHaveCount(0)
+
+    await writeState(true)
+    await page.reload()
+    await page.getByRole('button', { name: '위키 탐험 시작' }).click()
+
+    const brokenLab = page.locator('#enhancement-lab')
+    await expect(
+      brokenLab.getByRole('button', { name: /새 곡괭이 받기/ })
+    ).toBeVisible()
+
+    const brokenForge = brokenLab.locator('.enhancement-forge')
+    const brokenButton = brokenLab.locator('.enhancement-primary')
+    const brokenRecent = brokenLab.locator('.enhancement-recent-log')
+    const [forgeBox, buttonBox, recentBox] = await Promise.all([
+      brokenForge.boundingBox(),
+      brokenButton.boundingBox(),
+      brokenRecent.boundingBox()
+    ])
+
+    const brokenGeometry = {
+      buttonRelativeY:
+        forgeBox && buttonBox ? buttonBox.y - forgeBox.y : null,
+      recentRelativeY:
+        forgeBox && recentBox ? recentBox.y - forgeBox.y : null
+    }
+
+    expect(normal.buttonRelativeY).not.toBeNull()
+    expect(normal.recentRelativeY).not.toBeNull()
+    expect(brokenGeometry.buttonRelativeY).not.toBeNull()
+    expect(brokenGeometry.recentRelativeY).not.toBeNull()
+    expect(
+      Math.abs(brokenGeometry.buttonRelativeY - normal.buttonRelativeY)
+    ).toBeLessThanOrEqual(2)
+    expect(
+      Math.abs(brokenGeometry.recentRelativeY - normal.recentRelativeY)
+    ).toBeLessThanOrEqual(2)
+  })
+
   test('enhancement lab fits a 740px laptop viewport without clipping its bottom utilities', async ({ page }) => {
     await page.setViewportSize({ width: 1584, height: 740 })
     await page.addInitScript(() => {

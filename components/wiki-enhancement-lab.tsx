@@ -330,48 +330,47 @@ function playTone(
     }
 
     if (kind === 'charge') {
-      // Anvil strike + short magical rise: physical first, enchantment second.
-      hammerHit(0, 0.72, 0.42, false)
-      resonator(164, 0.045, 0.24, 0.021, 'triangle', 238)
-      resonator(328, 0.07, 0.26, 0.012, 'sine', 486)
-      impactNoise(0.075, 0.09, 0.018, 1650, 'highpass')
-      if (intensity >= 8) {
-        resonator(654, 0.1, 0.3, 0.009, 'sine', 780)
-      }
+      // Forge sequence: three compact hammer blows on the anvil.
+      hammerHit(0, 0.92, 0.72, false)
+      hammerHit(0.17, 0.82, 0.62, false)
+      hammerHit(0.34, 1.06, 0.94, false)
+      impactNoise(0.345, 0.08, 0.03, 1850, 'highpass')
+      resonator(874 + intensity * 4, 0.35, 0.38, 0.016, 'sine')
+      resonator(1320 + intensity * 7, 0.365, 0.29, 0.01, 'sine')
     } else if (kind === 'success') {
-      // Bright forged confirmation: clean strike, rising triad and short shimmer.
-      hammerHit(0, 1.08, 1.04, false)
-      resonator(392, 0.025, 0.34, 0.022, 'sine', 440)
-      resonator(494, 0.07, 0.34, 0.017, 'sine', 554)
-      resonator(659, 0.115, 0.38, 0.014, 'sine', 740)
-      impactNoise(0.045, 0.13, 0.018, 2200, 'highpass')
+      // Clean final hammer blow with a bright anvil ring.
+      hammerHit(0, 1.18, 1.16, false)
+      impactNoise(0.012, 0.07, 0.034, 1750, 'highpass')
+      resonator(742 + intensity * 3, 0.015, 0.5, 0.022, 'sine')
+      resonator(1110 + intensity * 5, 0.035, 0.43, 0.016, 'sine')
+      resonator(1480 + intensity * 6, 0.055, 0.34, 0.011, 'sine')
     } else if (kind === 'max') {
-      // +15 reward: heavier impact followed by a distinct golden fanfare.
-      hammerHit(0, 1.24, 1.2, false)
-      resonator(262, 0.08, 0.52, 0.024, 'sine', 330)
-      resonator(392, 0.15, 0.52, 0.022, 'sine', 494)
-      resonator(523, 0.22, 0.58, 0.02, 'sine', 659)
-      resonator(784, 0.31, 0.64, 0.014, 'sine', 988)
-      impactNoise(0.03, 0.16, 0.022, 2450, 'highpass')
+      // +15: ceremonial double strike and a long forged-metal ring.
+      hammerHit(0, 1.3, 1.18, false)
+      hammerHit(0.19, 1.18, 1.26, false)
+      impactNoise(0.2, 0.1, 0.04, 2050, 'highpass')
+      resonator(654, 0.205, 0.76, 0.026, 'sine')
+      resonator(981, 0.225, 0.68, 0.019, 'sine')
+      resonator(1472, 0.245, 0.56, 0.013, 'sine')
     } else if (kind === 'down') {
-      // Downgrade: dull impact followed by an unmistakable descending sweep.
-      hammerHit(0, 0.86, 0.38, true)
-      resonator(246, 0.035, 0.48, 0.031, 'triangle', 82)
-      resonator(156, 0.09, 0.52, 0.022, 'sine', 52)
-      impactNoise(0.11, 0.16, 0.018, 310, 'lowpass')
+      // Downgrade: heavy dull strike followed by a scraping downward resonance.
+      hammerHit(0, 0.96, 0.34, true)
+      impactNoise(0.035, 0.12, 0.034, 520, 'bandpass')
+      resonator(232, 0.025, 0.48, 0.03, 'triangle', 78)
+      resonator(138, 0.085, 0.46, 0.021, 'sine', 48)
     } else if (kind === 'destroy') {
-      // Destruction: low impact, brittle crack and lingering sub hit.
-      hammerHit(0, 1.34, 0.38, true)
-      impactNoise(0.018, 0.16, 0.09, 1320, 'bandpass')
-      impactNoise(0.07, 0.38, 0.075, 560, 'lowpass')
-      resonator(72, 0.015, 0.74, 0.06, 'sine', 34)
-      resonator(46, 0.08, 0.78, 0.04, 'triangle', 30)
-      impactNoise(0.19, 0.22, 0.035, 2350, 'highpass')
+      // Destruction: oversized hammer hit, metal crack and fragments hitting the floor.
+      hammerHit(0, 1.42, 0.34, true)
+      impactNoise(0.015, 0.13, 0.1, 1460, 'bandpass')
+      impactNoise(0.075, 0.19, 0.065, 760, 'bandpass')
+      impactNoise(0.145, 0.28, 0.052, 330, 'lowpass')
+      resonator(76, 0.01, 0.72, 0.064, 'sine', 34)
+      resonator(48, 0.07, 0.72, 0.042, 'triangle', 30)
     } else {
-      // Failure: short dead thunk with no rewarding ring.
-      impactNoise(0, 0.075, 0.08, 380, 'lowpass')
-      resonator(88, 0.004, 0.2, 0.052, 'triangle', 56)
-      impactNoise(0.018, 0.07, 0.026, 690, 'bandpass')
+      // Failure: one dead hammer blow with almost no anvil ring.
+      hammerHit(0, 0.88, 0.2, true)
+      impactNoise(0.01, 0.09, 0.046, 430, 'lowpass')
+      resonator(92, 0.006, 0.22, 0.043, 'triangle', 58)
     }
 
     activeEnhancementAudioCloseTimer = window.setTimeout(() => {
@@ -865,6 +864,19 @@ export function WikiEnhancementLab({
                   </div>
                 </div>
               </div>
+              <div className="enhancement-forge-impact" aria-hidden="true">
+                <span className="enhancement-forge-hammer" />
+                <span className="enhancement-forge-impact-ring" />
+                <span className="enhancement-forge-impact-core" />
+                <span className="enhancement-forge-sparks">
+                  {Array.from({ length: 16 }, (_, index) => (
+                    <i
+                      key={'forge-spark-' + index}
+                      style={{ '--i': index } as CSSProperties}
+                    />
+                  ))}
+                </span>
+              </div>
             </div>
 
 
@@ -976,35 +988,6 @@ export function WikiEnhancementLab({
                       (stats.level === 14 ? ' · +15 도전' : '')}
               </span>
             </button>
-          </div>
-
-          <div className="enhancement-run-result-slot" aria-live="polite">
-            {(broken || stats.level >= 15) ? (
-              <section
-                className="enhancement-run-result"
-                data-outcome={broken ? 'destroy' : 'max'}
-                aria-label="이번 강화 도전 결과"
-              >
-                <div>
-                  <small>{broken ? '도전 종료' : '도전 완료'}</small>
-                  <strong>
-                    {broken
-                      ? '곡괭이가 파괴되었습니다'
-                      : '+15 강화에 성공했습니다'}
-                  </strong>
-                </div>
-                <div className="enhancement-run-result-stats">
-                  <span><small>총 시도</small><b>{stats.run.attempts}</b></span>
-                  <span><small>최고 강화</small><b>+{stats.run.best}</b></span>
-                  <span><small>성공</small><b>{stats.run.successes}</b></span>
-                  <span><small>하락</small><b>{stats.run.downgrades}</b></span>
-                </div>
-              </section>
-            ) : (
-              <div className="enhancement-run-result-placeholder" aria-hidden="true">
-                <span>이번 도전 결과가 여기에 표시됩니다.</span>
-              </div>
-            )}
           </div>
 
           <div className="enhancement-recent-log">
