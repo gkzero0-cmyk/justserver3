@@ -4055,3 +4055,220 @@ html[data-text-size="small"] .wiki-enhancement-lab
     height: 60px;
   }
 }
+
+
+/* === 2026-09-28 upright hammer + separated forge/result FX v13 ===
+ * The previous hammer had the metal head on the far/bottom end of the CSS
+ * handle, which made the silhouette read upside-down. This version restores
+ * the familiar hammer orientation: head at the top, grip at the bottom, and
+ * the grip is the pivot. Hammer FX exist only while forging; result FX belong
+ * only to the pickaxe after the hammer leaves.
+ */
+.enhancement-forge-impact{
+  --forge-hit-x: 55%;
+  --forge-hit-y: 39%;
+}
+
+.enhancement-forge-hammer{
+  /* Hand/grip sits down-right of the impact point. */
+  left: calc(var(--forge-hit-x) + 15%);
+  top: calc(var(--forge-hit-y) + 17%);
+  width: clamp(10px, .72vw, 12px);
+  height: clamp(66px, 4.75vw, 78px);
+  transform-origin: 50% 94%;
+  transform:
+    translate(-50%, -94%)
+    rotate(34deg);
+}
+
+/* Normal hammer orientation: metal head is on TOP of the handle. */
+.enhancement-forge-hammer::before{
+  top: -8px;
+  bottom: auto;
+  width: clamp(48px, 3.55vw, 60px);
+  height: clamp(21px, 1.55vw, 26px);
+  transform: translateX(-50%);
+  /* Broad striking face points toward the pickaxe (left). */
+  clip-path: polygon(
+    0 12%,
+    28% 12%,
+    28% 0,
+    100% 0,
+    100% 100%,
+    28% 100%,
+    28% 88%,
+    0 88%
+  );
+  background:
+    linear-gradient(
+      90deg,
+      #171c1d 0 12%,
+      #323839 13% 38%,
+      #505758 39% 72%,
+      #747c7d 73% 100%
+    );
+  box-shadow:
+    inset 0 2px rgba(255,255,255,.11),
+    inset 0 -3px rgba(0,0,0,.38),
+    -3px 4px 0 rgba(0,0,0,.24);
+}
+
+.enhancement-forge-hammer::after{
+  top: 7px;
+  bottom: auto;
+  width: clamp(18px, 1.25vw, 22px);
+  height: clamp(7px, .5vw, 9px);
+}
+
+/*
+ * Arc swing around the grip. Contact angles point the head up-left from the
+ * hand into the cyan pickaxe head; recoil angles lift it back to the right.
+ */
+@keyframes enhancementBlacksmithHammerCombo{
+  0%{
+    opacity: 0;
+    transform: translate(-50%, -94%) rotate(35deg);
+  }
+  7%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(35deg);
+  }
+
+  /* 1st tap */
+  17%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(45deg);
+  }
+  24%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(-39deg);
+    filter: drop-shadow(0 0 3px rgba(244,176,84,.24));
+  }
+  31%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(12deg);
+    filter: none;
+  }
+
+  /* Main strike */
+  42%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(49deg);
+  }
+  52%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(-44deg);
+    filter: drop-shadow(0 0 5px rgba(255,190,96,.36));
+  }
+  61%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(10deg);
+    filter: none;
+  }
+
+  /* Finishing strike */
+  71%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(39deg);
+  }
+  80%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(-40deg);
+    filter: drop-shadow(0 0 3px rgba(244,176,84,.26));
+  }
+  89%{
+    opacity: .94;
+    transform: translate(-50%, -94%) rotate(8deg);
+    filter: none;
+  }
+  100%{
+    opacity: 0;
+    transform: translate(-50%, -94%) rotate(28deg);
+  }
+}
+
+/* During forging, the hammer owns the visual feedback. */
+.enhancement-forge[data-state="charging"] .enhancement-slot-shell{
+  animation: none !important;
+}
+
+.enhancement-forge[data-state="charging"] .enhancement-pickaxe{
+  animation: none !important;
+}
+
+.enhancement-forge[data-state="charging"] .enhancement-pickaxe::after{
+  animation: none !important;
+  opacity: 0 !important;
+}
+
+.enhancement-forge[data-state="charging"] .enhancement-particles i{
+  animation: none !important;
+  opacity: 0 !important;
+}
+
+/*
+ * Once the verdict arrives, the hammer layer is completely gone.
+ * Success/fail/down/destroy effects are then rendered by the item layer only,
+ * avoiding the double halo/spark treatment seen in the screenshots.
+ */
+.enhancement-forge:is(
+  [data-state="success"],
+  [data-state="max"],
+  [data-state="fail"],
+  [data-state="down"],
+  [data-state="destroy"]
+) .enhancement-forge-hammer,
+.enhancement-forge:is(
+  [data-state="success"],
+  [data-state="max"],
+  [data-state="fail"],
+  [data-state="down"],
+  [data-state="destroy"]
+) .enhancement-forge-impact-ring,
+.enhancement-forge:is(
+  [data-state="success"],
+  [data-state="max"],
+  [data-state="fail"],
+  [data-state="down"],
+  [data-state="destroy"]
+) .enhancement-forge-impact-core,
+.enhancement-forge:is(
+  [data-state="success"],
+  [data-state="max"],
+  [data-state="fail"],
+  [data-state="down"],
+  [data-state="destroy"]
+) .enhancement-forge-sparks i{
+  animation: none !important;
+  opacity: 0 !important;
+}
+
+/* Make the post-strike item result readable without a second forge halo. */
+.enhancement-forge[data-state="success"] .enhancement-pickaxe::after,
+.enhancement-forge[data-state="max"] .enhancement-pickaxe::after{
+  animation: enhancementForgeResultFlash .58s ease-out both !important;
+}
+
+.enhancement-forge[data-state="success"] .enhancement-particles i,
+.enhancement-forge[data-state="max"] .enhancement-particles i{
+  animation: enhancementParticleBurst .7s ease-out both !important;
+  animation-delay: calc(var(--i) * 9ms) !important;
+}
+
+@media (max-width: 700px){
+  .enhancement-forge-hammer{
+    left: calc(var(--forge-hit-x) + 15%);
+    top: calc(var(--forge-hit-y) + 17%);
+    transform-origin: 50% 94%;
+  }
+
+  .enhancement-forge-hammer::before{
+    top: -7px;
+    bottom: auto;
+  }
+
+  .enhancement-forge-hammer::after{
+    top: 6px;
+    bottom: auto;
+  }
+}

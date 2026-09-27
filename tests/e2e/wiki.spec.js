@@ -462,6 +462,24 @@ test.describe('desktop wiki journeys', () => {
     expect(strikeMotion.iterationCount).toBe('1')
     expect(strikeMotion.duration).toBeGreaterThanOrEqual(.65)
 
+    const separatedChargingFx = await lab.evaluate((root) => {
+      const pickaxe = root.querySelector('.enhancement-pickaxe')
+      const itemParticle = root.querySelector('.enhancement-particles i')
+      const hammerSpark = root.querySelector('.enhancement-forge-sparks i')
+      if (!pickaxe || !itemParticle || !hammerSpark) return null
+      return {
+        itemFlashOpacity: getComputedStyle(pickaxe, '::after').opacity,
+        itemParticleOpacity: getComputedStyle(itemParticle).opacity,
+        hammerSparkAnimation: getComputedStyle(hammerSpark).animationName
+      }
+    })
+    expect(separatedChargingFx).not.toBeNull()
+    expect(separatedChargingFx.itemFlashOpacity).toBe('0')
+    expect(separatedChargingFx.itemParticleOpacity).toBe('0')
+    expect(separatedChargingFx.hammerSparkAnimation).toContain(
+      'enhancementBlacksmithSparkCombo'
+    )
+
     const charging = await geometry()
     expect(before.buttonRelativeY).not.toBeNull()
     expect(charging.buttonRelativeY).not.toBeNull()
@@ -476,6 +494,21 @@ test.describe('desktop wiki journeys', () => {
       /강화 성공|강화 실패|강화 하락|장비 파괴|최대강화 달성/,
       { timeout: 3000 }
     )
+
+    const separatedResultFx = await lab.evaluate((root) => {
+      const ring = root.querySelector('.enhancement-forge-impact-ring')
+      const hammer = root.querySelector('.enhancement-forge-hammer')
+      if (!ring || !hammer) return null
+      return {
+        ringOpacity: getComputedStyle(ring).opacity,
+        ringAnimation: getComputedStyle(ring).animationName,
+        hammerOpacity: getComputedStyle(hammer).opacity
+      }
+    })
+    expect(separatedResultFx).not.toBeNull()
+    expect(separatedResultFx.ringOpacity).toBe('0')
+    expect(separatedResultFx.ringAnimation).toBe('none')
+    expect(separatedResultFx.hammerOpacity).toBe('0')
 
     const after = await geometry()
     expect(after.buttonRelativeY).not.toBeNull()
@@ -574,21 +607,28 @@ test.describe('desktop wiki journeys', () => {
       const impact = element.parentElement?.getBoundingClientRect()
       const left = Number.parseFloat(style.left)
       const top = Number.parseFloat(style.top)
+      const originParts = style.transformOrigin
+        .split(' ')
+        .map((value) => Number.parseFloat(value))
       return {
         handleHeight: Number.parseFloat(style.height),
         headWidth: Number.parseFloat(head.width),
+        headTop: Number.parseFloat(head.top),
         leftRatio: impact?.width ? left / impact.width : 0,
         topRatio: impact?.height ? top / impact.height : 0,
-        transformOrigin: style.transformOrigin
+        transformOriginY: originParts[1] || 0
       }
     })
     expect(hammerArt.handleHeight).toBeGreaterThanOrEqual(60)
     expect(hammerArt.headWidth).toBeGreaterThanOrEqual(48)
-    expect(hammerArt.leftRatio).toBeGreaterThan(.62)
-    expect(hammerArt.leftRatio).toBeLessThan(.70)
-    expect(hammerArt.topRatio).toBeGreaterThan(.18)
-    expect(hammerArt.topRatio).toBeLessThan(.28)
-    expect(hammerArt.transformOrigin).not.toContain('100%')
+    expect(hammerArt.headTop).toBeLessThan(0)
+    expect(hammerArt.leftRatio).toBeGreaterThan(.66)
+    expect(hammerArt.leftRatio).toBeLessThan(.74)
+    expect(hammerArt.topRatio).toBeGreaterThan(.51)
+    expect(hammerArt.topRatio).toBeLessThan(.60)
+    expect(hammerArt.transformOriginY).toBeGreaterThan(
+      hammerArt.handleHeight * .85
+    )
 
     await expect(lab.locator('.enhancement-run-result-slot')).toHaveCount(0)
 
