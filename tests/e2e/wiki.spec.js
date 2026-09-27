@@ -339,6 +339,80 @@ test.describe('desktop wiki journeys', () => {
     ).toBeLessThanOrEqual(2)
   })
 
+  test('enhancement lab fits a 740px laptop viewport without clipping its bottom utilities', async ({ page }) => {
+    await page.setViewportSize({ width: 1584, height: 740 })
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'justserver3-state-v2',
+        JSON.stringify({
+          version: 2,
+          values: {
+            enhancementLab: {
+              level: 7,
+              attempts: 14,
+              successes: 8,
+              failures: 5,
+              downgrades: 1,
+              destroyed: 0,
+              best: 7,
+              maxWins: 0,
+              broken: false,
+              history: [],
+              run: {
+                attempts: 14,
+                successes: 8,
+                failures: 5,
+                downgrades: 1,
+                destroyed: 0,
+                best: 7
+              }
+            }
+          }
+        })
+      )
+    })
+
+    await page.goto('/')
+    await page.getByRole('button', { name: '위키 탐험 시작' }).click()
+    await page.getByRole('button', { name: '글자 크게' }).click()
+
+    const lab = page.locator('#enhancement-lab')
+    const forge = lab.locator('.enhancement-forge')
+    const side = lab.locator('.enhancement-side')
+    const recent = lab.locator('.enhancement-recent-log')
+    const records = lab.locator('.enhancement-records')
+    const links = lab.locator('.enhancement-links')
+
+    const [labBox, forgeBox, sideBox, recentBox, recordsBox, linksBox] =
+      await Promise.all([
+        lab.boundingBox(),
+        forge.boundingBox(),
+        side.boundingBox(),
+        recent.boundingBox(),
+        records.boundingBox(),
+        links.boundingBox()
+      ])
+
+    expect(labBox).not.toBeNull()
+    expect(forgeBox).not.toBeNull()
+    expect(sideBox).not.toBeNull()
+    expect(recentBox).not.toBeNull()
+    expect(recordsBox).not.toBeNull()
+    expect(linksBox).not.toBeNull()
+
+    expect(labBox.height).toBeLessThanOrEqual(650)
+    expect(Math.abs(forgeBox.height - sideBox.height)).toBeLessThanOrEqual(2)
+    expect(recentBox.y + recentBox.height).toBeLessThanOrEqual(
+      forgeBox.y + forgeBox.height + 1
+    )
+    expect(recordsBox.y + recordsBox.height).toBeLessThanOrEqual(
+      sideBox.y + sideBox.height + 1
+    )
+    expect(linksBox.y + linksBox.height).toBeLessThanOrEqual(
+      sideBox.y + sideBox.height + 1
+    )
+  })
+
   test('enhancement lab scales up on wide desktop without panel imbalance', async ({ page }) => {
     await page.setViewportSize({ width: 1585, height: 900 })
     await page.goto('/')
