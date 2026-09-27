@@ -602,14 +602,13 @@ test.describe('desktop wiki journeys', () => {
 
     expect(slotBox).not.toBeNull()
     expect(impactBox).not.toBeNull()
-    expect(impactBox.width).toBeGreaterThan(slotBox.width * 1.5)
-    expect(impactBox.height).toBeGreaterThan(slotBox.height * 1.5)
+    expect(Math.abs(impactBox.width - slotBox.width)).toBeLessThanOrEqual(2)
+    expect(Math.abs(impactBox.height - slotBox.height)).toBeLessThanOrEqual(2)
 
     const hammer = lab.locator('.enhancement-forge-hammer')
     await expect(hammer).toHaveCount(1)
     const hammerArt = await hammer.evaluate((element) => {
       const style = getComputedStyle(element)
-      const head = getComputedStyle(element, '::before')
       const impact = element.parentElement?.getBoundingClientRect()
       const left = Number.parseFloat(style.left)
       const top = Number.parseFloat(style.top)
@@ -617,24 +616,26 @@ test.describe('desktop wiki journeys', () => {
         .split(' ')
         .map((value) => Number.parseFloat(value))
       return {
-        handleHeight: Number.parseFloat(style.height),
-        headWidth: Number.parseFloat(head.width),
-        headTop: Number.parseFloat(head.top),
+        src: element.getAttribute('src') || '',
+        width: Number.parseFloat(style.width),
+        height: Number.parseFloat(style.height),
         leftRatio: impact?.width ? left / impact.width : 0,
         topRatio: impact?.height ? top / impact.height : 0,
-        transformOriginY: originParts[1] || 0
+        transformOriginY: originParts[1] || 0,
+        imageRendering: style.imageRendering
       }
     })
-    expect(hammerArt.handleHeight).toBeGreaterThanOrEqual(60)
-    expect(hammerArt.headWidth).toBeGreaterThanOrEqual(48)
-    expect(hammerArt.headTop).toBeLessThan(0)
-    expect(hammerArt.leftRatio).toBeGreaterThan(.66)
-    expect(hammerArt.leftRatio).toBeLessThan(.74)
-    expect(hammerArt.topRatio).toBeGreaterThan(.51)
-    expect(hammerArt.topRatio).toBeLessThan(.60)
+    expect(hammerArt.src).toContain('blacksmith-hammer-pixel.svg')
+    expect(hammerArt.width).toBeGreaterThanOrEqual(52)
+    expect(hammerArt.height).toBeGreaterThanOrEqual(78)
+    expect(hammerArt.leftRatio).toBeGreaterThan(.68)
+    expect(hammerArt.leftRatio).toBeLessThan(.76)
+    expect(hammerArt.topRatio).toBeGreaterThan(.61)
+    expect(hammerArt.topRatio).toBeLessThan(.70)
     expect(hammerArt.transformOriginY).toBeGreaterThan(
-      hammerArt.handleHeight * .85
+      hammerArt.height * .85
     )
+    expect(hammerArt.imageRendering).toMatch(/pixelated|crisp-edges/)
 
     await expect(lab.locator('.enhancement-run-result-slot')).toHaveCount(0)
 

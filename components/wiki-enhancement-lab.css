@@ -3361,181 +3361,156 @@ html[data-text-size="small"] .wiki-enhancement-lab
   }
 }
 
-
-/* === 2026-09-28 forge hammer physical strike v11 ===
- * One heavy, readable blacksmith strike:
- * - blockier hammer silhouette that matches the pixel-art pickaxe
- * - contact point sits on the diamond head rather than the frame corner
- * - one weighted swing instead of three rapid icon-like taps
- * - compact, directional metal sparks instead of a magic-circle burst
+/* === 2026-09-28 canonical forge strike v15 ===
+ * Final hammer system:
+ * - real transparent pixel-art asset instead of CSS pseudo-elements
+ * - impact coordinates are relative to the item slot, not a 160% overlay
+ * - timing comes from enhancementStrikeDuration() through an inline CSS var
+ * - high tiers gain backswing/impact weight rather than large speed penalties
+ * - hammer FX own the forging phase; item FX own the verdict phase
  */
 .enhancement-forge{
-  --forge-strike-duration: .62s;
+  --forge-strike-duration: 650ms;
+  --forge-backswing-boost: 0deg;
+  --forge-main-contact-boost: 0deg;
 }
 
 .enhancement-forge[data-tier="mid"]{
-  --forge-strike-duration: .72s;
+  --forge-backswing-boost: 2deg;
+  --forge-main-contact-boost: 1deg;
 }
 
 .enhancement-forge[data-tier="high"]{
-  --forge-strike-duration: .82s;
+  --forge-backswing-boost: 5deg;
+  --forge-main-contact-boost: 2deg;
 }
 
 .enhancement-forge[data-tier="extreme"]{
-  --forge-strike-duration: .94s;
-}
-
-.enhancement-forge[data-tier="legendary"]{
-  --forge-strike-duration: 1.02s;
+  --forge-backswing-boost: 8deg;
+  --forge-main-contact-boost: 3deg;
 }
 
 .enhancement-forge[data-final-attempt="true"]{
-  --forge-strike-duration: 1.08s;
+  --forge-backswing-boost: 12deg;
+  --forge-main-contact-boost: 4deg;
 }
 
+/* The strike coordinate system now scales exactly with the item slot. */
 .enhancement-forge-impact{
-  --forge-hit-x: 55%;
-  --forge-hit-y: 42%;
-  left: 50%;
-  top: 50%;
-  width: 160%;
-  height: 160%;
-  transform: translate(-50%, -50%);
+  --forge-impact-rgb: 238, 164, 78;
+  --forge-hit-x: 42%;
+  --forge-hit-y: 35%;
+  position: absolute;
+  z-index: 24;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform: none;
+  overflow: visible;
   filter: none;
 }
 
+.enhancement-forge[data-tier="high"] .enhancement-forge-impact{
+  --forge-impact-rgb: 111, 207, 224;
+}
+
+.enhancement-forge[data-tier="extreme"] .enhancement-forge-impact{
+  --forge-impact-rgb: 153, 129, 238;
+}
+
+.enhancement-forge[data-tier="legendary"] .enhancement-forge-impact{
+  --forge-impact-rgb: 238, 196, 95;
+}
+
+.enhancement-forge[data-state="destroy"] .enhancement-forge-impact{
+  --forge-impact-rgb: 229, 91, 74;
+}
+
+/*
+ * The asset is upright in its source file: steel head at the top, grip at
+ * the bottom. The grip is the pivot. At roughly -45deg the head reaches the
+ * pickaxe's cyan head; positive angles are the visible wind-up.
+ */
 .enhancement-forge-hammer{
-  left: var(--forge-hit-x);
-  top: var(--forge-hit-y);
-  width: clamp(10px, .72vw, 12px);
-  height: clamp(66px, 4.75vw, 78px);
-  border: 1px solid #20140c;
+  position: absolute;
+  z-index: 5;
+  left: calc(var(--forge-hit-x) + 30%);
+  top: calc(var(--forge-hit-y) + 30%);
+  width: clamp(54px, 4vw, 66px);
+  height: auto;
+  border: 0;
   border-radius: 0;
   opacity: 0;
-  transform-origin: 50% 100%;
-  transform:
-    translate(-50%, -100%)
-    translate(46px, -54px)
-    rotate(52deg);
-  background:
-    repeating-linear-gradient(
-      0deg,
-      rgba(255,255,255,.025) 0 6px,
-      rgba(0,0,0,.08) 6px 12px
-    ),
-    linear-gradient(
-      90deg,
-      #24150c 0 16%,
-      #57331a 17% 34%,
-      #8b552a 35% 53%,
-      #5b351b 54% 78%,
-      #26170d 79% 100%
-    );
-  box-shadow:
-    inset 1px 0 rgba(255,225,180,.08),
-    inset -2px 0 rgba(0,0,0,.28),
-    2px 4px 0 rgba(0,0,0,.18);
-  filter: none;
-}
-
-.enhancement-forge-hammer::before{
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: auto;
-  bottom: -8px;
-  width: clamp(48px, 3.55vw, 60px);
-  height: clamp(21px, 1.55vw, 26px);
-  transform: translateX(-50%);
-  border: 1px solid #111617;
-  border-radius: 0;
-  clip-path: polygon(
-    0 0,
-    72% 0,
-    72% 12%,
-    100% 12%,
-    100% 88%,
-    72% 88%,
-    72% 100%,
-    0 100%
-  );
-  background:
-    linear-gradient(
-      180deg,
-      #737b7c 0 13%,
-      #4b5253 14% 34%,
-      #303637 35% 69%,
-      #181d1e 70% 100%
-    );
-  box-shadow:
-    inset 0 2px rgba(255,255,255,.11),
-    inset 0 -3px rgba(0,0,0,.38),
-    3px 4px 0 rgba(0,0,0,.24);
-}
-
-.enhancement-forge-hammer::after{
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: auto;
-  bottom: 5px;
-  width: clamp(18px, 1.25vw, 22px);
-  height: clamp(7px, .5vw, 9px);
-  transform: translateX(-50%);
-  border: 1px solid #151a1b;
-  border-radius: 0;
-  background:
-    linear-gradient(
-      180deg,
-      #555c5d 0 36%,
-      #2a3031 37% 100%
-    );
-  box-shadow: inset 0 1px rgba(255,255,255,.08);
+  transform-origin: 50% 92%;
+  transform: translate(-50%, -92%) rotate(34deg);
+  background: none;
+  box-shadow: none;
+  filter: drop-shadow(3px 5px 3px rgba(0,0,0,.28));
+  image-rendering: pixelated;
+  user-select: none;
+  pointer-events: none;
 }
 
 .enhancement-forge-impact-ring,
 .enhancement-forge-impact-core,
 .enhancement-forge-sparks{
+  position: absolute;
   left: var(--forge-hit-x);
   top: var(--forge-hit-y);
+  pointer-events: none;
 }
 
 .enhancement-forge-impact-ring{
-  width: clamp(48px, 24%, 72px);
-  height: clamp(24px, 12%, 36px);
-  border: 1px solid rgba(var(--forge-impact-rgb), .62);
+  width: clamp(42px, 27%, 56px);
+  height: clamp(22px, 14%, 30px);
+  border: 1px solid rgba(var(--forge-impact-rgb), .58);
   border-radius: 50%;
-  box-shadow:
-    0 0 9px rgba(var(--forge-impact-rgb), .22);
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px rgba(var(--forge-impact-rgb), .18);
 }
 
 .enhancement-forge-impact-core{
-  width: clamp(24px, 11%, 34px);
-  height: clamp(24px, 11%, 34px);
+  width: clamp(22px, 13%, 30px);
+  height: clamp(22px, 13%, 30px);
+  border-radius: 50%;
+  opacity: 0;
+  transform: translate(-50%, -50%);
   background:
     radial-gradient(
       circle,
       rgba(255,250,232,.98) 0 8%,
-      rgba(255,205,121,.9) 9% 20%,
-      rgba(var(--forge-impact-rgb), .42) 21% 40%,
+      rgba(255,205,121,.88) 9% 20%,
+      rgba(var(--forge-impact-rgb), .38) 21% 40%,
       transparent 66%
     );
-  filter: none;
+}
+
+.enhancement-forge-sparks{
+  width: 0;
+  height: 0;
 }
 
 .enhancement-forge-sparks i{
-  width: 20px;
+  --forge-angle: calc(var(--i) * 36deg);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 18px;
   height: 2px;
   border-radius: 0;
+  opacity: 0;
+  transform-origin: 0 50%;
   background:
     linear-gradient(
       90deg,
       rgba(255,249,223,.98),
-      rgba(242,171,75,.96) 40%,
-      rgba(218,111,41,.6) 68%,
+      rgba(242,171,75,.94) 40%,
+      rgba(218,111,41,.56) 68%,
       transparent
     );
-  box-shadow: 0 0 5px rgba(239,154,66,.38);
+  box-shadow: 0 0 4px rgba(239,154,66,.32);
 }
 
 .enhancement-forge-sparks i:nth-child(n+11){
@@ -3543,278 +3518,15 @@ html[data-text-size="small"] .wiki-enhancement-lab
 }
 
 .enhancement-forge-sparks i:nth-child(1){ --forge-angle: 146deg; }
-.enhancement-forge-sparks i:nth-child(2){ --forge-angle: 166deg; }
+.enhancement-forge-sparks i:nth-child(2){ --forge-angle: 166deg; width: 13px; }
 .enhancement-forge-sparks i:nth-child(3){ --forge-angle: 191deg; }
-.enhancement-forge-sparks i:nth-child(4){ --forge-angle: 216deg; }
+.enhancement-forge-sparks i:nth-child(4){ --forge-angle: 216deg; width: 13px; }
 .enhancement-forge-sparks i:nth-child(5){ --forge-angle: 241deg; }
-.enhancement-forge-sparks i:nth-child(6){ --forge-angle: 274deg; }
+.enhancement-forge-sparks i:nth-child(6){ --forge-angle: 274deg; width: 13px; }
 .enhancement-forge-sparks i:nth-child(7){ --forge-angle: 306deg; }
-.enhancement-forge-sparks i:nth-child(8){ --forge-angle: 332deg; }
+.enhancement-forge-sparks i:nth-child(8){ --forge-angle: 332deg; width: 13px; }
 .enhancement-forge-sparks i:nth-child(9){ --forge-angle: 24deg; }
-.enhancement-forge-sparks i:nth-child(10){ --forge-angle: 62deg; }
-
-.enhancement-forge-sparks i:nth-child(2n){
-  width: 14px;
-}
-
-.enhancement-forge[data-state="charging"] .enhancement-forge-hammer{
-  animation:
-    enhancementBlacksmithHammerPhysical
-    var(--forge-strike-duration)
-    cubic-bezier(.18,.76,.16,1)
-    1
-    both;
-}
-
-.enhancement-forge[data-state="charging"] .enhancement-forge-impact-ring{
-  animation:
-    enhancementBlacksmithImpactPhysical
-    var(--forge-strike-duration)
-    ease-out
-    1
-    both;
-}
-
-.enhancement-forge[data-state="charging"] .enhancement-forge-impact-core{
-  animation:
-    enhancementBlacksmithCorePhysical
-    var(--forge-strike-duration)
-    ease-out
-    1
-    both;
-}
-
-.enhancement-forge[data-state="charging"] .enhancement-forge-sparks i{
-  animation:
-    enhancementBlacksmithSparkPhysical
-    var(--forge-strike-duration)
-    cubic-bezier(.18,.72,.24,1)
-    1
-    both;
-  animation-delay: 0s;
-}
-
-@keyframes enhancementBlacksmithHammerPhysical{
-  0%{
-    opacity: 0;
-    transform:
-      translate(-50%, -100%)
-      translate(48px, -56px)
-      rotate(54deg);
-    filter: none;
-  }
-  14%{
-    opacity: 1;
-  }
-  30%{
-    opacity: 1;
-    transform:
-      translate(-50%, -100%)
-      translate(47px, -55px)
-      rotate(55deg);
-  }
-  48%{
-    opacity: 1;
-    transform:
-      translate(-50%, -100%)
-      translate(29px, -35px)
-      rotate(46deg);
-  }
-  58%{
-    opacity: 1;
-    transform:
-      translate(-50%, -100%)
-      translate(10px, -13px)
-      rotate(34deg);
-  }
-  62%{
-    opacity: 1;
-    transform:
-      translate(-50%, -100%)
-      translate(0, 0)
-      rotate(26deg);
-    filter: drop-shadow(0 0 4px rgba(244,176,84,.32));
-  }
-  67%{
-    opacity: 1;
-    transform:
-      translate(-50%, -100%)
-      translate(3px, -5px)
-      rotate(30deg);
-    filter: none;
-  }
-  79%{
-    opacity: .96;
-    transform:
-      translate(-50%, -100%)
-      translate(14px, -22px)
-      rotate(40deg);
-  }
-  100%{
-    opacity: 0;
-    transform:
-      translate(-50%, -100%)
-      translate(31px, -43px)
-      rotate(49deg);
-  }
-}
-
-@keyframes enhancementBlacksmithImpactPhysical{
-  0%, 57%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(.35,.55);
-  }
-  62%{
-    opacity: .7;
-    transform: translate(-50%, -50%) scale(.62,.78);
-  }
-  77%{
-    opacity: .22;
-    transform: translate(-50%, -50%) scale(1.05,1);
-  }
-  100%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.32,1.08);
-  }
-}
-
-@keyframes enhancementBlacksmithCorePhysical{
-  0%, 58%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(.2);
-  }
-  62%{
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(.85);
-  }
-  70%{
-    opacity: .45;
-    transform: translate(-50%, -50%) scale(1.05);
-  }
-  100%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.35);
-  }
-}
-
-@keyframes enhancementBlacksmithSparkPhysical{
-  0%, 59%{
-    opacity: 0;
-    transform:
-      rotate(var(--forge-angle))
-      translateX(4px)
-      scaleX(.15);
-  }
-  62%{
-    opacity: 1;
-  }
-  100%{
-    opacity: 0;
-    transform:
-      rotate(var(--forge-angle))
-      translateX(62px)
-      scaleX(.88);
-  }
-}
-
-@media (max-width: 700px){
-  .enhancement-forge-impact{
-    width: 148%;
-    height: 148%;
-  }
-
-  .enhancement-forge-hammer{
-    width: 10px;
-    height: 60px;
-  }
-
-  .enhancement-forge-hammer::before{
-    width: 46px;
-    height: 20px;
-  }
-
-  .enhancement-forge-hammer::after{
-    width: 17px;
-    height: 7px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce){
-  .enhancement-forge[data-state="charging"] .enhancement-forge-hammer,
-  .enhancement-forge[data-state="charging"] .enhancement-forge-impact-ring,
-  .enhancement-forge[data-state="charging"] .enhancement-forge-impact-core,
-  .enhancement-forge[data-state="charging"] .enhancement-forge-sparks i{
-    animation: none !important;
-    opacity: 0 !important;
-  }
-}
-
-
-/* === 2026-09-28 forge hammer three-hit swing v12 ===
- * The grip end is now the rotation pivot. The hammer head travels on an
- * actual arc from the upper-right into the pickaxe head three times, matching
- * the three metal strikes in wiki-enhancement-audio.ts.
- */
-.enhancement-forge{
-  --forge-strike-duration: .65s;
-}
-
-.enhancement-forge[data-tier="mid"]{
-  --forge-strike-duration: .8s;
-}
-
-.enhancement-forge[data-tier="high"]{
-  --forge-strike-duration: .98s;
-}
-
-.enhancement-forge[data-tier="extreme"]{
-  --forge-strike-duration: 1.2s;
-}
-
-.enhancement-forge[data-final-attempt="true"]{
-  --forge-strike-duration: 1.45s;
-}
-
-.enhancement-forge-impact{
-  --forge-hit-x: 55%;
-  --forge-hit-y: 42%;
-}
-
-.enhancement-forge-hammer{
-  /* Pivot is the hand/grip end. At ~30deg the metal head lands on hit-x/y. */
-  left: calc(var(--forge-hit-x) + 11%);
-  top: calc(var(--forge-hit-y) - 19%);
-  width: clamp(10px, .72vw, 12px);
-  height: clamp(66px, 4.75vw, 78px);
-  transform-origin: 50% 6%;
-  transform:
-    translate(-50%, -6%)
-    rotate(-48deg);
-  border-radius: 0;
-}
-
-.enhancement-forge-hammer::before{
-  /* Head remains at the far end of the handle, away from the grip pivot. */
-  top: auto;
-  bottom: -8px;
-  width: clamp(48px, 3.55vw, 60px);
-  height: clamp(21px, 1.55vw, 26px);
-  clip-path: polygon(
-    0 0,
-    72% 0,
-    72% 12%,
-    100% 12%,
-    100% 88%,
-    72% 88%,
-    72% 100%,
-    0 100%
-  );
-}
-
-.enhancement-forge-hammer::after{
-  top: auto;
-  bottom: 5px;
-}
+.enhancement-forge-sparks i:nth-child(10){ --forge-angle: 62deg; width: 13px; }
 
 .enhancement-forge[data-state="charging"] .enhancement-forge-hammer{
   animation:
@@ -3853,347 +3565,18 @@ html[data-text-size="small"] .wiki-enhancement-lab
   animation-delay: 0s;
 }
 
-/*
- * Contact frames: 24%, 52%, 80%.
- * The second hit carries the widest wind-up and strongest overshoot.
- */
-@keyframes enhancementBlacksmithHammerCombo{
-  0%{
-    opacity: 0;
-    transform: translate(-50%, -6%) rotate(-48deg);
-  }
-  8%{
-    opacity: 1;
-    transform: translate(-50%, -6%) rotate(-48deg);
-  }
-  17%{
-    opacity: 1;
-    transform: translate(-50%, -6%) rotate(-56deg);
-  }
-  24%{
-    opacity: 1;
-    transform: translate(-50%, -6%) rotate(30deg);
-    filter: drop-shadow(0 0 3px rgba(244,176,84,.25));
-  }
-  31%{
-    opacity: 1;
-    transform: translate(-50%, -6%) rotate(-26deg);
-    filter: none;
-  }
-  42%{
-    opacity: 1;
-    transform: translate(-50%, -6%) rotate(-61deg);
-  }
-  52%{
-    opacity: 1;
-    transform: translate(-50%, -6%) rotate(34deg);
-    filter: drop-shadow(0 0 5px rgba(255,190,96,.38));
-  }
-  61%{
-    opacity: 1;
-    transform: translate(-50%, -6%) rotate(-31deg);
-    filter: none;
-  }
-  71%{
-    opacity: 1;
-    transform: translate(-50%, -6%) rotate(-52deg);
-  }
-  80%{
-    opacity: 1;
-    transform: translate(-50%, -6%) rotate(29deg);
-    filter: drop-shadow(0 0 3px rgba(244,176,84,.28));
-  }
-  89%{
-    opacity: .96;
-    transform: translate(-50%, -6%) rotate(-23deg);
-    filter: none;
-  }
-  100%{
-    opacity: 0;
-    transform: translate(-50%, -6%) rotate(-38deg);
-  }
-}
-
-@keyframes enhancementBlacksmithImpactCombo{
-  0%, 21%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(.32,.48);
-  }
-  24%{
-    opacity: .55;
-    transform: translate(-50%, -50%) scale(.62,.72);
-  }
-  30%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.02,.92);
-  }
-  31%, 49%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(.34,.5);
-  }
-  52%{
-    opacity: .82;
-    transform: translate(-50%, -50%) scale(.76,.86);
-  }
-  59%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.22,1.04);
-  }
-  60%, 77%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(.32,.48);
-  }
-  80%{
-    opacity: .62;
-    transform: translate(-50%, -50%) scale(.68,.76);
-  }
-  87%, 100%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.08,.96);
-  }
-}
-
-@keyframes enhancementBlacksmithCoreCombo{
-  0%, 22%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(.18);
-  }
-  24%{
-    opacity: .82;
-    transform: translate(-50%, -50%) scale(.72);
-  }
-  29%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.08);
-  }
-  30%, 50%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(.18);
-  }
-  52%{
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(.94);
-  }
-  58%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.32);
-  }
-  59%, 78%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(.18);
-  }
-  80%{
-    opacity: .88;
-    transform: translate(-50%, -50%) scale(.78);
-  }
-  86%, 100%{
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.14);
-  }
-}
-
-@keyframes enhancementBlacksmithSparkCombo{
-  0%, 22%{
-    opacity: 0;
-    transform:
-      rotate(var(--forge-angle))
-      translateX(4px)
-      scaleX(.14);
-  }
-  24%{
-    opacity: .8;
-  }
-  31%{
-    opacity: 0;
-    transform:
-      rotate(var(--forge-angle))
-      translateX(43px)
-      scaleX(.72);
-  }
-  32%, 50%{
-    opacity: 0;
-    transform:
-      rotate(var(--forge-angle))
-      translateX(4px)
-      scaleX(.14);
-  }
-  52%{
-    opacity: 1;
-  }
-  60%{
-    opacity: 0;
-    transform:
-      rotate(var(--forge-angle))
-      translateX(66px)
-      scaleX(1);
-  }
-  61%, 78%{
-    opacity: 0;
-    transform:
-      rotate(var(--forge-angle))
-      translateX(4px)
-      scaleX(.14);
-  }
-  80%{
-    opacity: .86;
-  }
-  88%, 100%{
-    opacity: 0;
-    transform:
-      rotate(var(--forge-angle))
-      translateX(50px)
-      scaleX(.8);
-  }
-}
-
-@media (max-width: 700px){
-  .enhancement-forge-hammer{
-    left: calc(var(--forge-hit-x) + 11%);
-    top: calc(var(--forge-hit-y) - 19%);
-    transform-origin: 50% 6%;
-    width: 10px;
-    height: 60px;
-  }
-}
-
-
-/* === 2026-09-28 upright hammer + separated forge/result FX v13 ===
- * The previous hammer had the metal head on the far/bottom end of the CSS
- * handle, which made the silhouette read upside-down. This version restores
- * the familiar hammer orientation: head at the top, grip at the bottom, and
- * the grip is the pivot. Hammer FX exist only while forging; result FX belong
- * only to the pickaxe after the hammer leaves.
- */
-.enhancement-forge-impact{
-  --forge-hit-x: 55%;
-  --forge-hit-y: 39%;
-}
-
-.enhancement-forge-hammer{
-  /* Hand/grip sits down-right of the impact point. */
-  left: calc(var(--forge-hit-x) + 15%);
-  top: calc(var(--forge-hit-y) + 17%);
-  width: clamp(10px, .72vw, 12px);
-  height: clamp(66px, 4.75vw, 78px);
-  transform-origin: 50% 94%;
-  transform:
-    translate(-50%, -94%)
-    rotate(34deg);
-}
-
-/* Normal hammer orientation: metal head is on TOP of the handle. */
-.enhancement-forge-hammer::before{
-  top: -8px;
-  bottom: auto;
-  width: clamp(48px, 3.55vw, 60px);
-  height: clamp(21px, 1.55vw, 26px);
-  transform: translateX(-50%);
-  /* Broad striking face points toward the pickaxe (left). */
-  clip-path: polygon(
-    0 12%,
-    28% 12%,
-    28% 0,
-    100% 0,
-    100% 100%,
-    28% 100%,
-    28% 88%,
-    0 88%
-  );
-  background:
-    linear-gradient(
-      90deg,
-      #171c1d 0 12%,
-      #323839 13% 38%,
-      #505758 39% 72%,
-      #747c7d 73% 100%
-    );
-  box-shadow:
-    inset 0 2px rgba(255,255,255,.11),
-    inset 0 -3px rgba(0,0,0,.38),
-    -3px 4px 0 rgba(0,0,0,.24);
-}
-
-.enhancement-forge-hammer::after{
-  top: 7px;
-  bottom: auto;
-  width: clamp(18px, 1.25vw, 22px);
-  height: clamp(7px, .5vw, 9px);
-}
-
-/*
- * Arc swing around the grip. Contact angles point the head up-left from the
- * hand into the cyan pickaxe head; recoil angles lift it back to the right.
- */
-@keyframes enhancementBlacksmithHammerCombo{
-  0%{
-    opacity: 0;
-    transform: translate(-50%, -94%) rotate(35deg);
-  }
-  7%{
-    opacity: 1;
-    transform: translate(-50%, -94%) rotate(35deg);
-  }
-
-  /* 1st tap */
-  17%{
-    opacity: 1;
-    transform: translate(-50%, -94%) rotate(45deg);
-  }
-  24%{
-    opacity: 1;
-    transform: translate(-50%, -94%) rotate(-39deg);
-    filter: drop-shadow(0 0 3px rgba(244,176,84,.24));
-  }
-  31%{
-    opacity: 1;
-    transform: translate(-50%, -94%) rotate(12deg);
-    filter: none;
-  }
-
-  /* Main strike */
-  42%{
-    opacity: 1;
-    transform: translate(-50%, -94%) rotate(49deg);
-  }
-  52%{
-    opacity: 1;
-    transform: translate(-50%, -94%) rotate(-44deg);
-    filter: drop-shadow(0 0 5px rgba(255,190,96,.36));
-  }
-  61%{
-    opacity: 1;
-    transform: translate(-50%, -94%) rotate(10deg);
-    filter: none;
-  }
-
-  /* Finishing strike */
-  71%{
-    opacity: 1;
-    transform: translate(-50%, -94%) rotate(39deg);
-  }
-  80%{
-    opacity: 1;
-    transform: translate(-50%, -94%) rotate(-40deg);
-    filter: drop-shadow(0 0 3px rgba(244,176,84,.26));
-  }
-  89%{
-    opacity: .94;
-    transform: translate(-50%, -94%) rotate(8deg);
-    filter: none;
-  }
-  100%{
-    opacity: 0;
-    transform: translate(-50%, -94%) rotate(28deg);
-  }
-}
-
-/* During forging, the hammer owns the visual feedback. */
+/* Hammer owns the forging phase; suppress the old independent item charge FX. */
 .enhancement-forge[data-state="charging"] .enhancement-slot-shell{
   animation: none !important;
 }
 
 .enhancement-forge[data-state="charging"] .enhancement-pickaxe{
-  animation: none !important;
+  animation:
+    enhancementPickaxeHammerRecoil
+    var(--forge-strike-duration)
+    linear
+    1
+    both !important;
 }
 
 .enhancement-forge[data-state="charging"] .enhancement-pickaxe::after{
@@ -4206,11 +3589,7 @@ html[data-text-size="small"] .wiki-enhancement-lab
   opacity: 0 !important;
 }
 
-/*
- * Once the verdict arrives, the hammer layer is completely gone.
- * Success/fail/down/destroy effects are then rendered by the item layer only,
- * avoiding the double halo/spark treatment seen in the screenshots.
- */
+/* Verdict phase belongs to the item only. */
 .enhancement-forge:is(
   [data-state="success"],
   [data-state="max"],
@@ -4243,7 +3622,6 @@ html[data-text-size="small"] .wiki-enhancement-lab
   opacity: 0 !important;
 }
 
-/* Make the post-strike item result readable without a second forge halo. */
 .enhancement-forge[data-state="success"] .enhancement-pickaxe::after,
 .enhancement-forge[data-state="max"] .enhancement-pickaxe::after{
   animation: enhancementForgeResultFlash .58s ease-out both !important;
@@ -4255,141 +3633,81 @@ html[data-text-size="small"] .wiki-enhancement-lab
   animation-delay: calc(var(--i) * 9ms) !important;
 }
 
-@media (max-width: 700px){
-  .enhancement-forge-hammer{
-    left: calc(var(--forge-hit-x) + 15%);
-    top: calc(var(--forge-hit-y) + 17%);
-    transform-origin: 50% 94%;
-  }
-
-  .enhancement-forge-hammer::before{
-    top: -7px;
-    bottom: auto;
-  }
-
-  .enhancement-forge-hammer::after{
-    top: 6px;
-    bottom: auto;
-  }
-}
-
-
-/* === 2026-09-28 forge pacing + impact polish v14 ===
- * Higher enhancement levels stay tense without turning into slow motion.
- * Tension now comes from a larger main-hit backswing, not a much longer clip.
- * The pickaxe reacts physically to each contact and the verdict starts only
- * after the hammer sequence has visually cleared.
- */
-.enhancement-forge{
-  --forge-strike-duration: .65s;
-  --forge-backswing-boost: 0deg;
-  --forge-main-contact-boost: 0deg;
-}
-
-.enhancement-forge[data-tier="mid"]{
-  --forge-strike-duration: .72s;
-  --forge-backswing-boost: 2deg;
-  --forge-main-contact-boost: 1deg;
-}
-
-.enhancement-forge[data-tier="high"]{
-  --forge-strike-duration: .8s;
-  --forge-backswing-boost: 5deg;
-  --forge-main-contact-boost: 2deg;
-}
-
-.enhancement-forge[data-tier="extreme"]{
-  --forge-strike-duration: .88s;
-  --forge-backswing-boost: 8deg;
-  --forge-main-contact-boost: 3deg;
-}
-
-.enhancement-forge[data-final-attempt="true"]{
-  --forge-strike-duration: 1s;
-  --forge-backswing-boost: 12deg;
-  --forge-main-contact-boost: 4deg;
-}
-
-/* Three contacts remain quick; the middle strike is the dramatic one. */
 @keyframes enhancementBlacksmithHammerCombo{
   0%{
     opacity: 0;
-    transform: translate(-50%, -94%) rotate(35deg);
+    transform: translate(-50%, -92%) rotate(34deg);
   }
   7%{
     opacity: 1;
-    transform: translate(-50%, -94%) rotate(35deg);
+    transform: translate(-50%, -92%) rotate(34deg);
   }
 
-  /* 1: light setup tap */
+  /* light setup tap */
   17%{
     opacity: 1;
     transform:
-      translate(-50%, -94%)
-      rotate(calc(45deg + var(--forge-backswing-boost) * .28));
+      translate(-50%, -92%)
+      rotate(calc(43deg + var(--forge-backswing-boost) * .28));
   }
   24%{
     opacity: 1;
-    transform: translate(-50%, -94%) rotate(-39deg);
-    filter: drop-shadow(0 0 2px rgba(244,176,84,.2));
+    transform: translate(-50%, -92%) rotate(-42deg);
+    filter:
+      drop-shadow(3px 5px 3px rgba(0,0,0,.28))
+      drop-shadow(0 0 2px rgba(244,176,84,.18));
   }
   31%{
     opacity: 1;
-    transform: translate(-50%, -94%) rotate(12deg);
-    filter: none;
+    transform: translate(-50%, -92%) rotate(10deg);
+    filter: drop-shadow(3px 5px 3px rgba(0,0,0,.28));
   }
 
-  /* 2: main strike — larger wind-up at higher enhancement, not slower pacing */
+  /* strongest main strike */
   42%{
     opacity: 1;
     transform:
-      translate(-50%, -94%)
-      rotate(calc(49deg + var(--forge-backswing-boost)));
+      translate(-50%, -92%)
+      rotate(calc(48deg + var(--forge-backswing-boost)));
   }
   52%{
     opacity: 1;
     transform:
-      translate(-50%, -94%)
-      rotate(calc(-44deg - var(--forge-main-contact-boost)));
-    filter: drop-shadow(0 0 5px rgba(255,190,96,.38));
+      translate(-50%, -92%)
+      rotate(calc(-46deg - var(--forge-main-contact-boost)));
+    filter:
+      drop-shadow(3px 5px 3px rgba(0,0,0,.28))
+      drop-shadow(0 0 5px rgba(255,190,96,.36));
   }
   61%{
     opacity: 1;
-    transform: translate(-50%, -94%) rotate(10deg);
-    filter: none;
+    transform: translate(-50%, -92%) rotate(8deg);
+    filter: drop-shadow(3px 5px 3px rgba(0,0,0,.28));
   }
 
-  /* 3: short finishing tap */
+  /* quick finishing tap */
   71%{
     opacity: 1;
     transform:
-      translate(-50%, -94%)
-      rotate(calc(39deg + var(--forge-backswing-boost) * .36));
+      translate(-50%, -92%)
+      rotate(calc(38deg + var(--forge-backswing-boost) * .36));
   }
   80%{
     opacity: 1;
-    transform: translate(-50%, -94%) rotate(-40deg);
-    filter: drop-shadow(0 0 3px rgba(244,176,84,.24));
+    transform: translate(-50%, -92%) rotate(-43deg);
+    filter:
+      drop-shadow(3px 5px 3px rgba(0,0,0,.28))
+      drop-shadow(0 0 3px rgba(244,176,84,.22));
   }
   89%{
     opacity: .94;
-    transform: translate(-50%, -94%) rotate(8deg);
-    filter: none;
+    transform: translate(-50%, -92%) rotate(7deg);
+    filter: drop-shadow(3px 5px 3px rgba(0,0,0,.28));
   }
   100%{
     opacity: 0;
-    transform: translate(-50%, -94%) rotate(28deg);
+    transform: translate(-50%, -92%) rotate(26deg);
   }
-}
-
-/* The item is struck, not independently "charging". Keep the response tiny. */
-.enhancement-forge[data-state="charging"] .enhancement-pickaxe{
-  animation:
-    enhancementPickaxeHammerRecoil
-    var(--forge-strike-duration)
-    linear
-    1
-    both !important;
 }
 
 @keyframes enhancementPickaxeHammerRecoil{
@@ -4416,7 +3734,6 @@ html[data-text-size="small"] .wiki-enhancement-lab
   }
 }
 
-/* Hit FX strength: small → strong → medium. No sustained magic halo. */
 @keyframes enhancementBlacksmithImpactCombo{
   0%, 21%{
     opacity: 0;
@@ -4430,7 +3747,6 @@ html[data-text-size="small"] .wiki-enhancement-lab
     opacity: 0;
     transform: translate(-50%, -50%) scale(.86,.78);
   }
-
   30%, 49%{
     opacity: 0;
     transform: translate(-50%, -50%) scale(.3,.44);
@@ -4443,7 +3759,6 @@ html[data-text-size="small"] .wiki-enhancement-lab
     opacity: 0;
     transform: translate(-50%, -50%) scale(1.28,1.08);
   }
-
   59%, 77%{
     opacity: 0;
     transform: translate(-50%, -50%) scale(.28,.42);
@@ -4471,7 +3786,6 @@ html[data-text-size="small"] .wiki-enhancement-lab
     opacity: 0;
     transform: translate(-50%, -50%) scale(.98);
   }
-
   30%, 50%{
     opacity: 0;
     transform: translate(-50%, -50%) scale(.16);
@@ -4484,7 +3798,6 @@ html[data-text-size="small"] .wiki-enhancement-lab
     opacity: 0;
     transform: translate(-50%, -50%) scale(1.38);
   }
-
   59%, 78%{
     opacity: 0;
     transform: translate(-50%, -50%) scale(.16);
@@ -4517,7 +3830,6 @@ html[data-text-size="small"] .wiki-enhancement-lab
       translateX(34px)
       scaleX(.58);
   }
-
   30%, 50%{
     opacity: 0;
     transform:
@@ -4532,10 +3844,9 @@ html[data-text-size="small"] .wiki-enhancement-lab
     opacity: 0;
     transform:
       rotate(var(--forge-angle))
-      translateX(70px)
-      scaleX(1);
+      translateX(62px)
+      scaleX(.94);
   }
-
   60%, 78%{
     opacity: 0;
     transform:
@@ -4550,7 +3861,30 @@ html[data-text-size="small"] .wiki-enhancement-lab
     opacity: 0;
     transform:
       rotate(var(--forge-angle))
-      translateX(46px)
-      scaleX(.72);
+      translateX(42px)
+      scaleX(.7);
+  }
+}
+
+@media (max-width: 700px){
+  .enhancement-forge-hammer{
+    width: 52px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .enhancement-forge[data-state="charging"] .enhancement-forge-hammer,
+  .enhancement-forge[data-state="charging"] .enhancement-forge-impact-ring,
+  .enhancement-forge[data-state="charging"] .enhancement-forge-impact-core,
+  .enhancement-forge[data-state="charging"] .enhancement-forge-sparks i,
+  .enhancement-forge[data-state="charging"] .enhancement-pickaxe{
+    animation: none !important;
+  }
+
+  .enhancement-forge[data-state="charging"] .enhancement-forge-hammer,
+  .enhancement-forge[data-state="charging"] .enhancement-forge-impact-ring,
+  .enhancement-forge[data-state="charging"] .enhancement-forge-impact-core,
+  .enhancement-forge[data-state="charging"] .enhancement-forge-sparks i{
+    opacity: 0 !important;
   }
 }

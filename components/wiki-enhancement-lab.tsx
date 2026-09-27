@@ -24,6 +24,7 @@ import {
   enhancementOutcomeLabel,
   enhancementResultMessage,
   enhancementStageLabel,
+  enhancementStrikeDuration,
   normalizeEnhancementStats,
   resolveEnhancementOutcome,
   type EnhancementLogEntry,
@@ -410,6 +411,12 @@ export function WikiEnhancementLab({
           data-tier={glowTier}
           data-risk={danger.tone}
           data-final-attempt={stats.level === 14 ? 'true' : 'false'}
+          style={
+            {
+              '--forge-strike-duration':
+                enhancementStrikeDuration(stats.level) + 'ms'
+            } as CSSProperties
+          }
           data-state={
             broken
               ? 'destroy'
@@ -502,7 +509,17 @@ export function WikiEnhancementLab({
                 </div>
               </div>
               <div className="enhancement-forge-impact" aria-hidden="true">
-                <span className="enhancement-forge-hammer" />
+                <img
+                  className="enhancement-forge-hammer"
+                  src={withBasePath(
+                    '/enhancement-lab/blacksmith-hammer-pixel.svg?v=20260928'
+                  )}
+                  alt=""
+                  aria-hidden="true"
+                  draggable={false}
+                  width={64}
+                  height={96}
+                />
                 <span className="enhancement-forge-impact-ring" />
                 <span className="enhancement-forge-impact-core" />
                 <span className="enhancement-forge-sparks">
