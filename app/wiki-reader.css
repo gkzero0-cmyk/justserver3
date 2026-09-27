@@ -6938,3 +6938,27 @@ html[data-text-size="large"] :where(
     flex: 1 1 0;
   }
 }
+
+
+/* === 2026-09-28 search status clarity === */
+.search-result-card[data-status="draft"] {
+  border-style: dashed;
+  border-color: rgba(var(--gold-rgb), .13);
+  background: rgba(var(--gold-rgb), .018);
+}
+
+.search-result-card[data-status="draft"]:not(.is-selected) {
+  opacity: .78;
+}
+
+.search-result-card[data-status="draft"] .search-draft-badge {
+  border-style: solid;
+  border-color: rgba(var(--gold-rgb), .22);
+  background: rgba(var(--gold-rgb), .055);
+  color: #c6a574;
+}
+
+html[data-theme="light"] .search-result-card[data-status="draft"] {
+  border-color: rgba(118,84,55,.15);
+  background: rgba(118,84,55,.025);
+}

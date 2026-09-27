@@ -319,6 +319,7 @@ export function WikiSearchDialog({
                 }}
                 className={`search-result-card ${selectedIndex === index ? 'is-selected' : ''}`}
                 data-category={page.category}
+                data-status={page.status}
                 role="option"
                 aria-selected={selectedIndex === index}
                 onMouseEnter={() => onSelectedIndexChange(index)}
@@ -330,7 +331,7 @@ export function WikiSearchDialog({
                   <span className="search-result-meta-row">
                     <span className="search-result-category">{page.category}</span>
                     {page.status === 'draft' && (
-                      <em className="search-draft-badge">작성 중</em>
+                      <em className="search-draft-badge">준비 중</em>
                     )}
                     {page.status === 'brief' && (
                       <em className="search-brief-badge">간단 안내</em>
@@ -348,6 +349,8 @@ export function WikiSearchDialog({
                   <small>
                     {page.snippet ? (
                       <HighlightedText text={page.snippet} query={query} />
+                    ) : page.status === 'draft' ? (
+                      '공식 원문 보강 중 · 현재 준비 상태만 확인할 수 있습니다.'
                     ) : (
                       '상세 가이드 열기'
                     )}

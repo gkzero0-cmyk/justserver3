@@ -11,7 +11,11 @@ import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
 import { readNotionIndex } from '@/lib/notion-index'
 import { isDraftPage, wikiContentStatus } from '@/lib/wiki-content-status'
 import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
-import { formatSeoulDate, relativeUpdateLabel } from '@/lib/wiki-ux'
+import {
+  formatSeoulDate,
+  formatSeoulDateTime,
+  relativeUpdateLabel
+} from '@/lib/wiki-ux'
 import {
   deriveOptimizedVariant,
   resolveCachedAsset,
@@ -20,20 +24,6 @@ import {
 import { wikiGuidePath } from '@/lib/wiki-routes'
 
 export const revalidate = 300
-
-function formatSyncDate(value: string | null) {
-  if (!value) return '최근 동기화 확인 중'
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return '최근 동기화 확인 중'
-  return new Intl.DateTimeFormat('ko-KR', {
-    timeZone: 'Asia/Seoul',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  }).format(date)
-}
 
 export default async function HomePage() {
   const notionIndex = await readNotionIndex()
@@ -202,8 +192,13 @@ export default async function HomePage() {
         <span aria-hidden="true">●</span>
         <strong>원본 문서 · 5분 주기 자동 확인</strong>
         <small>
-          마지막 콘텐츠 변경 {formatSyncDate(notionIndex.generatedAt)}
+          마지막 동기화 {formatSeoulDateTime(notionIndex.generatedAt) || '확인 중'}
         </small>
+        {latestUpdate?.lastEdited && (
+          <small>
+            최근 문서 수정 {latestUpdate.title} · {formatSeoulDateTime(latestUpdate.lastEdited)}
+          </small>
+        )}
       </div>
 
       <section

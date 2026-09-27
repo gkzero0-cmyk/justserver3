@@ -4,17 +4,7 @@ import type { NotionIndexPage } from '@/lib/notion-index'
 import { categoryAnchorForTitle, categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import { withBasePath } from '@/lib/url-utils'
 import { wikiGuidePath } from '@/lib/wiki-routes'
-
-function formatDate(value: string | null) {
-  if (!value) return null
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return null
-  return new Intl.DateTimeFormat('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).format(date)
-}
+import { formatSeoulDate } from '@/lib/wiki-ux'
 
 export function WikiPageNavigation({
   current,
@@ -34,7 +24,7 @@ export function WikiPageNavigation({
       ? pages[currentIndex + 1]
       : null
   const category = categoryTitleForPage(current.title)
-  const updatedAt = formatDate(current.lastEdited)
+  const updatedAt = formatSeoulDate(current.lastEdited)
 
   if (mode === 'siblings') {
     if (!previous && !next) return null
