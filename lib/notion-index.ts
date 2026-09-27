@@ -10,6 +10,12 @@ export type NotionPageHistoryEntry = {
   removed?: string | null
 }
 
+export type NotionIndexSection = {
+  heading: string
+  anchor: string
+  text?: string | null
+}
+
 export type NotionFaqCandidate = {
   id: string
   sourcePageId: string
@@ -38,6 +44,7 @@ export type NotionIndexPage = {
   cover: string | null
   lastEdited: string | null
   searchText: string
+  sections?: NotionIndexSection[]
   changeSummary?: string | null
   history?: NotionPageHistoryEntry[]
   thumbnail?: string | null
