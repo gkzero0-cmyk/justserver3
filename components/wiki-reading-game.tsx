@@ -11,6 +11,7 @@ import {
   seoulDateKey
 } from '@/lib/wiki-survival'
 import { withBasePath } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 import {
   readWikiStateValue,
   readWikiStringArray,
@@ -183,10 +184,12 @@ type NextPage = {
 
 export function WikiNextExploration({
   currentTitle,
-  pages
+  pages,
+  primaryPageId
 }: {
   currentTitle: string
   pages: NextPage[]
+  primaryPageId?: string | null
 }) {
   const [readIds, setReadIds] = useState<string[]>([])
 
@@ -205,22 +208,27 @@ export function WikiNextExploration({
     () => new Set(readIds.map(normalized)),
     [readIds]
   )
-  const ordered = useMemo(
-    () =>
-      [...pages].sort((left, right) => {
-        const leftRead = readSet.has(normalized(left.pageId))
-        const rightRead = readSet.has(normalized(right.pageId))
-        if (leftRead !== rightRead) return leftRead ? 1 : -1
-        return 0
-      }),
-    [pages, readSet]
-  )
+  const ordered = useMemo(() => {
+    const primaryId = primaryPageId ? normalized(primaryPageId) : null
+    return [...pages].sort((left, right) => {
+      if (primaryId) {
+        const leftPrimary = normalized(left.pageId) === primaryId
+        const rightPrimary = normalized(right.pageId) === primaryId
+        if (leftPrimary !== rightPrimary) return leftPrimary ? -1 : 1
+      }
+
+      const leftRead = readSet.has(normalized(left.pageId))
+      const rightRead = readSet.has(normalized(right.pageId))
+      if (leftRead !== rightRead) return leftRead ? 1 : -1
+      return 0
+    })
+  }, [pages, primaryPageId, readSet])
 
   if (!ordered.length) return null
 
   return (
     <section
-      className="next-exploration"
+      className={`next-exploration ${primaryPageId ? 'has-primary' : ''}`}
       aria-labelledby="next-exploration-title"
     >
       <div className="next-exploration-head">
@@ -236,17 +244,20 @@ export function WikiNextExploration({
       <div className="next-exploration-grid">
         {ordered.map((page, index) => {
           const completed = readSet.has(normalized(page.pageId))
+          const primary =
+            Boolean(primaryPageId) &&
+            normalized(page.pageId) === normalized(primaryPageId || '')
           return (
             <Link
               key={page.pageId}
-              href={withBasePath(`/page/${page.pageId}/`)}
-              className={completed ? 'is-complete' : ''}
+              href={withBasePath(wikiGuidePath(page))}
+              className={`${completed ? 'is-complete' : ''} ${primary ? 'is-primary' : ''}`}
               data-wiki-event="wiki_next_exploration_navigate"
               data-wiki-section="next-exploration"
               data-wiki-target={page.title}
             >
               <span className="next-exploration-index">
-                {completed ? '✓' : index + 1}
+                {completed ? '✓' : primary ? '→' : index + 1}
               </span>
               {page.image && (
                 <span className="next-exploration-image" aria-hidden="true">
@@ -264,10 +275,18 @@ export function WikiNextExploration({
                 <small>
                   {completed
                     ? '완독한 가이드'
-                    : page.category || '추천 가이드'}
+                    : primary
+                      ? '다음 추천 가이드'
+                      : page.category || '추천 가이드'}
                 </small>
                 <strong>{page.title}</strong>
-                <em>{completed ? '다시 보기' : '다음 탐험 시작'} →</em>
+                <em>
+                  {completed
+                    ? '다시 보기'
+                    : primary
+                      ? '이어서 읽기'
+                      : '관련 가이드 보기'} →
+                </em>
               </span>
             </Link>
           )

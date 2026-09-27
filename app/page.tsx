@@ -65,6 +65,13 @@ export default async function HomePage() {
         new Date(a.lastEdited || 0).getTime()
     )
     .slice(0, 5)
+  const latestUpdate = recentPages[0] ?? null
+  const latestUpdateTime = latestUpdate?.lastEdited
+    ? new Date(latestUpdate.lastEdited).getTime()
+    : 0
+  const recentUpdatesQuiet =
+    latestUpdateTime > 0 &&
+    Date.now() - latestUpdateTime > 7 * 24 * 60 * 60 * 1000
 
   const brandLogo = rootPage?.logo128
     ? resolveCachedAsset(rootPage.logo128)
@@ -204,48 +211,78 @@ export default async function HomePage() {
 
       <div className="wiki-sync-strip" role="status" aria-label="위키 데이터 갱신 상태">
         <span aria-hidden="true">●</span>
-        <strong>원본 문서 자동 연동</strong>
-        <small>{formatSyncDate(notionIndex.generatedAt)} 기준</small>
+        <strong>원본 문서 · 5분 주기 자동 확인</strong>
+        <small>
+          마지막 콘텐츠 변경 {formatSyncDate(notionIndex.generatedAt)}
+        </small>
       </div>
 
-      <section className="recent-updates" aria-labelledby="recent-updates-title">
+      <section
+        className={`recent-updates ${recentUpdatesQuiet ? 'is-quiet' : ''}`}
+        aria-labelledby="recent-updates-title"
+      >
         <div className="recent-updates-head">
           <div>
             <p>RECENT UPDATES</p>
             <h2 id="recent-updates-title">최근 업데이트</h2>
-            <span>최근 수정된 가이드부터 바로 확인할 수 있습니다.</span>
+            <span>
+              {recentUpdatesQuiet
+                ? '최근 7일간 새 콘텐츠 변경이 없습니다.'
+                : '최근 수정된 가이드부터 바로 확인할 수 있습니다.'}
+            </span>
           </div>
         </div>
 
-        <div className="recent-update-list">
-          {recentPages.map((page) => (
-            <Link
-              prefetch={false}
-              key={page.pageId}
-              href={withBasePath(wikiGuidePath(page))}
-              className="recent-update-card"
-              data-wiki-event="wiki_home_navigate"
-              data-wiki-section="recent-updates"
-              data-wiki-target={page.title}
-              data-wiki-status={wikiContentStatus(page)}
-            >
-              <span
-                className="recent-update-date"
-                title={formatDate(page.lastEdited)}
+        {recentUpdatesQuiet && latestUpdate ? (
+          <Link
+            prefetch={false}
+            href={withBasePath(wikiGuidePath(latestUpdate))}
+            className="recent-update-quiet"
+            data-wiki-event="wiki_home_navigate"
+            data-wiki-section="recent-updates"
+            data-wiki-target={latestUpdate.title}
+            data-wiki-status={wikiContentStatus(latestUpdate)}
+          >
+            <span>
+              <small>마지막 콘텐츠 변경</small>
+              <strong>{latestUpdate.title}</strong>
+            </span>
+            <time dateTime={latestUpdate.lastEdited || undefined}>
+              {formatDate(latestUpdate.lastEdited)}
+            </time>
+            <b aria-hidden="true">→</b>
+          </Link>
+        ) : (
+          <div className="recent-update-list">
+            {recentPages.map((page) => (
+              <Link
+                prefetch={false}
+                key={page.pageId}
+                href={withBasePath(wikiGuidePath(page))}
+                className="recent-update-card"
+                data-wiki-event="wiki_home_navigate"
+                data-wiki-section="recent-updates"
+                data-wiki-target={page.title}
+                data-wiki-status={wikiContentStatus(page)}
               >
-                {relativeUpdateLabel(page.lastEdited)}
-                <small>{formatDate(page.lastEdited)}</small>
-              </span>
-              <strong>{page.title}</strong>
-              {page.changeSummary && (
-                <small className="recent-update-summary">
-                  {page.changeSummary}
-                </small>
-              )}
-              <span className="recent-update-arrow">→</span>
-            </Link>
-          ))}
-        </div>
+                <span
+                  className="recent-update-date"
+                  title={formatDate(page.lastEdited)}
+                >
+                  {relativeUpdateLabel(page.lastEdited)}
+                  <small>{formatDate(page.lastEdited)}</small>
+                </span>
+                <strong>{page.title}</strong>
+                {page.changeSummary && (
+                  <small className="recent-update-summary">
+                    {page.changeSummary}
+                  </small>
+                )}
+                <span className="recent-update-arrow">→</span>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       <WikiSinceVisit

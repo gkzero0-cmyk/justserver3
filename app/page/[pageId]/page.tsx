@@ -57,6 +57,12 @@ const RELATED_BY_TITLE: Record<string, string[]> = {
   '많이 물어보는 것': ['서버규칙', '기초설정(뉴비필독)', '패치노트']
 }
 
+const PRIMARY_NEXT_BY_TITLE: Record<string, string> = {
+  서버규칙: '기초설정(뉴비필독)',
+  '기초설정(뉴비필독)': '채광',
+  채광: '장비강화'
+}
+
 function formatSyncDate(value: string | null | undefined) {
   if (!value) return ''
   const date = new Date(value)
@@ -247,6 +253,12 @@ export async function renderWikiPage(pageId: string) {
   const related = currentPage
     ? relatedPages(currentPage, readyNavigationPages)
     : []
+  const primaryNextTitle = currentPage
+    ? PRIMARY_NEXT_BY_TITLE[currentPage.title]
+    : null
+  const primaryNextPage = primaryNextTitle
+    ? readyNavigationPages.find((page) => page.title === primaryNextTitle) ?? null
+    : null
   const hasVerifiedFaq = currentPage?.title === '많이 물어보는 것'
   const isEnhancementGuide = currentPage?.title === '장비강화'
   const rawContentStatus = currentPage
@@ -258,6 +270,14 @@ export async function renderWikiPage(pageId: string) {
       ? 'brief'
       : rawContentStatus
   const draft = contentStatus === 'draft'
+  const isMiningBrief =
+    currentPage?.title === '채광' && contentStatus === 'brief'
+  const miningSections =
+    isMiningBrief && currentPage
+      ? currentPage.sections
+          .filter((section) => section.heading?.trim())
+          .slice(0, 6)
+      : []
   const readingQuiz =
     currentPage && !draft && !hasVerifiedFaq && !isEnhancementGuide
       ? buildReadingQuiz(currentPage, readyNavigationPages)
@@ -376,9 +396,12 @@ export async function renderWikiPage(pageId: string) {
             <em>자료</em>
             <strong>원본 문서 연동</strong>
           </span>
+          <span className="article-sync-status">
+            자동 확인 <strong>5분 주기</strong>
+          </span>
           {notionIndex.generatedAt && (
-            <span className="article-sync-status">
-              동기화 <strong>{formatSyncDate(notionIndex.generatedAt)}</strong>
+            <span className="article-content-update">
+              콘텐츠 변경 <strong>{formatSyncDate(notionIndex.generatedAt)}</strong>
             </span>
           )}
         </div>
@@ -407,18 +430,30 @@ export async function renderWikiPage(pageId: string) {
             >
               전체 가이드 보기
             </Link>
-            {related[0] && (
-              <Link
-                href={withBasePath(wikiGuidePath(related[0]))}
-                data-wiki-event="wiki_draft_navigate"
-                data-wiki-section="draft-state"
-                data-wiki-target={related[0].title}
-                data-wiki-status="ready"
-              >
-                {related[0].title} 먼저 보기
-              </Link>
-            )}
           </div>
+          {related.length > 0 && (
+            <div
+              className="draft-related-guides"
+              aria-label="지금 읽을 수 있는 관련 가이드"
+            >
+              <strong>지금 읽을 수 있는 관련 가이드</strong>
+              <div>
+                {related.slice(0, 3).map((page) => (
+                  <Link
+                    key={page.pageId}
+                    href={withBasePath(wikiGuidePath(page))}
+                    data-wiki-event="wiki_draft_navigate"
+                    data-wiki-section="draft-related"
+                    data-wiki-target={page.title}
+                    data-wiki-status={wikiContentStatus(page)}
+                  >
+                    <span>{page.title}</span>
+                    <b aria-hidden="true">→</b>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
       ) : (
         <>
@@ -497,6 +532,34 @@ export async function renderWikiPage(pageId: string) {
             </section>
           ) : hasVerifiedFaq ? (
             <WikiVerifiedFaq />
+          ) : isMiningBrief ? (
+            <section
+              className="verified-brief-guide"
+              aria-labelledby="verified-mining-flow-title"
+            >
+              <div className="verified-brief-guide-head">
+                <p>VERIFIED FLOW</p>
+                <h2 id="verified-mining-flow-title">
+                  원문에서 확인된 채광 흐름
+                </h2>
+                <span>
+                  현재 공식 원문에 있는 내용만 순서대로 정리했습니다.
+                  세부 정보가 추가되면 같은 문서에 자동으로 보강됩니다.
+                </span>
+              </div>
+              <ol>
+                {miningSections.map((section, index) => (
+                  <li
+                    key={section.anchor || section.heading}
+                    id={section.anchor || undefined}
+                  >
+                    <b>{String(index + 1).padStart(2, '0')}</b>
+                    <strong>{section.heading}</strong>
+                    {section.text?.trim() && <small>{section.text}</small>}
+                  </li>
+                ))}
+              </ol>
+            </section>
           ) : (
             <section className="document-card">
               <NotionDocument
@@ -536,9 +599,10 @@ export async function renderWikiPage(pageId: string) {
         />
       )}
 
-      {currentPage && related.length > 0 && (
+      {currentPage && !draft && related.length > 0 && (
         <WikiNextExploration
           currentTitle={currentPage.title}
+          primaryPageId={primaryNextPage?.pageId}
           pages={related.map((page) => {
             const image = [
               page.thumbnailSmall,

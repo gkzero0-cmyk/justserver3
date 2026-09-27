@@ -105,7 +105,8 @@ test.describe('desktop wiki journeys', () => {
 
     await expect(page.getByText('이 문서 핵심', { exact: true })).toBeVisible()
     await expect(page.getByText('원본 문서 연동', { exact: true })).toBeVisible()
-    await expect(page.getByText(/동기화/).first()).toBeVisible()
+    await expect(page.getByText(/자동 확인/).first()).toBeVisible()
+    await expect(page.getByText(/콘텐츠 변경/).first()).toBeVisible()
 
     await expect(
       page.getByText('문서 변경 이력', { exact: true })
@@ -116,10 +117,38 @@ test.describe('desktop wiki journeys', () => {
     ).toBeVisible()
   })
 
-  test('content maturity UI avoids duplicate summaries and exposes the enhancement experience', async ({ page }) => {
+  test('content maturity UI exposes verified brief flow, draft exits, and guided next steps', async ({ page }) => {
     await page.goto('/guide/mining/')
     await expect(page.getByText('간단 안내', { exact: true }).first()).toBeVisible()
     await expect(page.getByText('이 문서 핵심', { exact: true })).toHaveCount(0)
+    await expect(
+      page.getByText('원문에서 확인된 채광 흐름', { exact: true })
+    ).toBeVisible()
+    await expect(
+      page.getByText('야생으로 이동하여 광물을 캘 수 있습니다.', { exact: true })
+    ).toBeVisible()
+    await expect(
+      page.getByText('광물의 시세는 불규칙적으로 변동됩니다.', { exact: true })
+    ).toBeVisible()
+
+    const miningNext = page.locator('.next-exploration .is-primary')
+    await expect(miningNext).toContainText('다음 추천 가이드')
+    await expect(miningNext).toContainText('장비강화')
+
+    await page.goto('/guide/rules/')
+    const rulesNext = page.locator('.next-exploration .is-primary')
+    await expect(rulesNext).toContainText('다음 추천 가이드')
+    await expect(rulesNext).toContainText('기초설정(뉴비필독)')
+
+    await page.goto('/guide/collection/')
+    const draftRelated = page.locator('.draft-related-guides')
+    await expect(
+      draftRelated.getByText('지금 읽을 수 있는 관련 가이드', {
+        exact: true
+      })
+    ).toBeVisible()
+    expect(await draftRelated.getByRole('link').count()).toBeGreaterThanOrEqual(2)
+    await expect(page.locator('.next-exploration')).toHaveCount(0)
 
     await page.goto('/guide/upgrade/')
     await expect(page.getByText('체험 가이드', { exact: true })).toBeVisible()
@@ -129,11 +158,21 @@ test.describe('desktop wiki journeys', () => {
 
     await page.goto('/')
     await expect(
+      page.getByText('원본 문서 · 5분 주기 자동 확인', { exact: true })
+    ).toBeVisible()
+    await expect(page.getByText(/마지막 콘텐츠 변경/).first()).toBeVisible()
+    await expect(
       page.getByText(/준비 중인 문서 \d+개/).first()
     ).toBeVisible()
     await expect(
       page.getByText('처음 시작 순서 보기', { exact: true })
     ).toBeVisible()
+
+    const recent = page.locator('.recent-updates')
+    const visibleUpdateSurfaces =
+      (await recent.locator('.recent-update-quiet').count()) +
+      (await recent.locator('.recent-update-card').count())
+    expect(visibleUpdateSurfaces).toBeGreaterThan(0)
   })
 
   test('enhancement lab runs a full enhancement interaction', async ({ page }) => {

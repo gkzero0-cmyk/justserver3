@@ -1546,3 +1546,95 @@ html[data-theme="light"] .directory-drafts-global {
   border-top-color: rgba(118,84,55,.12);
 }
 
+/* === 2026-09-28 freshness trust + quiet updates === */
+.wiki-sync-strip strong {
+  color: var(--text-secondary);
+}
+
+.wiki-sync-strip small {
+  color: var(--text-subtle);
+}
+
+.recent-updates.is-quiet {
+  padding-bottom: 16px;
+}
+
+.recent-update-quiet {
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto 18px;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 13px;
+  border: 1px solid rgba(var(--gold-rgb), .1);
+  border-radius: 12px;
+  background: rgba(255,255,255,.012);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color .16s ease, background .16s ease, transform .16s ease;
+}
+
+.recent-update-quiet:hover,
+.recent-update-quiet:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(var(--gold-rgb), .22);
+  background: rgba(var(--gold-rgb), .035);
+  outline: none;
+}
+
+.recent-update-quiet > span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.recent-update-quiet small {
+  color: var(--text-subtle);
+  font-size: 10px;
+}
+
+.recent-update-quiet strong {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.recent-update-quiet time {
+  color: var(--text-subtle);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.recent-update-quiet > b {
+  color: var(--gold);
+  font-size: 12px;
+}
+
+@media (max-width: 520px) {
+  .wiki-sync-strip {
+    gap: 5px 7px;
+  }
+
+  .wiki-sync-strip strong {
+    width: 100%;
+  }
+
+  .recent-update-quiet {
+    grid-template-columns: minmax(0,1fr) 16px;
+  }
+
+  .recent-update-quiet time {
+    grid-column: 1;
+    font-size: 10px;
+  }
+
+  .recent-update-quiet > b {
+    grid-column: 2;
+    grid-row: 1 / 3;
+  }
+}
+
+html[data-theme="light"] .recent-update-quiet {
+  border-color: rgba(118,84,55,.12);
+  background: rgba(255,250,243,.48);
+}
+
