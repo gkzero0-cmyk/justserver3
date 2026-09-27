@@ -54,7 +54,8 @@ async function fetchText(path, options = {}) {
 for (const check of checks) {
   const { response, text } = await fetchText(check.path)
   if (check.path.includes('search-index.json')) searchIndexText = text
-  const missing = check.expect.filter((value) => !text.includes(value))
+  const normalizedText = text.replace(/<!--\s*-->/g, '')
+  const missing = check.expect.filter((value) => !normalizedText.includes(value))
 
   if (!response.ok || missing.length) {
     failed = true
