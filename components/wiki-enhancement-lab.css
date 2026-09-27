@@ -3371,28 +3371,38 @@ html[data-text-size="small"] .wiki-enhancement-lab
  */
 .enhancement-forge{
   --forge-strike-duration: 650ms;
-  --forge-backswing-boost: 0deg;
-  --forge-main-contact-boost: 0deg;
+  --forge-light-windup: 43deg;
+  --forge-main-windup: 48deg;
+  --forge-main-contact: -46deg;
+  --forge-finish-windup: 38deg;
 }
 
 .enhancement-forge[data-tier="mid"]{
-  --forge-backswing-boost: 2deg;
-  --forge-main-contact-boost: 1deg;
+  --forge-light-windup: 44deg;
+  --forge-main-windup: 50deg;
+  --forge-main-contact: -47deg;
+  --forge-finish-windup: 39deg;
 }
 
 .enhancement-forge[data-tier="high"]{
-  --forge-backswing-boost: 5deg;
-  --forge-main-contact-boost: 2deg;
+  --forge-light-windup: 45deg;
+  --forge-main-windup: 53deg;
+  --forge-main-contact: -48deg;
+  --forge-finish-windup: 40deg;
 }
 
 .enhancement-forge[data-tier="extreme"]{
-  --forge-backswing-boost: 8deg;
-  --forge-main-contact-boost: 3deg;
+  --forge-light-windup: 46deg;
+  --forge-main-windup: 56deg;
+  --forge-main-contact: -49deg;
+  --forge-finish-windup: 41deg;
 }
 
 .enhancement-forge[data-final-attempt="true"]{
-  --forge-backswing-boost: 12deg;
-  --forge-main-contact-boost: 4deg;
+  --forge-light-windup: 47deg;
+  --forge-main-windup: 60deg;
+  --forge-main-contact: -50deg;
+  --forge-finish-windup: 42deg;
 }
 
 /* The strike coordinate system now scales exactly with the item slot. */
@@ -3648,7 +3658,7 @@ html[data-text-size="small"] .wiki-enhancement-lab
     opacity: 1;
     transform:
       translate(-50%, -92%)
-      rotate(calc(43deg + var(--forge-backswing-boost) * .28));
+      rotate(var(--forge-light-windup));
   }
   24%{
     opacity: 1;
@@ -3668,13 +3678,13 @@ html[data-text-size="small"] .wiki-enhancement-lab
     opacity: 1;
     transform:
       translate(-50%, -92%)
-      rotate(calc(48deg + var(--forge-backswing-boost)));
+      rotate(var(--forge-main-windup));
   }
   52%{
     opacity: 1;
     transform:
       translate(-50%, -92%)
-      rotate(calc(-46deg - var(--forge-main-contact-boost)));
+      rotate(var(--forge-main-contact));
     filter:
       drop-shadow(3px 5px 3px rgba(0,0,0,.28))
       drop-shadow(0 0 5px rgba(255,190,96,.36));
@@ -3690,7 +3700,7 @@ html[data-text-size="small"] .wiki-enhancement-lab
     opacity: 1;
     transform:
       translate(-50%, -92%)
-      rotate(calc(38deg + var(--forge-backswing-boost) * .36));
+      rotate(var(--forge-finish-windup));
   }
   80%{
     opacity: 1;
