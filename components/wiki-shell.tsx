@@ -380,7 +380,7 @@ export function WikiShell({
         )
         const occurrences = new Map<string, number>()
 
-        const next = nodes
+        const allItems = nodes
           .map((node) => {
             const rawText =
               Array.from(node.childNodes)
@@ -421,6 +421,13 @@ export function WikiShell({
             }
           })
           .filter((item): item is TocItem => Boolean(item))
+
+        const h2Items = allItems.filter((item) => item.level === 2)
+        const next = (
+          h2Items.length >= 2
+            ? h2Items
+            : allItems.filter((item) => item.level >= 2)
+        ).slice(0, 8)
 
         setToc((current) => {
           const unchanged =

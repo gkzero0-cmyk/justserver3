@@ -8,6 +8,7 @@ import { withBasePath } from '@/lib/url-utils'
 import { wikiGuidePath } from '@/lib/wiki-routes'
 
 const PREFETCH_TITLES = new Set(['서버규칙'])
+const GROUPS = ['시작하기', '주요 콘텐츠', '성장 · 경제'] as const
 
 export type WikiNavigationPage = {
   pageId: string
@@ -57,6 +58,43 @@ export function WikiNavigation({
   onOpenSearch: () => void
   categoryForPage: (page: WikiNavigationPage) => string
 }) {
+  const draftPages = pages.filter((page) => page.status === 'draft')
+
+  const pageLink = (
+    page: WikiNavigationPage,
+    group: string,
+    draft = false
+  ) => {
+    const current =
+      Boolean(currentPageId) &&
+      page.pageId.replaceAll('-', '') ===
+        currentPageId!.replaceAll('-', '')
+
+    return (
+      <Link
+        key={page.pageId}
+        href={withBasePath(wikiGuidePath(page))}
+        prefetch={!draft && home && PREFETCH_TITLES.has(page.title)}
+        onClick={onCloseMenu}
+        className={`global-page-link ${current ? 'is-current' : ''} ${draft ? 'is-draft' : ''}`}
+        aria-current={current ? 'page' : undefined}
+        aria-label={draft ? `${page.title} — 준비 중인 문서` : undefined}
+        data-wiki-event="wiki_sidebar_navigate"
+        data-wiki-section={group}
+        data-wiki-target={page.title}
+        data-wiki-status={page.status || 'unknown'}
+      >
+        <span className="sidebar-page-icon" aria-hidden="true">
+          {iconForTitle(page.title)}
+        </span>
+        <span className="global-page-copy">
+          <strong>{page.title}</strong>
+          {draft && <em className="sidebar-draft-badge">준비 중</em>}
+        </span>
+      </Link>
+    )
+  }
+
   return (
     <>
       <aside className={`wiki-sidebar ${menuOpen ? 'is-open' : ''}`}>
@@ -97,51 +135,14 @@ export function WikiNavigation({
         <nav className="toc-list">
           <div className="global-page-list">
             <span className="nav-section-label">전체 문서</span>
-            {['시작하기', '주요 콘텐츠', '성장 · 경제'].map((group) => {
-              const groupPages = pages.filter(
-                (page) => categoryForPage(page) === group
-              )
-              const readyPages = groupPages.filter(
-                (page) => page.status !== 'draft'
-              )
-              const draftPages = groupPages.filter(
-                (page) => page.status === 'draft'
+            {GROUPS.map((group) => {
+              const readyPages = pages.filter(
+                (page) =>
+                  categoryForPage(page) === group &&
+                  page.status !== 'draft'
               )
 
-              if (!groupPages.length) return null
-
-              const pageLink = (page: WikiNavigationPage, draft = false) => {
-                const current =
-                  Boolean(currentPageId) &&
-                  page.pageId.replaceAll('-', '') ===
-                    currentPageId!.replaceAll('-', '')
-
-                return (
-                  <Link
-                    key={page.pageId}
-                    href={withBasePath(wikiGuidePath(page))}
-                    prefetch={!draft && home && PREFETCH_TITLES.has(page.title)}
-                    onClick={onCloseMenu}
-                    className={`global-page-link ${current ? 'is-current' : ''} ${draft ? 'is-draft' : ''}`}
-                    aria-current={current ? 'page' : undefined}
-                    aria-label={draft ? `${page.title} — 준비 중인 문서` : undefined}
-                    data-wiki-event="wiki_sidebar_navigate"
-                    data-wiki-section={group}
-                    data-wiki-target={page.title}
-                    data-wiki-status={page.status || 'unknown'}
-                  >
-                    <span className="sidebar-page-icon" aria-hidden="true">
-                      {iconForTitle(page.title)}
-                    </span>
-                    <span className="global-page-copy">
-                      <strong>{page.title}</strong>
-                      {draft && (
-                        <em className="sidebar-draft-badge">준비 중</em>
-                      )}
-                    </span>
-                  </Link>
-                )
-              }
+              if (!readyPages.length) return null
 
               return (
                 <section
@@ -167,30 +168,33 @@ export function WikiNavigation({
                     </span>
                   </button>
                   <div className="sidebar-category-links">
-                    {readyPages.map((page) => pageLink(page))}
+                    {readyPages.map((page) => pageLink(page, group))}
                   </div>
-                  {draftPages.length > 0 && (
-                    <details className="sidebar-draft-group">
-                      <summary>
-                        <span>준비 중</span>
-                        <b>{draftPages.length}</b>
-                      </summary>
-                      <div className="sidebar-category-links is-draft-list">
-                        {draftPages.map((page) => pageLink(page, true))}
-                      </div>
-                    </details>
-                  )}
                 </section>
               )
             })}
+
+            {draftPages.length > 0 && (
+              <details className="sidebar-draft-group sidebar-global-drafts">
+                <summary>
+                  <span>준비 중인 문서</span>
+                  <b>{draftPages.length}</b>
+                </summary>
+                <div className="sidebar-category-links is-draft-list">
+                  {draftPages.map((page) =>
+                    pageLink(page, '준비 중', true)
+                  )}
+                </div>
+              </details>
+            )}
           </div>
 
-          <div className="current-toc mobile-current-toc">
-            <span className="nav-section-label">
-              현재 페이지{currentCategory ? ` · ${currentCategory}` : ''}
-            </span>
-            {toc.length ? (
-              toc.map((item) => (
+          {!home && toc.length > 0 && (
+            <div className="current-toc mobile-current-toc">
+              <span className="nav-section-label">
+                현재 페이지{currentCategory ? ` · ${currentCategory}` : ''}
+              </span>
+              {toc.map((item) => (
                 <button
                   key={item.id}
                   type="button"
@@ -201,11 +205,9 @@ export function WikiNavigation({
                   <span>{iconForTitle(item.text)}</span>
                   <span>{item.text}</span>
                 </button>
-              ))
-            ) : (
-              <p className="toc-empty">현재 페이지 목차가 없습니다.</p>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </nav>
 
         <div className="sidebar-foot">

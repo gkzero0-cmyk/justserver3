@@ -23,7 +23,13 @@ function normalize(value: string) {
   return value.replaceAll('-', '')
 }
 
-export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
+export function StarterGuide({
+  pages,
+  compact = false
+}: {
+  pages: NotionIndexPage[]
+  compact?: boolean
+}) {
   const [readIds, setReadIds] = useState<string[]>([])
   const [progressReady, setProgressReady] = useState(false)
 
@@ -71,6 +77,89 @@ export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
     ({ page }) => !readSet.has(normalize(page.pageId))
   )?.page.pageId
 
+  const stepLinks = steps.map(({ page, meta }, index) => {
+    const completed = readSet.has(normalize(page.pageId))
+    const isNext =
+      returning &&
+      !allComplete &&
+      normalize(page.pageId) === normalize(nextUnreadId || '')
+
+    return (
+      <Link
+        key={page.pageId}
+        href={withBasePath(wikiGuidePath(page))}
+        prefetch={false}
+        className={`starter-step ${completed ? 'is-complete' : ''} ${isNext ? 'is-next' : ''}`}
+        data-wiki-event="wiki_home_navigate"
+        data-wiki-section={returning ? 'starter-returning' : 'starter-guide'}
+        data-wiki-target={page.title}
+        data-wiki-status="ready"
+      >
+        <span className="starter-number">
+          {completed ? '✓' : String(index + 1).padStart(2, '0')}
+        </span>
+        <span className="starter-icon" aria-hidden="true">{meta[1]}</span>
+        <span className="starter-copy">
+          <strong>{completed ? `${meta[2]} 완료` : meta[2]}</strong>
+          <small>
+            {completed ? '이미 읽은 가이드입니다. 다시 확인할 수 있어요.' : meta[3]}
+          </small>
+        </span>
+        <span className="starter-target">
+          <span>{page.title}</span>
+          {isNext && <em>다음 추천</em>}
+        </span>
+        <span className="starter-arrow">{completed ? '↺' : '→'}</span>
+      </Link>
+    )
+  })
+
+  const progress = returning ? (
+    <div
+      className="starter-progress"
+      aria-label={`핵심 가이드 ${completedCount}개 완료, 전체 ${steps.length}개`}
+    >
+      <span>
+        <i
+          style={{
+            width: `${Math.round((completedCount / steps.length) * 100)}%`
+          }}
+        />
+      </span>
+      <small>{Math.round((completedCount / steps.length) * 100)}%</small>
+    </div>
+  ) : null
+
+  if (compact) {
+    return (
+      <details className={`starter-guide starter-guide-compact ${returning ? 'is-returning' : ''} ${allComplete ? 'is-complete' : ''}`}>
+        <summary>
+          <div>
+            <p>{returning ? 'NEXT STEP' : 'FIRST START'}</p>
+            <strong>
+              {allComplete
+                ? '핵심 시작 순서 완료'
+                : returning
+                  ? '다음 시작 순서 이어보기'
+                  : '처음 시작 순서 보기'}
+            </strong>
+            <small>
+              {allComplete
+                ? '필수 흐름을 모두 확인했습니다.'
+                : '규칙 → 설정 → 첫 수익 → 장비 성장 순서로 확인합니다.'}
+            </small>
+          </div>
+          <span>
+            {returning ? `${completedCount}/${steps.length}` : `${steps.length} STEP`}
+            <b aria-hidden="true">⌄</b>
+          </span>
+        </summary>
+        {progress}
+        <div className="starter-steps">{stepLinks}</div>
+      </details>
+    )
+  }
+
   return (
     <section
       className={`starter-guide ${returning ? 'is-returning' : ''} ${allComplete ? 'is-complete' : ''}`}
@@ -101,59 +190,8 @@ export function StarterGuide({ pages }: { pages: NotionIndexPage[] }) {
         </strong>
       </div>
 
-      {returning && (
-        <div
-          className="starter-progress"
-          aria-label={`핵심 가이드 ${completedCount}개 완료, 전체 ${steps.length}개`}
-        >
-          <span>
-            <i
-              style={{
-                width: `${Math.round((completedCount / steps.length) * 100)}%`
-              }}
-            />
-          </span>
-          <small>{Math.round((completedCount / steps.length) * 100)}%</small>
-        </div>
-      )}
-
-      <div className="starter-steps">
-        {steps.map(({ page, meta }, index) => {
-          const completed = readSet.has(normalize(page.pageId))
-          const isNext =
-            returning &&
-            !allComplete &&
-            normalize(page.pageId) === normalize(nextUnreadId || '')
-
-          return (
-            <Link
-              key={page.pageId}
-              href={withBasePath(wikiGuidePath(page))}
-              className={`starter-step ${completed ? 'is-complete' : ''} ${isNext ? 'is-next' : ''}`}
-              data-wiki-event="wiki_home_navigate"
-              data-wiki-section={returning ? 'starter-returning' : 'starter-guide'}
-              data-wiki-target={page.title}
-              data-wiki-status="ready"
-            >
-              <span className="starter-number">
-                {completed ? '✓' : String(index + 1).padStart(2, '0')}
-              </span>
-              <span className="starter-icon" aria-hidden="true">{meta[1]}</span>
-              <span className="starter-copy">
-                <strong>{completed ? `${meta[2]} 완료` : meta[2]}</strong>
-                <small>
-                  {completed ? '이미 읽은 가이드입니다. 다시 확인할 수 있어요.' : meta[3]}
-                </small>
-              </span>
-              <span className="starter-target">
-                <span>{page.title}</span>
-                {isNext && <em>다음 추천</em>}
-              </span>
-              <span className="starter-arrow">{completed ? '↺' : '→'}</span>
-            </Link>
-          )
-        })}
-      </div>
+      {progress}
+      <div className="starter-steps">{stepLinks}</div>
     </section>
   )
 }

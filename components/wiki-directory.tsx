@@ -12,7 +12,8 @@ import { wikiGuidePath } from '@/lib/wiki-routes'
 
 function badgeForTitle(title: string) {
   if (title === '서버규칙' || title.includes('뉴비필독')) return '필수'
-  if (title === '채광' || title === '빚 갚기' || title === '장비강화') return '핵심'
+  if (title === '채광' || title === '빚 갚기') return '핵심'
+  if (title === '장비강화') return '체험 가능'
   if (title === '패치노트') return '업데이트'
   if (title === '많이 물어보는 것') return 'FAQ'
   if (title === 'API') return 'API'
@@ -39,11 +40,11 @@ const DESCRIPTION_BY_TITLE: Record<string, string> = {
   '빚 갚기': '부채 상환과 경제 진행 흐름',
   신용등급: '신용등급 조건과 혜택 안내',
   장비수리: '장비 내구도와 수리 방법 안내',
-  장비강화: '강화 단계·재료·성장 안내',
+  장비강화: '공식 정보 보강 전 강화 체험소 이용 가능',
   '많이 물어보는 것': '자주 묻는 질문을 빠르게 확인'
 }
 
-const FEATURED = new Set(['서버규칙','기초설정(뉴비필독)','채광','빚 갚기','장비강화'])
+const FEATURED = new Set(['서버규칙','기초설정(뉴비필독)','채광'])
 
 const GROUPS = [
   { key: 'start', icon: '🧭', title: '시작하기', description: '처음 접속하기 전에 확인할 필수 안내' },
@@ -79,22 +80,46 @@ function assignUniqueMedia(pages: NotionIndexPage[]) {
 
 export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
   if (!pages.length) return null
+
   const mediaById = assignUniqueMedia(pages)
+  const draftPages = pages.filter(
+    (page) => wikiContentStatus(page) === 'draft'
+  )
   const grouped = GROUPS.map((group) => {
-    const groupPages = pages.filter(
-      (page) => categoryForTitle(page.title) === group.key
+    const readyPages = pages.filter(
+      (page) =>
+        categoryForTitle(page.title) === group.key &&
+        wikiContentStatus(page) !== 'draft'
     )
-    return {
-      ...group,
-      pages: groupPages,
-      readyPages: groupPages.filter(
-        (page) => wikiContentStatus(page) !== 'draft'
-      ),
-      draftPages: groupPages.filter(
-        (page) => wikiContentStatus(page) === 'draft'
-      )
-    }
-  }).filter((group) => group.pages.length > 0)
+    return { ...group, readyPages }
+  }).filter((group) => group.readyPages.length > 0)
+
+  const draftCard = (page: NotionIndexPage) => (
+    <Link
+      key={page.pageId}
+      href={withBasePath(wikiGuidePath(page))}
+      prefetch={false}
+      aria-label={`${page.title} — 작성 중인 문서`}
+      className="directory-card is-draft"
+      data-status="draft"
+      data-wiki-event="wiki_home_navigate"
+      data-wiki-section="directory-drafts"
+      data-wiki-target={page.title}
+      data-wiki-status="draft"
+    >
+      <span className="directory-media is-icon" aria-hidden="true">
+        {iconForTitle(page.title)}
+      </span>
+      <span className="directory-copy">
+        <span className="directory-title-row">
+          <strong>{page.title}</strong>
+          <em>작성 중</em>
+        </span>
+        <small>공식 원문 보강을 기다리고 있습니다.</small>
+      </span>
+      <span className="directory-arrow">↗</span>
+    </Link>
+  )
 
   return (
     <section className="wiki-directory" aria-labelledby="wiki-directory-title">
@@ -102,21 +127,26 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
         <div>
           <p>QUICK DIRECTORY</p>
           <h2 id="wiki-directory-title">위키 가이드 바로가기</h2>
-          <span>이미지와 아이콘만 봐도 문서를 빠르게 구분할 수 있게 정리했습니다.</span>
+          <span>지금 읽을 수 있는 가이드를 먼저 보여주고, 준비 중 문서는 아래에 모았습니다.</span>
         </div>
         <span>{pages.length}개 가이드</span>
       </div>
 
       <div className="directory-groups">
         {grouped.map((group) => (
-          <section className="directory-group" data-category={group.key} id={`category-${group.key}`} key={group.key}>
+          <section
+            className="directory-group"
+            data-category={group.key}
+            id={`category-${group.key}`}
+            key={group.key}
+          >
             <div className="directory-group-head">
               <span>{group.icon}</span>
               <div>
                 <strong>{group.title}</strong>
                 <small>{group.description}</small>
               </div>
-              <em>{group.pages.length}</em>
+              <em>{group.readyPages.length}</em>
             </div>
 
             <div className="directory-grid">
@@ -125,7 +155,7 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                 const resolvedMedia = media ? resolveCachedAsset(media) : null
                 const status = wikiContentStatus(page)
                 const badge =
-                  status === 'brief'
+                  status === 'brief' && page.title !== '장비강화'
                     ? '간단 안내'
                     : badgeForTitle(page.title)
                 const featured =
@@ -145,7 +175,15 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                   >
                     <span className={`directory-media ${media ? 'has-image' : 'is-icon'}`}>
                       {resolvedMedia ? (
-                        <img src={resolvedMedia} alt="" aria-hidden="true" loading="lazy" decoding="async" width="256" height="256" />
+                        <img
+                          src={resolvedMedia}
+                          alt=""
+                          aria-hidden="true"
+                          loading="lazy"
+                          decoding="async"
+                          width="256"
+                          height="256"
+                        />
                       ) : (
                         iconForTitle(page.title)
                       )}
@@ -171,57 +209,21 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
                 )
               })}
             </div>
-
-            {group.draftPages.length > 0 && (
-              <details className="directory-drafts">
-                <summary>
-                  <span>작성 중인 문서 {group.draftPages.length}개</span>
-                  <small>필요할 때 펼쳐보세요</small>
-                </summary>
-                <div className="directory-grid is-drafts">
-                  {group.draftPages.map((page) => {
-                    const media = mediaById.get(page.pageId) ?? null
-                    const resolvedMedia = media
-                      ? resolveCachedAsset(media)
-                      : null
-
-                    return (
-                      <Link
-                        key={page.pageId}
-                        href={withBasePath(wikiGuidePath(page))}
-                        prefetch={false}
-                        aria-label={`${page.title} — 작성 중인 문서`}
-                        className="directory-card is-draft"
-                        data-status="draft"
-                        data-wiki-event="wiki_home_navigate"
-                        data-wiki-section="directory"
-                        data-wiki-target={page.title}
-                        data-wiki-status="draft"
-                      >
-                        <span className={`directory-media ${media ? 'has-image' : 'is-icon'}`}>
-                          {resolvedMedia ? (
-                            <img src={resolvedMedia} alt="" aria-hidden="true" loading="lazy" decoding="async" width="256" height="256" />
-                          ) : (
-                            iconForTitle(page.title)
-                          )}
-                        </span>
-                        <span className="directory-copy">
-                          <span className="directory-title-row">
-                            <strong>{page.title}</strong>
-                            <em>작성 중</em>
-                          </span>
-                          <small>내용을 정리하고 있습니다.</small>
-                        </span>
-                        <span className="directory-arrow">↗</span>
-                      </Link>
-                    )
-                  })}
-                </div>
-              </details>
-            )}
           </section>
         ))}
       </div>
+
+      {draftPages.length > 0 && (
+        <details className="directory-drafts directory-drafts-global">
+          <summary>
+            <span>준비 중인 문서 {draftPages.length}개</span>
+            <small>공식 원문이 보강되면 같은 주소에서 자동으로 업데이트됩니다.</small>
+          </summary>
+          <div className="directory-grid is-drafts">
+            {draftPages.map(draftCard)}
+          </div>
+        </details>
+      )}
     </section>
   )
 }

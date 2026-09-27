@@ -171,7 +171,7 @@ export default async function HomePage() {
             data-wiki-event="wiki_home_navigate"
             data-wiki-section="quick-goals"
             data-wiki-target="upgrade"
-            data-wiki-status="draft"
+            data-wiki-status="brief"
           >
             <span className="directory-media is-icon">⚒️</span>
             <span className="directory-copy">
@@ -198,6 +198,8 @@ export default async function HomePage() {
             <span className="directory-arrow">→</span>
           </Link>
         </div>
+
+        <StarterGuide pages={directoryPages} compact />
       </section>
 
       <div className="wiki-sync-strip" role="status" aria-label="위키 데이터 갱신 상태">
@@ -205,8 +207,6 @@ export default async function HomePage() {
         <strong>원본 문서 자동 연동</strong>
         <small>{formatSyncDate(notionIndex.generatedAt)} 기준</small>
       </div>
-
-      <StarterGuide pages={directoryPages} />
 
       <section className="recent-updates" aria-labelledby="recent-updates-title">
         <div className="recent-updates-head">

@@ -1174,3 +1174,53 @@ html[data-theme="light"] .verified-faq-answer p {
     grid-template-columns: 1fr;
   }
 }
+
+/* === Compact document metadata and enhancement experience state === */
+.article-status-strip {
+  color: var(--text-subtle);
+  font-size: 11px;
+}
+
+.article-status-strip strong {
+  color: var(--text-secondary);
+}
+
+.enhancement-guide-state {
+  min-height: 250px;
+  border-style: solid;
+  border-color: rgba(var(--accent-rgb), .18);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb), .1), transparent 42%),
+    radial-gradient(circle at 85% 18%, rgba(var(--gold-rgb), .07), transparent 34%),
+    var(--surface-soft);
+}
+
+.enhancement-guide-state .draft-state-icon {
+  border-color: rgba(var(--accent-rgb), .2);
+  background: rgba(var(--accent-rgb), .075);
+}
+
+.enhancement-guide-state > p {
+  color: #d99086;
+}
+
+.enhancement-guide-state .state-actions a:first-child {
+  border-color: rgba(var(--accent-rgb), .28);
+  background: rgba(var(--accent-rgb), .1);
+  color: #efb0a8;
+}
+
+html[data-theme="light"] .enhancement-guide-state {
+  border-color: rgba(184,61,52,.16);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(184,61,52,.07), transparent 42%),
+    rgba(255,250,243,.76);
+}
+
+@media (max-width: 620px) {
+  .article-status-strip {
+    justify-content: flex-start;
+    gap: 7px 11px;
+  }
+}
+

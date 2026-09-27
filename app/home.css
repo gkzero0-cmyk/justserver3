@@ -1365,3 +1365,184 @@ html[data-theme="light"] .recent-viewed-empty {
     grid-column: auto;
   }
 }
+
+/* === Compact home hierarchy and consolidated draft shelf === */
+.starter-guide-compact {
+  margin-top: 14px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(var(--gold-rgb), .1);
+  border-radius: 14px;
+  background: rgba(255,255,255,.012);
+  box-shadow: none;
+}
+
+.starter-guide-compact > summary {
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.starter-guide-compact > summary::-webkit-details-marker {
+  display: none;
+}
+
+.starter-guide-compact > summary > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.starter-guide-compact > summary p {
+  margin: 0;
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.starter-guide-compact > summary strong {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.starter-guide-compact > summary small {
+  color: var(--text-subtle);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.starter-guide-compact > summary > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-subtle);
+  font-size: 10px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.starter-guide-compact > summary > span b {
+  color: var(--gold);
+  transition: transform .16s ease;
+}
+
+.starter-guide-compact[open] > summary > span b {
+  transform: rotate(180deg);
+}
+
+.starter-guide-compact .starter-progress {
+  margin: 0 14px 10px;
+}
+
+.starter-guide-compact .starter-steps {
+  padding: 0 14px 14px;
+}
+
+.directory-drafts-global {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(var(--gold-rgb), .09);
+}
+
+.directory-drafts-global > summary {
+  min-height: 48px;
+  padding: 8px 10px;
+}
+
+.directory-drafts-global > summary span {
+  color: var(--text-secondary);
+}
+
+.directory-drafts-global > summary small {
+  color: var(--text-subtle);
+}
+
+.wiki-main.is-home-main > .wiki-hero {
+  order: 0;
+}
+
+.wiki-main.is-home-main > .quick-goals {
+  order: 1;
+}
+
+.wiki-main.is-home-main > .wiki-sync-strip {
+  order: 2;
+}
+
+.wiki-main.is-home-main > .favorite-pages,
+.wiki-main.is-home-main > .recent-viewed {
+  order: 3;
+}
+
+.wiki-main.is-home-main > .since-visit {
+  order: 4;
+}
+
+.wiki-main.is-home-main > .wiki-directory:not(.quick-goals) {
+  order: 5;
+}
+
+.wiki-main.is-home-main > .recent-updates {
+  order: 6;
+}
+
+.wiki-main.is-home-main > .home-playground {
+  order: 7;
+}
+
+@media (max-width: 620px) {
+  .starter-guide-compact {
+    padding: 0;
+  }
+
+  .starter-guide-compact > summary {
+    min-height: 58px;
+    padding: 10px 11px;
+  }
+
+  .starter-guide-compact > summary small {
+    display: none;
+  }
+
+  .starter-guide-compact .starter-steps {
+    padding: 0 10px 10px;
+  }
+}
+
+@media (max-width: 520px) {
+  .quick-goals .directory-card {
+    min-height: 84px;
+    grid-template-columns: 58px minmax(0,1fr) 18px;
+    padding: 11px 12px;
+  }
+
+  .quick-goals .directory-media {
+    width: 58px;
+    height: 58px;
+  }
+
+  .quick-goals .directory-copy small {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .directory-drafts-global .directory-card {
+    min-height: 82px;
+  }
+}
+
+html[data-theme="light"] .starter-guide-compact {
+  border-color: rgba(118,84,55,.12);
+  background: rgba(255,255,255,.38);
+}
+
+html[data-theme="light"] .directory-drafts-global {
+  border-top-color: rgba(118,84,55,.12);
+}
+

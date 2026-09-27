@@ -6771,3 +6771,37 @@ html[data-theme="light"] .enhancement-guide-preview small,
 html[data-theme="light"] .enhancement-guide-preview p {
   color: #6b5d57;
 }
+
+/* === Navigation clarity and mobile topbar simplification === */
+.sidebar-global-drafts {
+  margin: 18px 7px 2px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(var(--gold-rgb), .08);
+}
+
+.sidebar-global-drafts > summary {
+  color: var(--text-subtle);
+}
+
+@media (max-width: 620px) {
+  .wiki-topbar .header-search-button {
+    display: none !important;
+  }
+
+  .brand small,
+  .hero-copy > p:last-of-type,
+  .mobile-bottom-nav span,
+  .wiki-footer span {
+    color: var(--text-secondary);
+  }
+
+  .sidebar-category-head strong,
+  .global-page-copy strong {
+    color: var(--text-secondary);
+  }
+}
+
+html[data-theme="light"] .sidebar-global-drafts {
+  border-top-color: rgba(118,84,55,.11);
+}
+

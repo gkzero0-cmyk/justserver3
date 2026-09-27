@@ -57,18 +57,6 @@ const RELATED_BY_TITLE: Record<string, string[]> = {
   '많이 물어보는 것': ['서버규칙', '기초설정(뉴비필독)', '패치노트']
 }
 
-function formatUpdatedDate(value: string | null | undefined) {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return ''
-  return new Intl.DateTimeFormat('ko-KR', {
-    timeZone: 'Asia/Seoul',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  }).format(date)
-}
-
 function formatSyncDate(value: string | null | undefined) {
   if (!value) return ''
   const date = new Date(value)
@@ -84,6 +72,14 @@ function formatSyncDate(value: string | null | undefined) {
 }
 
 function buildKeySummary(page: NotionIndexPage) {
+  if (page.title === '서버규칙') {
+    return [
+      '재입주 시에도 입장료가 필요하며, 기존 강화 장비는 재지급됩니다.',
+      '강화 아이템과 출석·도감·파쿠르 보상 아이템은 거래할 수 없습니다.',
+      '자동화·비인가 프로그램·일자굴파기 등 금지 행동을 먼저 확인하세요.'
+    ]
+  }
+
   const normalized = page.searchText
     .replace(page.title, '')
     .replace(/\s+/g, ' ')
@@ -168,7 +164,9 @@ export async function generateWikiPageMetadata(
   const description =
     page.title === '많이 물어보는 것'
       ? '그냥서버 : 적자생존 서버규칙에서 직접 확인한 자주 묻는 질문과 답변을 빠르게 확인하세요.'
-      : page.searchText
+      : page.title === '장비강화'
+        ? '장비강화 공식 정보는 보강 중이며, 강화 체험소에서 +15강까지 성공·실패·하락·파괴 흐름을 체험할 수 있습니다.'
+        : page.searchText
           .replace(page.title, '')
           .replace(/\s+/g, ' ')
           .trim()
@@ -250,18 +248,25 @@ export async function renderWikiPage(pageId: string) {
     ? relatedPages(currentPage, readyNavigationPages)
     : []
   const hasVerifiedFaq = currentPage?.title === '많이 물어보는 것'
+  const isEnhancementGuide = currentPage?.title === '장비강화'
   const rawContentStatus = currentPage
     ? wikiContentStatus(currentPage)
     : 'detailed'
-  const contentStatus = hasVerifiedFaq ? 'detailed' : rawContentStatus
+  const contentStatus = hasVerifiedFaq
+    ? 'detailed'
+    : isEnhancementGuide
+      ? 'brief'
+      : rawContentStatus
   const draft = contentStatus === 'draft'
-  const isEnhancementGuide = currentPage?.title === '장비강화'
   const readingQuiz =
-    currentPage && !draft && !hasVerifiedFaq
+    currentPage && !draft && !hasVerifiedFaq && !isEnhancementGuide
       ? buildReadingQuiz(currentPage, readyNavigationPages)
       : null
   const keySummary =
-    currentPage && !draft && !hasVerifiedFaq
+    currentPage &&
+    contentStatus === 'detailed' &&
+    !hasVerifiedFaq &&
+    !isEnhancementGuide
       ? buildKeySummary(currentPage)
       : []
 
@@ -357,26 +362,23 @@ export async function renderWikiPage(pageId: string) {
       {currentPage && (
         <div className="article-status-strip" aria-label="문서 상태">
           <span>
-            <b>{contentStatus === 'draft' ? '준비 중' : contentStatus === 'brief' ? '간단 안내' : '상세 가이드'}</b>
+            <b>
+              {isEnhancementGuide
+                ? '체험 가이드'
+                : contentStatus === 'draft'
+                  ? '준비 중'
+                  : contentStatus === 'brief'
+                    ? '간단 안내'
+                    : '상세 가이드'}
+            </b>
           </span>
-          {currentPage.lastEdited && (
-            <span>
-              최근 수정 <strong>{formatUpdatedDate(currentPage.lastEdited)}</strong>
-            </span>
-          )}
           <span className="article-source-status">
             <em>자료</em>
             <strong>원본 문서 연동</strong>
           </span>
           {notionIndex.generatedAt && (
             <span className="article-sync-status">
-              데이터 갱신 <strong>{formatSyncDate(notionIndex.generatedAt)}</strong>
-            </span>
-          )}
-          {currentPage.changeSummary && (
-            <span className="article-change-summary">
-              <em>최근 변경</em>
-              <strong>{currentPage.changeSummary}</strong>
+              동기화 <strong>{formatSyncDate(notionIndex.generatedAt)}</strong>
             </span>
           )}
         </div>
@@ -389,41 +391,13 @@ export async function renderWikiPage(pageId: string) {
       {draft ? (
         <section className="draft-state" role="status" aria-labelledby="draft-state-title">
           <div className="draft-state-icon" aria-hidden="true">🛠️</div>
-          <p>{isEnhancementGuide ? 'ENHANCEMENT GUIDE' : 'PREPARING GUIDE'}</p>
-          <h2 id="draft-state-title">
-            {isEnhancementGuide
-              ? '장비강화 정보는 정리 중이지만, 강화 체험소는 지금 이용할 수 있습니다.'
-              : `${title} 가이드를 정리하고 있습니다.`}
-          </h2>
+          <p>PREPARING GUIDE</p>
+          <h2 id="draft-state-title">{title} 가이드를 정리하고 있습니다.</h2>
           <span>
-            {isEnhancementGuide
-              ? '실제 서버의 확정된 강화 정보는 Notion 원문이 보강되는 대로 같은 주소에 반영됩니다. 그 전까지 강화 체험소에서 +15강까지 강화 흐름과 성공·실패·하락·파괴 연출을 체험해보세요.'
-              : '아직 확정된 내용이 충분하지 않아 빈 문서 대신 준비 상태를 표시합니다. Notion 원문이 보강되면 같은 주소에 자동으로 반영됩니다.'}
+            아직 확정된 내용이 충분하지 않아 빈 문서 대신 준비 상태를 표시합니다.
+            Notion 원문이 보강되면 같은 주소에 자동으로 반영됩니다.
           </span>
-          {isEnhancementGuide && (
-            <div className="enhancement-guide-preview" aria-label="강화 체험소 규칙 요약">
-              <strong>강화 체험소 기준 위험 구간</strong>
-              <div>
-                <span><b>+0 ~ +4</b><small>실패 시 단계 유지</small></span>
-                <span><b>+5 ~ +6</b><small>하락 가능 구간</small></span>
-                <span><b>+7 ~ +14</b><small>하락·파괴 가능 구간</small></span>
-                <span><b>+15</b><small>체험소 최대 강화</small></span>
-              </div>
-              <p>체험용 시뮬레이션 규칙이며 실제 서버의 공식 강화 확률을 뜻하지 않습니다.</p>
-            </div>
-          )}
           <div className="state-actions">
-            {isEnhancementGuide && (
-              <Link
-                href={withBasePath('/#enhancement-lab')}
-                data-wiki-event="wiki_draft_navigate"
-                data-wiki-section="draft-state"
-                data-wiki-target="enhancement-lab"
-                data-wiki-status="ready"
-              >
-                ⚒️ 강화 체험소 열기
-              </Link>
-            )}
             <Link
               href={withBasePath(`/#category-${currentPage ? categoryKey(currentPage.title) : 'start'}`)}
               data-wiki-event="wiki_draft_navigate"
@@ -462,7 +436,7 @@ export async function renderWikiPage(pageId: string) {
             </section>
           )}
 
-          {contentStatus === 'brief' && (
+          {contentStatus === 'brief' && !isEnhancementGuide && (
             <aside className="brief-notice" role="status">
               <span>간단 안내</span>
               <div>
@@ -472,7 +446,56 @@ export async function renderWikiPage(pageId: string) {
             </aside>
           )}
 
-          {hasVerifiedFaq ? (
+          {isEnhancementGuide ? (
+            <section
+              className="draft-state enhancement-guide-state"
+              aria-labelledby="enhancement-guide-title"
+            >
+              <div className="draft-state-icon" aria-hidden="true">⚒️</div>
+              <p>ENHANCEMENT EXPERIENCE</p>
+              <h2 id="enhancement-guide-title">
+                강화 체험소는 지금 이용할 수 있습니다.
+              </h2>
+              <span>
+                실제 서버의 확정된 강화 확률·재료 정보는 원문 보강 후 반영합니다.
+                지금은 체험소에서 +15강까지 성공·실패·하락·파괴 흐름을 확인할 수 있습니다.
+              </span>
+              <div className="enhancement-guide-preview" aria-label="강화 체험소 규칙 요약">
+                <strong>강화 체험소 기준 위험 구간</strong>
+                <div>
+                  <span><b>+0 ~ +4</b><small>실패 시 단계 유지</small></span>
+                  <span><b>+5 ~ +6</b><small>하락 가능 구간</small></span>
+                  <span><b>+7 ~ +14</b><small>하락·파괴 가능 구간</small></span>
+                  <span><b>+15</b><small>체험소 최대 강화</small></span>
+                </div>
+                <p>
+                  체험용 시뮬레이션 규칙이며 실제 서버의 공식 강화 확률을 뜻하지 않습니다.
+                </p>
+              </div>
+              <div className="state-actions">
+                <Link
+                  href={withBasePath('/#enhancement-lab')}
+                  data-wiki-event="wiki_enhancement_navigate"
+                  data-wiki-section="enhancement-guide"
+                  data-wiki-target="enhancement-lab"
+                  data-wiki-status="ready"
+                >
+                  ⚒️ 강화 체험소 열기
+                </Link>
+                {related[0] && (
+                  <Link
+                    href={withBasePath(wikiGuidePath(related[0]))}
+                    data-wiki-event="wiki_enhancement_navigate"
+                    data-wiki-section="enhancement-guide"
+                    data-wiki-target={related[0].title}
+                    data-wiki-status="ready"
+                  >
+                    {related[0].title} 같이 보기
+                  </Link>
+                )}
+              </div>
+            </section>
+          ) : hasVerifiedFaq ? (
             <WikiVerifiedFaq />
           ) : (
             <section className="document-card">
