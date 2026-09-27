@@ -288,9 +288,11 @@ export async function renderWikiPage(pageId: string) {
       !isEnhancementGuide &&
       !hasVerifiedBrief)
 
-  const [recordMap, fullImageManifest] = needsNotionDocument
+  const notionPayload = needsNotionDocument
     ? await Promise.all([getNotionPage(pageId), readNotionAssetManifest()])
-    : [null, {} as Record<string, string>]
+    : null
+  const recordMap = notionPayload?.[0] ?? null
+  const fullImageManifest = notionPayload?.[1] ?? {}
   const imageManifest = recordMap
     ? narrowImageManifest(recordMap, fullImageManifest)
     : {}
