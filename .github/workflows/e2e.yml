@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: wiki-e2e-${{ github.ref }}
+  group: wiki-e2e-${{ github.event.workflow_run.name || github.ref }}
   cancel-in-progress: true
 
 jobs:
