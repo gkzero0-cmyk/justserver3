@@ -1070,7 +1070,7 @@ html[data-theme="light"] .state-actions a {
   }
 
   .mobile-toc-sheet > header strong {
-    font-size: 18px;
+    font-size: var(--font-heading-18);
   }
 
   .mobile-toc-sheet > header button {
@@ -1545,7 +1545,7 @@ html[data-theme="light"] .status-content-metrics {
 .fun-modal-content > h2 {
   margin: 0;
   color: #f2e8e3;
-  font-size: 21px;
+  font-size: var(--font-heading-21);
   letter-spacing: -.025em;
 }
 
@@ -1792,7 +1792,7 @@ html[data-theme="light"] .status-content-metrics {
 
 .fortune-ready > strong {
   color: #f1e5df;
-  font-size: 17px;
+  font-size: var(--font-heading-17);
 }
 
 .fortune-ready > small {
@@ -1923,7 +1923,7 @@ html[data-theme="light"] .status-content-metrics {
 .quiz-question > h3 {
   margin: 0 0 16px;
   color: #f0e5df;
-  font-size: 19px;
+  font-size: var(--font-heading-19);
   line-height: 1.45;
 }
 
@@ -2184,7 +2184,7 @@ html[data-theme="light"] .exploration-list a {
   }
 
   .fun-zone-head h2 {
-    font-size: 18px;
+    font-size: var(--font-heading-18);
   }
 
   .fun-zone-head > strong {
@@ -2251,7 +2251,7 @@ html[data-theme="light"] .exploration-list a {
 
   .fortune-result > h3,
   .quiz-result > h3 {
-    font-size: 23px;
+    font-size: var(--font-heading-23);
   }
 
   .exploration-summary {
@@ -2384,7 +2384,7 @@ html[data-theme="light"] .exploration-list a {
 
 .random-ready > strong {
   color: #f1e5df;
-  font-size: 17px;
+  font-size: var(--font-heading-17);
 }
 
 .random-ready > small {
@@ -2665,7 +2665,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
   }
 
   .random-result > h3 {
-    font-size: 23px;
+    font-size: var(--font-heading-23);
   }
 
   .achievement-grid {
@@ -2723,7 +2723,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
 .survival-log-head h2 {
   margin: 0;
   color: #f1e8e2;
-  font-size: 21px;
+  font-size: var(--font-heading-21);
   letter-spacing: -.025em;
 }
 
@@ -2775,7 +2775,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
 
 .survival-profile-title > strong {
   color: #e3bd76;
-  font-size: 21px;
+  font-size: var(--font-heading-21);
   letter-spacing: -.02em;
 }
 
@@ -3367,7 +3367,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
   }
 
   .survival-log-head h2 {
-    font-size: 18px;
+    font-size: var(--font-heading-18);
   }
 
   .survival-log-head > div > span {
@@ -3385,7 +3385,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
   }
 
   .survival-profile-title > strong {
-    font-size: 19px;
+    font-size: var(--font-heading-19);
   }
 
   .survival-profile-metrics {
@@ -3497,7 +3497,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
 .reading-quiz-head h2 {
   margin: 0;
   color: #f0e7e2;
-  font-size: 20px;
+  font-size: var(--font-heading-20);
   letter-spacing: -.025em;
 }
 
@@ -4034,7 +4034,7 @@ html[data-theme="light"] .wiki-inline-treasure {
   .reading-explorer-head h2,
   .next-exploration-head h2,
   .reading-quiz-head h2 {
-    font-size: 17px;
+    font-size: var(--font-heading-17);
   }
 
   .reading-explorer-head > b,
@@ -4110,7 +4110,7 @@ html[data-theme="light"] .wiki-inline-treasure {
 .adventure-hub-head h2 {
   margin: 0;
   color: #f1e7e2;
-  font-size: 21px;
+  font-size: var(--font-heading-21);
   letter-spacing: -.025em;
 }
 
@@ -4453,7 +4453,7 @@ html[data-theme="light"] .wiki-inline-treasure {
 
 .passport-cover > strong {
   color: #dfccb0;
-  font-size: 17px;
+  font-size: var(--font-heading-17);
 }
 
 .passport-cover > span {
@@ -4928,7 +4928,7 @@ html[data-theme="light"] .passport-cover {
   }
 
   .adventure-hub-head h2 {
-    font-size: 17px;
+    font-size: var(--font-heading-17);
   }
 
   .adventure-tabs {
@@ -5998,7 +5998,7 @@ html[data-theme="light"] .status-backlog-title strong {
 }
 
 .mobile-quick-sheet > header strong {
-  font-size: 20px;
+  font-size: var(--font-heading-20);
 }
 
 .mobile-quick-sheet > header span {

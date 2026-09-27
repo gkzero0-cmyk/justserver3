@@ -183,7 +183,7 @@ html[data-theme="light"] .brief-notice {
 
 .document-feedback h2 {
   margin: 0;
-  font-size: 17px;
+  font-size: var(--font-heading-17);
 }
 
 
