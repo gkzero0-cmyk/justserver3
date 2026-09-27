@@ -30,6 +30,8 @@ if (branch && branch !== 'main') {
 
 const trackedChanges = git(['status', '--porcelain'])
 if (trackedChanges) {
+  console.error('INFO git status --porcelain:')
+  console.error(trackedChanges)
   fail('working tree has uncommitted changes')
 } else {
   pass('working tree is clean')
