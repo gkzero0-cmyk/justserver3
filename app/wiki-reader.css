@@ -115,14 +115,14 @@
 
 .sidebar-category-head strong {
   color: #a49791;
-  font-size: 11px;
+  font-size: var(--font-meta);
   font-weight: 850;
   letter-spacing: .055em;
 }
 
 .sidebar-category-head span {
   color: #756963;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .sidebar-category-links {
@@ -131,7 +131,7 @@
 }
 
 .nav-section-label {
-  font-size: 10px;
+  font-size: var(--font-micro);
   letter-spacing: .09em;
 }
 
@@ -149,7 +149,7 @@
   border: 1px solid rgba(var(--gold-rgb),.08);
   border-radius: 8px;
   background: rgba(var(--gold-rgb),.035);
-  font-size: 13px;
+  font-size: var(--font-copy);
 }
 
 .global-page-link:hover .sidebar-page-icon,
@@ -182,12 +182,12 @@
 }
 
 .article-toc-label {
-  font-size: 11px;
+  font-size: var(--font-meta);
 }
 
 .article-toc-item {
   padding-block: 7px;
-  font-size: 12px;
+  font-size: var(--font-small);
   line-height: 1.5;
 }
 
@@ -198,12 +198,12 @@
   gap: 8px;
   margin-bottom: 7px;
   color: #786b66;
-  font-size: 11px;
+  font-size: var(--font-meta);
 }
 
 .article-progress strong {
   color: #b99b73;
-  font-size: 11px;
+  font-size: var(--font-meta);
 }
 
 .article-progress-track {
@@ -238,7 +238,7 @@
   border-radius: 999px;
   background: rgba(var(--gold-rgb),.045);
   color: #b18e63;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 800;
   letter-spacing: .05em;
 }
@@ -320,11 +320,11 @@
   }
 
   .sidebar-toggle-collapsed b {
-    font-size: 14px;
+    font-size: var(--font-body);
   }
 
   .sidebar-toggle-collapsed em {
-    font-size: 10px;
+    font-size: var(--font-micro);
     font-style: normal;
     font-weight: 800;
   }
@@ -464,7 +464,7 @@
   }
 
   .hero-copy > p:last-of-type {
-    font-size: 12px;
+    font-size: var(--font-small);
     line-height: 1.6;
   }
 
@@ -568,7 +568,7 @@ html[data-theme="light"] .notion-bookmark:hover {
   border: 1px dashed rgba(160,147,140,.22);
   border-radius: 999px;
   color: #a99a93;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-style: normal;
   font-weight: 800;
 }
@@ -819,7 +819,7 @@ html[data-theme="light"] .notion-bookmark:hover {
   }
 
   .mobile-reading-tools button span {
-    font-size: 10px;
+    font-size: var(--font-micro);
     font-weight: 800;
   }
 }
@@ -829,12 +829,12 @@ html[data-theme="light"] .notion-bookmark:hover {
   .page-siblings small,
   .status-services small,
   .status-services span {
-    font-size: 11px;
+    font-size: var(--font-meta);
   }
 
   .search-result-category,
   .search-draft-badge {
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 
   .loading-topbar {
@@ -910,14 +910,14 @@ html[data-theme="light"] .state-actions a {
 }
 
 .directory-drafts > summary span {
-  font-size: 11px;
+  font-size: var(--font-meta);
   font-weight: 800;
 }
 
 .directory-drafts > summary small {
   margin-left: auto;
   color: #776b66;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .sidebar-category-head {
@@ -937,7 +937,7 @@ html[data-theme="light"] .state-actions a {
 .sidebar-category-meta b {
   display: none;
   color: #887a74;
-  font-size: 12px;
+  font-size: var(--font-small);
   font-weight: 700;
   transition: transform .16s ease;
 }
@@ -1066,7 +1066,7 @@ html[data-theme="light"] .state-actions a {
 
   .mobile-toc-sheet > header small {
     color: #857871;
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 
   .mobile-toc-sheet > header strong {
@@ -1093,7 +1093,7 @@ html[data-theme="light"] .state-actions a {
     border-top: 1px solid rgba(255,255,255,.05);
     border-bottom: 1px solid rgba(255,255,255,.05);
     color: #8d807a;
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 
   .mobile-toc-progress b {
@@ -1141,7 +1141,7 @@ html[data-theme="light"] .state-actions a {
 
   .mobile-toc-item strong {
     min-width: 0;
-    font-size: 12px;
+    font-size: var(--font-small);
     line-height: 1.45;
   }
 }
@@ -1181,14 +1181,14 @@ html[data-theme="light"] .mobile-toc-item.is-active {
   border-radius: 999px;
   background: rgba(var(--gold-rgb),.055);
   color: #c7a169;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-style: normal;
   font-weight: 800;
 }
 
 @media (max-width: 620px) {
   .search-brief-badge {
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 }
 
@@ -1213,7 +1213,7 @@ html[data-theme="light"] .mobile-toc-item.is-active {
 
 .search-fallback > span {
   color: #81736d;
-  font-size: 10px;
+  font-size: var(--font-micro);
   text-align: center;
 }
 
@@ -1248,14 +1248,14 @@ html[data-theme="light"] .mobile-toc-item.is-active {
 .search-fallback a strong {
   min-width: 0;
   overflow: hidden;
-  font-size: 11px;
+  font-size: var(--font-meta);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .search-fallback a b {
   color: #786b65;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 @media (max-width: 760px) {
@@ -1462,7 +1462,7 @@ html[data-theme="light"] .status-content-metrics {
   border: 1px solid rgba(160,147,140,.16);
   border-radius: 999px;
   color: var(--text-subtle);
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-style: normal;
   font-weight: 800;
   line-height: 1.4;
@@ -1471,7 +1471,7 @@ html[data-theme="light"] .status-content-metrics {
 @media (max-width: 620px) {
 
   .sidebar-draft-badge {
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 }
 
@@ -1536,7 +1536,7 @@ html[data-theme="light"] .status-content-metrics {
 .fun-modal-kicker {
   margin: 0 0 5px;
   color: #c69755;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .14em;
 }
@@ -1553,7 +1553,7 @@ html[data-theme="light"] .status-content-metrics {
   display: block;
   margin-top: 6px;
   color: #8f817b;
-  font-size: 11px;
+  font-size: var(--font-meta);
   line-height: 1.55;
 }
 
@@ -1563,7 +1563,7 @@ html[data-theme="light"] .status-content-metrics {
   border: 1px solid rgba(var(--gold-rgb),.15);
   border-radius: 999px;
   color: #aa906b;
-  font-size: 10px;
+  font-size: var(--font-micro);
   letter-spacing: .09em;
 }
 
@@ -1656,19 +1656,19 @@ html[data-theme="light"] .status-content-metrics {
 
 .fun-card-copy > small {
   color: #a18461;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 850;
   letter-spacing: .04em;
 }
 
 .fun-card-copy > strong {
   color: #f2e8e3;
-  font-size: 15px;
+  font-size: var(--font-title-sm);
 }
 
 .fun-card-copy > em {
   color: #93857f;
-  font-size: 11px;
+  font-size: var(--font-meta);
   font-style: normal;
   line-height: 1.55;
 }
@@ -1679,7 +1679,7 @@ html[data-theme="light"] .status-content-metrics {
   grid-column: 1 / -1;
   align-self: end;
   color: #bda37c;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 800;
 }
 
@@ -1799,7 +1799,7 @@ html[data-theme="light"] .status-content-metrics {
   max-width: 430px;
   margin-top: 8px;
   color: #8f817b;
-  font-size: 11px;
+  font-size: var(--font-meta);
   line-height: 1.6;
 }
 
@@ -1819,7 +1819,7 @@ html[data-theme="light"] .status-content-metrics {
 .quiz-result > p {
   margin: 0 0 6px;
   color: #ad8957;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 850;
   letter-spacing: .08em;
 }
@@ -1837,7 +1837,7 @@ html[data-theme="light"] .status-content-metrics {
   max-width: 470px;
   margin-top: 10px;
   color: #d9cbc4;
-  font-size: 13px;
+  font-size: var(--font-copy);
   line-height: 1.65;
 }
 
@@ -1849,7 +1849,7 @@ html[data-theme="light"] .status-content-metrics {
   border-radius: 12px;
   background: rgba(var(--gold-rgb),.035);
   color: #a99578;
-  font-size: 11px;
+  font-size: var(--font-meta);
   line-height: 1.55;
 }
 
@@ -1857,7 +1857,7 @@ html[data-theme="light"] .status-content-metrics {
   max-width: 480px;
   margin-top: 12px;
   color: #9b8d87;
-  font-size: 12px;
+  font-size: var(--font-small);
   line-height: 1.7;
 }
 
@@ -1867,7 +1867,7 @@ html[data-theme="light"] .status-content-metrics {
   border-radius: 999px;
   background: rgba(var(--gold-rgb),.06);
   color: #b79b71;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .fun-result-actions {
@@ -1899,7 +1899,7 @@ html[data-theme="light"] .status-content-metrics {
 .fun-result-actions > span {
   width: 100%;
   color: #8e817b;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .quiz-progress-row {
@@ -1912,7 +1912,7 @@ html[data-theme="light"] .status-content-metrics {
 
 .quiz-progress-row > span:first-child {
   color: #a89270;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 850;
 }
 
@@ -1985,13 +1985,13 @@ html[data-theme="light"] .status-content-metrics {
 .exploration-summary > div small {
   margin-top: 5px;
   color: #8e817b;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .exploration-summary > p {
   margin: 0;
   color: #9d8f89;
-  font-size: 12px;
+  font-size: var(--font-small);
   line-height: 1.65;
 }
 
@@ -2044,14 +2044,14 @@ html[data-theme="light"] .status-content-metrics {
   min-width: 0;
   overflow: hidden;
   color: #d9cdc6;
-  font-size: 11px;
+  font-size: var(--font-meta);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .exploration-list a small {
   color: #716762;
-  font-size: 10px;
+  font-size: var(--font-micro);
   white-space: nowrap;
 }
 
@@ -2062,7 +2062,7 @@ html[data-theme="light"] .status-content-metrics {
   border-radius: 12px;
   background: rgba(var(--gold-rgb),.055);
   color: #ceb687;
-  font-size: 11px;
+  font-size: var(--font-meta);
   line-height: 1.55;
   text-align: center;
 }
@@ -2206,17 +2206,17 @@ html[data-theme="light"] .exploration-list a {
   }
 
   .fun-card-copy > strong {
-    font-size: 14px;
+    font-size: var(--font-body);
   }
 
   .fun-card-copy > em {
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 
   .fun-card-action {
     grid-column: 1 / -1;
     justify-self: start;
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 
   .fun-modal-backdrop {
@@ -2299,7 +2299,7 @@ html[data-theme="light"] .exploration-list a {
   background: transparent;
   color: #c69755;
   font: inherit;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .14em;
   cursor: default;
@@ -2340,7 +2340,7 @@ html[data-theme="light"] .exploration-list a {
   border-radius: 999px;
   background: rgba(18,15,16,.96);
   color: #dfc18e;
-  font-size: 11px;
+  font-size: var(--font-meta);
   font-weight: 800;
   line-height: 1.4;
   text-align: center;
@@ -2391,7 +2391,7 @@ html[data-theme="light"] .exploration-list a {
   max-width: 430px;
   margin-top: 8px;
   color: #8f817b;
-  font-size: 11px;
+  font-size: var(--font-meta);
   line-height: 1.6;
 }
 
@@ -2415,7 +2415,7 @@ html[data-theme="light"] .exploration-list a {
 .random-result > p {
   margin: 0 0 6px;
   color: #8ca8c8;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 850;
   letter-spacing: .08em;
 }
@@ -2434,14 +2434,14 @@ html[data-theme="light"] .exploration-list a {
   border-radius: 999px;
   background: rgba(93,135,187,.05);
   color: #9fb5d0;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .random-result > strong {
   max-width: 450px;
   margin-top: 13px;
   color: #c6d1df;
-  font-size: 12px;
+  font-size: var(--font-small);
   line-height: 1.65;
 }
 
@@ -2456,7 +2456,7 @@ html[data-theme="light"] .exploration-list a {
   border-radius: 10px;
   background: rgba(var(--gold-rgb),.055);
   color: #c6ae89;
-  font-size: 13px;
+  font-size: var(--font-copy);
   font-weight: 800;
   text-decoration: none;
   cursor: pointer;
@@ -2485,7 +2485,7 @@ html[data-theme="light"] .exploration-list a {
 
 .achievement-title-card > span {
   color: #918171;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 800;
   letter-spacing: .06em;
 }
@@ -2498,7 +2498,7 @@ html[data-theme="light"] .exploration-list a {
 
 .achievement-title-card > small {
   color: #8f817b;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .achievement-grid {
@@ -2550,12 +2550,12 @@ html[data-theme="light"] .exploration-list a {
 
 .achievement-grid article strong {
   color: #d8ccc5;
-  font-size: 11px;
+  font-size: var(--font-meta);
 }
 
 .achievement-grid article small {
   color: #7e726c;
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.45;
 }
 
@@ -2564,7 +2564,7 @@ html[data-theme="light"] .exploration-list a {
   border-radius: 999px;
   background: rgba(255,255,255,.035);
   color: #756a65;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .achievement-grid article.is-unlocked b {
@@ -2586,7 +2586,7 @@ html[data-theme="light"] .exploration-list a {
   border-radius: 9px;
   background: rgba(255,255,255,.012);
   color: #8f817b;
-  font-size: 10px;
+  font-size: var(--font-micro);
   text-align: center;
 }
 
@@ -2679,7 +2679,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
   .fun-secret-toast {
     bottom: max(14px, env(safe-area-inset-bottom));
     border-radius: 14px;
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 }
 
@@ -2715,7 +2715,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
 .survival-log-head p {
   margin: 0 0 5px;
   color: #76a984;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .14em;
 }
@@ -2731,7 +2731,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
   display: block;
   margin-top: 6px;
   color: #8e817b;
-  font-size: 11px;
+  font-size: var(--font-meta);
   line-height: 1.55;
 }
 
@@ -2742,7 +2742,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
   border-radius: 999px;
   background: rgba(229,115,66,.055);
   color: #d99b72;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 850;
 }
 
@@ -2768,7 +2768,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
 
 .survival-profile-title > span {
   color: #8d7d6a;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 800;
   letter-spacing: .06em;
 }
@@ -2781,7 +2781,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
 
 .survival-profile-title > small {
   color: #8c807a;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .survival-profile-metrics {
@@ -2812,7 +2812,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
 
 .survival-profile-metrics small {
   color: #766a65;
-  font-size: 10px;
+  font-size: var(--font-micro);
   text-align: center;
 }
 
@@ -2823,7 +2823,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
   border-radius: 10px;
   background: rgba(var(--gold-rgb),.05);
   color: #c7ac82;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 850;
   cursor: pointer;
 }
@@ -2839,7 +2839,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
   right: 15px;
   bottom: -23px;
   color: #7daa88;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .survival-dashboard-grid {
@@ -2873,14 +2873,14 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
 
 .survival-panel > header small {
   color: #8b7963;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 850;
   letter-spacing: .09em;
 }
 
 .survival-panel > header strong {
   color: #e7dcd6;
-  font-size: 14px;
+  font-size: var(--font-body);
 }
 
 .survival-panel > header > b {
@@ -2888,7 +2888,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
   border-radius: 999px;
   background: rgba(255,255,255,.035);
   color: #7c706b;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 850;
 }
 
@@ -2937,18 +2937,18 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
 
 .mission-list strong {
   color: #cec2bc;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .mission-list small {
   color: #746964;
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.45;
 }
 
 .mission-list > div > b {
   color: #887b75;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .mission-list > div.is-done > b {
@@ -2990,12 +2990,12 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
 
 .collection-list strong {
   color: #cfc3bc;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .collection-list small {
   color: #776a64;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .collection-list i {
@@ -3043,7 +3043,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
 .treasure-panel > p {
   margin: 10px 0 0;
   color: #746964;
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.55;
 }
 
@@ -3076,14 +3076,14 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
 
 .survival-tip small {
   color: #7890ad;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 850;
   letter-spacing: .08em;
 }
 
 .survival-tip strong {
   color: #aebdce;
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.5;
 }
 
@@ -3147,7 +3147,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
   border-radius: 50%;
   background: rgba(14,12,13,.78);
   color: #ccb07f;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
 }
 
@@ -3222,7 +3222,7 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
   bottom: max(24px,env(safe-area-inset-bottom));
   padding: 10px 14px;
   border-radius: 999px;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 850;
 }
 
@@ -3267,14 +3267,14 @@ html[data-theme="light"] .achievement-grid article.is-unlocked {
 
 .wiki-achievement-toast small {
   color: #9e835d;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .11em;
 }
 
 .wiki-achievement-toast strong {
   color: #ecd29e;
-  font-size: 12px;
+  font-size: var(--font-small);
 }
 
 .wiki-achievement-toast > b {
@@ -3371,12 +3371,12 @@ html[data-theme="light"] .wiki-achievement-toast strong {
   }
 
   .survival-log-head > div > span {
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 
   .survival-streak-badge {
     padding: 5px 7px;
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 
   .survival-profile-card {
@@ -3487,7 +3487,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
 .reading-quiz-head p {
   margin: 0 0 5px;
   color: #7d9fc2;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .14em;
 }
@@ -3507,7 +3507,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
   display: block;
   margin-top: 6px;
   color: #897d77;
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.55;
 }
 
@@ -3519,7 +3519,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
   border-radius: 999px;
   background: rgba(106,151,190,.045);
   color: #91abc5;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .reading-explorer-top {
@@ -3571,7 +3571,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
 .reading-map header small,
 .reading-collection-sets small {
   color: #758da6;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 850;
   letter-spacing: .08em;
 }
@@ -3586,7 +3586,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
 .reading-daily-quest header p {
   margin: 3px 0 0;
   color: #766b66;
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.45;
 }
 
@@ -3596,7 +3596,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
   border-radius: 999px;
   background: rgba(255,255,255,.035);
   color: #827670;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .reading-daily-quest.is-complete > header > b {
@@ -3644,7 +3644,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
   border-radius: 9px;
   background: rgba(255,255,255,.03);
   color: #927f70;
-  font-size: 12px;
+  font-size: var(--font-small);
   font-weight: 900;
 }
 
@@ -3663,14 +3663,14 @@ html[data-theme="light"] .wiki-achievement-toast strong {
 .reading-quest-steps a small,
 .reading-unread-list a small {
   color: #726762;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .reading-quest-steps a strong,
 .reading-unread-list a strong {
   overflow: hidden;
   color: #cfc4be;
-  font-size: 10px;
+  font-size: var(--font-micro);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -3678,7 +3678,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
 .reading-quest-steps a > b,
 .reading-unread-list a > b {
   color: #806f62;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .reading-unread-card > header {
@@ -3700,7 +3700,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
   place-items: center;
   padding: 16px;
   color: #91b49a;
-  font-size: 11px;
+  font-size: var(--font-meta);
   text-align: center;
 }
 
@@ -3744,7 +3744,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
 .reading-collection-sets p {
   margin: 0;
   color: #716762;
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.4;
 }
 
@@ -3765,7 +3765,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
 
 .reading-collection-sets em {
   color: #83756e;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-style: normal;
 }
 
@@ -3793,7 +3793,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
 
 .reading-map > header > span {
   color: #716762;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .reading-map-routes {
@@ -3813,7 +3813,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
   align-items: center;
   gap: 7px;
   color: #9b8a80;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .reading-map-category > span {
@@ -3825,7 +3825,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
   border-radius: 50%;
   background: rgba(255,255,255,.02);
   color: #776b66;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .reading-map-nodes {
@@ -3872,13 +3872,13 @@ html[data-theme="light"] .wiki-achievement-toast strong {
   place-items: center;
   border-radius: 50%;
   background: rgba(255,255,255,.035);
-  font-size: 12px;
+  font-size: var(--font-small);
 }
 
 .reading-map-nodes > a > strong {
   width: 100%;
   overflow: hidden;
-  font-size: 10px;
+  font-size: var(--font-micro);
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -3908,7 +3908,7 @@ html[data-theme="light"] .wiki-achievement-toast strong {
 .reading-quiz-message {
   margin: 8px 0 0;
   color: #a18a78;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .reading-quiz-message.is-success {
@@ -3933,11 +3933,11 @@ html[data-theme="light"] .wiki-achievement-toast strong {
 }
 
 .wiki-inline-treasure > span {
-  font-size: 12px;
+  font-size: var(--font-small);
 }
 
 .wiki-inline-treasure > small {
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 750;
 }
 
@@ -4040,7 +4040,7 @@ html[data-theme="light"] .wiki-inline-treasure {
   .reading-explorer-head > b,
   .reading-quiz-head > b {
     padding: 5px 7px;
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 
   .reading-daily-quest > header {
@@ -4102,7 +4102,7 @@ html[data-theme="light"] .wiki-inline-treasure {
 .adventure-hub-head p {
   margin: 0 0 5px;
   color: #c89d62;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .14em;
 }
@@ -4118,7 +4118,7 @@ html[data-theme="light"] .wiki-inline-treasure {
   display: block;
   margin-top: 6px;
   color: #8b7e78;
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.55;
 }
 
@@ -4129,7 +4129,7 @@ html[data-theme="light"] .wiki-inline-treasure {
   border-radius: 999px;
   background: rgba(var(--gold-rgb),.045);
   color: #b79a70;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .adventure-tabs {
@@ -4179,12 +4179,12 @@ html[data-theme="light"] .wiki-inline-treasure {
   place-items: center;
   border-radius: 9px;
   background: rgba(255,255,255,.028);
-  font-size: 15px;
+  font-size: var(--font-title-sm);
 }
 
 .adventure-tabs small {
   color: #766c67;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .1em;
 }
@@ -4192,7 +4192,7 @@ html[data-theme="light"] .wiki-inline-treasure {
 .adventure-tabs strong {
   overflow: hidden;
   color: #aaa09a;
-  font-size: 10px;
+  font-size: var(--font-micro);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -4250,7 +4250,7 @@ html[data-theme="light"] .wiki-inline-treasure {
 .boss-visual small,
 .boss-hp-row small {
   color: #9b7d54;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .09em;
 }
@@ -4269,7 +4269,7 @@ html[data-theme="light"] .wiki-inline-treasure {
 .boss-visual p {
   margin: 0;
   color: #766c67;
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.5;
 }
 
@@ -4301,7 +4301,7 @@ html[data-theme="light"] .wiki-inline-treasure {
   border-radius: 50%;
   background: #151314;
   color: #81746d;
-  font-size: 14px;
+  font-size: var(--font-body);
 }
 
 .story-chapter-marker > i {
@@ -4331,7 +4331,7 @@ html[data-theme="light"] .wiki-inline-treasure {
 .story-chapter-copy > strong {
   display: block;
   margin-top: 2px;
-  font-size: 11px;
+  font-size: var(--font-meta);
 }
 
 .story-chapter-copy > p {
@@ -4377,7 +4377,7 @@ html[data-theme="light"] .wiki-inline-treasure {
   place-items: center;
   border-radius: 9px;
   background: rgba(255,255,255,.03);
-  font-size: 14px;
+  font-size: var(--font-body);
 }
 
 .story-choice-grid > a > div {
@@ -4388,20 +4388,20 @@ html[data-theme="light"] .wiki-inline-treasure {
 
 .story-choice-grid small {
   color: #746963;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .story-choice-grid strong {
   overflow: hidden;
   color: #c8bdb7;
-  font-size: 10px;
+  font-size: var(--font-micro);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .story-choice-grid b {
   color: #9c805c;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .story-choice-grid .is-complete b {
@@ -4414,7 +4414,7 @@ html[data-theme="light"] .wiki-inline-treasure {
   border: 1px dashed rgba(255,255,255,.045);
   border-radius: 9px;
   color: #695f5a;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .adventure-passport {
@@ -4461,7 +4461,7 @@ html[data-theme="light"] .wiki-inline-treasure {
   border: 1px solid rgba(var(--gold-rgb),.12);
   border-radius: 999px;
   color: #a68a65;
-  font-size: 10px;
+  font-size: var(--font-micro);
   letter-spacing: .08em;
 }
 
@@ -4497,7 +4497,7 @@ html[data-theme="light"] .wiki-inline-treasure {
 
 .passport-pages header b {
   color: #917b62;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .passport-pages article.is-complete header b {
@@ -4542,13 +4542,13 @@ html[data-theme="light"] .wiki-inline-treasure {
 .passport-stamps strong {
   width: 56px;
   overflow: hidden;
-  font-size: 10px;
+  font-size: var(--font-micro);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .passport-stamps small {
-  font-size: 10px;
+  font-size: var(--font-micro);
   letter-spacing: .06em;
 }
 
@@ -4583,7 +4583,7 @@ html[data-theme="light"] .wiki-inline-treasure {
   border-radius: 999px;
   background: rgba(118,153,192,.05);
   color: #8ea6bd;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .build-personalize-note,
@@ -4591,7 +4591,7 @@ html[data-theme="light"] .wiki-inline-treasure {
   margin-top: 8px;
   padding: 8px 10px;
   border-radius: 9px;
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.45;
 }
 
@@ -4645,7 +4645,7 @@ html[data-theme="light"] .wiki-inline-treasure {
   border-radius: 50%;
   background: rgba(255,255,255,.035);
   color: #766a65;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
 }
 
@@ -4676,21 +4676,21 @@ html[data-theme="light"] .wiki-inline-treasure {
 
 .survival-build-route small {
   color: #6e6560;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .survival-build-route strong {
   width: 100%;
   overflow: hidden;
   color: #c4b9b3;
-  font-size: 10px;
+  font-size: var(--font-micro);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .survival-build-route em {
   color: #8195a7;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-style: normal;
 }
 
@@ -4738,7 +4738,7 @@ html[data-theme="light"] .wiki-inline-treasure {
   border-radius: 999px;
   background: rgba(255,255,255,.025);
   color: #716762;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .boss-icon {
@@ -4758,7 +4758,7 @@ html[data-theme="light"] .wiki-inline-treasure {
 }
 
 .boss-visual strong {
-  font-size: 14px;
+  font-size: var(--font-body);
 }
 
 .boss-battle {
@@ -4784,7 +4784,7 @@ html[data-theme="light"] .wiki-inline-treasure {
 
 .boss-hp-row > b {
   color: #ba746a;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .weekly-boss-card.is-defeated .boss-hp-row > b {
@@ -4834,13 +4834,13 @@ html[data-theme="light"] .wiki-inline-treasure {
 
 .boss-damage-grid strong {
   color: #c9bdb7;
-  font-size: 13px;
+  font-size: var(--font-copy);
 }
 
 .boss-damage-grid small,
 .boss-damage-grid em {
   color: #716762;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-style: normal;
 }
 
@@ -4849,7 +4849,7 @@ html[data-theme="light"] .wiki-inline-treasure {
   padding: 9px;
   border-top: 1px solid rgba(255,255,255,.04);
   color: #716762;
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.55;
 }
 
@@ -4972,7 +4972,7 @@ html[data-theme="light"] .passport-cover {
   .story-chapter-marker > span {
     width: 29px;
     height: 29px;
-    font-size: 12px;
+    font-size: var(--font-small);
   }
 
   .story-chapter-marker > i {
@@ -5036,7 +5036,7 @@ html[data-theme="light"] .passport-cover {
 
 .adventure-overview small {
   color: #6f6560;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .08em;
 }
@@ -5044,7 +5044,7 @@ html[data-theme="light"] .passport-cover {
 .adventure-overview strong {
   overflow: hidden;
   color: #aaa09a;
-  font-size: 10px;
+  font-size: var(--font-micro);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -5093,7 +5093,7 @@ html[data-theme="light"] .passport-cover {
   border-radius: 10px;
   background: rgba(var(--gold-rgb),.045);
   color: #c59e65;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .adventure-continue-copy {
@@ -5104,7 +5104,7 @@ html[data-theme="light"] .passport-cover {
 
 .adventure-continue-copy small {
   color: #9d7d52;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .09em;
 }
@@ -5112,7 +5112,7 @@ html[data-theme="light"] .passport-cover {
 .adventure-continue-copy strong {
   overflow: hidden;
   color: #d9cec8;
-  font-size: 11px;
+  font-size: var(--font-meta);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -5120,7 +5120,7 @@ html[data-theme="light"] .passport-cover {
 .adventure-continue-copy em {
   overflow: hidden;
   color: #776c66;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-style: normal;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -5128,7 +5128,7 @@ html[data-theme="light"] .passport-cover {
 
 .adventure-continue-card > b {
   color: #ad8c60;
-  font-size: 10px;
+  font-size: var(--font-micro);
   white-space: nowrap;
 }
 
@@ -5157,12 +5157,12 @@ html[data-theme="light"] .passport-cover {
 .story-progress-strip strong,
 .story-progress-strip > b {
   color: #b99767;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .story-progress-strip small {
   color: #6d625d;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .08em;
 }
@@ -5204,7 +5204,7 @@ html[data-theme="light"] .passport-cover {
   border: 1px solid rgba(var(--gold-rgb),.12);
   border-radius: 999px;
   color: #9f8055;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .08em;
 }
@@ -5257,13 +5257,13 @@ html[data-theme="light"] .passport-cover {
 }
 
 .passport-special-seal b {
-  font-size: 10px;
+  font-size: var(--font-micro);
   letter-spacing: .08em;
 }
 
 .passport-special-seal em {
   margin-top: 2px;
-  font-size: 14px;
+  font-size: var(--font-body);
 }
 
 .passport-stamps > a {
@@ -5331,14 +5331,14 @@ html[data-theme="light"] .passport-cover {
 }
 
 .boss-defeat-seal span {
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 950;
   letter-spacing: .08em;
 }
 
 .boss-defeat-seal b {
   margin-top: 3px;
-  font-size: 10px;
+  font-size: var(--font-micro);
   letter-spacing: .09em;
 }
 
@@ -5373,14 +5373,14 @@ html[data-theme="light"] .passport-cover {
 
 .boss-next-hit small {
   color: #956a65;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .09em;
 }
 
 .boss-next-hit strong {
   color: #ac918b;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .boss-next-hit > a {
@@ -5389,7 +5389,7 @@ html[data-theme="light"] .passport-cover {
   border: 1px solid rgba(181,84,72,.1);
   border-radius: 8px;
   color: #b27b73;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 850;
   text-decoration: none;
 }
@@ -5411,7 +5411,7 @@ html[data-theme="light"] .passport-cover {
   background: rgba(255,255,255,.014);
   color: #8b7d75;
   font: inherit;
-  font-size: 10px;
+  font-size: var(--font-micro);
   cursor: pointer;
 }
 
@@ -5430,12 +5430,12 @@ html[data-theme="light"] .passport-cover {
   justify-items: center;
   gap: 2px;
   color: #847770;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .adventure-stage-nav > span small {
   color: #665d58;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .adventure-unlock-toast {
@@ -5488,7 +5488,7 @@ html[data-theme="light"] .passport-cover {
 
 .adventure-unlock-toast small {
   color: #9d8058;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .1em;
 }
@@ -5496,20 +5496,20 @@ html[data-theme="light"] .passport-cover {
 .adventure-unlock-toast strong {
   overflow: hidden;
   color: #e8cf9b;
-  font-size: 11px;
+  font-size: var(--font-meta);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .adventure-unlock-toast em {
   color: #8c7e76;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-style: normal;
 }
 
 .adventure-unlock-toast > b {
   color: #d4ad6c;
-  font-size: 15px;
+  font-size: var(--font-title-sm);
 }
 
 @keyframes adventurePanelIn {
@@ -5679,7 +5679,7 @@ html[data-theme="light"] .adventure-unlock-toast strong {
   color: #81746e;
   cursor: pointer;
   list-style: none;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 800;
 }
 
@@ -5698,7 +5698,7 @@ html[data-theme="light"] .adventure-unlock-toast strong {
   border-radius: 999px;
   background: rgba(255,255,255,.035);
   text-align: center;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .sidebar-category-links.is-draft-list {
@@ -5770,7 +5770,7 @@ html[data-theme="light"] .adventure-unlock-toast strong {
   }
 
   .mobile-bottom-nav strong {
-    font-size: 10px;
+    font-size: var(--font-micro);
     font-weight: 800;
   }
 
@@ -5817,14 +5817,14 @@ html[data-theme="light"] .adventure-unlock-toast strong {
   gap: 5px;
   margin-top: 3px;
   color: #c5aaa0;
-  font-size: 11px;
+  font-size: var(--font-meta);
   font-weight: 760;
   line-height: 1.35;
 }
 
 .search-result-section > b {
   color: #897771;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .search-result-section mark {
@@ -5836,7 +5836,7 @@ html[data-theme="light"] .adventure-unlock-toast strong {
 @media (max-width: 620px) {
 
   .search-result-section {
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 }
 
@@ -5876,7 +5876,7 @@ html[data-theme="light"] .adventure-unlock-toast strong {
   border-radius: 999px;
   background: rgba(var(--accent-rgb), .11);
   color: #d5887f;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .06em;
 }
@@ -5887,12 +5887,12 @@ html[data-theme="light"] .adventure-unlock-toast strong {
   align-items: center;
   gap: 6px;
   color: #aa9b94;
-  font-size: 11px;
+  font-size: var(--font-meta);
 }
 
 .search-quick-answer-source strong {
   color: #d7cbc5;
-  font-size: 12px;
+  font-size: var(--font-small);
 }
 
 .search-quick-answer-source > span {
@@ -5905,7 +5905,7 @@ html[data-theme="light"] .adventure-unlock-toast strong {
   display: -webkit-box;
   overflow: hidden;
   color: #e2d8d2;
-  font-size: 13px;
+  font-size: var(--font-copy);
   font-weight: 720;
   line-height: 1.62;
   -webkit-box-orient: vertical;
@@ -5920,7 +5920,7 @@ html[data-theme="light"] .adventure-unlock-toast strong {
 
 .search-quick-answer-action {
   color: #a99a93;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 800;
 }
 
@@ -5942,7 +5942,7 @@ html[data-theme="light"] .status-backlog-title strong {
   }
 
   .search-quick-answer-text {
-    font-size: 12px;
+    font-size: var(--font-small);
     -webkit-line-clamp: 2;
   }
 }
@@ -5992,7 +5992,7 @@ html[data-theme="light"] .status-backlog-title strong {
 
 .mobile-quick-sheet > header small {
   color: var(--gold);
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   letter-spacing: .1em;
 }
@@ -6003,7 +6003,7 @@ html[data-theme="light"] .status-backlog-title strong {
 
 .mobile-quick-sheet > header span {
   color: var(--text-subtle);
-  font-size: 11px;
+  font-size: var(--font-meta);
 }
 
 .mobile-quick-sheet > header button {
@@ -6051,7 +6051,7 @@ html[data-theme="light"] .status-backlog-title strong {
 }
 
 .mobile-quick-grid a strong {
-  font-size: 12px;
+  font-size: var(--font-small);
 }
 
 .mobile-quick-grid a b {
@@ -6061,7 +6061,7 @@ html[data-theme="light"] .status-backlog-title strong {
 .mobile-quick-note {
   margin: 0;
   color: var(--text-subtle);
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.55;
 }
 
@@ -6089,7 +6089,7 @@ html[data-theme="light"] .mobile-quick-grid a {
   }
 
   .mobile-bottom-nav strong {
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 
   .mobile-quick-grid {
@@ -6115,12 +6115,12 @@ html[data-theme="light"] .mobile-quick-grid a {
 
 .mobile-quick-rules-head strong {
   color: #bcaea7;
-  font-size: 10px;
+  font-size: var(--font-micro);
 }
 
 .mobile-quick-rules-head a {
   color: #a78b66;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 800;
   text-decoration: none;
 }
@@ -6143,13 +6143,13 @@ html[data-theme="light"] .mobile-quick-grid a {
 
 .mobile-quick-rule-grid small {
   color: #81736c;
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.35;
 }
 
 .mobile-quick-rule-grid strong {
   color: #c5b7af;
-  font-size: 10px;
+  font-size: var(--font-micro);
   line-height: 1.45;
 }
 
@@ -6312,7 +6312,7 @@ html[data-theme="light"] .status-review-queue article {
   border: 1px solid rgba(255,255,255,.08);
   background: rgba(5,7,8,.82);
   color: #8e9293;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 900;
   line-height: 1.2;
   text-align: center;
@@ -6381,7 +6381,7 @@ html[data-theme="light"] .status-review-queue article {
   border-radius: 5px;
   background: rgba(var(--forge-glow), .025);
   color: #91a6a8;
-  font-size: 10px;
+  font-size: var(--font-micro);
   font-weight: 800;
   text-decoration: none;
 }
@@ -6404,7 +6404,7 @@ html[data-theme="light"] .status-review-queue article {
 @media (max-width: 700px) {
 
   .enhancement-context-guide {
-    font-size: 10px;
+    font-size: var(--font-micro);
   }
 }
 
@@ -6657,7 +6657,7 @@ html[data-theme="light"] .enhancement-context-guide {
   border-radius: 7px;
   background: transparent;
   color: #8f837d;
-  font-size: 11px;
+  font-size: var(--font-meta);
   font-weight: 850;
   cursor: pointer;
 }
@@ -6708,7 +6708,7 @@ html[data-text-size="large"] .draft-notice {
   background: rgba(var(--gold-rgb),.045);
   color: #b8a99e;
   font: inherit;
-  font-size: 11px;
+  font-size: var(--font-meta);
   font-weight: 850;
   cursor: pointer;
 }
@@ -6805,3 +6805,136 @@ html[data-theme="light"] .sidebar-global-drafts {
   border-top-color: rgba(118,84,55,.11);
 }
 
+
+
+/* === 2026-09-28 global text-size coverage + mobile reader control === */
+.mobile-text-size-setting {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 10px;
+  border: 1px solid rgba(var(--gold-rgb), .12);
+  border-radius: 13px;
+  background: rgba(var(--gold-rgb), .025);
+}
+
+.mobile-text-size-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.mobile-text-size-copy small {
+  color: #8f7b63;
+  font-size: var(--font-micro);
+  font-weight: 850;
+  letter-spacing: .08em;
+}
+
+.mobile-text-size-copy strong {
+  color: #d7cbc5;
+  font-size: var(--font-small);
+}
+
+.mobile-text-size-buttons {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  background: rgba(255,255,255,.018);
+}
+
+.mobile-text-size-buttons button {
+  min-width: 42px;
+  min-height: 42px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #948780;
+  font-size: var(--font-meta);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.mobile-text-size-buttons button.is-active {
+  background: rgba(var(--gold-rgb), .12);
+  color: #efc781;
+}
+
+.mobile-text-size-buttons button:focus-visible {
+  outline: 2px solid rgba(var(--gold-rgb), .42);
+  outline-offset: 2px;
+}
+
+html[data-theme="light"] .mobile-text-size-setting {
+  border-color: rgba(118,84,55,.14);
+  background: rgba(255,250,243,.56);
+}
+
+html[data-theme="light"] .mobile-text-size-buttons {
+  border-color: rgba(118,84,55,.13);
+  background: rgba(118,84,55,.035);
+}
+
+html[data-theme="light"] .mobile-text-size-copy strong {
+  color: #5f504a;
+}
+
+html[data-theme="light"] .mobile-text-size-buttons button {
+  color: #74635b;
+}
+
+html[data-theme="light"] .mobile-text-size-buttons button.is-active {
+  color: #8a5f28;
+  background: rgba(var(--gold-rgb), .14);
+}
+
+/* Larger copy may wrap rather than being clipped by compact cards. */
+html[data-text-size="large"] :where(
+  .directory-copy,
+  .recent-update-card,
+  .related-doc-card,
+  .favorite-page-card,
+  .search-result-card,
+  .mobile-quick-grid a,
+  .mobile-quick-rule-grid article
+) {
+  min-height: 0;
+}
+
+html[data-text-size="large"] :where(
+  .directory-copy strong,
+  .directory-copy small,
+  .recent-update-card strong,
+  .related-doc-card strong,
+  .favorite-page-card strong,
+  .search-result-card strong,
+  .mobile-quick-grid a strong,
+  .mobile-quick-rule-grid strong
+) {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+@media (max-width: 420px) {
+  .mobile-text-size-setting {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mobile-text-size-buttons {
+    width: 100%;
+  }
+
+  .mobile-text-size-buttons button {
+    flex: 1 1 0;
+  }
+}

@@ -1101,6 +1101,8 @@ export function WikiShell({
           pages={pages}
           onClose={() => setMobileQuickOpen(false)}
           onOpenSearch={openSearch}
+          textSize={textSize}
+          onChangeTextSize={changeTextSize}
         />
       )}
 

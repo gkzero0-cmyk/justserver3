@@ -41,6 +41,35 @@ test.describe('desktop wiki journeys', () => {
     await expect(page.locator('html')).toHaveAttribute('data-text-size', 'large')
   })
 
+  test('text size control visibly scales home and sidebar copy', async ({ page }) => {
+    await page.goto('/')
+
+    const heroCopy = page.locator('.hero-copy > p:last-of-type')
+    const sidebarLabel = page.locator('.sidebar-category-head strong').first()
+
+    await expect(heroCopy).toBeVisible()
+    await expect(sidebarLabel).toBeVisible()
+
+    const defaultHero = await heroCopy.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+    const defaultSidebar = await sidebarLabel.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+
+    await page.getByRole('button', { name: '글자 크게' }).click()
+
+    const largeHero = await heroCopy.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+    const largeSidebar = await sidebarLabel.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+
+    expect(largeHero).toBeGreaterThan(defaultHero)
+    expect(largeSidebar).toBeGreaterThan(defaultSidebar)
+  })
+
   test('text size control visibly scales enhancement lab copy', async ({ page }) => {
     await page.setViewportSize({ width: 1584, height: 740 })
     await page.goto('/')
@@ -778,6 +807,32 @@ test.describe('mobile wiki journeys', () => {
     await expect(
       dialog.getByText('개인당 최대 5개까지 허용됩니다.', { exact: true })
     ).toBeVisible()
+  })
+
+  test('mobile quick view exposes persistent text-size controls', async ({ page }) => {
+    await page.goto('/')
+
+    await page.getByRole('button', { name: /빠른정보/ }).click()
+    const dialog = page.getByRole('dialog', { name: '게임 중 빠른보기' })
+    const ruleCopy = dialog.locator('.mobile-quick-rule-grid strong').first()
+
+    await expect(dialog.getByText('글자 크기', { exact: true })).toBeVisible()
+    await expect(ruleCopy).toBeVisible()
+
+    const defaultSize = await ruleCopy.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+
+    await dialog.getByRole('button', { name: '글자 크게' }).click()
+    await expect(page.locator('html')).toHaveAttribute('data-text-size', 'large')
+
+    const largeSize = await ruleCopy.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+    expect(largeSize).toBeGreaterThan(defaultSize)
+
+    await page.reload()
+    await expect(page.locator('html')).toHaveAttribute('data-text-size', 'large')
   })
 
   test('search modal fits within phone width', async ({ page }) => {

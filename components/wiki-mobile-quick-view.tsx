@@ -14,6 +14,8 @@ type QuickPage = {
   status?: WikiContentStatus
 }
 
+type TextSize = 'small' | 'default' | 'large'
+
 const QUICK_RULE_QUESTIONS = [
   '재입주할 수 있나요?',
   '강화된 아이템을 다른 사람과 주고받아도 되나요?',
@@ -41,11 +43,15 @@ const QUICK_TITLES = [
 export function WikiMobileQuickView({
   pages,
   onClose,
-  onOpenSearch
+  onOpenSearch,
+  textSize,
+  onChangeTextSize
 }: {
   pages: QuickPage[]
   onClose: () => void
   onOpenSearch: () => void
+  textSize: TextSize
+  onChangeTextSize: (size: TextSize) => void
 }) {
   const sheetRef = useRef<HTMLElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
@@ -128,6 +134,49 @@ export function WikiMobileQuickView({
             ×
           </button>
         </header>
+
+        <section
+          className="mobile-text-size-setting"
+          aria-labelledby="mobile-text-size-title"
+        >
+          <div className="mobile-text-size-copy">
+            <small>읽기 설정</small>
+            <strong id="mobile-text-size-title">글자 크기</strong>
+          </div>
+          <div
+            className="mobile-text-size-buttons"
+            role="group"
+            aria-label="모바일 글자 크기"
+          >
+            <button
+              type="button"
+              className={textSize === 'small' ? 'is-active' : ''}
+              aria-pressed={textSize === 'small'}
+              onClick={() => onChangeTextSize('small')}
+              aria-label="글자 작게"
+            >
+              A−
+            </button>
+            <button
+              type="button"
+              className={textSize === 'default' ? 'is-active' : ''}
+              aria-pressed={textSize === 'default'}
+              onClick={() => onChangeTextSize('default')}
+              aria-label="기본 글자 크기"
+            >
+              A
+            </button>
+            <button
+              type="button"
+              className={textSize === 'large' ? 'is-active' : ''}
+              aria-pressed={textSize === 'large'}
+              onClick={() => onChangeTextSize('large')}
+              aria-label="글자 크게"
+            >
+              A+
+            </button>
+          </div>
+        </section>
 
         <section className="mobile-quick-rules" aria-labelledby="mobile-quick-rules-title">
           <div className="mobile-quick-rules-head">
