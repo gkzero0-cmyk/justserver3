@@ -12,6 +12,24 @@ import {
 import type { WikiContentStatus } from '@/lib/wiki-content-status'
 import { withBasePath } from '@/lib/url-utils'
 import { wikiGuidePath } from '@/lib/wiki-routes'
+import {
+  closeEnhancementAudio,
+  playEnhancementTone
+} from '@/components/wiki-enhancement-audio'
+import {
+  DEFAULT_ENHANCEMENT_STATS,
+  ENHANCEMENT_RULES,
+  enhancementAttemptDelay,
+  enhancementDanger,
+  enhancementOutcomeLabel,
+  enhancementResultMessage,
+  enhancementStageLabel,
+  normalizeEnhancementStats,
+  resolveEnhancementOutcome,
+  type EnhancementLogEntry,
+  type EnhancementOutcome,
+  type EnhancementStats
+} from '@/components/wiki-enhancement-rules'
 
 type EnhancementPage = {
   pageId: string
@@ -19,368 +37,10 @@ type EnhancementPage = {
   status?: WikiContentStatus
 }
 
-type EnhancementOutcome = 'success' | 'fail' | 'down' | 'destroy' | 'max'
-
-type EnhancementLogEntry = {
-  id: number
-  outcome: EnhancementOutcome
-  from: number
-  to: number
-}
-
-type EnhancementRun = {
-  attempts: number
-  successes: number
-  failures: number
-  downgrades: number
-  destroyed: number
-  best: number
-}
-
-type EnhancementStats = {
-  level: number
-  attempts: number
-  successes: number
-  failures: number
-  downgrades: number
-  destroyed: number
-  best: number
-  maxWins: number
-  broken: boolean
-  history: EnhancementLogEntry[]
-  run: EnhancementRun
-}
-
-type EnhancementRule = {
-  success: number
-  fail: number
-  down: number
-  destroy: number
-}
-
-const DEFAULT_STATS: EnhancementStats = {
-  level: 0,
-  attempts: 0,
-  successes: 0,
-  failures: 0,
-  downgrades: 0,
-  destroyed: 0,
-  best: 0,
-  maxWins: 0,
-  broken: false,
-  history: [],
-  run: {
-    attempts: 0,
-    successes: 0,
-    failures: 0,
-    downgrades: 0,
-    destroyed: 0,
-    best: 0
-  }
-}
-
-const RULES: EnhancementRule[] = [
-  { success: 82, fail: 18, down: 0, destroy: 0 },
-  { success: 78, fail: 22, down: 0, destroy: 0 },
-  { success: 74, fail: 26, down: 0, destroy: 0 },
-  { success: 70, fail: 30, down: 0, destroy: 0 },
-  { success: 64, fail: 36, down: 0, destroy: 0 },
-  { success: 58, fail: 29, down: 13, destroy: 0 },
-  { success: 54, fail: 29, down: 17, destroy: 0 },
-  { success: 49, fail: 30, down: 18, destroy: 3 },
-  { success: 44, fail: 30, down: 21, destroy: 5 },
-  { success: 40, fail: 29, down: 24, destroy: 7 },
-  { success: 35, fail: 29, down: 27, destroy: 9 },
-  { success: 31, fail: 28, down: 30, destroy: 11 },
-  { success: 27, fail: 27, down: 32, destroy: 14 },
-  { success: 22, fail: 26, down: 34, destroy: 18 },
-  { success: 18, fail: 24, down: 33, destroy: 25 }
-]
-
-function normalizeStats(value: unknown): EnhancementStats {
-  if (!value || typeof value !== 'object') return { ...DEFAULT_STATS }
-  const raw = value as Partial<EnhancementStats>
-  return {
-    level: Math.max(0, Math.min(15, Number(raw.level) || 0)),
-    attempts: Math.max(0, Number(raw.attempts) || 0),
-    successes: Math.max(0, Number(raw.successes) || 0),
-    failures: Math.max(0, Number(raw.failures) || 0),
-    downgrades: Math.max(0, Number(raw.downgrades) || 0),
-    destroyed: Math.max(0, Number(raw.destroyed) || 0),
-    best: Math.max(0, Math.min(15, Number(raw.best) || 0)),
-    maxWins: Math.max(0, Number(raw.maxWins) || 0),
-    broken: Boolean(raw.broken),
-    history: Array.isArray(raw.history)
-      ? raw.history
-          .filter((entry): entry is EnhancementLogEntry => {
-            if (!entry || typeof entry !== 'object') return false
-            const value = entry as Partial<EnhancementLogEntry>
-            return (
-              typeof value.id === 'number' &&
-              ['success', 'fail', 'down', 'destroy', 'max'].includes(
-                String(value.outcome)
-              )
-            )
-          })
-          .slice(0, 8)
-          .map((entry) => ({
-            id: Number(entry.id),
-            outcome: entry.outcome,
-            from: Math.max(0, Math.min(15, Number(entry.from) || 0)),
-            to: Math.max(0, Math.min(15, Number(entry.to) || 0))
-          }))
-      : [],
-    run:
-      raw.run && typeof raw.run === 'object'
-        ? {
-            attempts: Math.max(0, Number(raw.run.attempts) || 0),
-            successes: Math.max(0, Number(raw.run.successes) || 0),
-            failures: Math.max(0, Number(raw.run.failures) || 0),
-            downgrades: Math.max(0, Number(raw.run.downgrades) || 0),
-            destroyed: Math.max(0, Number(raw.run.destroyed) || 0),
-            best: Math.max(0, Math.min(15, Number(raw.run.best) || 0))
-          }
-        : {
-            attempts: 0,
-            successes: 0,
-            failures: 0,
-            downgrades: 0,
-            destroyed: 0,
-            best: Math.max(0, Math.min(15, Number(raw.level) || 0))
-          }
-  }
-}
-
-function dangerLabel(level: number) {
-  if (level <= 4) return { label: '안정', tone: 'safe' }
-  if (level <= 7) return { label: '주의', tone: 'caution' }
-  if (level <= 10) return { label: '위험', tone: 'danger' }
-  return { label: '극한', tone: 'extreme' }
-}
-
-function enhancementStageLabel(level: number, broken = false) {
-  if (broken) return '파괴'
-  if (level >= 15) return '최대강화'
-  if (level >= 12) return '극한강화'
-  if (level >= 8) return '고강화'
-  if (level >= 5) return '강화'
-  return '기본'
-}
-
-function resultMessage(outcome: EnhancementOutcome, from: number, to: number) {
-  if (outcome === 'success') return '강화 성공 · +' + from + ' → +' + to
-  if (outcome === 'max') return '강화 성공 · +' + from + ' → +15 · 최대강화 달성'
-  if (outcome === 'down') return '강화 하락 · +' + from + ' → +' + to
-  if (outcome === 'destroy') {
-    return '장비 파괴 · +' + from + ' 곡괭이가 부서졌습니다'
-  }
-  return '강화 실패 · +' + from + ' 유지'
-}
-
-function outcomeLabel(outcome: EnhancementOutcome) {
-  if (outcome === 'success') return '성공'
-  if (outcome === 'max') return '+15 달성'
-  if (outcome === 'down') return '하락'
-  if (outcome === 'destroy') return '파괴'
-  return '실패'
-}
-
-function attemptDelay(level: number) {
-  if (level >= 14) return 1450
-  if (level >= 12) return 1200
-  if (level >= 8) return 980
-  if (level >= 5) return 800
-  return 650
-}
-
-let activeEnhancementAudioContext: AudioContext | null = null
-let activeEnhancementAudioCloseTimer: number | null = null
-
 function randomPercent() {
   const values = new Uint32Array(1)
   window.crypto.getRandomValues(values)
   return (values[0] / 0xffffffff) * 100
-}
-
-function playTone(
-  kind: 'charge' | 'success' | 'fail' | 'down' | 'destroy' | 'max',
-  level = 0,
-  volume = 1
-) {
-  try {
-    const AudioContextClass = window.AudioContext
-    if (!AudioContextClass) return
-
-    if (
-      activeEnhancementAudioContext &&
-      activeEnhancementAudioContext.state !== 'closed'
-    ) {
-      void activeEnhancementAudioContext.close().catch(() => {})
-    }
-    if (activeEnhancementAudioCloseTimer) {
-      window.clearTimeout(activeEnhancementAudioCloseTimer)
-    }
-
-    const ctx = new AudioContextClass()
-    activeEnhancementAudioContext = ctx
-    const now = ctx.currentTime
-    const intensity = Math.max(0, Math.min(15, level))
-    const master = ctx.createGain()
-    const compressor = ctx.createDynamicsCompressor()
-
-    const normalizedVolume = Math.max(0, Math.min(1, volume))
-    master.gain.setValueAtTime(1.32 * normalizedVolume, now)
-    compressor.threshold.setValueAtTime(-20, now)
-    compressor.knee.setValueAtTime(16, now)
-    compressor.ratio.setValueAtTime(8, now)
-    compressor.attack.setValueAtTime(0.0015, now)
-    compressor.release.setValueAtTime(0.16, now)
-    master.connect(compressor)
-    compressor.connect(ctx.destination)
-
-    const resonator = (
-      frequency: number,
-      start: number,
-      duration: number,
-      gainValue: number,
-      type: OscillatorType = 'sine',
-      endFrequency?: number
-    ) => {
-      const osc = ctx.createOscillator()
-      const gain = ctx.createGain()
-      osc.type = type
-      osc.frequency.setValueAtTime(frequency, now + start)
-      if (endFrequency) {
-        osc.frequency.exponentialRampToValueAtTime(
-          Math.max(34, endFrequency),
-          now + start + duration
-        )
-      }
-      gain.gain.setValueAtTime(0.0001, now + start)
-      gain.gain.exponentialRampToValueAtTime(
-        Math.max(0.0002, gainValue),
-        now + start + 0.004
-      )
-      gain.gain.exponentialRampToValueAtTime(
-        0.0001,
-        now + start + duration
-      )
-      osc.connect(gain)
-      gain.connect(master)
-      osc.start(now + start)
-      osc.stop(now + start + duration + 0.03)
-    }
-
-    const impactNoise = (
-      start: number,
-      duration: number,
-      gainValue: number,
-      frequency: number,
-      filterType: BiquadFilterType = 'bandpass'
-    ) => {
-      const frames = Math.max(1, Math.floor(ctx.sampleRate * duration))
-      const buffer = ctx.createBuffer(1, frames, ctx.sampleRate)
-      const data = buffer.getChannelData(0)
-      for (let index = 0; index < frames; index += 1) {
-        const decay = 1 - index / frames
-        data[index] = (Math.random() * 2 - 1) * decay
-      }
-
-      const source = ctx.createBufferSource()
-      const filter = ctx.createBiquadFilter()
-      const gain = ctx.createGain()
-      source.buffer = buffer
-      filter.type = filterType
-      filter.frequency.setValueAtTime(frequency, now + start)
-      filter.Q.setValueAtTime(filterType === 'bandpass' ? 1.7 : 0.8, now + start)
-      gain.gain.setValueAtTime(Math.max(0.0002, gainValue), now + start)
-      gain.gain.exponentialRampToValueAtTime(
-        0.0001,
-        now + start + duration
-      )
-      source.connect(filter)
-      filter.connect(gain)
-      gain.connect(master)
-      source.start(now + start)
-      source.stop(now + start + duration + 0.025)
-    }
-
-    const hammerHit = (
-      start = 0,
-      strength = 1,
-      ring = 1,
-      dull = false
-    ) => {
-      const body = 74 + Math.min(18, intensity * 1.15)
-      impactNoise(start, 0.045, 0.072 * strength, dull ? 610 : 980)
-      impactNoise(start + 0.004, 0.09, 0.03 * strength, 250, 'lowpass')
-      resonator(body, start, 0.2, 0.055 * strength, 'triangle')
-      const metallicPartials = dull
-        ? [238, 356, 514]
-        : [286, 431, 638, 917]
-      metallicPartials.forEach((frequency, index) => {
-        resonator(
-          frequency + intensity * (index + 1) * 1.8,
-          start + 0.006 + index * 0.003,
-          (0.22 + index * 0.07) * ring,
-          (0.022 / (index + 1)) * strength,
-          index % 2 ? 'triangle' : 'sine'
-        )
-      })
-    }
-
-    if (kind === 'charge') {
-      // Forge sequence: three compact hammer blows on the anvil.
-      hammerHit(0, 0.92, 0.72, false)
-      hammerHit(0.17, 0.82, 0.62, false)
-      hammerHit(0.34, 1.06, 0.94, false)
-      impactNoise(0.345, 0.08, 0.03, 1850, 'highpass')
-      resonator(874 + intensity * 4, 0.35, 0.38, 0.016, 'sine')
-      resonator(1320 + intensity * 7, 0.365, 0.29, 0.01, 'sine')
-    } else if (kind === 'success') {
-      // Clean final hammer blow with a bright anvil ring.
-      hammerHit(0, 1.18, 1.16, false)
-      impactNoise(0.012, 0.07, 0.034, 1750, 'highpass')
-      resonator(742 + intensity * 3, 0.015, 0.5, 0.022, 'sine')
-      resonator(1110 + intensity * 5, 0.035, 0.43, 0.016, 'sine')
-      resonator(1480 + intensity * 6, 0.055, 0.34, 0.011, 'sine')
-    } else if (kind === 'max') {
-      // +15: ceremonial double strike and a long forged-metal ring.
-      hammerHit(0, 1.3, 1.18, false)
-      hammerHit(0.19, 1.18, 1.26, false)
-      impactNoise(0.2, 0.1, 0.04, 2050, 'highpass')
-      resonator(654, 0.205, 0.76, 0.026, 'sine')
-      resonator(981, 0.225, 0.68, 0.019, 'sine')
-      resonator(1472, 0.245, 0.56, 0.013, 'sine')
-    } else if (kind === 'down') {
-      // Downgrade: heavy dull strike followed by a scraping downward resonance.
-      hammerHit(0, 0.96, 0.34, true)
-      impactNoise(0.035, 0.12, 0.034, 520, 'bandpass')
-      resonator(232, 0.025, 0.48, 0.03, 'triangle', 78)
-      resonator(138, 0.085, 0.46, 0.021, 'sine', 48)
-    } else if (kind === 'destroy') {
-      // Destruction: oversized hammer hit, metal crack and fragments hitting the floor.
-      hammerHit(0, 1.42, 0.34, true)
-      impactNoise(0.015, 0.13, 0.1, 1460, 'bandpass')
-      impactNoise(0.075, 0.19, 0.065, 760, 'bandpass')
-      impactNoise(0.145, 0.28, 0.052, 330, 'lowpass')
-      resonator(76, 0.01, 0.72, 0.064, 'sine', 34)
-      resonator(48, 0.07, 0.72, 0.042, 'triangle', 30)
-    } else {
-      // Failure: one dead hammer blow with almost no anvil ring.
-      hammerHit(0, 0.88, 0.2, true)
-      impactNoise(0.01, 0.09, 0.046, 430, 'lowpass')
-      resonator(92, 0.006, 0.22, 0.043, 'triangle', 58)
-    }
-
-    activeEnhancementAudioCloseTimer = window.setTimeout(() => {
-      if (activeEnhancementAudioContext === ctx) {
-        activeEnhancementAudioContext = null
-      }
-      void ctx.close().catch(() => {})
-      activeEnhancementAudioCloseTimer = null
-    }, 2300)
-  } catch {}
 }
 
 function EnhancementPickaxe({
@@ -433,7 +93,7 @@ export function WikiEnhancementLab({
 }: {
   pages: EnhancementPage[]
 }) {
-  const [stats, setStats] = useState<EnhancementStats>(DEFAULT_STATS)
+  const [stats, setStats] = useState<EnhancementStats>(DEFAULT_ENHANCEMENT_STATS)
   const [ready, setReady] = useState(false)
   const [animating, setAnimating] = useState(false)
   const [broken, setBroken] = useState(false)
@@ -447,8 +107,8 @@ export function WikiEnhancementLab({
   const timerRef = useRef<number | null>(null)
   const bestTimerRef = useRef<number | null>(null)
 
-  const rule = RULES[Math.min(stats.level, 14)]
-  const danger = dangerLabel(stats.level)
+  const rule = ENHANCEMENT_RULES[Math.min(stats.level, 14)]
+  const danger = enhancementDanger(stats.level)
   const enhancementPage = pages.find((page) => page.title === '장비강화')
   const repairPage = pages.find((page) => page.title === '장비수리')
   const faqPage = pages.find((page) => page.title === '많이 물어보는 것')
@@ -475,8 +135,8 @@ export function WikiEnhancementLab({
   }, [stats.run.attempts, stats.run.successes])
 
   useEffect(() => {
-    const saved = normalizeStats(
-      readWikiStateValue('enhancementLab', DEFAULT_STATS)
+    const saved = normalizeEnhancementStats(
+      readWikiStateValue('enhancementLab', DEFAULT_ENHANCEMENT_STATS)
     )
     setStats(saved)
     setBroken(saved.broken)
@@ -511,13 +171,7 @@ export function WikiEnhancementLab({
     return () => {
       if (timerRef.current) window.clearTimeout(timerRef.current)
       if (bestTimerRef.current) window.clearTimeout(bestTimerRef.current)
-      if (
-        activeEnhancementAudioContext &&
-        activeEnhancementAudioContext.state !== 'closed'
-      ) {
-        void activeEnhancementAudioContext.close().catch(() => {})
-        activeEnhancementAudioContext = null
-      }
+      closeEnhancementAudio()
     }
   }, [])
 
@@ -552,37 +206,18 @@ export function WikiEnhancementLab({
     if (!ready || animating || broken || stats.level >= 15) return
 
     const from = stats.level
-    const currentRule = RULES[from]
     const roll = randomPercent()
-
-    let nextOutcome: EnhancementOutcome = 'fail'
-    let to = from
-
-    if (roll < currentRule.success) {
-      to = Math.min(15, from + 1)
-      nextOutcome = to === 15 ? 'max' : 'success'
-    } else if (roll < currentRule.success + currentRule.fail) {
-      nextOutcome = 'fail'
-    } else if (
-      roll <
-      currentRule.success + currentRule.fail + currentRule.down
-    ) {
-      to = Math.max(0, from - 1)
-      nextOutcome = 'down'
-    } else {
-      nextOutcome = 'destroy'
-      to = 0
-    }
+    const { outcome: nextOutcome, to } = resolveEnhancementOutcome(from, roll)
 
     setAnimating(true)
     setOutcome(null)
     setMessage('강화 중… 장비를 담금질하고 있습니다.')
-    if (soundOn && soundVolume > 0) playTone('charge', from, soundVolume)
+    if (soundOn && soundVolume > 0) playEnhancementTone('charge', from, soundVolume)
     vibrate(18)
 
     track('wiki_enhancement_attempt', {
       from_level: String(from),
-      risk: dangerLabel(from).tone
+      risk: enhancementDanger(from).tone
     })
 
     timerRef.current = window.setTimeout(() => {
@@ -629,7 +264,7 @@ export function WikiEnhancementLab({
 
       persist(next)
       setOutcome(nextOutcome)
-      setMessage(resultMessage(nextOutcome, from, to))
+      setMessage(enhancementResultMessage(nextOutcome, from, to))
       setAnimating(false)
 
       if (isNewBest) {
@@ -651,7 +286,7 @@ export function WikiEnhancementLab({
       }
 
       if (soundOn && soundVolume > 0) {
-        playTone(nextOutcome, from, soundVolume)
+        playEnhancementTone(nextOutcome, from, soundVolume)
       }
 
       track('wiki_enhancement_result', {
@@ -659,7 +294,7 @@ export function WikiEnhancementLab({
         from_level: String(from),
         to_level: String(to)
       })
-    }, attemptDelay(from))
+    }, enhancementAttemptDelay(from))
   }
 
   const replaceBrokenPickaxe = () => {
@@ -757,7 +392,7 @@ export function WikiEnhancementLab({
               onClick={() => {
                 if (!soundOn) setSoundOn(true)
                 if (soundVolume > 0) {
-                  playTone('success', Math.max(5, stats.level), soundVolume)
+                  playEnhancementTone('success', Math.max(5, stats.level), soundVolume)
                 }
               }}
             >
@@ -1002,9 +637,9 @@ export function WikiEnhancementLab({
                   <span
                     key={entry.id}
                     data-outcome={entry.outcome}
-                    title={resultMessage(entry.outcome, entry.from, entry.to)}
+                    title={enhancementResultMessage(entry.outcome, entry.from, entry.to)}
                   >
-                    <b>{outcomeLabel(entry.outcome)}</b>
+                    <b>{enhancementOutcomeLabel(entry.outcome)}</b>
                     <small>
                       {entry.outcome === 'destroy'
                         ? '+' + entry.from + ' → 파괴'

@@ -1,7 +1,7 @@
 /* Enhancement Lab styles are loaded with the dynamically imported lab only.
    Shared wiki/layout styles remain in app/wiki-reader.css. */
 /* === 2026-09-26 enhancement lab · Minecraft/wiki refresh === */
-.wiki-enhancement-lab {
+.wiki-enhancement-lab{
   position: relative;
   overflow: hidden;
   display: grid;
@@ -14,10 +14,7 @@
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.025),
     0 18px 42px rgba(0,0,0,.18);
-}
-
-
-.wiki-enhancement-lab::before {
+}.wiki-enhancement-lab::before{
   content: '';
   position: absolute;
   inset: 0;
@@ -28,10 +25,7 @@
     linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
   background-size: 18px 18px;
   mask-image: linear-gradient(to bottom, rgba(0,0,0,.6), transparent 72%);
-}
-
-
-.enhancement-lab-head {
+}.enhancement-lab-head{
   position: relative;
   z-index: 1;
   display: flex;
@@ -40,51 +34,33 @@
   gap: 18px;
   padding-bottom: 13px;
   border-bottom: 1px solid rgba(255,255,255,.055);
-}
-
-
-.enhancement-lab-head > div:first-child {
+}.enhancement-lab-head > div:first-child{
   display: grid;
   gap: 4px;
-}
-
-
-.enhancement-lab-head p {
+}.enhancement-lab-head p{
   margin: 0;
   color: #67c8cc;
   font-size: 10px;
   font-weight: 900;
   letter-spacing: .08em;
-}
-
-
-.enhancement-lab-head h2 {
+}.enhancement-lab-head h2{
   margin: 0;
   color: #e1dcd7;
   font-size: clamp(21px, 2.8vw, 28px);
   letter-spacing: -.03em;
-}
-
-
-.enhancement-lab-head > div:first-child > span {
+}.enhancement-lab-head > div:first-child > span{
   max-width: 670px;
   color: #938b86;
   font-size: 11px;
   line-height: 1.6;
-}
-
-
-.enhancement-head-actions {
+}.enhancement-head-actions{
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   justify-content: end;
   gap: 7px;
-}
-
-
-.enhancement-sim-badge,
-.enhancement-head-actions button {
+}.enhancement-sim-badge,
+  .enhancement-head-actions button{
   min-height: 30px;
   padding: 0 10px;
   border: 1px solid rgba(255,255,255,.075);
@@ -93,40 +69,25 @@
   color: #99908b;
   font-size: 10px;
   font-weight: 800;
-}
-
-
-.enhancement-sim-badge {
+}.enhancement-sim-badge{
   display: inline-flex;
   align-items: center;
   color: #70cbd0;
   border-color: rgba(84,194,200,.16);
   background: rgba(60,174,181,.045);
-}
-
-
-.enhancement-head-actions button {
+}.enhancement-head-actions button{
   cursor: pointer;
-}
-
-
-.enhancement-head-actions button:hover,
-.enhancement-head-actions button:focus-visible {
+}.enhancement-head-actions button:hover,
+  .enhancement-head-actions button:focus-visible{
   border-color: rgba(84,194,200,.28);
   color: #d0e5e6;
-}
-
-
-.enhancement-main-grid {
+}.enhancement-main-grid{
   position: relative;
   z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(270px, .72fr);
   gap: 12px;
-}
-
-
-.enhancement-forge {
+}.enhancement-forge{
   --forge-glow: 80, 194, 199;
   position: relative;
   overflow: hidden;
@@ -143,35 +104,17 @@
     inset 0 1px 0 rgba(255,255,255,.018),
     inset 0 0 0 1px rgba(0,0,0,.22);
   isolation: isolate;
-}
-
-
-.enhancement-forge[data-tier="mid"] {
+}.enhancement-forge[data-tier="mid"]{
   --forge-glow: 76, 190, 205;
-}
-
-
-.enhancement-forge[data-tier="high"] {
+}.enhancement-forge[data-tier="high"]{
   --forge-glow: 91, 143, 224;
-}
-
-
-.enhancement-forge[data-tier="extreme"] {
+}.enhancement-forge[data-tier="extreme"]{
   --forge-glow: 174, 111, 222;
-}
-
-
-.enhancement-forge[data-tier="legendary"] {
+}.enhancement-forge[data-tier="legendary"]{
   --forge-glow: 235, 190, 90;
-}
-
-
-.enhancement-forge[data-state="destroy"] {
+}.enhancement-forge[data-state="destroy"]{
   --forge-glow: 213, 86, 73;
-}
-
-
-.enhancement-forge-grid {
+}.enhancement-forge-grid{
   position: absolute;
   inset: 0;
   z-index: -2;
@@ -181,41 +124,26 @@
     linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
   background-size: 16px 16px;
-}
-
-
-.enhancement-level-row {
+}.enhancement-level-row{
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
   gap: 8px;
-}
-
-
-.enhancement-level-label {
+}.enhancement-level-label{
   color: #687174;
   font-size: 10px;
   font-weight: 900;
   letter-spacing: .06em;
-}
-
-
-.enhancement-level-row > strong {
+}.enhancement-level-row > strong{
   color: rgb(var(--forge-glow));
   font-size: 32px;
   line-height: 1;
   text-shadow: 0 0 18px rgba(var(--forge-glow), .16);
-}
-
-
-.enhancement-item-name {
+}.enhancement-item-name{
   color: #a39c98;
   font-size: 10px;
   font-weight: 800;
-}
-
-
-.enhancement-item-stage {
+}.enhancement-item-stage{
   position: relative;
   min-height: 292px;
   display: grid;
@@ -223,10 +151,7 @@
   align-content: center;
   gap: 12px;
   padding: 14px 0 6px;
-}
-
-
-.enhancement-slot-shell {
+}.enhancement-slot-shell{
   position: relative;
   z-index: 3;
   width: 190px;
@@ -244,50 +169,32 @@
     border-color .2s ease,
     box-shadow .2s ease,
     transform .2s ease;
-}
-
-
-.enhancement-slot-shell::before,
-.enhancement-slot-shell::after {
+}.enhancement-slot-shell::before,
+  .enhancement-slot-shell::after{
   content: '';
   position: absolute;
   pointer-events: none;
-}
-
-
-.enhancement-slot-shell::before {
+}.enhancement-slot-shell::before{
   inset: 3px;
   border-top: 2px solid rgba(255,255,255,.045);
   border-left: 2px solid rgba(255,255,255,.035);
   border-right: 2px solid rgba(0,0,0,.28);
   border-bottom: 2px solid rgba(0,0,0,.34);
-}
-
-
-.enhancement-slot-shell::after {
+}.enhancement-slot-shell::after{
   inset: -1px;
   opacity: 0;
   box-shadow: 0 0 24px rgba(var(--forge-glow), .22);
   transition: opacity .2s ease;
-}
-
-
-.enhancement-slot-shell[data-enchanted="true"] {
+}.enhancement-slot-shell[data-enchanted="true"]{
   border-color: rgba(var(--forge-glow), .28);
   box-shadow:
     inset 3px 3px 0 rgba(255,255,255,.04),
     inset -3px -3px 0 rgba(0,0,0,.4),
     0 12px 32px rgba(0,0,0,.3),
     0 0 18px rgba(var(--forge-glow), .075);
-}
-
-
-.enhancement-slot-shell[data-enchanted="true"]::after {
+}.enhancement-slot-shell[data-enchanted="true"]::after{
   opacity: .72;
-}
-
-
-.enhancement-slot {
+}.enhancement-slot{
   width: 100%;
   height: 100%;
   padding: 6px;
@@ -295,10 +202,7 @@
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,.035),
     inset 0 0 20px rgba(0,0,0,.48);
-}
-
-
-.enhancement-slot-inner {
+}.enhancement-slot-inner{
   position: relative;
   width: 100%;
   height: 100%;
@@ -308,10 +212,7 @@
   background:
     linear-gradient(135deg, rgba(255,255,255,.018), transparent 38%),
     #101314;
-}
-
-
-.enhancement-slot-inner::before {
+}.enhancement-slot-inner::before{
   content: '';
   position: absolute;
   inset: 0;
@@ -321,10 +222,7 @@
     linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
   background-size: 12px 12px;
-}
-
-
-.enhancement-pickaxe {
+}.enhancement-pickaxe{
   position: relative;
   z-index: 3;
   width: 154px;
@@ -339,10 +237,7 @@
     transform .22s ease,
     filter .22s ease,
     opacity .22s ease;
-}
-
-
-.enhancement-pickaxe-image {
+}.enhancement-pickaxe-image{
   display: block;
   width: 100%;
   height: 100%;
@@ -350,28 +245,7 @@
   image-rendering: pixelated;
   user-select: none;
   pointer-events: none;
-}
-
-
-.enhancement-slot-level {
-  position: absolute;
-  z-index: 6;
-  right: 8px;
-  bottom: 7px;
-  min-width: 35px;
-  padding: 3px 6px;
-  border: 1px solid rgba(var(--forge-glow), .25);
-  background: rgba(5,7,8,.84);
-  color: rgb(var(--forge-glow));
-  font-size: 13px;
-  font-weight: 950;
-  line-height: 1.15;
-  text-align: center;
-  text-shadow: 0 1px 1px #000;
-}
-
-
-.enhancement-item-tooltip {
+}.enhancement-item-tooltip{
   position: relative;
   z-index: 5;
   width: min(340px, 92%);
@@ -383,72 +257,39 @@
   border-radius: 4px;
   background: rgba(7,8,9,.82);
   box-shadow: 0 8px 18px rgba(0,0,0,.18);
-}
-
-
-.enhancement-item-tooltip strong {
+}.enhancement-item-tooltip strong{
   color: #e3ded8;
   font-size: 10px;
-}
-
-
-.enhancement-item-tooltip span {
+}.enhancement-item-tooltip span{
   color: #817b77;
   font-size: 10px;
   line-height: 1.45;
-}
-
-
-.enhancement-forge[data-state="charging"] .enhancement-slot-shell {
+}.enhancement-forge[data-state="charging"] .enhancement-slot-shell{
   animation: enhancementSlotCharge .92s cubic-bezier(.2,.8,.2,1);
-}
-
-
-.enhancement-forge[data-state="charging"] .enhancement-pickaxe {
+}.enhancement-forge[data-state="charging"] .enhancement-pickaxe{
   animation: enhancementChargeItem .92s cubic-bezier(.2,.8,.2,1);
-}
-
-
-.enhancement-forge[data-state="success"] .enhancement-slot-shell,
-.enhancement-forge[data-state="max"] .enhancement-slot-shell {
+}.enhancement-forge[data-state="success"] .enhancement-slot-shell,
+  .enhancement-forge[data-state="max"] .enhancement-slot-shell{
   animation: enhancementSlotSuccess .58s cubic-bezier(.18,.8,.25,1);
-}
-
-
-.enhancement-forge[data-state="success"] .enhancement-pickaxe,
-.enhancement-forge[data-state="max"] .enhancement-pickaxe {
+}.enhancement-forge[data-state="success"] .enhancement-pickaxe,
+  .enhancement-forge[data-state="max"] .enhancement-pickaxe{
   animation: enhancementSuccess .58s cubic-bezier(.18,.8,.25,1);
-}
-
-
-.enhancement-forge[data-state="fail"] .enhancement-pickaxe {
+}.enhancement-forge[data-state="fail"] .enhancement-pickaxe{
   animation: enhancementFail .42s ease-out;
   filter: grayscale(.28) brightness(.84);
-}
-
-
-.enhancement-forge[data-state="down"] .enhancement-pickaxe {
+}.enhancement-forge[data-state="down"] .enhancement-pickaxe{
   animation: enhancementDown .5s ease-out;
-}
-
-
-.enhancement-forge[data-state="destroy"] .enhancement-pickaxe {
+}.enhancement-forge[data-state="destroy"] .enhancement-pickaxe{
   opacity: .13;
   transform: scale(.74) rotate(4deg);
   filter: grayscale(.86) contrast(.82);
-}
-
-
-.enhancement-forge[data-state="destroy"] .enhancement-slot-shell {
+}.enhancement-forge[data-state="destroy"] .enhancement-slot-shell{
   border-color: rgba(213,86,73,.28);
   box-shadow:
     inset 3px 3px 0 rgba(255,255,255,.025),
     inset -3px -3px 0 rgba(0,0,0,.4),
     0 0 22px rgba(213,86,73,.1);
-}
-
-
-.enhancement-particles {
+}.enhancement-particles{
   position: absolute;
   left: 50%;
   top: 47%;
@@ -456,10 +297,7 @@
   width: 0;
   height: 0;
   pointer-events: none;
-}
-
-
-.enhancement-particles i {
+}.enhancement-particles i{
   --angle: calc(var(--i) * 30deg);
   position: absolute;
   width: 5px;
@@ -471,23 +309,14 @@
     rotate(var(--angle))
     translateX(70px)
     rotate(calc(var(--angle) * -1));
-}
-
-
-.enhancement-forge[data-state="charging"] .enhancement-particles i {
+}.enhancement-forge[data-state="charging"] .enhancement-particles i{
   animation: enhancementParticleCharge .92s ease-out;
   animation-delay: calc(var(--i) * 16ms);
-}
-
-
-.enhancement-forge[data-state="success"] .enhancement-particles i,
-.enhancement-forge[data-state="max"] .enhancement-particles i {
+}.enhancement-forge[data-state="success"] .enhancement-particles i,
+  .enhancement-forge[data-state="max"] .enhancement-particles i{
   animation: enhancementParticleBurst .7s ease-out;
   animation-delay: calc(var(--i) * 9ms);
-}
-
-
-.enhancement-shards {
+}.enhancement-shards{
   position: absolute;
   left: 50%;
   top: 45%;
@@ -495,10 +324,7 @@
   width: 0;
   height: 0;
   pointer-events: none;
-}
-
-
-.enhancement-shards i {
+}.enhancement-shards i{
   --angle: calc(var(--i) * 40deg);
   position: absolute;
   width: 10px;
@@ -507,10 +333,7 @@
   box-shadow: 0 0 9px rgba(82,199,202,.3);
   animation: enhancementShard .78s cubic-bezier(.12,.78,.2,1) both;
   animation-delay: calc(var(--i) * 13ms);
-}
-
-
-.enhancement-result {
+}.enhancement-result{
   min-height: 44px;
   display: grid;
   grid-template-columns: 26px minmax(0,1fr);
@@ -520,69 +343,39 @@
   border: 1px solid rgba(255,255,255,.055);
   border-radius: 6px;
   background: rgba(255,255,255,.018);
-}
-
-
-.enhancement-result > span {
+}.enhancement-result > span{
   display: grid;
   place-items: center;
   color: #677176;
   font-size: 17px;
-}
-
-
-.enhancement-result > strong {
+}.enhancement-result > strong{
   color: #9b918c;
   font-size: 10px;
   line-height: 1.45;
-}
-
-
-.enhancement-result[data-outcome="success"],
-.enhancement-result[data-outcome="max"] {
+}.enhancement-result[data-outcome="success"],
+  .enhancement-result[data-outcome="max"]{
   border-color: rgba(84,203,213,.18);
   background: rgba(84,203,213,.035);
-}
-
-
-.enhancement-result[data-outcome="success"] > span,
-.enhancement-result[data-outcome="max"] > span,
-.enhancement-result[data-outcome="success"] > strong,
-.enhancement-result[data-outcome="max"] > strong {
+}.enhancement-result[data-outcome="success"] > span,
+  .enhancement-result[data-outcome="max"] > span,
+  .enhancement-result[data-outcome="success"] > strong,
+  .enhancement-result[data-outcome="max"] > strong{
   color: #8edfe5;
-}
-
-
-.enhancement-result[data-outcome="down"] {
+}.enhancement-result[data-outcome="down"]{
   border-color: rgba(223,145,72,.15);
   background: rgba(223,145,72,.035);
-}
-
-
-.enhancement-result[data-outcome="down"] > span,
-.enhancement-result[data-outcome="down"] > strong {
+}.enhancement-result[data-outcome="down"] > span,
+  .enhancement-result[data-outcome="down"] > strong{
   color: #dba26e;
-}
-
-
-.enhancement-result[data-outcome="destroy"] {
+}.enhancement-result[data-outcome="destroy"]{
   border-color: rgba(223,82,67,.2);
   background: rgba(223,82,67,.05);
-}
-
-
-.enhancement-result[data-outcome="destroy"] > span,
-.enhancement-result[data-outcome="destroy"] > strong {
+}.enhancement-result[data-outcome="destroy"] > span,
+  .enhancement-result[data-outcome="destroy"] > strong{
   color: #dd776d;
-}
-
-
-.enhancement-action-zone {
+}.enhancement-action-zone{
   display: grid;
-}
-
-
-.enhancement-primary {
+}.enhancement-primary{
   min-height: 60px;
   display: grid;
   place-items: center;
@@ -603,142 +396,85 @@
     transform .12s ease,
     border-color .12s ease,
     background .12s ease;
-}
-
-
-.enhancement-primary:hover:not(:disabled) {
+}.enhancement-primary:hover:not(:disabled){
   border-color: rgba(85,190,196,.42);
   background:
     linear-gradient(180deg, rgba(63,169,176,.17), rgba(48,130,136,.075));
-}
-
-
-.enhancement-primary:active:not(:disabled) {
+}.enhancement-primary:active:not(:disabled){
   transform: translateY(1px);
   box-shadow: inset 0 2px 0 rgba(0,0,0,.2);
-}
-
-
-.enhancement-primary:disabled {
+}.enhancement-primary:disabled{
   opacity: .54;
   cursor: wait;
-}
-
-
-.enhancement-primary span {
+}.enhancement-primary span{
   color: #699da0;
   font-size: 10px;
   font-weight: 800;
-}
-
-
-.enhancement-primary.is-replace {
+}.enhancement-primary.is-replace{
   border-color: rgba(223,82,67,.22);
   background: rgba(223,82,67,.06);
   color: #e3aaa5;
-}
-
-
-.enhancement-primary.is-max {
+}.enhancement-primary.is-max{
   border-color: rgba(237,188,83,.26);
   background:
     linear-gradient(180deg, rgba(237,188,83,.13), rgba(237,188,83,.045));
   color: #efd598;
-}
-
-
-.enhancement-side {
+}.enhancement-side{
   display: grid;
   align-content: start;
   gap: 10px;
-}
-
-
-.enhancement-side > section {
+}.enhancement-side > section{
   display: grid;
   gap: 10px;
   padding: 13px;
   border: 1px solid rgba(255,255,255,.06);
   border-radius: 8px;
   background: rgba(255,255,255,.014);
-}
-
-
-.enhancement-panel-title {
+}.enhancement-panel-title{
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   padding-bottom: 7px;
   border-bottom: 1px solid rgba(255,255,255,.04);
-}
-
-
-.enhancement-panel-title > div {
+}.enhancement-panel-title > div{
   display: grid;
   gap: 1px;
-}
-
-
-.enhancement-panel-title small {
+}.enhancement-panel-title small{
   color: #687073;
   font-size: 10px;
   font-weight: 900;
   letter-spacing: .07em;
-}
-
-
-.enhancement-panel-title strong {
+}.enhancement-panel-title strong{
   color: #bcb4af;
   font-size: 11px;
-}
-
-
-.enhancement-panel-title > span,
-.enhancement-panel-title > b {
+}.enhancement-panel-title > span,
+  .enhancement-panel-title > b{
   padding: 4px 7px;
   border-radius: 5px;
   background: rgba(255,255,255,.03);
   color: #928a85;
   font-size: 10px;
   font-weight: 900;
-}
-
-
-.enhancement-panel-title > span[data-tone="safe"] {
+}.enhancement-panel-title > span[data-tone="safe"]{
   color: #79c6a4;
   background: rgba(80,180,130,.055);
-}
-
-
-.enhancement-panel-title > span[data-tone="caution"] {
+}.enhancement-panel-title > span[data-tone="caution"]{
   color: #d0b06f;
   background: rgba(210,170,80,.055);
-}
-
-
-.enhancement-panel-title > span[data-tone="danger"] {
+}.enhancement-panel-title > span[data-tone="danger"]{
   color: #d88f6e;
   background: rgba(210,100,70,.06);
-}
-
-
-.enhancement-panel-title > span[data-tone="extreme"] {
+}.enhancement-panel-title > span[data-tone="extreme"]{
   color: #d67878;
   background: rgba(210,65,65,.065);
-}
-
-
-.enhancement-odds-grid,
-.enhancement-record-grid {
+}.enhancement-odds-grid,
+  .enhancement-record-grid{
   display: grid;
   grid-template-columns: repeat(2, minmax(0,1fr));
   gap: 6px;
-}
-
-
-.enhancement-odds-grid > div,
-.enhancement-record-grid > span {
+}.enhancement-odds-grid > div,
+  .enhancement-record-grid > span{
   min-width: 0;
   display: grid;
   gap: 2px;
@@ -746,52 +482,28 @@
   border: 1px solid rgba(255,255,255,.035);
   border-radius: 5px;
   background: rgba(0,0,0,.14);
-}
-
-
-.enhancement-odds-grid small,
-.enhancement-record-grid small {
+}.enhancement-odds-grid small,
+  .enhancement-record-grid small{
   color: #77706c;
   font-size: 10px;
-}
-
-
-.enhancement-odds-grid strong,
-.enhancement-record-grid strong {
+}.enhancement-odds-grid strong,
+  .enhancement-record-grid strong{
   color: #bbb2ad;
   font-size: 15px;
-}
-
-
-.enhancement-odds-grid [data-kind="success"] strong {
+}.enhancement-odds-grid [data-kind="success"] strong{
   color: #79cad1;
-}
-
-
-.enhancement-odds-grid [data-kind="down"] strong {
+}.enhancement-odds-grid [data-kind="down"] strong{
   color: #c99b6f;
-}
-
-
-.enhancement-odds-grid [data-kind="destroy"] strong {
+}.enhancement-odds-grid [data-kind="destroy"] strong{
   color: #c9756d;
-}
-
-
-.enhancement-probability > p {
+}.enhancement-probability > p{
   margin: 0;
   color: #746c67;
   font-size: 10px;
   line-height: 1.5;
-}
-
-
-.enhancement-probability > p strong {
+}.enhancement-probability > p strong{
   color: #a19892;
-}
-
-
-.enhancement-max-panel {
+}.enhancement-max-panel{
   display: grid;
   justify-items: center;
   gap: 3px;
@@ -799,28 +511,16 @@
   border: 1px solid rgba(237,188,83,.13);
   border-radius: 6px;
   background: rgba(237,188,83,.035);
-}
-
-
-.enhancement-max-panel strong {
+}.enhancement-max-panel strong{
   color: #e2c57e;
   font-size: 18px;
-}
-
-
-.enhancement-max-panel span {
+}.enhancement-max-panel span{
   color: #897b62;
   font-size: 10px;
-}
-
-
-.enhancement-links > div:last-child {
+}.enhancement-links > div:last-child{
   display: grid;
   gap: 5px;
-}
-
-
-.enhancement-links a {
+}.enhancement-links a{
   min-height: 38px;
   display: grid;
   grid-template-columns: 24px minmax(0,1fr) 16px;
@@ -832,250 +532,129 @@
   background: rgba(0,0,0,.09);
   color: inherit;
   text-decoration: none;
-}
-
-
-.enhancement-links a:hover {
+}.enhancement-links a:hover{
   border-color: rgba(70,211,222,.14);
   background: rgba(70,211,222,.022);
-}
-
-
-.enhancement-links a > span {
+}.enhancement-links a > span{
   color: #6db9c0;
   font-size: 12px;
   text-align: center;
-}
-
-
-.enhancement-links a strong {
+}.enhancement-links a strong{
   color: #a19994;
   font-size: 10px;
-}
-
-
-.enhancement-links a b {
+}.enhancement-links a b{
   color: #697376;
   font-size: 10px;
-}
-
-
-html[data-theme="light"] .wiki-enhancement-lab {
+}html[data-theme="light"] .wiki-enhancement-lab{
   border-color: rgba(78,68,62,.1);
   background: #f4f1ec;
-}
-
-
-html[data-theme="light"] .enhancement-forge {
+}html[data-theme="light"] .enhancement-forge{
   border-color: rgba(78,68,62,.09);
   background: #ebe9e4;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.68);
-}
-
-
-html[data-theme="light"] .enhancement-slot-shell {
+}html[data-theme="light"] .enhancement-slot-shell{
   border-color: rgba(63,58,54,.2);
   background: linear-gradient(135deg, #bbb8b2, #908d88);
-}
-
-
-html[data-theme="light"] .enhancement-slot {
+}html[data-theme="light"] .enhancement-slot{
   background: #d6d3cd;
-}
-
-
-html[data-theme="light"] .enhancement-slot-inner {
+}html[data-theme="light"] .enhancement-slot-inner{
   background: #efede8;
-}
-
-
-html[data-theme="light"] .enhancement-item-tooltip {
+}html[data-theme="light"] .enhancement-item-tooltip{
   border-color: rgba(78,68,62,.12);
   background: rgba(255,255,255,.72);
-}
-
-
-html[data-theme="light"] .enhancement-item-tooltip strong,
-html[data-theme="light"] .enhancement-lab-head h2,
-html[data-theme="light"] .enhancement-panel-title strong,
-html[data-theme="light"] .enhancement-item-name,
-html[data-theme="light"] .enhancement-record-grid strong,
-html[data-theme="light"] .enhancement-links a strong {
+}html[data-theme="light"] .enhancement-item-tooltip strong,
+  html[data-theme="light"] .enhancement-lab-head h2,
+  html[data-theme="light"] .enhancement-panel-title strong,
+  html[data-theme="light"] .enhancement-item-name,
+  html[data-theme="light"] .enhancement-record-grid strong,
+  html[data-theme="light"] .enhancement-links a strong{
   color: #5c514c;
-}
-
-
-html[data-theme="light"] .enhancement-side > section,
-html[data-theme="light"] .enhancement-result {
+}html[data-theme="light"] .enhancement-side > section,
+  html[data-theme="light"] .enhancement-result{
   border-color: rgba(78,68,62,.09);
   background: rgba(255,255,255,.42);
-}
-
-
-html[data-theme="light"] .enhancement-odds-grid > div,
-html[data-theme="light"] .enhancement-record-grid > span,
-html[data-theme="light"] .enhancement-links a {
+}html[data-theme="light"] .enhancement-odds-grid > div,
+  html[data-theme="light"] .enhancement-record-grid > span,
+  html[data-theme="light"] .enhancement-links a{
   background: rgba(255,255,255,.58);
-}
-
-
-@media (max-width: 900px) {
-  .enhancement-main-grid {
+}@media (max-width: 900px){.enhancement-main-grid{
     grid-template-columns: 1fr;
-  }
-
-
-  .enhancement-side {
+  }.enhancement-side{
     grid-template-columns: repeat(3, minmax(0,1fr));
-  }
-
-
-  .enhancement-forge {
+  }.enhancement-forge{
     min-height: 480px;
   }
-}
-
-
-@media (max-width: 700px) {
-  .wiki-enhancement-lab {
+}@media (max-width: 700px){.wiki-enhancement-lab{
     padding: 14px;
     border-radius: 13px;
-  }
-
-
-  .enhancement-lab-head {
+  }.enhancement-lab-head{
     display: grid;
-  }
-
-
-  .enhancement-head-actions {
+  }.enhancement-head-actions{
     justify-content: start;
-  }
-
-
-  .enhancement-forge {
+  }.enhancement-forge{
     min-height: 430px;
     padding: 14px;
-  }
-
-
-  .enhancement-item-stage {
+  }.enhancement-item-stage{
     min-height: 260px;
-  }
-
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: 168px;
     height: 168px;
-  }
-
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: 136px;
     height: 136px;
-  }
-
-
-  .enhancement-side {
+  }.enhancement-side{
     grid-template-columns: 1fr;
-  }
-
-
-  .enhancement-primary {
+  }.enhancement-primary{
     min-height: 58px;
   }
-}
-
-
-@media (prefers-reduced-motion: reduce) {
-  .enhancement-forge[data-state] .enhancement-pickaxe,
+}@media (prefers-reduced-motion: reduce){.enhancement-forge[data-state] .enhancement-pickaxe,
   .enhancement-forge[data-state] .enhancement-slot-shell,
   .enhancement-forge[data-state] .enhancement-particles i,
-  .enhancement-shards i,
-  .enhancement-enchant-sheen {
+  .enhancement-shards i{
     animation: none !important;
   }
-}
-
-
-.wiki-enhancement-lab {
+}.wiki-enhancement-lab{
   overflow: visible;
   padding-bottom: 22px;
-}
-
-
-.enhancement-main-grid {
+}.enhancement-main-grid{
   align-items: start;
-}
-
-
-.enhancement-forge {
+}.enhancement-forge{
   min-height: 442px;
   padding: 15px;
-}
-
-
-.enhancement-item-stage {
+}.enhancement-item-stage{
   min-height: 242px;
   gap: 8px;
   padding: 5px 0 3px;
-}
-
-
-.enhancement-slot-shell {
+}.enhancement-slot-shell{
   width: 168px;
   height: 168px;
   padding: 6px;
-}
-
-
-.enhancement-slot {
+}.enhancement-slot{
   padding: 5px;
-}
-
-
-.enhancement-pickaxe {
+}.enhancement-pickaxe{
   width: 136px;
   height: 136px;
-}
-
-
-.enhancement-pickaxe-image {
+}.enhancement-pickaxe-image{
   background: transparent !important;
-}
-
-
-.enhancement-item-tooltip {
+}.enhancement-item-tooltip{
   width: min(320px, 92%);
   padding: 8px 10px;
-}
-
-
-.enhancement-side {
+}.enhancement-side{
   gap: 8px;
-}
-
-
-.enhancement-side > section {
+}.enhancement-side > section{
   gap: 8px;
   padding: 11px;
-}
-
-
-.enhancement-record-grid,
-.enhancement-odds-grid {
+}.enhancement-record-grid,
+  .enhancement-odds-grid{
   gap: 5px;
-}
-
-
-.enhancement-odds-grid > div,
-.enhancement-record-grid > span {
+}.enhancement-odds-grid > div,
+  .enhancement-record-grid > span{
   padding: 8px;
 }
 
 
 /* The base sprite is transparent; the slot itself supplies the background. */
-.enhancement-slot-inner {
+.enhancement-slot-inner{
   background:
     radial-gradient(circle at 50% 48%, rgba(var(--forge-glow), .025), transparent 58%),
     #0d0f10;
@@ -1083,26 +662,20 @@ html[data-theme="light"] .enhancement-links a {
 
 
 /* Make each reinforcement band immediately recognizable without turning the wiki into a neon game UI. */
-.enhancement-forge[data-tier="mid"] .enhancement-slot-shell {
+.enhancement-forge[data-tier="mid"] .enhancement-slot-shell{
   border-color: rgba(69, 196, 200, .34);
   box-shadow:
     inset 3px 3px 0 rgba(255,255,255,.035),
     inset -3px -3px 0 rgba(0,0,0,.4),
     0 0 0 1px rgba(69,196,200,.055),
     0 10px 26px rgba(0,0,0,.28);
-}
-
-
-.enhancement-forge[data-tier="mid"] .enhancement-pickaxe {
+}.enhancement-forge[data-tier="mid"] .enhancement-pickaxe{
   transform: translateY(1px) scale(1.015);
   filter:
     brightness(1.05)
     drop-shadow(0 8px 8px rgba(0,0,0,.38))
     drop-shadow(0 0 10px rgba(70,205,207,.28));
-}
-
-
-.enhancement-forge[data-tier="high"] .enhancement-slot-shell {
+}.enhancement-forge[data-tier="high"] .enhancement-slot-shell{
   border-color: rgba(86, 145, 231, .48);
   box-shadow:
     inset 3px 3px 0 rgba(255,255,255,.04),
@@ -1110,27 +683,18 @@ html[data-theme="light"] .enhancement-links a {
     0 0 0 1px rgba(86,145,231,.09),
     0 0 20px rgba(86,145,231,.13),
     0 10px 28px rgba(0,0,0,.3);
-}
-
-
-.enhancement-forge[data-tier="high"] .enhancement-slot-inner {
+}.enhancement-forge[data-tier="high"] .enhancement-slot-inner{
   background:
     radial-gradient(circle at 50% 48%, rgba(82,139,229,.11), transparent 56%),
     #0c0f14;
-}
-
-
-.enhancement-forge[data-tier="high"] .enhancement-pickaxe {
+}.enhancement-forge[data-tier="high"] .enhancement-pickaxe{
   transform: translateY(1px) scale(1.035);
   filter:
     brightness(1.08)
     saturate(1.12)
     drop-shadow(0 8px 8px rgba(0,0,0,.38))
     drop-shadow(0 0 14px rgba(91,143,224,.34));
-}
-
-
-.enhancement-forge[data-tier="extreme"] .enhancement-slot-shell {
+}.enhancement-forge[data-tier="extreme"] .enhancement-slot-shell{
   border-color: rgba(178, 104, 222, .56);
   box-shadow:
     inset 3px 3px 0 rgba(255,255,255,.045),
@@ -1138,27 +702,18 @@ html[data-theme="light"] .enhancement-links a {
     0 0 0 1px rgba(178,104,222,.11),
     0 0 24px rgba(178,104,222,.18),
     0 10px 30px rgba(0,0,0,.32);
-}
-
-
-.enhancement-forge[data-tier="extreme"] .enhancement-slot-inner {
+}.enhancement-forge[data-tier="extreme"] .enhancement-slot-inner{
   background:
     radial-gradient(circle at 50% 48%, rgba(178,104,222,.15), transparent 58%),
     #100c13;
-}
-
-
-.enhancement-forge[data-tier="extreme"] .enhancement-pickaxe {
+}.enhancement-forge[data-tier="extreme"] .enhancement-pickaxe{
   transform: translateY(1px) scale(1.055);
   filter:
     brightness(1.12)
     saturate(1.2)
     drop-shadow(0 8px 9px rgba(0,0,0,.4))
     drop-shadow(0 0 18px rgba(183,105,228,.42));
-}
-
-
-.enhancement-forge[data-tier="legendary"] .enhancement-slot-shell {
+}.enhancement-forge[data-tier="legendary"] .enhancement-slot-shell{
   border-color: rgba(231, 188, 87, .72);
   box-shadow:
     inset 3px 3px 0 rgba(255,255,255,.055),
@@ -1166,17 +721,11 @@ html[data-theme="light"] .enhancement-links a {
     0 0 0 1px rgba(231,188,87,.14),
     0 0 28px rgba(231,188,87,.22),
     0 10px 32px rgba(0,0,0,.32);
-}
-
-
-.enhancement-forge[data-tier="legendary"] .enhancement-slot-inner {
+}.enhancement-forge[data-tier="legendary"] .enhancement-slot-inner{
   background:
     radial-gradient(circle at 50% 48%, rgba(231,188,87,.17), transparent 60%),
     #12100b;
-}
-
-
-.enhancement-forge[data-tier="legendary"] .enhancement-pickaxe {
+}.enhancement-forge[data-tier="legendary"] .enhancement-pickaxe{
   transform: translateY(1px) scale(1.065);
   filter:
     brightness(1.18)
@@ -1187,14 +736,11 @@ html[data-theme="light"] .enhancement-links a {
 
 
 /* Broken items stay dark and transparent instead of revealing the source image background. */
-.enhancement-forge[data-state="destroy"] .enhancement-slot-inner {
+.enhancement-forge[data-state="destroy"] .enhancement-slot-inner{
   background:
     radial-gradient(circle at 50% 48%, rgba(170,53,44,.12), transparent 58%),
     #090a0b;
-}
-
-
-.enhancement-forge[data-state="destroy"] .enhancement-slot-inner::after {
+}.enhancement-forge[data-state="destroy"] .enhancement-slot-inner::after{
   content: '';
   position: absolute;
   z-index: 5;
@@ -1205,10 +751,7 @@ html[data-theme="light"] .enhancement-links a {
     linear-gradient(132deg, transparent 46%, rgba(215,82,71,.55) 47%, rgba(215,82,71,.55) 48%, transparent 49%),
     linear-gradient(48deg, transparent 56%, rgba(215,82,71,.34) 57%, rgba(215,82,71,.34) 58%, transparent 59%),
     linear-gradient(162deg, transparent 62%, rgba(215,82,71,.25) 63%, rgba(215,82,71,.25) 64%, transparent 65%);
-}
-
-
-.enhancement-forge[data-state="destroy"] .enhancement-pickaxe {
+}.enhancement-forge[data-state="destroy"] .enhancement-pickaxe{
   opacity: .22;
   transform: translateY(4px) rotate(6deg) scale(.8);
   filter:
@@ -1216,35 +759,7 @@ html[data-theme="light"] .enhancement-links a {
     brightness(.25)
     contrast(1.25)
     drop-shadow(0 7px 7px rgba(0,0,0,.6));
-}
-
-
-.enhancement-forge[data-state="destroy"] .enhancement-slot-level {
-  border-color: rgba(216,77,66,.4);
-  color: #df776f;
-}
-
-
-.enhancement-forge[data-tier="extreme"] .enhancement-enchant-sheen {
-  opacity: .32;
-}
-
-
-.enhancement-forge[data-tier="legendary"] .enhancement-enchant-sheen {
-  opacity: .38;
-  background:
-    linear-gradient(
-      115deg,
-      transparent 35%,
-      rgba(235,190,88,.08) 43%,
-      rgba(231,188,87,.25) 49%,
-      rgba(191,124,224,.11) 55%,
-      transparent 63%
-    );
-}
-
-
-.enhancement-risk-warning {
+}.enhancement-risk-warning{
   display: grid;
   gap: 2px;
   padding: 8px 9px;
@@ -1252,92 +767,48 @@ html[data-theme="light"] .enhancement-links a {
   border-left: 3px solid rgba(213,86,73,.54);
   border-radius: 5px;
   background: rgba(213,86,73,.035);
-}
-
-
-.enhancement-risk-warning strong {
+}.enhancement-risk-warning strong{
   color: #d9867d;
   font-size: 10px;
-}
-
-
-.enhancement-risk-warning span {
+}.enhancement-risk-warning span{
   color: #8d7773;
   font-size: 10px;
   line-height: 1.4;
-}
-
-
-.enhancement-panel-title > b {
+}.enhancement-panel-title > b{
   border-color: rgba(var(--forge-glow), .12);
   color: rgb(var(--forge-glow));
 }
 
 
 /* Slightly denser controls keep the complete mini-game visible on common laptop heights. */
-.enhancement-result {
+.enhancement-result{
   min-height: 40px;
   padding: 8px 10px;
-}
-
-
-.enhancement-primary {
+}.enhancement-primary{
   min-height: 54px;
-}
-
-
-@media (max-width: 900px) {
-
-  .enhancement-forge {
+}@media (max-width: 900px){.enhancement-forge{
     min-height: 422px;
-  }
-
-
-  .enhancement-side {
+  }.enhancement-side{
     grid-template-columns: repeat(3, minmax(0,1fr));
   }
-}
-
-
-@media (max-width: 700px) {
-  .wiki-enhancement-lab {
+}@media (max-width: 700px){.wiki-enhancement-lab{
     padding: 13px 13px 19px;
-  }
-
-
-  .enhancement-forge {
+  }.enhancement-forge{
     min-height: 405px;
     padding: 13px;
-  }
-
-
-  .enhancement-item-stage {
+  }.enhancement-item-stage{
     min-height: 226px;
-  }
-
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: 154px;
     height: 154px;
-  }
-
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: 124px;
     height: 124px;
-  }
-
-
-  .enhancement-side {
+  }.enhancement-side{
     grid-template-columns: 1fr;
   }
-}
-
-
-@media (prefers-reduced-motion: reduce) {
-  .enhancement-tier-mark,
-  .enhancement-slot-shell,
-  .enhancement-pickaxe {
+}@media (prefers-reduced-motion: reduce){.enhancement-slot-shell,
+  .enhancement-pickaxe{
     transition: none !important;
   }
 }
@@ -1345,70 +816,37 @@ html[data-theme="light"] .enhancement-links a {
 
 
 /* === 2026-09-26 enhancement lab gameplay v3 === */
-.enhancement-forge {
+.enhancement-forge{
   grid-template-rows: auto auto 1fr auto auto auto;
-}
-
-
-.enhancement-mobile-odds {
+}.enhancement-mobile-odds{
   display: none;
-}
-
-
-.enhancement-pickaxe {
+}.enhancement-pickaxe{
   isolation: isolate;
-}
-
-
-.enhancement-pickaxe-runes {
+}.enhancement-pickaxe-runes{
   position: absolute;
   z-index: 5;
   inset: 0;
   pointer-events: none;
-}
-
-
-.enhancement-pickaxe-runes i {
+}.enhancement-pickaxe-runes i{
   position: absolute;
   width: 4px;
   height: 4px;
   background: rgb(var(--forge-glow));
   opacity: .45;
   box-shadow: 0 0 7px rgba(var(--forge-glow), .32);
-}
-
-
-.enhancement-pickaxe-runes i:nth-child(1) { left: 18%; top: 30%; }
-
-.enhancement-pickaxe-runes i:nth-child(2) { right: 18%; top: 22%; }
-
-.enhancement-pickaxe-runes i:nth-child(3) { right: 28%; bottom: 24%; }
-
-.enhancement-pickaxe-runes i:nth-child(4) { left: 34%; bottom: 17%; }
-
-
-.enhancement-forge[data-tier="mid"] .enhancement-pickaxe-runes i {
+}.enhancement-pickaxe-runes i:nth-child(1){ left: 18%; top: 30%; }.enhancement-pickaxe-runes i:nth-child(2){ right: 18%; top: 22%; }.enhancement-pickaxe-runes i:nth-child(3){ right: 28%; bottom: 24%; }.enhancement-pickaxe-runes i:nth-child(4){ left: 34%; bottom: 17%; }.enhancement-forge[data-tier="mid"] .enhancement-pickaxe-runes i{
   opacity: .42;
-}
-
-
-.enhancement-forge[data-tier="high"] .enhancement-pickaxe-runes i {
+}.enhancement-forge[data-tier="high"] .enhancement-pickaxe-runes i{
   width: 5px;
   height: 5px;
   opacity: .62;
   animation: enhancementRunePulse 1.8s ease-in-out infinite alternate;
-}
-
-
-.enhancement-forge[data-tier="extreme"] .enhancement-pickaxe-runes i {
+}.enhancement-forge[data-tier="extreme"] .enhancement-pickaxe-runes i{
   width: 5px;
   height: 5px;
   opacity: .78;
   animation: enhancementRunePulse 1.15s ease-in-out infinite alternate;
-}
-
-
-.enhancement-forge[data-tier="legendary"] .enhancement-pickaxe-runes i {
+}.enhancement-forge[data-tier="legendary"] .enhancement-pickaxe-runes i{
   width: 6px;
   height: 6px;
   opacity: .92;
@@ -1418,41 +856,26 @@ html[data-theme="light"] .enhancement-links a {
 
 /* Stage-specific pacing: early upgrades are fast; late upgrades carry more tension. */
 .enhancement-forge[data-state="charging"][data-tier="base"] .enhancement-slot-shell,
-.enhancement-forge[data-state="charging"][data-tier="base"] .enhancement-pickaxe,
-.enhancement-forge[data-state="charging"][data-tier="base"] .enhancement-particles i {
+  .enhancement-forge[data-state="charging"][data-tier="base"] .enhancement-pickaxe,
+  .enhancement-forge[data-state="charging"][data-tier="base"] .enhancement-particles i{
   animation-duration: .65s;
-}
-
-
-.enhancement-forge[data-state="charging"][data-tier="mid"] .enhancement-slot-shell,
-.enhancement-forge[data-state="charging"][data-tier="mid"] .enhancement-pickaxe,
-.enhancement-forge[data-state="charging"][data-tier="mid"] .enhancement-particles i {
+}.enhancement-forge[data-state="charging"][data-tier="mid"] .enhancement-slot-shell,
+  .enhancement-forge[data-state="charging"][data-tier="mid"] .enhancement-pickaxe,
+  .enhancement-forge[data-state="charging"][data-tier="mid"] .enhancement-particles i{
   animation-duration: .8s;
-}
-
-
-.enhancement-forge[data-state="charging"][data-tier="high"] .enhancement-slot-shell,
-.enhancement-forge[data-state="charging"][data-tier="high"] .enhancement-pickaxe,
-.enhancement-forge[data-state="charging"][data-tier="high"] .enhancement-particles i {
+}.enhancement-forge[data-state="charging"][data-tier="high"] .enhancement-slot-shell,
+  .enhancement-forge[data-state="charging"][data-tier="high"] .enhancement-pickaxe,
+  .enhancement-forge[data-state="charging"][data-tier="high"] .enhancement-particles i{
   animation-duration: .98s;
-}
-
-
-.enhancement-forge[data-state="charging"][data-tier="extreme"] .enhancement-slot-shell,
-.enhancement-forge[data-state="charging"][data-tier="extreme"] .enhancement-pickaxe,
-.enhancement-forge[data-state="charging"][data-tier="extreme"] .enhancement-particles i {
+}.enhancement-forge[data-state="charging"][data-tier="extreme"] .enhancement-slot-shell,
+  .enhancement-forge[data-state="charging"][data-tier="extreme"] .enhancement-pickaxe,
+  .enhancement-forge[data-state="charging"][data-tier="extreme"] .enhancement-particles i{
   animation-duration: 1.2s;
-}
-
-
-.enhancement-forge[data-final-attempt="true"][data-state="charging"] .enhancement-slot-shell,
-.enhancement-forge[data-final-attempt="true"][data-state="charging"] .enhancement-pickaxe,
-.enhancement-forge[data-final-attempt="true"][data-state="charging"] .enhancement-particles i {
+}.enhancement-forge[data-final-attempt="true"][data-state="charging"] .enhancement-slot-shell,
+  .enhancement-forge[data-final-attempt="true"][data-state="charging"] .enhancement-pickaxe,
+  .enhancement-forge[data-final-attempt="true"][data-state="charging"] .enhancement-particles i{
   animation-duration: 1.45s;
-}
-
-
-.enhancement-forge[data-final-attempt="true"][data-state="charging"]::after {
+}.enhancement-forge[data-final-attempt="true"][data-state="charging"]::after{
   content: '';
   position: absolute;
   z-index: -1;
@@ -1466,63 +889,39 @@ html[data-theme="light"] .enhancement-links a {
 
 
 /* Button language follows actual risk instead of looking the same on every level. */
-.enhancement-primary[data-risk="caution"] {
+.enhancement-primary[data-risk="caution"]{
   border-color: rgba(196,155,83,.28);
   background: linear-gradient(180deg, rgba(170,130,60,.09), rgba(70,55,35,.05));
   color: #d8c39e;
-}
-
-
-.enhancement-primary[data-risk="danger"] {
+}.enhancement-primary[data-risk="danger"]{
   border-color: rgba(206,120,80,.3);
   background: linear-gradient(180deg, rgba(183,91,61,.08), rgba(82,42,34,.05));
   color: #dfb19e;
-}
-
-
-.enhancement-primary[data-risk="extreme"] {
+}.enhancement-primary[data-risk="extreme"]{
   border-color: rgba(203,79,72,.38);
   background: linear-gradient(180deg, rgba(174,55,52,.11), rgba(72,28,28,.055));
   color: #e5aaa5;
-}
-
-
-.enhancement-recent-log {
+}.enhancement-recent-log{
   display: grid;
   gap: 6px;
   padding-top: 8px;
   border-top: 1px solid rgba(255,255,255,.045);
-}
-
-
-.enhancement-log-head {
+}.enhancement-log-head{
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-}
-
-
-.enhancement-log-head strong {
+}.enhancement-log-head strong{
   color: #aaa19c;
   font-size: 10px;
-}
-
-
-.enhancement-log-head span {
+}.enhancement-log-head span{
   color: #696f70;
   font-size: 10px;
-}
-
-
-.enhancement-log-list {
+}.enhancement-log-list{
   display: grid;
   grid-template-columns: repeat(5, minmax(0,1fr));
   gap: 5px;
-}
-
-
-.enhancement-log-list > span {
+}.enhancement-log-list > span{
   min-width: 0;
   display: grid;
   gap: 1px;
@@ -1530,96 +929,54 @@ html[data-theme="light"] .enhancement-links a {
   border: 1px solid rgba(255,255,255,.04);
   border-radius: 5px;
   background: rgba(0,0,0,.1);
-}
-
-
-.enhancement-log-list b {
+}.enhancement-log-list b{
   color: #8c8581;
   font-size: 10px;
-}
-
-
-.enhancement-log-list small {
+}.enhancement-log-list small{
   overflow: hidden;
   color: #6f6a67;
   font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-
-.enhancement-log-list [data-outcome="success"] b,
-.enhancement-log-list [data-outcome="max"] b {
+}.enhancement-log-list [data-outcome="success"] b,
+  .enhancement-log-list [data-outcome="max"] b{
   color: #78c8cd;
-}
-
-
-.enhancement-log-list [data-outcome="down"] b {
+}.enhancement-log-list [data-outcome="down"] b{
   color: #c59970;
-}
-
-
-.enhancement-log-list [data-outcome="destroy"] b {
+}.enhancement-log-list [data-outcome="destroy"] b{
   color: #d2766d;
-}
-
-
-.enhancement-recent-log > p {
+}.enhancement-recent-log > p{
   margin: 0;
   color: #67615e;
   font-size: 10px;
-}
-
-
-.enhancement-side > details {
+}.enhancement-side > details{
   display: grid;
   gap: 8px;
   padding: 11px;
   border: 1px solid rgba(255,255,255,.06);
   border-radius: 8px;
   background: rgba(255,255,255,.014);
-}
-
-
-.enhancement-side > details > summary {
+}.enhancement-side > details > summary{
   cursor: pointer;
   list-style: none;
   padding-bottom: 0;
   border-bottom: 0;
-}
-
-
-.enhancement-side > details > summary::-webkit-details-marker {
+}.enhancement-side > details > summary::-webkit-details-marker{
   display: none;
-}
-
-
-.enhancement-side > details[open] > summary {
+}.enhancement-side > details[open] > summary{
   padding-bottom: 7px;
   border-bottom: 1px solid rgba(255,255,255,.04);
   margin-bottom: 2px;
-}
-
-
-.enhancement-side > details > summary > b {
+}.enhancement-side > details > summary > b{
   min-width: 22px;
   text-align: center;
-}
-
-
-.enhancement-side > details[open] > summary > b {
+}.enhancement-side > details[open] > summary > b{
   transform: rotate(45deg);
-}
-
-
-.enhancement-run-strip {
+}.enhancement-run-strip{
   display: grid;
   grid-template-columns: repeat(4, minmax(0,1fr));
   gap: 5px;
-}
-
-
-.enhancement-run-strip > span {
+}.enhancement-run-strip > span{
   min-width: 0;
   display: grid;
   gap: 1px;
@@ -1627,45 +984,25 @@ html[data-theme="light"] .enhancement-links a {
   border: 1px solid rgba(255,255,255,.035);
   border-radius: 5px;
   background: rgba(0,0,0,.12);
-}
-
-
-.enhancement-run-strip small {
+}.enhancement-run-strip small{
   color: #716b67;
   font-size: 10px;
-}
-
-
-.enhancement-run-strip strong {
+}.enhancement-run-strip strong{
   color: #b8b0ab;
   font-size: 13px;
-}
-
-
-@media (max-width: 900px) {
-  .enhancement-log-list {
+}@media (max-width: 900px){.enhancement-log-list{
     grid-template-columns: repeat(5, minmax(72px,1fr));
     overflow-x: auto;
     scrollbar-width: thin;
   }
-}
-
-
-@media (max-width: 700px) {
-  .enhancement-forge {
+}@media (max-width: 700px){.enhancement-forge{
     grid-template-rows: auto auto auto auto auto auto auto;
-  }
-
-
-  .enhancement-mobile-odds {
+  }.enhancement-mobile-odds{
     display: grid;
     grid-template-columns: repeat(4, minmax(0,1fr));
     gap: 4px;
     margin-top: 2px;
-  }
-
-
-  .enhancement-mobile-odds > span {
+  }.enhancement-mobile-odds > span{
     min-width: 0;
     display: grid;
     gap: 1px;
@@ -1673,65 +1010,34 @@ html[data-theme="light"] .enhancement-links a {
     border: 1px solid rgba(255,255,255,.035);
     border-radius: 4px;
     background: rgba(0,0,0,.11);
-  }
-
-
-  .enhancement-mobile-odds small {
+  }.enhancement-mobile-odds small{
     color: #6e6865;
     font-size: 10px;
-  }
-
-
-  .enhancement-mobile-odds strong {
+  }.enhancement-mobile-odds strong{
     color: #b6aeaa;
     font-size: 11px;
-  }
-
-
-  .enhancement-mobile-odds > span:first-child strong {
+  }.enhancement-mobile-odds > span:first-child strong{
     color: #78c8cd;
-  }
-
-
-  .enhancement-mobile-odds > span:last-child strong {
+  }.enhancement-mobile-odds > span:last-child strong{
     color: #c9756d;
-  }
-
-
-  .enhancement-side .enhancement-probability {
+  }.enhancement-side .enhancement-probability{
     display: none;
-  }
-
-
-  .enhancement-run {
+  }.enhancement-run{
     order: 0;
-  }
-
-
-  .enhancement-records,
-  .enhancement-links {
+  }.enhancement-records,
+  .enhancement-links{
     order: 1;
-  }
-
-
-  .enhancement-log-list {
+  }.enhancement-log-list{
     grid-template-columns: repeat(5, minmax(88px,1fr));
   }
-}
-
-
-html[data-theme="light"] .enhancement-side > details,
-html[data-theme="light"] .enhancement-run-strip > span,
-html[data-theme="light"] .enhancement-log-list > span,
-html[data-theme="light"] .enhancement-mobile-odds > span {
+}html[data-theme="light"] .enhancement-side > details,
+  html[data-theme="light"] .enhancement-run-strip > span,
+  html[data-theme="light"] .enhancement-log-list > span,
+  html[data-theme="light"] .enhancement-mobile-odds > span{
   border-color: rgba(78,68,62,.08);
   background: rgba(255,255,255,.5);
-}
-
-
-@media (prefers-reduced-motion: reduce) {
-  .enhancement-pickaxe-runes i,
-  .enhancement-forge[data-final-attempt="true"][data-state="charging"]::after {
+}@media (prefers-reduced-motion: reduce){.enhancement-pickaxe-runes i,
+  .enhancement-forge[data-final-attempt="true"][data-state="charging"]::after{
     animation: none !important;
   }
 }
@@ -1739,12 +1045,9 @@ html[data-theme="light"] .enhancement-mobile-odds > span {
 
 
 /* === 2026-09-26 enhancement lab completion polish v4 === */
-.enhancement-forge {
+.enhancement-forge{
   position: relative;
-}
-
-
-.enhancement-new-best {
+}.enhancement-new-best{
   position: absolute;
   z-index: 30;
   top: 58px;
@@ -1763,26 +1066,17 @@ html[data-theme="light"] .enhancement-mobile-odds > span {
   transform: translateX(-50%);
   pointer-events: none;
   animation: enhancementNewBest 1.65s cubic-bezier(.2,.8,.2,1) both;
-}
-
-
-.enhancement-new-best small {
+}.enhancement-new-best small{
   color: #a88c58;
   font-size: 10px;
   font-weight: 900;
   letter-spacing: .08em;
-}
-
-
-.enhancement-new-best strong {
+}.enhancement-new-best strong{
   color: #ebcb80;
   font-size: 20px;
   line-height: 1;
   text-shadow: 0 0 14px rgba(231,188,87,.28);
-}
-
-
-.enhancement-break-pieces {
+}.enhancement-break-pieces{
   position: absolute;
   z-index: 12;
   left: 50%;
@@ -1790,10 +1084,7 @@ html[data-theme="light"] .enhancement-mobile-odds > span {
   width: 0;
   height: 0;
   pointer-events: none;
-}
-
-
-.enhancement-break-pieces i {
+}.enhancement-break-pieces i{
   --angle: calc(-112deg + (var(--i) * 32deg));
   position: absolute;
   width: 14px;
@@ -1803,276 +1094,91 @@ html[data-theme="light"] .enhancement-mobile-odds > span {
   box-shadow: 0 0 9px rgba(74,188,194,.2);
   animation: enhancementBreakPiece 1.05s cubic-bezier(.12,.72,.18,1) both;
   animation-delay: calc(var(--i) * 18ms);
-}
-
-
-.enhancement-break-pieces i[data-part="diamond"] {
+}.enhancement-break-pieces i[data-part="diamond"]{
   background: linear-gradient(135deg, #77e2df 0 34%, #2a979b 35% 68%, #176b70 69%);
-}
-
-
-.enhancement-break-pieces i[data-part="handle"] {
+}.enhancement-break-pieces i[data-part="handle"]{
   width: 8px;
   height: 15px;
   background: linear-gradient(90deg, #85542c 0 45%, #5a351f 46% 100%);
   box-shadow: 0 0 7px rgba(0,0,0,.28);
-}
-
-
-.enhancement-forge[data-state="destroy"] .enhancement-slot-shell {
+}.enhancement-forge[data-state="destroy"] .enhancement-slot-shell{
   animation: enhancementDestroyImpact .62s ease-out both;
-}
-
-
-.enhancement-run-result {
-  display: grid;
-  gap: 8px;
-  padding: 10px 11px;
-  border: 1px solid rgba(255,255,255,.055);
-  border-radius: 6px;
-  background: rgba(255,255,255,.015);
-}
-
-
-.enhancement-run-result > div:first-child {
-  display: grid;
-  gap: 2px;
-}
-
-
-.enhancement-run-result > div:first-child small {
-  color: #736d69;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: .07em;
-}
-
-
-.enhancement-run-result > div:first-child strong {
-  color: #b9b0ab;
-  font-size: 10px;
-}
-
-
-.enhancement-run-result[data-outcome="destroy"] {
-  border-color: rgba(213,86,73,.17);
-  background: rgba(213,86,73,.035);
-}
-
-
-.enhancement-run-result[data-outcome="destroy"] > div:first-child strong {
-  color: #d4948e;
-}
-
-
-.enhancement-run-result[data-outcome="max"] {
-  border-color: rgba(231,188,87,.2);
-  background: rgba(231,188,87,.035);
-}
-
-
-.enhancement-run-result[data-outcome="max"] > div:first-child strong {
-  color: #dbc182;
-}
-
-
-.enhancement-run-result-stats {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0,1fr));
-  gap: 5px;
-}
-
-
-.enhancement-run-result-stats > span {
-  min-width: 0;
-  display: grid;
-  gap: 1px;
-  padding: 6px 7px;
-  border: 1px solid rgba(255,255,255,.035);
-  border-radius: 4px;
-  background: rgba(0,0,0,.12);
-}
-
-
-.enhancement-run-result-stats small {
-  color: #716a66;
-  font-size: 10px;
-}
-
-
-.enhancement-run-result-stats b {
-  color: #bdb4af;
-  font-size: 12px;
-}
-
-
-@media (min-width: 901px) and (max-height: 820px) {
-  .wiki-enhancement-lab {
+}@media (min-width: 901px) and (max-height: 820px){.wiki-enhancement-lab{
     gap: 10px;
     padding: 14px 15px 17px;
-  }
-
-
-  .enhancement-lab-head {
+  }.enhancement-lab-head{
     gap: 12px;
     padding-bottom: 9px;
-  }
-
-
-  .enhancement-lab-head h2 {
+  }.enhancement-lab-head h2{
     font-size: 22px;
-  }
-
-
-  .enhancement-lab-head > div:first-child > span {
+  }.enhancement-lab-head > div:first-child > span{
     font-size: 10px;
     line-height: 1.45;
-  }
-
-
-  .enhancement-forge {
+  }.enhancement-forge{
     min-height: 386px;
     gap: 7px;
     padding: 12px;
-  }
-
-
-  .enhancement-item-stage {
+  }.enhancement-item-stage{
     min-height: 190px;
     gap: 6px;
     padding: 2px 0;
-  }
-
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: 142px;
     height: 142px;
-  }
-
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: 114px;
     height: 114px;
-  }
-
-
-  .enhancement-item-tooltip {
+  }.enhancement-item-tooltip{
     width: min(300px, 90%);
     padding: 6px 9px;
-  }
-
-
-  .enhancement-item-tooltip span {
+  }.enhancement-item-tooltip span{
     font-size: 10px;
-  }
-
-
-  .enhancement-side > section,
-  .enhancement-side > details {
+  }.enhancement-side > section,
+  .enhancement-side > details{
     gap: 6px;
     padding: 9px;
-  }
-
-
-  .enhancement-odds-grid > div,
+  }.enhancement-odds-grid > div,
   .enhancement-record-grid > span,
-  .enhancement-run-strip > span {
+  .enhancement-run-strip > span{
     padding: 6px 7px;
-  }
-
-
-  .enhancement-primary {
+  }.enhancement-primary{
     min-height: 48px;
-  }
-
-
-  .enhancement-result {
+  }.enhancement-result{
     min-height: 36px;
     padding: 6px 9px;
-  }
-
-
-  .enhancement-recent-log {
+  }.enhancement-recent-log{
     gap: 4px;
     padding-top: 6px;
   }
-}
-
-
-@media (min-width: 901px) and (max-height: 700px) {
-  .enhancement-lab-head > div:first-child > span {
+}@media (min-width: 901px) and (max-height: 700px){.enhancement-lab-head > div:first-child > span{
     display: none;
-  }
-
-
-  .enhancement-forge {
+  }.enhancement-forge{
     min-height: 348px;
-  }
-
-
-  .enhancement-item-stage {
+  }.enhancement-item-stage{
     min-height: 166px;
-  }
-
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: 126px;
     height: 126px;
-  }
-
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: 102px;
     height: 102px;
-  }
-
-
-  .enhancement-log-list > span:nth-child(n+4) {
+  }.enhancement-log-list > span:nth-child(n+4){
     display: none;
-  }
-
-
-  .enhancement-log-list {
+  }.enhancement-log-list{
     grid-template-columns: repeat(3, minmax(0,1fr));
   }
-}
-
-
-@media (max-width: 700px) {
-  .enhancement-new-best {
+}@media (max-width: 700px){.enhancement-new-best{
     top: 54px;
     min-width: 104px;
     padding: 7px 11px 8px;
-  }
-
-
-  .enhancement-new-best strong {
+  }.enhancement-new-best strong{
     font-size: 18px;
   }
-
-
-  .enhancement-run-result-stats {
-    grid-template-columns: repeat(2, minmax(0,1fr));
-  }
-}
-
-
-html[data-theme="light"] .enhancement-run-result,
-html[data-theme="light"] .enhancement-run-result-stats > span {
-  border-color: rgba(78,68,62,.09);
-  background: rgba(255,255,255,.48);
-}
-
-
-html[data-theme="light"] .enhancement-new-best {
+}html[data-theme="light"] .enhancement-new-best{
   background: rgba(252,247,235,.96);
-}
-
-
-@media (prefers-reduced-motion: reduce) {
-  .enhancement-new-best,
+}@media (prefers-reduced-motion: reduce){.enhancement-new-best,
   .enhancement-break-pieces i,
-  .enhancement-forge[data-state="destroy"] .enhancement-slot-shell {
+  .enhancement-forge[data-state="destroy"] .enhancement-slot-shell{
     animation: none !important;
   }
 }
@@ -2080,14 +1186,11 @@ html[data-theme="light"] .enhancement-new-best {
 
 
 /* === 2026-09-26 enhancement lab stability and alignment v5 === */
-.wiki-enhancement-lab {
+.wiki-enhancement-lab{
   --enhancement-action-height: 54px;
   --enhancement-result-height: 44px;
   --enhancement-run-result-height: 78px;
-}
-
-
-.enhancement-forge {
+}.enhancement-forge{
   grid-template-rows:
     auto
     auto
@@ -2100,85 +1203,32 @@ html[data-theme="light"] .enhancement-new-best {
 
 
 /* Keep the primary interaction target in exactly the same place for every state. */
-.enhancement-result {
+.enhancement-result{
   height: var(--enhancement-result-height);
   min-height: var(--enhancement-result-height);
   overflow: hidden;
-}
-
-
-.enhancement-result > strong {
+}.enhancement-result > strong{
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-}
-
-
-.enhancement-action-zone {
+}.enhancement-action-zone{
   width: 100%;
   height: var(--enhancement-action-height);
   min-height: var(--enhancement-action-height);
-}
-
-
-.enhancement-primary {
+}.enhancement-primary{
   width: 100%;
   height: var(--enhancement-action-height);
   min-height: var(--enhancement-action-height);
   margin: 0;
-}
-
-
-.enhancement-run-result-slot {
-  height: var(--enhancement-run-result-height);
-  min-height: var(--enhancement-run-result-height);
-  overflow: hidden;
-}
-
-
-.enhancement-run-result {
-  width: 100%;
-  height: 100%;
-  align-content: center;
-  box-sizing: border-box;
-}
-
-
-.enhancement-run-result-placeholder {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255,255,255,.025);
-  border-radius: 6px;
-  background: rgba(255,255,255,.006);
-  visibility: hidden;
-}
-
-
-.enhancement-run-result-placeholder span {
-  font-size: 10px;
-}
-
-
-.enhancement-recent-log {
+}.enhancement-recent-log{
   min-height: 59px;
-}
-
-
-.enhancement-log-list {
+}.enhancement-log-list{
   min-height: 35px;
-}
-
-
-.enhancement-log-list > span {
+}.enhancement-log-list > span{
   height: 35px;
   box-sizing: border-box;
-}
-
-
-.enhancement-log-list > span.is-empty {
+}.enhancement-log-list > span.is-empty{
   opacity: .34;
   border-style: dashed;
   background: transparent;
@@ -2187,20 +1237,14 @@ html[data-theme="light"] .enhancement-new-best {
 
 /* The artwork and every active visual effect now share the same local coordinate system. */
 .enhancement-slot,
-.enhancement-slot-inner {
+  .enhancement-slot-inner{
   overflow: visible;
-}
-
-
-.enhancement-pickaxe {
+}.enhancement-pickaxe{
   position: relative;
   transform: translateY(-1px);
   transform-origin: 50% 50%;
   isolation: isolate;
-}
-
-
-.enhancement-pickaxe-art {
+}.enhancement-pickaxe-art{
   position: relative;
   z-index: 2;
   width: 100%;
@@ -2209,11 +1253,8 @@ html[data-theme="light"] .enhancement-new-best {
   place-items: center;
   grid-template-areas: "art";
   pointer-events: none;
-}
-
-
-.enhancement-pickaxe-image,
-.enhancement-pickaxe-glint-image {
+}.enhancement-pickaxe-image,
+  .enhancement-pickaxe-glint-image{
   grid-area: art;
   width: 100%;
   height: 100%;
@@ -2222,10 +1263,7 @@ html[data-theme="light"] .enhancement-new-best {
   image-rendering: pixelated;
   user-select: none;
   pointer-events: none;
-}
-
-
-.enhancement-pickaxe-glint-image {
+}.enhancement-pickaxe-glint-image{
   position: relative;
   z-index: 3;
   opacity: 0;
@@ -2236,43 +1274,31 @@ html[data-theme="light"] .enhancement-new-best {
     hue-rotate(24deg)
     drop-shadow(0 0 7px rgba(var(--forge-glow), .25));
   animation: enhancementPickaxeGlint 2.8s ease-in-out infinite;
-}
-
-
-.enhancement-forge[data-tier="extreme"] .enhancement-pickaxe-glint-image {
+}.enhancement-forge[data-tier="extreme"] .enhancement-pickaxe-glint-image{
   animation-duration: 2s;
   filter:
     brightness(1.55)
     saturate(1.45)
     hue-rotate(42deg)
     drop-shadow(0 0 9px rgba(var(--forge-glow), .34));
-}
-
-
-.enhancement-forge[data-tier="legendary"] .enhancement-pickaxe-glint-image {
+}.enhancement-forge[data-tier="legendary"] .enhancement-pickaxe-glint-image{
   animation-duration: 1.7s;
   filter:
     brightness(1.62)
     saturate(1.3)
     sepia(.14)
     drop-shadow(0 0 10px rgba(var(--forge-glow), .4));
-}
-
-
-.enhancement-pickaxe-runes {
+}.enhancement-pickaxe-runes{
   z-index: 6;
 }
 
 
 /* Tight item-bound particles: no more effect origin floating away from the pickaxe. */
-.enhancement-particles {
+.enhancement-particles{
   left: 50%;
   top: 48%;
   z-index: 7;
-}
-
-
-.enhancement-particles i {
+}.enhancement-particles i{
   width: 4px;
   height: 4px;
   transform:
@@ -2283,54 +1309,28 @@ html[data-theme="light"] .enhancement-new-best {
 
 
 /* Break the head upward/outward and the handle downward instead of a circular explosion. */
-.enhancement-break-pieces {
+.enhancement-break-pieces{
   left: 50%;
   top: 48%;
   z-index: 11;
-}
-
-
-.enhancement-break-pieces i {
+}.enhancement-break-pieces i{
   --dx: 0px;
   --dy: 0px;
   --turn: 90deg;
   transform: translate(-50%, -50%);
   animation-name: enhancementBreakPieceDirectional;
-}
-
-
-.enhancement-break-pieces i:nth-child(1) { --dx: -76px; --dy: -50px; --turn: -145deg; }
-
-.enhancement-break-pieces i:nth-child(2) { --dx: -38px; --dy: -74px; --turn: -80deg; }
-
-.enhancement-break-pieces i:nth-child(3) { --dx: 10px; --dy: -82px; --turn: 75deg; }
-
-.enhancement-break-pieces i:nth-child(4) { --dx: 52px; --dy: -58px; --turn: 132deg; }
-
-.enhancement-break-pieces i:nth-child(5) { --dx: 78px; --dy: -24px; --turn: 185deg; }
-
-.enhancement-break-pieces i:nth-child(6) { --dx: 34px; --dy: 64px; --turn: 125deg; }
-
-.enhancement-break-pieces i:nth-child(7) { --dx: 4px; --dy: 82px; --turn: 188deg; }
-
-.enhancement-break-pieces i:nth-child(8) { --dx: -34px; --dy: 68px; --turn: 238deg; }
-
-
-.enhancement-shards {
+}.enhancement-break-pieces i:nth-child(1){ --dx: -76px; --dy: -50px; --turn: -145deg; }.enhancement-break-pieces i:nth-child(2){ --dx: -38px; --dy: -74px; --turn: -80deg; }.enhancement-break-pieces i:nth-child(3){ --dx: 10px; --dy: -82px; --turn: 75deg; }.enhancement-break-pieces i:nth-child(4){ --dx: 52px; --dy: -58px; --turn: 132deg; }.enhancement-break-pieces i:nth-child(5){ --dx: 78px; --dy: -24px; --turn: 185deg; }.enhancement-break-pieces i:nth-child(6){ --dx: 34px; --dy: 64px; --turn: 125deg; }.enhancement-break-pieces i:nth-child(7){ --dx: 4px; --dy: 82px; --turn: 188deg; }.enhancement-break-pieces i:nth-child(8){ --dx: -34px; --dy: 68px; --turn: 238deg; }.enhancement-shards{
   left: 50%;
   top: 48%;
   z-index: 10;
-}
-
-
-.enhancement-shards i {
+}.enhancement-shards i{
   width: 7px;
   height: 5px;
 }
 
 
 /* Related documents remain in the sidebar and never enter the repeated-click zone. */
-.enhancement-guide-recommendation {
+.enhancement-guide-recommendation{
   display: grid;
   gap: 2px;
   padding: 7px 8px;
@@ -2338,17 +1338,11 @@ html[data-theme="light"] .enhancement-new-best {
   border-left: 2px solid rgba(var(--forge-glow), .32);
   border-radius: 4px;
   background: rgba(var(--forge-glow), .018);
-}
-
-
-.enhancement-guide-recommendation small {
+}.enhancement-guide-recommendation small{
   color: #727779;
   font-size: 10px;
   font-weight: 900;
-}
-
-
-.enhancement-guide-recommendation strong {
+}.enhancement-guide-recommendation strong{
   color: #9aa3a4;
   font-size: 10px;
   line-height: 1.4;
@@ -2356,29 +1350,19 @@ html[data-theme="light"] .enhancement-new-best {
 
 
 /* Results can change appearance, but not the geometry of the repeated interaction. */
-.enhancement-forge[data-state="destroy"] .enhancement-pickaxe {
+.enhancement-forge[data-state="destroy"] .enhancement-pickaxe{
   transform: translateY(-1px) rotate(5deg) scale(.76);
-}
-
-
-.enhancement-forge[data-state="success"] .enhancement-pickaxe,
-.enhancement-forge[data-state="max"] .enhancement-pickaxe,
-.enhancement-forge[data-state="charging"] .enhancement-pickaxe,
-.enhancement-forge[data-state="fail"] .enhancement-pickaxe,
-.enhancement-forge[data-state="down"] .enhancement-pickaxe {
+}.enhancement-forge[data-state="success"] .enhancement-pickaxe,
+  .enhancement-forge[data-state="max"] .enhancement-pickaxe,
+  .enhancement-forge[data-state="charging"] .enhancement-pickaxe,
+  .enhancement-forge[data-state="fail"] .enhancement-pickaxe,
+  .enhancement-forge[data-state="down"] .enhancement-pickaxe{
   transform-origin: 50% 50%;
-}
-
-
-@media (min-width: 901px) and (max-height: 820px) {
-  .wiki-enhancement-lab {
+}@media (min-width: 901px) and (max-height: 820px){.wiki-enhancement-lab{
     --enhancement-action-height: 48px;
     --enhancement-result-height: 36px;
     --enhancement-run-result-height: 66px;
-  }
-
-
-  .enhancement-forge {
+  }.enhancement-forge{
     grid-template-rows:
       auto
       auto
@@ -2387,50 +1371,23 @@ html[data-theme="light"] .enhancement-new-best {
       var(--enhancement-action-height)
       var(--enhancement-run-result-height)
       auto;
-  }
-
-
-  .enhancement-recent-log {
+  }.enhancement-recent-log{
     min-height: 52px;
-  }
-
-
-  .enhancement-log-list,
-  .enhancement-log-list > span {
+  }.enhancement-log-list,
+  .enhancement-log-list > span{
     min-height: 31px;
     height: 31px;
   }
-}
-
-
-@media (min-width: 901px) and (max-height: 700px) {
-  .wiki-enhancement-lab {
+}@media (min-width: 901px) and (max-height: 700px){.wiki-enhancement-lab{
     --enhancement-action-height: 46px;
     --enhancement-result-height: 34px;
     --enhancement-run-result-height: 58px;
   }
-
-
-  .enhancement-run-result {
-    padding: 6px 8px;
-  }
-
-
-  .enhancement-run-result-stats > span {
-    padding: 4px 6px;
-  }
-}
-
-
-@media (max-width: 700px) {
-  .wiki-enhancement-lab {
+}@media (max-width: 700px){.wiki-enhancement-lab{
     --enhancement-action-height: 58px;
     --enhancement-result-height: 46px;
     --enhancement-run-result-height: 92px;
-  }
-
-
-  .enhancement-forge {
+  }.enhancement-forge{
     grid-template-rows:
       auto
       auto
@@ -2439,48 +1396,23 @@ html[data-theme="light"] .enhancement-new-best {
       var(--enhancement-action-height)
       var(--enhancement-run-result-height)
       auto;
-  }
-
-
-  .enhancement-primary {
+  }.enhancement-primary{
     touch-action: manipulation;
-  }
-
-
-  .enhancement-guide-recommendation {
+  }.enhancement-guide-recommendation{
     padding: 8px;
   }
-}
-
-
-html[data-theme="light"] .enhancement-run-result-placeholder {
-  border-color: rgba(78,68,62,.035);
-  background: rgba(255,255,255,.16);
-}
-
-
-html[data-theme="light"] .enhancement-guide-recommendation {
+}html[data-theme="light"] .enhancement-guide-recommendation{
   border-color: rgba(78,68,62,.09);
   background: rgba(255,255,255,.4);
-}
-
-
-html[data-theme="light"] .enhancement-guide-recommendation strong {
+}html[data-theme="light"] .enhancement-guide-recommendation strong{
   color: #6c625d;
-}
-
-
-html[data-theme="light"] .enhancement-log-list > span.is-empty {
+}html[data-theme="light"] .enhancement-log-list > span.is-empty{
   background: rgba(255,255,255,.2);
-}
-
-
-@media (prefers-reduced-motion: reduce) {
-  .enhancement-pickaxe-glint-image,
+}@media (prefers-reduced-motion: reduce){.enhancement-pickaxe-glint-image,
   .enhancement-pickaxe-runes i,
   .enhancement-particles i,
   .enhancement-break-pieces i,
-  .enhancement-shards i {
+  .enhancement-shards i{
     animation: none !important;
   }
 }
@@ -2494,30 +1426,18 @@ html[data-theme="light"] .enhancement-log-list > span.is-empty {
  * 2) forge-like impact feedback that matches the new metal sounds,
  * 3) clearer odds and run information without adding visual noise.
  */
-.wiki-enhancement-lab {
+.wiki-enhancement-lab{
   gap: 10px;
   padding: 14px;
   overflow: visible;
-}
-
-
-.enhancement-lab-head {
+}.enhancement-lab-head{
   gap: 14px;
   padding-bottom: 9px;
-}
-
-
-.enhancement-lab-head > div:first-child {
+}.enhancement-lab-head > div:first-child{
   gap: 2px;
-}
-
-
-.enhancement-lab-head h2 {
+}.enhancement-lab-head h2{
   font-size: clamp(20px, 2.4vw, 25px);
-}
-
-
-.enhancement-lab-head > div:first-child > span {
+}.enhancement-lab-head > div:first-child > span{
   font-size: 10px;
   line-height: 1.45;
 }
@@ -2529,139 +1449,69 @@ html[data-theme="light"] .enhancement-log-list > span.is-empty {
  * every following child into the wrong explicit row and created a large
  * empty band above the action button.
  */
-.enhancement-forge {
+.enhancement-forge{
   min-height: 0;
   grid-template-rows: none;
   grid-auto-rows: auto;
   gap: 7px;
   padding: 12px;
-}
-
-
-.enhancement-item-stage {
+}.enhancement-item-stage{
   min-height: 218px;
   gap: 7px;
   padding: 3px 0 1px;
-}
-
-
-.enhancement-slot-shell {
+}.enhancement-slot-shell{
   width: 156px;
   height: 156px;
   padding: 6px;
-}
-
-
-.enhancement-slot {
+}.enhancement-slot{
   padding: 5px;
-}
-
-
-.enhancement-pickaxe {
+}.enhancement-pickaxe{
   width: 126px;
   height: 126px;
-}
-
-
-.enhancement-item-tooltip {
+}.enhancement-item-tooltip{
   width: min(320px, 88%);
   gap: 2px;
   padding: 6px 9px;
-}
-
-
-.enhancement-item-tooltip strong {
+}.enhancement-item-tooltip strong{
   font-size: 10px;
-}
-
-
-.enhancement-item-tooltip span {
+}.enhancement-item-tooltip span{
   font-size: 10px;
   line-height: 1.35;
-}
-
-
-.enhancement-level-row > strong {
+}.enhancement-level-row > strong{
   font-size: 29px;
-}
-
-
-.enhancement-level-row {
+}.enhancement-level-row{
   min-height: 32px;
 }
 
 
-/* The post-run card lives below the fixed action button, so it can collapse safely. */
-.enhancement-run-result-slot {
-  height: auto;
-  min-height: 0;
-  overflow: visible;
-}
-
-
-.enhancement-run-result-placeholder {
-  display: none;
-}
-
-
-.enhancement-run-result {
-  min-height: 56px;
-  padding: 7px 9px;
-  gap: 5px;
-}
-
-
-.enhancement-run-result-stats > span {
-  padding: 4px 6px;
-}
-
-
 /* Compact, stable recent history: all five cells stay present but use less height. */
-.enhancement-recent-log {
+.enhancement-recent-log{
   min-height: 45px;
   gap: 4px;
   padding-top: 5px;
   border-top: 1px solid rgba(255,255,255,.035);
-}
-
-
-.enhancement-log-head strong {
+}.enhancement-log-head strong{
   font-size: 10px;
-}
-
-
-.enhancement-log-head span {
+}.enhancement-log-head span{
   font-size: 10px;
-}
-
-
-.enhancement-log-list {
+}.enhancement-log-list{
   min-height: 27px;
   gap: 4px;
-}
-
-
-.enhancement-log-list > span {
+}.enhancement-log-list > span{
   height: 27px;
   min-height: 27px;
   align-content: center;
   padding: 3px 5px;
   border-radius: 4px;
-}
-
-
-.enhancement-log-list b {
+}.enhancement-log-list b{
   font-size: 10px;
-}
-
-
-.enhancement-log-list small {
+}.enhancement-log-list small{
   font-size: 10px;
 }
 
 
 /* Near-button odds summary: readable without looking away to the right panel. */
-.enhancement-action-odds {
+.enhancement-action-odds{
   min-height: 22px;
   display: flex;
   align-items: center;
@@ -2672,119 +1522,65 @@ html[data-theme="light"] .enhancement-log-list > span.is-empty {
   color: #78716d;
   font-size: 10px;
   line-height: 1;
-}
-
-
-.enhancement-action-odds > span {
+}.enhancement-action-odds > span{
   display: inline-flex;
   align-items: baseline;
   gap: 3px;
-}
-
-
-.enhancement-action-odds small {
+}.enhancement-action-odds small{
   color: #6f6966;
   font-size: 10px;
-}
-
-
-.enhancement-action-odds b {
+}.enhancement-action-odds b{
   color: #a8a09b;
   font-size: 10px;
-}
-
-
-.enhancement-action-odds > span:first-of-type b {
+}.enhancement-action-odds > span:first-of-type b{
   color: #7ccdd0;
-}
-
-
-.enhancement-action-odds > i {
+}.enhancement-action-odds > i{
   color: #4c4947;
   font-style: normal;
-}
-
-
-.enhancement-action-odds .is-danger b {
+}.enhancement-action-odds .is-danger b{
   color: #d77f72;
-}
-
-
-.enhancement-action-odds > strong {
+}.enhancement-action-odds > strong{
   color: #d6bd7a;
   font-size: 10px;
-}
-
-
-.enhancement-action-zone,
-.enhancement-primary {
+}.enhancement-action-zone,
+  .enhancement-primary{
   --enhancement-action-height: 50px;
   height: var(--enhancement-action-height);
   min-height: var(--enhancement-action-height);
-}
-
-
-.enhancement-primary {
+}.enhancement-primary{
   font-size: 13px;
-}
-
-
-.enhancement-primary span {
+}.enhancement-primary span{
   font-size: 10px;
 }
 
 
 /* Result feedback should be recognizable even before reading the sentence. */
-.enhancement-result {
+.enhancement-result{
   --enhancement-result-height: 38px;
   height: var(--enhancement-result-height);
   min-height: var(--enhancement-result-height);
   grid-template-columns: 22px minmax(0,1fr);
   gap: 7px;
   padding: 6px 9px;
-}
-
-
-.enhancement-result > span {
+}.enhancement-result > span{
   font-size: 15px;
-}
-
-
-.enhancement-result > strong {
+}.enhancement-result > strong{
   font-size: 10px;
   line-height: 1.35;
-}
-
-
-.enhancement-result[data-outcome="charging"] {
+}.enhancement-result[data-outcome="charging"]{
   border-color: rgba(217,152,74,.18);
   background:
     linear-gradient(90deg, rgba(217,152,74,.055), rgba(255,255,255,.012));
-}
-
-
-.enhancement-result[data-outcome="charging"] > span {
+}.enhancement-result[data-outcome="charging"] > span{
   color: #d19a59;
-}
-
-
-.enhancement-result[data-outcome="charging"] > strong {
+}.enhancement-result[data-outcome="charging"] > strong{
   color: #b9a58f;
-}
-
-
-.enhancement-result[data-outcome="fail"] {
+}.enhancement-result[data-outcome="fail"]{
   border-color: rgba(171,164,158,.12);
   background: rgba(150,143,138,.025);
-}
-
-
-.enhancement-result[data-outcome="fail"] > span {
+}.enhancement-result[data-outcome="fail"] > span{
   color: #77716d;
-}
-
-
-.enhancement-result[data-outcome="fail"] > strong {
+}.enhancement-result[data-outcome="fail"] > strong{
   color: #a19a95;
 }
 
@@ -2795,7 +1591,7 @@ html[data-theme="light"] .enhancement-log-list > span.is-empty {
  * - magical colour only becomes a secondary layer at high enhancement
  * - effects stay attached to the pickaxe coordinate system
  */
-.enhancement-pickaxe::after {
+.enhancement-pickaxe::after{
   content: '';
   position: absolute;
   z-index: 8;
@@ -2815,10 +1611,7 @@ html[data-theme="light"] .enhancement-log-list > span.is-empty {
       rgba(220,126,43,.08) 40%,
       transparent 68%
     );
-}
-
-
-.enhancement-particles i {
+}.enhancement-particles i{
   width: 9px;
   height: 2px;
   border-radius: 1px;
@@ -2826,45 +1619,27 @@ html[data-theme="light"] .enhancement-log-list > span.is-empty {
   box-shadow:
     0 0 4px rgba(230,160,77,.55),
     0 0 8px rgba(220,112,42,.22);
-}
-
-
-.enhancement-forge[data-tier="high"] .enhancement-particles i {
+}.enhancement-forge[data-tier="high"] .enhancement-particles i{
   background: linear-gradient(90deg, #e5a04d 0 62%, rgb(var(--forge-glow)) 63%);
-}
-
-
-.enhancement-forge[data-tier="extreme"] .enhancement-particles i {
+}.enhancement-forge[data-tier="extreme"] .enhancement-particles i{
   background: linear-gradient(90deg, #e2a052 0 50%, rgb(var(--forge-glow)) 51%);
-}
-
-
-.enhancement-forge[data-tier="legendary"] .enhancement-particles i {
+}.enhancement-forge[data-tier="legendary"] .enhancement-particles i{
   background: #edc36f;
   box-shadow:
     0 0 5px rgba(237,195,111,.68),
     0 0 10px rgba(237,188,83,.26);
-}
-
-
-.enhancement-forge[data-state="charging"] .enhancement-pickaxe::after {
+}.enhancement-forge[data-state="charging"] .enhancement-pickaxe::after{
   animation: enhancementForgeImpactFlash .52s ease-out both;
-}
-
-
-.enhancement-forge[data-state="success"] .enhancement-pickaxe::after,
-.enhancement-forge[data-state="max"] .enhancement-pickaxe::after {
+}.enhancement-forge[data-state="success"] .enhancement-pickaxe::after,
+  .enhancement-forge[data-state="max"] .enhancement-pickaxe::after{
   animation: enhancementForgeResultFlash .58s ease-out both;
 }
 
 
 /* Short physical recoil instead of a neon pulse. */
-.enhancement-forge[data-state="charging"] .enhancement-pickaxe {
+.enhancement-forge[data-state="charging"] .enhancement-pickaxe{
   animation: enhancementForgeStrike .52s cubic-bezier(.22,.8,.28,1);
-}
-
-
-.enhancement-forge[data-state="fail"] .enhancement-pickaxe {
+}.enhancement-forge[data-state="fail"] .enhancement-pickaxe{
   animation: enhancementForgeDeadHit .34s ease-out;
   filter:
     grayscale(.34)
@@ -2874,53 +1649,35 @@ html[data-theme="light"] .enhancement-log-list > span.is-empty {
 
 
 /* High-tier progression: stronger silhouette treatment, not just more particles. */
-.enhancement-forge[data-tier="mid"] .enhancement-pickaxe {
+.enhancement-forge[data-tier="mid"] .enhancement-pickaxe{
   filter:
     drop-shadow(0 8px 9px rgba(0,0,0,.4))
     drop-shadow(0 0 5px rgba(76,190,205,.12));
-}
-
-
-.enhancement-forge[data-tier="high"] .enhancement-pickaxe {
+}.enhancement-forge[data-tier="high"] .enhancement-pickaxe{
   filter:
     drop-shadow(0 8px 9px rgba(0,0,0,.4))
     drop-shadow(0 0 5px rgba(91,143,224,.24))
     drop-shadow(0 0 11px rgba(91,143,224,.09));
-}
-
-
-.enhancement-forge[data-tier="extreme"] .enhancement-pickaxe {
+}.enhancement-forge[data-tier="extreme"] .enhancement-pickaxe{
   filter:
     drop-shadow(0 8px 9px rgba(0,0,0,.42))
     drop-shadow(0 0 6px rgba(174,111,222,.34))
     drop-shadow(0 0 14px rgba(174,111,222,.12));
-}
-
-
-.enhancement-forge[data-tier="legendary"] .enhancement-pickaxe {
+}.enhancement-forge[data-tier="legendary"] .enhancement-pickaxe{
   filter:
     drop-shadow(0 8px 9px rgba(0,0,0,.42))
     drop-shadow(0 0 5px rgba(235,190,90,.38))
     drop-shadow(0 0 15px rgba(235,190,90,.15));
-}
-
-
-.enhancement-forge[data-tier="high"] .enhancement-slot-shell {
+}.enhancement-forge[data-tier="high"] .enhancement-slot-shell{
   border-color: rgba(91,143,224,.24);
-}
-
-
-.enhancement-forge[data-tier="extreme"] .enhancement-slot-shell {
+}.enhancement-forge[data-tier="extreme"] .enhancement-slot-shell{
   border-color: rgba(174,111,222,.32);
   box-shadow:
     inset 3px 3px 0 rgba(255,255,255,.035),
     inset -3px -3px 0 rgba(0,0,0,.4),
     0 9px 22px rgba(0,0,0,.28),
     0 0 10px rgba(174,111,222,.09);
-}
-
-
-.enhancement-forge[data-tier="legendary"] .enhancement-slot-shell {
+}.enhancement-forge[data-tier="legendary"] .enhancement-slot-shell{
   border-color: rgba(235,190,90,.38);
   box-shadow:
     inset 3px 3px 0 rgba(255,255,255,.04),
@@ -2930,47 +1687,22 @@ html[data-theme="light"] .enhancement-log-list > span.is-empty {
 }
 
 
-.enhancement-forge[data-tier="extreme"] .enhancement-tier-mark {
-  color: #c99ce8;
-}
-
-
-.enhancement-forge[data-tier="legendary"] .enhancement-tier-mark {
-  color: #e7c46f;
-}
-
-
 /* Right panel hierarchy: current level / run best / success rate first. */
-.enhancement-side {
+.enhancement-side{
   gap: 7px;
-}
-
-
-.enhancement-side > section,
-.enhancement-side > details {
+}.enhancement-side > section,
+  .enhancement-side > details{
   gap: 7px;
   padding: 10px;
-}
-
-
-.enhancement-probability {
+}.enhancement-probability{
   gap: 7px !important;
-}
-
-
-.enhancement-panel-title {
+}.enhancement-panel-title{
   padding-bottom: 5px;
-}
-
-
-.enhancement-run-highlight {
+}.enhancement-run-highlight{
   display: grid;
   grid-template-columns: repeat(3, minmax(0,1fr));
   gap: 5px;
-}
-
-
-.enhancement-run-highlight > span {
+}.enhancement-run-highlight > span{
   min-width: 0;
   display: grid;
   gap: 1px;
@@ -2978,291 +1710,137 @@ html[data-theme="light"] .enhancement-log-list > span.is-empty {
   border: 1px solid rgba(255,255,255,.04);
   border-radius: 5px;
   background: rgba(0,0,0,.13);
-}
-
-
-.enhancement-run-highlight small {
+}.enhancement-run-highlight small{
   color: #6f6966;
   font-size: 10px;
-}
-
-
-.enhancement-run-highlight strong {
+}.enhancement-run-highlight strong{
   color: #c4bbb5;
   font-size: 15px;
   line-height: 1;
-}
-
-
-.enhancement-run-highlight > span:first-child strong {
+}.enhancement-run-highlight > span:first-child strong{
   color: rgb(var(--forge-glow));
-}
-
-
-.enhancement-run-strip {
+}.enhancement-run-strip{
   gap: 4px;
-}
-
-
-.enhancement-run-strip > span {
+}.enhancement-run-strip > span{
   padding: 4px 6px;
-}
-
-
-.enhancement-run-strip small {
+}.enhancement-run-strip small{
   font-size: 10px;
-}
-
-
-.enhancement-run-strip strong {
+}.enhancement-run-strip strong{
   font-size: 11px;
-}
-
-
-.enhancement-odds-grid {
+}.enhancement-odds-grid{
   gap: 5px;
-}
-
-
-.enhancement-odds-grid > div {
+}.enhancement-odds-grid > div{
   padding: 7px 8px;
-}
-
-
-.enhancement-odds-grid [data-kind="success"] strong {
+}.enhancement-odds-grid [data-kind="success"] strong{
   font-size: 18px;
-}
-
-
-.enhancement-odds-grid [data-kind="fail"] strong,
-.enhancement-odds-grid [data-kind="down"] strong,
-.enhancement-odds-grid [data-kind="destroy"] strong {
+}.enhancement-odds-grid [data-kind="fail"] strong,
+  .enhancement-odds-grid [data-kind="down"] strong,
+  .enhancement-odds-grid [data-kind="destroy"] strong{
   font-size: 14px;
 }
 
 
 /* More aggressive height compaction for common 720–900px laptop viewports. */
-@media (min-width: 901px) and (max-height: 900px) {
-  .wiki-enhancement-lab {
+@media (min-width: 901px) and (max-height: 900px){.wiki-enhancement-lab{
     padding: 11px 12px;
     gap: 8px;
-  }
-
-
-  .enhancement-lab-head {
+  }.enhancement-lab-head{
     padding-bottom: 7px;
-  }
-
-
-  .enhancement-item-stage {
+  }.enhancement-item-stage{
     min-height: 184px;
     gap: 5px;
-  }
-
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: 138px;
     height: 138px;
-  }
-
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: 111px;
     height: 111px;
-  }
-
-
-  .enhancement-item-tooltip {
+  }.enhancement-item-tooltip{
     padding: 5px 8px;
-  }
-
-
-  .enhancement-action-zone,
-  .enhancement-primary {
+  }.enhancement-action-zone,
+  .enhancement-primary{
     --enhancement-action-height: 46px;
-  }
-
-
-  .enhancement-result {
+  }.enhancement-result{
     --enhancement-result-height: 34px;
-  }
-
-
-  .enhancement-action-odds {
+  }.enhancement-action-odds{
     min-height: 18px;
-  }
-
-
-  .enhancement-recent-log {
+  }.enhancement-recent-log{
     min-height: 39px;
-  }
-
-
-  .enhancement-log-list,
-  .enhancement-log-list > span {
+  }.enhancement-log-list,
+  .enhancement-log-list > span{
     min-height: 24px;
     height: 24px;
-  }
-
-
-  .enhancement-side > section,
-  .enhancement-side > details {
+  }.enhancement-side > section,
+  .enhancement-side > details{
     padding: 8px;
     gap: 5px;
-  }
-
-
-  .enhancement-run-highlight > span {
+  }.enhancement-run-highlight > span{
     padding: 5px 6px;
   }
-}
-
-
-@media (min-width: 901px) and (max-height: 760px) {
-  .enhancement-lab-head > div:first-child > span {
+}@media (min-width: 901px) and (max-height: 760px){.enhancement-lab-head > div:first-child > span{
     display: none;
-  }
-
-
-  .enhancement-item-stage {
+  }.enhancement-item-stage{
     min-height: 156px;
-  }
-
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: 122px;
     height: 122px;
-  }
-
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: 98px;
     height: 98px;
-  }
-
-
-  .enhancement-item-tooltip span {
+  }.enhancement-item-tooltip span{
     display: none;
-  }
-
-
-  .enhancement-item-tooltip {
+  }.enhancement-item-tooltip{
     width: min(250px, 78%);
     padding: 4px 7px;
-  }
-
-
-  .enhancement-recent-log {
+  }.enhancement-recent-log{
     min-height: 34px;
-  }
-
-
-  .enhancement-log-head {
+  }.enhancement-log-head{
     display: none;
-  }
-
-
-  .enhancement-log-list,
-  .enhancement-log-list > span {
+  }.enhancement-log-list,
+  .enhancement-log-list > span{
     min-height: 23px;
     height: 23px;
   }
-}
-
-
-@media (max-width: 700px) {
-  .wiki-enhancement-lab {
+}@media (max-width: 700px){.wiki-enhancement-lab{
     overflow: hidden;
     padding: 11px;
-  }
-
-
-  .enhancement-item-stage {
+  }.enhancement-item-stage{
     min-height: 190px;
-  }
-
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: 142px;
     height: 142px;
-  }
-
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: 114px;
     height: 114px;
-  }
-
-
-  .enhancement-action-odds {
+  }.enhancement-action-odds{
     justify-content: flex-start;
     min-height: 25px;
     padding-inline: 3px;
-  }
-
-
-  .enhancement-action-zone,
-  .enhancement-primary {
+  }.enhancement-action-zone,
+  .enhancement-primary{
     --enhancement-action-height: 52px;
-  }
-
-
-  .enhancement-run-highlight > span {
+  }.enhancement-run-highlight > span{
     padding: 6px;
-  }
-
-
-  .enhancement-run-highlight strong {
+  }.enhancement-run-highlight strong{
     font-size: 13px;
-  }
-
-
-  .enhancement-recent-log {
+  }.enhancement-recent-log{
     overflow: hidden;
   }
-}
-
-
-html[data-theme="light"] .enhancement-action-odds b,
-html[data-theme="light"] .enhancement-run-highlight strong {
+}html[data-theme="light"] .enhancement-action-odds b,
+  html[data-theme="light"] .enhancement-run-highlight strong{
   color: #625b56;
-}
-
-
-html[data-theme="light"] .enhancement-run-highlight > span {
+}html[data-theme="light"] .enhancement-run-highlight > span{
   border-color: rgba(78,68,62,.08);
   background: rgba(255,255,255,.45);
-}
-
-
-html[data-theme="light"] .enhancement-result[data-outcome="charging"] {
+}html[data-theme="light"] .enhancement-result[data-outcome="charging"]{
   border-color: rgba(170,112,43,.18);
   background: rgba(196,130,51,.045);
-}
-
-
-@media (prefers-reduced-motion: reduce) {
-  .enhancement-pickaxe::after {
+}@media (prefers-reduced-motion: reduce){.enhancement-pickaxe::after{
     animation: none !important;
   }
-}
-
-
-
-/* === 2026-09-26 enhancement lab item focus and audio controls v7 === */
-/* Keep the pickaxe unobstructed; status information now lives outside the slot. */
-.enhancement-tier-mark,
-.enhancement-slot-level {
-  display: none !important;
-}
-
-
-.enhancement-level-row {
+}.enhancement-level-row{
   align-items: center;
-}
-
-
-.enhancement-stage-tag {
+}.enhancement-stage-tag{
   display: inline-flex;
   align-items: center;
   min-height: 20px;
@@ -3274,10 +1852,7 @@ html[data-theme="light"] .enhancement-result[data-outcome="charging"] {
   font-size: 10px;
   font-weight: 900;
   letter-spacing: .02em;
-}
-
-
-.enhancement-stage-tag[data-tier="destroy"] {
+}.enhancement-stage-tag[data-tier="destroy"]{
   border-color: rgba(213,86,73,.2);
   background: rgba(213,86,73,.05);
   color: #d98a82;
@@ -3285,7 +1860,7 @@ html[data-theme="light"] .enhancement-result[data-outcome="charging"] {
 
 
 /* Let the item fill more of the slot now that corner labels are gone. */
-.enhancement-pickaxe {
+.enhancement-pickaxe{
   width: 132px;
   height: 132px;
   filter:
@@ -3293,34 +1868,22 @@ html[data-theme="light"] .enhancement-result[data-outcome="charging"] {
     brightness(1.025)
     drop-shadow(0 8px 9px rgba(0,0,0,.4))
     drop-shadow(0 0 7px rgba(var(--forge-glow), .1));
-}
-
-
-.enhancement-slot-inner {
+}.enhancement-slot-inner{
   background:
     radial-gradient(circle at 50% 46%, rgba(var(--forge-glow), .025), transparent 52%),
     linear-gradient(135deg, rgba(255,255,255,.015), transparent 38%),
     #101314;
-}
-
-
-.enhancement-item-tooltip {
+}.enhancement-item-tooltip{
   width: min(300px, 84%);
-}
-
-
-.enhancement-item-tooltip strong {
+}.enhancement-item-tooltip strong{
   letter-spacing: -.01em;
 }
 
 
 /* Sound controls: toggle, persisted volume, and one-shot preview. */
-.enhancement-head-actions {
+.enhancement-head-actions{
   align-items: stretch;
-}
-
-
-.enhancement-sound-controls {
+}.enhancement-sound-controls{
   display: flex;
   align-items: center;
   gap: 6px;
@@ -3328,56 +1891,35 @@ html[data-theme="light"] .enhancement-result[data-outcome="charging"] {
   border: 1px solid rgba(255,255,255,.055);
   border-radius: 8px;
   background: rgba(0,0,0,.12);
-}
-
-
-.enhancement-sound-controls > button {
+}.enhancement-sound-controls > button{
   min-height: 28px;
   padding: 0 8px;
-}
-
-
-.enhancement-sound-test {
+}.enhancement-sound-test{
   color: #aba29c !important;
-}
-
-
-.enhancement-volume-control {
+}.enhancement-volume-control{
   min-width: 145px;
   display: grid;
   grid-template-columns: 18px minmax(72px, 1fr) 34px;
   align-items: center;
   gap: 5px;
   padding: 0 4px;
-}
-
-
-.enhancement-volume-control > span {
+}.enhancement-volume-control > span{
   display: grid;
   place-items: center;
   font-size: 12px;
   filter: saturate(.7);
-}
-
-
-.enhancement-volume-control > b {
+}.enhancement-volume-control > b{
   color: #8e8782;
   font-size: 10px;
   font-weight: 900;
   text-align: right;
-}
-
-
-.enhancement-volume-control input[type="range"] {
+}.enhancement-volume-control input[type="range"]{
   width: 100%;
   height: 18px;
   margin: 0;
   accent-color: #62c3c8;
   cursor: pointer;
-}
-
-
-.enhancement-volume-control input[type="range"]:focus-visible {
+}.enhancement-volume-control input[type="range"]:focus-visible{
   outline: 1px solid rgba(98,195,200,.46);
   outline-offset: 2px;
   border-radius: 3px;
@@ -3385,7 +1927,7 @@ html[data-theme="light"] .enhancement-result[data-outcome="charging"] {
 
 
 /* The wording is shorter now, so the feedback line can be a little tighter. */
-.enhancement-result > strong {
+.enhancement-result > strong{
   -webkit-line-clamp: 1;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -3393,26 +1935,17 @@ html[data-theme="light"] .enhancement-result[data-outcome="charging"] {
 
 
 /* High-tier labels are progressive and consistent, never drawn on the item itself. */
-.enhancement-stage-tag[data-tier="mid"] {
+.enhancement-stage-tag[data-tier="mid"]{
   color: #7bcbd0;
-}
-
-
-.enhancement-stage-tag[data-tier="high"] {
+}.enhancement-stage-tag[data-tier="high"]{
   color: #90ade7;
   border-color: rgba(91,143,224,.22);
   background: rgba(91,143,224,.045);
-}
-
-
-.enhancement-stage-tag[data-tier="extreme"] {
+}.enhancement-stage-tag[data-tier="extreme"]{
   color: #c99ce8;
   border-color: rgba(174,111,222,.24);
   background: rgba(174,111,222,.045);
-}
-
-
-.enhancement-stage-tag[data-tier="legendary"] {
+}.enhancement-stage-tag[data-tier="legendary"]{
   color: #e7c46f;
   border-color: rgba(235,190,90,.26);
   background: rgba(235,190,90,.05);
@@ -3420,85 +1953,43 @@ html[data-theme="light"] .enhancement-result[data-outcome="charging"] {
 
 
 /* Light mode keeps the controls visible without turning them into bright chrome. */
-html[data-theme="light"] .enhancement-sound-controls {
+html[data-theme="light"] .enhancement-sound-controls{
   border-color: rgba(78,68,62,.08);
   background: rgba(255,255,255,.36);
-}
-
-
-html[data-theme="light"] .enhancement-volume-control > b {
+}html[data-theme="light"] .enhancement-volume-control > b{
   color: #716863;
-}
-
-
-html[data-theme="light"] .enhancement-stage-tag {
+}html[data-theme="light"] .enhancement-stage-tag{
   background: rgba(var(--forge-glow), .035);
-}
-
-
-@media (min-width: 901px) and (max-height: 900px) {
-  .enhancement-pickaxe {
+}@media (min-width: 901px) and (max-height: 900px){.enhancement-pickaxe{
     width: 117px;
     height: 117px;
-  }
-
-
-  .enhancement-volume-control {
+  }.enhancement-volume-control{
     min-width: 128px;
     grid-template-columns: 16px minmax(62px,1fr) 30px;
   }
-}
-
-
-@media (min-width: 901px) and (max-height: 760px) {
-  .enhancement-pickaxe {
+}@media (min-width: 901px) and (max-height: 760px){.enhancement-pickaxe{
     width: 104px;
     height: 104px;
-  }
-
-
-  .enhancement-sound-controls {
+  }.enhancement-sound-controls{
     gap: 3px;
-  }
-
-
-  .enhancement-volume-control {
+  }.enhancement-volume-control{
     min-width: 116px;
   }
-}
-
-
-@media (max-width: 700px) {
-  .enhancement-head-actions {
+}@media (max-width: 700px){.enhancement-head-actions{
     width: 100%;
     justify-content: flex-start;
-  }
-
-
-  .enhancement-sound-controls {
+  }.enhancement-sound-controls{
     width: 100%;
     flex-wrap: wrap;
-  }
-
-
-  .enhancement-volume-control {
+  }.enhancement-volume-control{
     flex: 1 1 150px;
     min-width: 140px;
-  }
-
-
-  .enhancement-sound-test {
+  }.enhancement-sound-test{
     flex: 0 0 auto;
-  }
-
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: 120px;
     height: 120px;
-  }
-
-
-  .enhancement-result > strong {
+  }.enhancement-result > strong{
     white-space: normal;
     -webkit-line-clamp: 2;
   }
@@ -3513,7 +2004,7 @@ html[data-theme="light"] .enhancement-stage-tag {
  * glint, break pieces) follows the same visual-center correction while the
  * existing transform animations remain untouched.
  */
-.enhancement-pickaxe {
+.enhancement-pickaxe{
   --pickaxe-visual-x: -6px;
   --pickaxe-visual-y: -2px;
   translate: var(--pickaxe-visual-x) var(--pickaxe-visual-y);
@@ -3521,7 +2012,7 @@ html[data-theme="light"] .enhancement-stage-tag {
 
 
 /* Keep the subtle slot light centered on the corrected item, not the raw box. */
-.enhancement-slot-inner {
+.enhancement-slot-inner{
   background:
     radial-gradient(
       circle at calc(50% - 6px) calc(46% - 2px),
@@ -3530,19 +2021,11 @@ html[data-theme="light"] .enhancement-stage-tag {
     ),
     linear-gradient(135deg, rgba(255,255,255,.015), transparent 38%),
     #101314;
-}
-
-
-@media (min-width: 901px) and (max-height: 760px) {
-  .enhancement-pickaxe {
+}@media (min-width: 901px) and (max-height: 760px){.enhancement-pickaxe{
     --pickaxe-visual-x: -5px;
     --pickaxe-visual-y: -2px;
   }
-}
-
-
-@media (max-width: 700px) {
-  .enhancement-pickaxe {
+}@media (max-width: 700px){.enhancement-pickaxe{
     --pickaxe-visual-x: -5px;
     --pickaxe-visual-y: -2px;
   }
@@ -3551,301 +2034,143 @@ html[data-theme="light"] .enhancement-stage-tag {
 
 
 /* === 2026-09-26 enhancement lab responsive desktop scale === */
-@media (min-width: 1100px) {
-  .wiki-enhancement-lab {
+@media (min-width: 1100px){.wiki-enhancement-lab{
     gap: clamp(16px, 1.2vw, 22px);
     padding: clamp(20px, 1.45vw, 28px);
-  }
-
-
-  .enhancement-lab-head {
+  }.enhancement-lab-head{
     gap: clamp(18px, 1.5vw, 28px);
     padding-bottom: clamp(14px, 1vw, 19px);
-  }
-
-
-  .enhancement-lab-head p {
+  }.enhancement-lab-head p{
     font-size: clamp(10px, .68vw, 12px);
-  }
-
-
-  .enhancement-lab-head h2 {
+  }.enhancement-lab-head h2{
     font-size: clamp(28px, 2vw, 36px);
-  }
-
-
-  .enhancement-lab-head > div:first-child > span {
+  }.enhancement-lab-head > div:first-child > span{
     font-size: clamp(12px, .78vw, 14px);
-  }
-
-
-  .enhancement-head-actions {
+  }.enhancement-head-actions{
     gap: 9px;
-  }
-
-
-  .enhancement-sim-badge,
-  .enhancement-head-actions button {
+  }.enhancement-sim-badge,
+  .enhancement-head-actions button{
     min-height: clamp(36px, 2.5vw, 42px);
     padding-inline: clamp(11px, .85vw, 15px);
     font-size: clamp(10px, .65vw, 12px);
-  }
-
-
-  .enhancement-volume-control {
+  }.enhancement-volume-control{
     min-height: clamp(36px, 2.5vw, 42px);
     padding-inline: 10px;
-  }
-
-
-  .enhancement-volume-control input {
+  }.enhancement-volume-control input{
     width: clamp(110px, 8vw, 155px);
-  }
-
-
-  .enhancement-volume-control b {
+  }.enhancement-volume-control b{
     min-width: 36px;
     font-size: clamp(9px, .62vw, 11px);
-  }
-
-
-  .enhancement-main-grid {
+  }.enhancement-main-grid{
     grid-template-columns: minmax(0, 1.82fr) minmax(330px, .92fr);
     gap: clamp(14px, 1vw, 20px);
-  }
-
-
-  .enhancement-forge {
+  }.enhancement-forge{
     min-height: clamp(560px, 39vw, 690px);
     gap: clamp(11px, .8vw, 15px);
     padding: clamp(20px, 1.45vw, 28px);
-  }
-
-
-  .enhancement-level-row {
+  }.enhancement-level-row{
     gap: 10px;
-  }
-
-
-  .enhancement-level-label {
+  }.enhancement-level-label{
     font-size: clamp(9px, .62vw, 11px);
-  }
-
-
-  .enhancement-level-row > strong {
+  }.enhancement-level-row > strong{
     font-size: clamp(38px, 2.7vw, 50px);
-  }
-
-
-  .enhancement-item-name {
+  }.enhancement-item-name{
     font-size: clamp(11px, .75vw, 14px);
-  }
-
-
-  .enhancement-stage-tag {
+  }.enhancement-stage-tag{
     min-height: 24px;
     padding-inline: 8px;
     font-size: clamp(8px, .55vw, 10px);
-  }
-
-
-  .enhancement-item-stage {
+  }.enhancement-item-stage{
     min-height: clamp(330px, 23vw, 410px);
     gap: clamp(13px, .9vw, 18px);
     padding-block: 16px 8px;
-  }
-
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: clamp(215px, 15vw, 270px);
     height: clamp(215px, 15vw, 270px);
     padding: clamp(8px, .55vw, 10px);
-  }
-
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: clamp(176px, 12.2vw, 220px);
     height: clamp(176px, 12.2vw, 220px);
-  }
-
-
-  .enhancement-item-tooltip {
+  }.enhancement-item-tooltip{
     width: min(430px, 92%);
     padding: 11px 14px;
-  }
-
-
-  .enhancement-item-tooltip strong {
+  }.enhancement-item-tooltip strong{
     font-size: clamp(11px, .72vw, 13px);
-  }
-
-
-  .enhancement-item-tooltip span {
+  }.enhancement-item-tooltip span{
     font-size: clamp(9px, .62vw, 11px);
-  }
-
-
-  .enhancement-result {
+  }.enhancement-result{
     min-height: clamp(50px, 3.6vw, 60px);
     grid-template-columns: 31px minmax(0,1fr);
     padding: 11px 14px;
-  }
-
-
-  .enhancement-result > span {
+  }.enhancement-result > span{
     font-size: clamp(18px, 1.35vw, 23px);
-  }
-
-
-  .enhancement-result > strong {
+  }.enhancement-result > strong{
     font-size: clamp(11px, .72vw, 13px);
-  }
-
-
-  .enhancement-action-odds {
+  }.enhancement-action-odds{
     font-size: clamp(9px, .62vw, 11px);
-  }
-
-
-  .enhancement-primary {
+  }.enhancement-primary{
     min-height: clamp(68px, 4.8vw, 82px);
     font-size: clamp(16px, 1.05vw, 19px);
-  }
-
-
-  .enhancement-primary span {
+  }.enhancement-primary span{
     font-size: clamp(10px, .66vw, 12px);
-  }
-
-
-  .enhancement-side {
+  }.enhancement-side{
     gap: clamp(11px, .8vw, 15px);
-  }
-
-
-  .enhancement-side > section,
-  .enhancement-side > details {
+  }.enhancement-side > section,
+  .enhancement-side > details{
     padding: clamp(15px, 1.05vw, 20px);
-  }
-
-
-  .enhancement-panel-title small,
-  .enhancement-log-head span {
+  }.enhancement-panel-title small,
+  .enhancement-log-head span{
     font-size: clamp(8px, .54vw, 10px);
-  }
-
-
-  .enhancement-panel-title strong,
-  .enhancement-log-head strong {
+  }.enhancement-panel-title strong,
+  .enhancement-log-head strong{
     font-size: clamp(11px, .76vw, 14px);
-  }
-
-
-  .enhancement-odds-grid strong {
+  }.enhancement-odds-grid strong{
     font-size: clamp(18px, 1.3vw, 24px);
-  }
-
-
-  .enhancement-record-grid strong,
-  .enhancement-run-strip strong {
+  }.enhancement-record-grid strong,
+  .enhancement-run-strip strong{
     font-size: clamp(14px, 1vw, 18px);
-  }
-
-
-  .enhancement-record-grid small,
+  }.enhancement-record-grid small,
   .enhancement-run-strip small,
-  .enhancement-odds-grid small {
+  .enhancement-odds-grid small{
     font-size: clamp(8px, .55vw, 10px);
-  }
-
-
-  .enhancement-log-list {
+  }.enhancement-log-list{
     gap: clamp(6px, .45vw, 9px);
-  }
-
-
-  .enhancement-log-list > span {
+  }.enhancement-log-list > span{
     padding: 8px 9px;
-  }
-
-
-  .enhancement-log-list b {
+  }.enhancement-log-list b{
     font-size: clamp(9px, .6vw, 11px);
-  }
-
-
-  .enhancement-log-list small {
+  }.enhancement-log-list small{
     font-size: clamp(8px, .55vw, 10px);
   }
-}
-
-
-@media (min-width: 1440px) {
-
-  .enhancement-main-grid {
+}@media (min-width: 1440px){.enhancement-main-grid{
     grid-template-columns: minmax(0, 1.9fr) minmax(350px, .9fr);
   }
-}
-
-
-@media (min-width: 1600px) {
-
-  .wiki-enhancement-lab {
+}@media (min-width: 1600px){.wiki-enhancement-lab{
     border-radius: 19px;
-  }
-
-
-  .enhancement-main-grid {
+  }.enhancement-main-grid{
     grid-template-columns: minmax(0, 1.92fr) minmax(370px, .9fr);
   }
-}
-
-
-@media (min-width: 1920px) {
-
-  .enhancement-forge {
+}@media (min-width: 1920px){.enhancement-forge{
     min-height: 700px;
-  }
-
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: 280px;
     height: 280px;
-  }
-
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: 230px;
     height: 230px;
   }
-}
-
-
-@media (min-width: 1100px) and (max-height: 760px) {
-  .enhancement-forge {
+}@media (min-width: 1100px) and (max-height: 760px){.enhancement-forge{
     min-height: 520px;
-  }
-
-
-  .enhancement-item-stage {
+  }.enhancement-item-stage{
     min-height: 286px;
     padding-block: 8px 4px;
-  }
-
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: clamp(190px, 13vw, 220px);
     height: clamp(190px, 13vw, 220px);
-  }
-
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: clamp(156px, 10.5vw, 180px);
     height: clamp(156px, 10.5vw, 180px);
-  }
-
-
-  .enhancement-primary {
+  }.enhancement-primary{
     min-height: 62px;
   }
 }
@@ -3853,13 +2178,9 @@ html[data-theme="light"] .enhancement-stage-tag {
 
 
 /* === 2026-09-26 enhancement lab desktop density refinement === */
-@media (min-width: 1100px) {
-  .enhancement-head-actions {
+@media (min-width: 1100px){.enhancement-head-actions{
     align-self: center;
-  }
-
-
-  .enhancement-sound-controls {
+  }.enhancement-sound-controls{
     display: flex;
     align-items: center;
     gap: 7px;
@@ -3867,151 +2188,72 @@ html[data-theme="light"] .enhancement-stage-tag {
     border: 1px solid rgba(255,255,255,.055);
     border-radius: 10px;
     background: rgba(0,0,0,.1);
-  }
-
-
-  .enhancement-sound-controls > button {
+  }.enhancement-sound-controls > button{
     border-color: transparent;
     background: transparent;
-  }
-
-
-  .enhancement-sound-controls > button:hover,
-  .enhancement-sound-controls > button:focus-visible {
+  }.enhancement-sound-controls > button:hover,
+  .enhancement-sound-controls > button:focus-visible{
     background: rgba(255,255,255,.035);
-  }
-
-
-  .enhancement-sound-controls > button:first-child {
+  }.enhancement-sound-controls > button:first-child{
     gap: 5px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-  }
-
-
-  .enhancement-volume-control {
+  }.enhancement-volume-control{
     border-left: 1px solid rgba(255,255,255,.055);
     border-right: 1px solid rgba(255,255,255,.055);
-  }
-
-
-  .enhancement-side > section,
-  .enhancement-side > details {
+  }.enhancement-side > section,
+  .enhancement-side > details{
     border-radius: 10px;
-  }
-
-
-  .enhancement-odds-grid {
+  }.enhancement-odds-grid{
     gap: clamp(7px, .55vw, 10px);
-  }
-
-
-  .enhancement-odds-grid > div,
+  }.enhancement-odds-grid > div,
   .enhancement-record-grid > span,
-  .enhancement-run-strip > span {
+  .enhancement-run-strip > span{
     min-height: 54px;
     align-content: center;
-  }
-
-
-  .enhancement-probability .enhancement-panel-title {
+  }.enhancement-probability .enhancement-panel-title{
     margin-bottom: 1px;
-  }
-
-
-  .enhancement-record-grid,
-  .enhancement-run-strip {
+  }.enhancement-record-grid,
+  .enhancement-run-strip{
     gap: clamp(6px, .5vw, 9px);
-  }
-
-
-  .enhancement-links a {
+  }.enhancement-links a{
     min-height: 44px;
   }
-}
-
-
-@media (min-width: 1100px) and (max-width: 1399px) {
-  .wiki-enhancement-lab {
+}@media (min-width: 1100px) and (max-width: 1399px){.wiki-enhancement-lab{
     padding: 20px;
-  }
-
-
-  .enhancement-main-grid {
+  }.enhancement-main-grid{
     grid-template-columns: minmax(0, 1.68fr) minmax(300px, .82fr);
-  }
-
-
-  .enhancement-forge {
+  }.enhancement-forge{
     padding: 19px;
-  }
-
-
-  .enhancement-side > section,
-  .enhancement-side > details {
+  }.enhancement-side > section,
+  .enhancement-side > details{
     padding: 14px;
   }
-}
-
-
-@media (min-width: 1400px) {
-  .enhancement-lab-head > div:first-child {
+}@media (min-width: 1400px){.enhancement-lab-head > div:first-child{
     max-width: 60%;
-  }
-
-
-  .enhancement-head-actions {
+  }.enhancement-head-actions{
     max-width: 40%;
   }
-}
-
-
-@media (min-width: 1700px) {
-  .enhancement-main-grid {
+}@media (min-width: 1700px){.enhancement-main-grid{
     grid-template-columns: minmax(0, 2fr) minmax(390px, .9fr);
-  }
-
-
-  .enhancement-side {
+  }.enhancement-side{
     gap: 14px;
-  }
-
-
-  .enhancement-side > section,
-  .enhancement-side > details {
+  }.enhancement-side > section,
+  .enhancement-side > details{
     padding: 19px;
   }
-}
-
-
-@media (min-width: 1100px) and (max-height: 650px) {
-  .wiki-enhancement-lab {
+}@media (min-width: 1100px) and (max-height: 650px){.wiki-enhancement-lab{
     padding-block: 16px;
-  }
-
-
-  .enhancement-lab-head {
+  }.enhancement-lab-head{
     padding-bottom: 10px;
-  }
-
-
-  .enhancement-lab-head > div:first-child > span {
+  }.enhancement-lab-head > div:first-child > span{
     display: none;
-  }
-
-
-  .enhancement-item-tooltip span {
+  }.enhancement-item-tooltip span{
     display: none;
-  }
-
-
-  .enhancement-recent-log {
+  }.enhancement-recent-log{
     padding-top: 5px;
-  }
-
-
-  .enhancement-log-list > span {
+  }.enhancement-log-list > span{
     padding-block: 5px;
   }
 }
@@ -4019,243 +2261,132 @@ html[data-theme="light"] .enhancement-stage-tag {
 
 
 /* === 2026-09-26 enhancement feedback v5: fit + distinct outcomes === */
-.enhancement-slot-inner::after {
+.enhancement-slot-inner::after{
   content: '';
   position: absolute;
   inset: 0;
   z-index: 7;
   pointer-events: none;
   opacity: 0;
-}
-
-
-.enhancement-forge[data-state="success"] .enhancement-slot-inner::after {
+}.enhancement-forge[data-state="success"] .enhancement-slot-inner::after{
   background:
     radial-gradient(circle at 50% 50%, rgba(126,236,240,.34), transparent 34%),
     conic-gradient(from 0deg, transparent, rgba(99,208,221,.2), transparent 28%, rgba(117,165,255,.15), transparent 55%);
   animation: enhancementSuccessAura .7s ease-out both;
-}
-
-
-.enhancement-forge[data-state="max"] .enhancement-slot-inner::after {
+}.enhancement-forge[data-state="max"] .enhancement-slot-inner::after{
   background:
     radial-gradient(circle at 50% 50%, rgba(255,232,160,.54), transparent 32%),
     conic-gradient(from 0deg, rgba(245,204,104,.05), rgba(255,239,177,.42), rgba(168,125,255,.16), rgba(245,204,104,.05));
   animation: enhancementMaxAura 1.05s cubic-bezier(.18,.78,.2,1) both;
-}
-
-
-.enhancement-forge[data-state="fail"] .enhancement-slot-inner::after {
+}.enhancement-forge[data-state="fail"] .enhancement-slot-inner::after{
   background: linear-gradient(rgba(30,30,31,.38), rgba(12,12,13,.18));
   animation: enhancementFailShade .42s ease-out both;
-}
-
-
-.enhancement-forge[data-state="down"] .enhancement-slot-inner::after {
+}.enhancement-forge[data-state="down"] .enhancement-slot-inner::after{
   background:
     linear-gradient(to bottom, rgba(224,145,68,.05), rgba(224,113,51,.28) 72%, transparent);
   animation: enhancementDownSweep .62s ease-out both;
-}
-
-
-.enhancement-forge[data-state="destroy"] .enhancement-slot-inner::after {
+}.enhancement-forge[data-state="destroy"] .enhancement-slot-inner::after{
   background:
     radial-gradient(circle at 50% 50%, rgba(239,82,66,.36), transparent 38%),
     linear-gradient(135deg, transparent 46%, rgba(255,111,92,.34) 48% 50%, transparent 52%),
     linear-gradient(45deg, transparent 43%, rgba(255,111,92,.24) 45% 47%, transparent 49%);
   animation: enhancementDestroyFlash .78s ease-out both;
-}
-
-
-.enhancement-forge[data-state="success"] .enhancement-particles i {
+}.enhancement-forge[data-state="success"] .enhancement-particles i{
   background: linear-gradient(90deg, #bafcff, #72d9e4);
   box-shadow: 0 0 7px rgba(114,217,228,.7);
-}
-
-
-.enhancement-forge[data-state="max"] .enhancement-particles i {
+}.enhancement-forge[data-state="max"] .enhancement-particles i{
   background: linear-gradient(90deg, #fff0a9, #e8bd5d);
   box-shadow: 0 0 8px rgba(238,196,94,.82), 0 0 14px rgba(183,126,255,.26);
-}
-
-
-.enhancement-forge[data-state="down"] .enhancement-particles i {
+}.enhancement-forge[data-state="down"] .enhancement-particles i{
   background: #d58b50;
   box-shadow: 0 0 6px rgba(213,139,80,.44);
   animation: enhancementDownParticle .55s ease-in both;
-}
-
-
-.enhancement-forge[data-state="destroy"] {
+}.enhancement-forge[data-state="destroy"]{
   animation: enhancementForgeDestroyShake .52s ease-out both;
-}
-
-
-.enhancement-forge[data-state="destroy"] .enhancement-shards i {
+}.enhancement-forge[data-state="destroy"] .enhancement-shards i{
   box-shadow: 0 0 11px rgba(231,78,63,.28);
 }
 
 
 /* Keep the enlarged desktop UI visible on short monitors without shrinking text. */
-@media (min-width: 1100px) and (max-height: 760px) {
-  .wiki-enhancement-lab {
+@media (min-width: 1100px) and (max-height: 760px){.wiki-enhancement-lab{
     gap: 9px;
     padding: 13px 16px 14px;
-  }
-
-
-  .enhancement-lab-head {
+  }.enhancement-lab-head{
     padding-bottom: 8px;
-  }
-
-
-  .enhancement-lab-head > div:first-child > span {
+  }.enhancement-lab-head > div:first-child > span{
     display: none;
-  }
-
-
-  .enhancement-main-grid {
+  }.enhancement-main-grid{
     align-items: start;
-  }
-
-
-  .enhancement-forge {
+  }.enhancement-forge{
     min-height: 430px;
     gap: 6px;
     padding: 13px 16px;
-  }
-
-
-  .enhancement-item-stage {
+  }.enhancement-item-stage{
     min-height: 218px;
     gap: 6px;
     padding-block: 4px 2px;
-  }
-
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: clamp(174px, 12vw, 205px);
     height: clamp(174px, 12vw, 205px);
-  }
-
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: clamp(143px, 9.8vw, 168px);
     height: clamp(143px, 9.8vw, 168px);
-  }
-
-
-  .enhancement-item-tooltip {
+  }.enhancement-item-tooltip{
     padding-block: 7px;
-  }
-
-
-  .enhancement-item-tooltip span {
+  }.enhancement-item-tooltip span{
     display: none;
-  }
-
-
-  .enhancement-result {
+  }.enhancement-result{
     min-height: 38px;
     height: 38px;
     padding-block: 5px;
-  }
-
-
-  .enhancement-action-odds {
+  }.enhancement-action-odds{
     min-height: 18px;
     padding-block: 0;
-  }
-
-
-  .enhancement-action-zone,
-  .enhancement-primary {
+  }.enhancement-action-zone,
+  .enhancement-primary{
     min-height: 54px;
     height: 54px;
-  }
-
-
-  .enhancement-recent-log {
+  }.enhancement-recent-log{
     min-height: 39px;
     padding-top: 3px;
-  }
-
-
-  .enhancement-log-list > span {
+  }.enhancement-log-list > span{
     min-height: 25px;
     height: 25px;
     padding-block: 2px;
-  }
-
-
-  .enhancement-side {
+  }.enhancement-side{
     gap: 7px;
-  }
-
-
-  .enhancement-side > section,
-  .enhancement-side > details {
+  }.enhancement-side > section,
+  .enhancement-side > details{
     gap: 6px;
     padding: 10px 12px;
-  }
-
-
-  .enhancement-odds-grid > div,
+  }.enhancement-odds-grid > div,
   .enhancement-record-grid > span,
-  .enhancement-run-strip > span {
+  .enhancement-run-strip > span{
     min-height: 46px;
     padding-block: 6px;
-  }
-
-
-  .enhancement-probability > p {
+  }.enhancement-probability > p{
     line-height: 1.35;
   }
-}
-
-
-@media (min-width: 1100px) and (max-height: 620px) {
-  .enhancement-lab-head p {
+}@media (min-width: 1100px) and (max-height: 620px){.enhancement-lab-head p{
     font-size: 10px;
-  }
-
-
-  .enhancement-lab-head h2 {
+  }.enhancement-lab-head h2{
     font-size: 25px;
-  }
-
-
-  .enhancement-forge {
+  }.enhancement-forge{
     min-height: 392px;
-  }
-
-
-  .enhancement-item-stage {
+  }.enhancement-item-stage{
     min-height: 185px;
-  }
-
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: 166px;
     height: 166px;
-  }
-
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: 136px;
     height: 136px;
-  }
-
-
-  .enhancement-recent-log {
+  }.enhancement-recent-log{
     display: none;
   }
-}
-
-
-@media (prefers-reduced-motion: reduce) {
-  .enhancement-slot-inner::after,
-  .enhancement-forge[data-state="destroy"] {
+}@media (prefers-reduced-motion: reduce){.enhancement-slot-inner::after,
+  .enhancement-forge[data-state="destroy"]{
     animation: none !important;
   }
 }
@@ -4266,38 +2397,25 @@ html[data-theme="light"] .enhancement-stage-tag {
  * The right column may change content, but it always reserves the same
  * warning/result space so the whole mini-game does not jump.
  */
-.enhancement-risk-warning {
+.enhancement-risk-warning{
   min-height: 49px;
   box-sizing: border-box;
-}
-
-.enhancement-risk-warning[data-visible="false"] {
+}.enhancement-risk-warning[data-visible="false"]{
   visibility: hidden;
   pointer-events: none;
-}
-
-@media (min-width: 901px) {
-  .enhancement-main-grid {
+}@media (min-width: 901px){.enhancement-main-grid{
     align-items: stretch;
-  }
-
-  .enhancement-forge,
-  .enhancement-side {
+  }.enhancement-forge,
+  .enhancement-side{
     height: 100%;
     min-height: 0;
-  }
-
-  .enhancement-side {
+  }.enhancement-side{
     grid-template-rows: minmax(0, 1fr) auto auto auto;
     align-content: stretch;
-  }
-
-  .enhancement-probability {
+  }.enhancement-probability{
     min-height: 0;
     align-content: start;
-  }
-
-  .enhancement-forge {
+  }.enhancement-forge{
     --enhancement-result-slot-height: 46px;
     --enhancement-odds-slot-height: 24px;
     --enhancement-action-slot-height: 68px;
@@ -4312,66 +2430,35 @@ html[data-theme="light"] .enhancement-stage-tag {
       var(--enhancement-run-slot-height)
       var(--enhancement-log-slot-height);
     grid-auto-rows: unset;
-  }
-
-  .enhancement-result {
+  }.enhancement-result{
     width: 100%;
     height: 100%;
     min-height: 0;
     box-sizing: border-box;
-  }
-
-  .enhancement-action-odds {
+  }.enhancement-action-odds{
     width: 100%;
     height: 100%;
     min-height: 0;
     box-sizing: border-box;
-  }
-
-  .enhancement-action-zone,
-  .enhancement-primary {
+  }.enhancement-action-zone,
+  .enhancement-primary{
     width: 100%;
     height: 100%;
     min-height: 0;
     box-sizing: border-box;
-  }
-
-  .enhancement-run-result-slot {
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .enhancement-run-result,
-  .enhancement-run-result-placeholder {
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    box-sizing: border-box;
-  }
-
-  .enhancement-run-result-placeholder {
-    display: grid;
-    visibility: hidden;
-  }
-
-  .enhancement-recent-log {
+  }.enhancement-recent-log{
     width: 100%;
     height: 100%;
     min-height: 0;
     box-sizing: border-box;
     overflow: hidden;
-  }
-
-  .enhancement-log-list {
+  }.enhancement-log-list{
     min-height: 0;
   }
 }
 
 /* The attached laptop-sized view needs compact but still fixed slots. */
-@media (min-width: 901px) and (max-height: 760px) {
-  .enhancement-forge {
+@media (min-width: 901px) and (max-height: 760px){.enhancement-forge{
     --enhancement-result-slot-height: 38px;
     --enhancement-odds-slot-height: 19px;
     --enhancement-action-slot-height: 54px;
@@ -4385,19 +2472,9 @@ html[data-theme="light"] .enhancement-stage-tag {
       var(--enhancement-action-slot-height)
       var(--enhancement-run-slot-height)
       var(--enhancement-log-slot-height);
-  }
-
-  .enhancement-risk-warning {
+  }.enhancement-risk-warning{
     min-height: 45px;
     padding-block: 6px;
-  }
-
-  .enhancement-run-result {
-    padding: 5px 8px;
-  }
-
-  .enhancement-run-result-stats > span {
-    padding-block: 3px;
   }
 }
 
@@ -4406,11 +2483,9 @@ html[data-theme="light"] .enhancement-stage-tag {
  * The flash is deliberately larger, but opacity stays restrained so it reads
  * as impact rather than a bright overlay.
  */
-.enhancement-pickaxe {
+.enhancement-pickaxe{
   --enhancement-effect-radius: 72px;
-}
-
-.enhancement-pickaxe::after {
+}.enhancement-pickaxe::after{
   width: 145%;
   height: 145%;
   background:
@@ -4421,56 +2496,33 @@ html[data-theme="light"] .enhancement-stage-tag {
       rgba(220,126,43,.07) 45%,
       transparent 72%
     );
-}
-
-.enhancement-particles i {
+}.enhancement-particles i{
   transform:
     rotate(var(--angle))
     translateX(var(--enhancement-effect-radius))
     rotate(calc(var(--angle) * -1));
-}
-
-.enhancement-pickaxe-runes {
+}.enhancement-pickaxe-runes{
   inset: -8%;
-}
-
-.enhancement-forge[data-tier="high"] .enhancement-pickaxe::after,
-.enhancement-forge[data-tier="extreme"] .enhancement-pickaxe::after,
-.enhancement-forge[data-tier="legendary"] .enhancement-pickaxe::after {
+}.enhancement-forge[data-tier="high"] .enhancement-pickaxe::after,
+  .enhancement-forge[data-tier="extreme"] .enhancement-pickaxe::after,
+  .enhancement-forge[data-tier="legendary"] .enhancement-pickaxe::after{
   width: 155%;
   height: 155%;
-}
-
-@media (min-width: 1100px) {
-  .enhancement-pickaxe {
+}@media (min-width: 1100px){.enhancement-pickaxe{
     --enhancement-effect-radius: 104px;
   }
-}
-
-@media (min-width: 1440px) {
-  .enhancement-pickaxe {
+}@media (min-width: 1440px){.enhancement-pickaxe{
     --enhancement-effect-radius: 118px;
   }
-}
-
-@media (min-width: 1920px) {
-  .enhancement-pickaxe {
+}@media (min-width: 1920px){.enhancement-pickaxe{
     --enhancement-effect-radius: 138px;
   }
-}
-
-@media (min-width: 901px) and (max-height: 760px) {
-  .enhancement-pickaxe {
+}@media (min-width: 901px) and (max-height: 760px){.enhancement-pickaxe{
     --enhancement-effect-radius: 86px;
   }
-}
-
-@media (max-width: 700px) {
-  .enhancement-pickaxe {
+}@media (max-width: 700px){.enhancement-pickaxe{
     --enhancement-effect-radius: 72px;
-  }
-
-  .enhancement-pickaxe::after {
+  }.enhancement-pickaxe::after{
     width: 138%;
     height: 138%;
   }
@@ -4508,31 +2560,23 @@ html[data-text-size="small"] .wiki-enhancement-lab
     .enhancement-log-head,
     .enhancement-log-list b,
     .enhancement-log-list small
-  ) {
+  ){
   font-size: 10px;
-}
-
-html[data-text-size="small"] .wiki-enhancement-lab
+}html[data-text-size="small"] .wiki-enhancement-lab
   :is(
     .enhancement-lab-head > div:first-child > span,
     .enhancement-item-name,
     .enhancement-panel-title strong,
     .enhancement-run-strip strong,
     .enhancement-record-grid strong
-  ) {
+  ){
   font-size: 11px;
-}
-
-html[data-text-size="small"] .wiki-enhancement-lab .enhancement-primary {
+}html[data-text-size="small"] .wiki-enhancement-lab .enhancement-primary{
   font-size: 12px;
-}
-
-html[data-text-size="small"] .wiki-enhancement-lab
-  :is(.enhancement-odds-grid strong, .enhancement-run-highlight strong) {
+}html[data-text-size="small"] .wiki-enhancement-lab
+  :is(.enhancement-odds-grid strong, .enhancement-run-highlight strong){
   font-size: 16px;
-}
-
-html[data-text-size="large"] .wiki-enhancement-lab
+}html[data-text-size="large"] .wiki-enhancement-lab
   :is(
     .enhancement-lab-head p,
     .enhancement-sim-badge,
@@ -4559,31 +2603,23 @@ html[data-text-size="large"] .wiki-enhancement-lab
     .enhancement-log-head,
     .enhancement-log-list b,
     .enhancement-log-list small
-  ) {
+  ){
   font-size: 11px;
-}
-
-html[data-text-size="large"] .wiki-enhancement-lab
+}html[data-text-size="large"] .wiki-enhancement-lab
   :is(
     .enhancement-lab-head > div:first-child > span,
     .enhancement-item-name,
     .enhancement-panel-title strong,
     .enhancement-run-strip strong,
     .enhancement-record-grid strong
-  ) {
+  ){
   font-size: 13px;
-}
-
-html[data-text-size="large"] .wiki-enhancement-lab .enhancement-primary {
+}html[data-text-size="large"] .wiki-enhancement-lab .enhancement-primary{
   font-size: 15px;
-}
-
-html[data-text-size="large"] .wiki-enhancement-lab
-  :is(.enhancement-odds-grid strong, .enhancement-run-highlight strong) {
+}html[data-text-size="large"] .wiki-enhancement-lab
+  :is(.enhancement-odds-grid strong, .enhancement-run-highlight strong){
   font-size: 20px;
-}
-
-html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong {
+}html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong{
   line-height: 1.35;
 }
 
@@ -4593,29 +2629,20 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
  * Keep the two columns aligned, but stop reserving invisible post-run space
  * during an active run and place the two collapsed utility details side by side.
  */
-@media (min-width: 1100px) and (max-height: 800px) {
-  .wiki-enhancement-lab {
+@media (min-width: 1100px) and (max-height: 800px){.wiki-enhancement-lab{
     gap: 7px;
     padding: 10px 12px 12px;
-  }
-
-  .enhancement-lab-head {
+  }.enhancement-lab-head{
     gap: 10px;
     padding-bottom: 6px;
-  }
-
-  .enhancement-main-grid {
+  }.enhancement-main-grid{
     align-items: stretch;
     gap: 10px;
-  }
-
-  .enhancement-forge,
-  .enhancement-side {
+  }.enhancement-forge,
+  .enhancement-side{
     height: auto;
     min-height: 0;
-  }
-
-  .enhancement-forge {
+  }.enhancement-forge{
     --enhancement-result-slot-height: 36px;
     --enhancement-odds-slot-height: 18px;
     --enhancement-action-slot-height: 50px;
@@ -4631,136 +2658,78 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
       var(--enhancement-action-slot-height)
       auto
       var(--enhancement-log-slot-height);
-  }
-
-  .enhancement-item-stage {
+  }.enhancement-item-stage{
     min-height: 174px;
     gap: 5px;
     padding-block: 2px 0;
-  }
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: clamp(168px, 11vw, 188px);
     height: clamp(168px, 11vw, 188px);
-  }
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: clamp(138px, 9vw, 154px);
     height: clamp(138px, 9vw, 154px);
-  }
-
-  .enhancement-item-tooltip {
+  }.enhancement-item-tooltip{
     padding-block: 5px;
-  }
-
-  .enhancement-run-result-slot {
-    height: auto;
-    min-height: 0;
-    overflow: visible;
-  }
-
-  .enhancement-run-result-placeholder {
-    display: none;
-  }
-
-  .enhancement-run-result {
-    min-height: 48px;
-    height: auto;
-  }
-
-  .enhancement-result,
+  }.enhancement-result,
   .enhancement-action-odds,
   .enhancement-action-zone,
   .enhancement-primary,
-  .enhancement-recent-log {
+  .enhancement-recent-log{
     min-height: 0;
     height: 100%;
-  }
-
-  .enhancement-recent-log {
+  }.enhancement-recent-log{
     overflow: hidden;
     gap: 3px;
     padding-top: 3px;
-  }
-
-  .enhancement-log-list,
-  .enhancement-log-list > span {
+  }.enhancement-log-list,
+  .enhancement-log-list > span{
     min-height: 22px;
     height: 22px;
-  }
-
-  .enhancement-side {
+  }.enhancement-side{
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: auto auto auto;
     align-content: start;
     gap: 6px;
-  }
-
-  .enhancement-side > section {
+  }.enhancement-side > section{
     grid-column: 1 / -1;
-  }
-
-  .enhancement-side > section,
-  .enhancement-side > details {
+  }.enhancement-side > section,
+  .enhancement-side > details{
     gap: 5px;
     padding: 7px 9px;
-  }
-
-  .enhancement-records,
-  .enhancement-links {
+  }.enhancement-records,
+  .enhancement-links{
     grid-column: auto;
     min-width: 0;
-  }
-
-  .enhancement-records[open],
-  .enhancement-links[open] {
+  }.enhancement-records[open],
+  .enhancement-links[open]{
     grid-column: 1 / -1;
-  }
-
-  .enhancement-records > summary,
-  .enhancement-links > summary {
+  }.enhancement-records > summary,
+  .enhancement-links > summary{
     min-height: 34px;
     padding-bottom: 0;
     border-bottom: 0;
-  }
-
-  .enhancement-panel-title {
+  }.enhancement-panel-title{
     padding-bottom: 5px;
-  }
-
-  .enhancement-risk-warning {
+  }.enhancement-risk-warning{
     min-height: 40px;
     padding-block: 4px;
-  }
-
-  .enhancement-odds-grid,
+  }.enhancement-odds-grid,
   .enhancement-run-highlight,
-  .enhancement-run-strip {
+  .enhancement-run-strip{
     gap: 5px;
-  }
-
-  .enhancement-odds-grid > div,
+  }.enhancement-odds-grid > div,
   .enhancement-record-grid > span,
-  .enhancement-run-strip > span {
+  .enhancement-run-strip > span{
     min-height: 39px;
     padding-block: 4px;
-  }
-
-  .enhancement-run-highlight > span {
+  }.enhancement-run-highlight > span{
     padding-block: 4px;
-  }
-
-  .enhancement-probability > p {
+  }.enhancement-probability > p{
     line-height: 1.3;
   }
-}
-
-@media (min-width: 1100px) and (max-height: 700px) {
-  .wiki-enhancement-lab {
+}@media (min-width: 1100px) and (max-height: 700px){.wiki-enhancement-lab{
     padding-block: 8px 10px;
-  }
-
-  .enhancement-forge {
+  }.enhancement-forge{
     grid-template-rows:
       auto
       minmax(156px, 1fr)
@@ -4769,40 +2738,19 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
       46px
       auto
       30px;
-  }
-
-  .enhancement-item-stage {
+  }.enhancement-item-stage{
     min-height: 156px;
-  }
-
-  .enhancement-slot-shell {
+  }.enhancement-slot-shell{
     width: clamp(154px, 10vw, 172px);
     height: clamp(154px, 10vw, 172px);
-  }
-
-  .enhancement-pickaxe {
+  }.enhancement-pickaxe{
     width: clamp(126px, 8.2vw, 141px);
     height: clamp(126px, 8.2vw, 141px);
-  }
-
-  .enhancement-side > section,
-  .enhancement-side > details {
+  }.enhancement-side > section,
+  .enhancement-side > details{
     padding-block: 6px;
   }
-}
-
-/* === 2026-09-28 blacksmith impact + state-stable controls v11 === */
-/*
- * The post-run summary used to appear only after destruction/+15 and pushed
- * the recent-history row down. The same statistics already live in the right
- * panel, so the forge keeps one six-row geometry for every button state.
- */
-.enhancement-run-result-slot {
-  display: none !important;
-}
-
-@media (min-width: 901px) {
-  .enhancement-forge {
+}@media (min-width: 901px){.enhancement-forge{
     grid-template-rows:
       auto
       minmax(220px, 1fr)
@@ -4811,21 +2759,16 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
       68px
       54px;
     grid-auto-rows: unset;
-  }
-
-  .enhancement-result,
+  }.enhancement-result,
   .enhancement-action-odds,
   .enhancement-action-zone,
   .enhancement-primary,
-  .enhancement-recent-log {
+  .enhancement-recent-log{
     min-height: 0;
     height: 100%;
     box-sizing: border-box;
   }
-}
-
-@media (min-width: 1100px) and (max-height: 800px) {
-  .enhancement-forge {
+}@media (min-width: 1100px) and (max-height: 800px){.enhancement-forge{
     grid-template-rows:
       auto
       minmax(174px, 1fr)
@@ -4834,10 +2777,7 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
       50px
       33px;
   }
-}
-
-@media (min-width: 1100px) and (max-height: 700px) {
-  .enhancement-forge {
+}@media (min-width: 1100px) and (max-height: 700px){.enhancement-forge{
     grid-template-rows:
       auto
       minmax(156px, 1fr)
@@ -4846,10 +2786,7 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
       46px
       30px;
   }
-}
-
-@media (max-width: 900px) {
-  .enhancement-forge {
+}@media (max-width: 900px){.enhancement-forge{
     grid-template-rows: none;
     grid-auto-rows: auto;
   }
@@ -4860,15 +2797,11 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
  * action read as an anvil strike instead of a tiny glow inside the item.
  */
 .enhancement-slot-shell,
-.enhancement-item-stage {
+  .enhancement-item-stage{
   overflow: visible;
-}
-
-.enhancement-slot-shell {
+}.enhancement-slot-shell{
   position: relative;
-}
-
-.enhancement-forge-impact {
+}.enhancement-forge-impact{
   --forge-impact-rgb: 238, 164, 78;
   position: absolute;
   z-index: 24;
@@ -4880,25 +2813,15 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
   transform: translate(-50%, -50%);
   overflow: visible;
   filter: drop-shadow(0 0 5px rgba(var(--forge-impact-rgb), .18));
-}
-
-.enhancement-forge[data-tier="high"] .enhancement-forge-impact {
+}.enhancement-forge[data-tier="high"] .enhancement-forge-impact{
   --forge-impact-rgb: 111, 207, 224;
-}
-
-.enhancement-forge[data-tier="extreme"] .enhancement-forge-impact {
+}.enhancement-forge[data-tier="extreme"] .enhancement-forge-impact{
   --forge-impact-rgb: 153, 129, 238;
-}
-
-.enhancement-forge[data-tier="legendary"] .enhancement-forge-impact {
+}.enhancement-forge[data-tier="legendary"] .enhancement-forge-impact{
   --forge-impact-rgb: 238, 196, 95;
-}
-
-.enhancement-forge[data-state="destroy"] .enhancement-forge-impact {
+}.enhancement-forge[data-state="destroy"] .enhancement-forge-impact{
   --forge-impact-rgb: 229, 91, 74;
-}
-
-.enhancement-forge-hammer {
+}.enhancement-forge-hammer{
   position: absolute;
   z-index: 5;
   left: 57%;
@@ -4914,9 +2837,7 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
   box-shadow:
     inset 1px 0 rgba(255,255,255,.1),
     0 4px 8px rgba(0,0,0,.34);
-}
-
-.enhancement-forge-hammer::before {
+}.enhancement-forge-hammer::before{
   content: '';
   position: absolute;
   left: 50%;
@@ -4931,9 +2852,7 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
   box-shadow:
     inset 0 2px rgba(255,255,255,.13),
     0 5px 10px rgba(0,0,0,.42);
-}
-
-.enhancement-forge-hammer::after {
+}.enhancement-forge-hammer::after{
   content: '';
   position: absolute;
   left: 50%;
@@ -4943,10 +2862,8 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
   transform: translateX(-50%);
   border-radius: 2px;
   background: rgba(224,218,208,.2);
-}
-
-.enhancement-forge-impact-ring,
-.enhancement-forge-impact-core {
+}.enhancement-forge-impact-ring,
+  .enhancement-forge-impact-core{
   position: absolute;
   z-index: 3;
   left: 50%;
@@ -4955,18 +2872,14 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
   pointer-events: none;
   opacity: 0;
   transform: translate(-50%, -50%) scale(.2);
-}
-
-.enhancement-forge-impact-ring {
+}.enhancement-forge-impact-ring{
   width: 46%;
   height: 46%;
   border: 2px solid rgba(var(--forge-impact-rgb), .88);
   box-shadow:
     0 0 18px rgba(var(--forge-impact-rgb), .48),
     inset 0 0 12px rgba(var(--forge-impact-rgb), .22);
-}
-
-.enhancement-forge-impact-core {
+}.enhancement-forge-impact-core{
   width: 23%;
   height: 23%;
   background:
@@ -4978,9 +2891,7 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
       transparent 72%
     );
   filter: blur(.25px);
-}
-
-.enhancement-forge-sparks {
+}.enhancement-forge-sparks{
   position: absolute;
   z-index: 4;
   left: 50%;
@@ -4988,9 +2899,7 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
   width: 0;
   height: 0;
   pointer-events: none;
-}
-
-.enhancement-forge-sparks i {
+}.enhancement-forge-sparks i{
   --forge-angle: calc(var(--i) * 22.5deg);
   position: absolute;
   left: 0;
@@ -5012,52 +2921,32 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
       rgba(var(--forge-impact-rgb), 0)
     );
   box-shadow: 0 0 6px rgba(var(--forge-impact-rgb), .54);
-}
-
-.enhancement-forge[data-state="charging"] .enhancement-forge-hammer {
+}.enhancement-forge[data-state="charging"] .enhancement-forge-hammer{
   animation: enhancementBlacksmithHammer .24s cubic-bezier(.2,.78,.25,1) 3;
-}
-
-.enhancement-forge[data-state="charging"] .enhancement-forge-impact-ring {
+}.enhancement-forge[data-state="charging"] .enhancement-forge-impact-ring{
   animation: enhancementBlacksmithRing .24s ease-out 3;
-}
-
-.enhancement-forge[data-state="charging"] .enhancement-forge-impact-core {
+}.enhancement-forge[data-state="charging"] .enhancement-forge-impact-core{
   animation: enhancementBlacksmithCore .24s ease-out 3;
-}
-
-.enhancement-forge[data-state="charging"] .enhancement-forge-sparks i {
+}.enhancement-forge[data-state="charging"] .enhancement-forge-sparks i{
   animation: enhancementBlacksmithSpark .24s ease-out 3;
   animation-delay: calc(var(--i) * -0.002s);
-}
-
-.enhancement-forge[data-state="success"] .enhancement-forge-impact-ring,
-.enhancement-forge[data-state="max"] .enhancement-forge-impact-ring {
+}.enhancement-forge[data-state="success"] .enhancement-forge-impact-ring,
+  .enhancement-forge[data-state="max"] .enhancement-forge-impact-ring{
   animation: enhancementBlacksmithResultRing .48s ease-out 1;
-}
-
-.enhancement-forge[data-state="success"] .enhancement-forge-impact-core,
-.enhancement-forge[data-state="max"] .enhancement-forge-impact-core {
+}.enhancement-forge[data-state="success"] .enhancement-forge-impact-core,
+  .enhancement-forge[data-state="max"] .enhancement-forge-impact-core{
   animation: enhancementBlacksmithResultCore .38s ease-out 1;
-}
-
-.enhancement-forge[data-state="success"] .enhancement-forge-sparks i,
-.enhancement-forge[data-state="max"] .enhancement-forge-sparks i,
-.enhancement-forge[data-state="down"] .enhancement-forge-sparks i,
-.enhancement-forge[data-state="destroy"] .enhancement-forge-sparks i {
+}.enhancement-forge[data-state="success"] .enhancement-forge-sparks i,
+  .enhancement-forge[data-state="max"] .enhancement-forge-sparks i,
+  .enhancement-forge[data-state="down"] .enhancement-forge-sparks i,
+  .enhancement-forge[data-state="destroy"] .enhancement-forge-sparks i{
   animation: enhancementBlacksmithResultSpark .42s ease-out 1;
   animation-delay: calc(var(--i) * .002s);
-}
-
-.enhancement-forge[data-state="down"] .enhancement-forge-impact-ring {
+}.enhancement-forge[data-state="down"] .enhancement-forge-impact-ring{
   animation: enhancementBlacksmithDownRing .38s ease-out 1;
-}
-
-.enhancement-forge[data-state="destroy"] .enhancement-forge-impact-ring {
+}.enhancement-forge[data-state="destroy"] .enhancement-forge-impact-ring{
   animation: enhancementBlacksmithDestroyRing .5s ease-out 1;
-}
-
-.enhancement-forge[data-state="destroy"] .enhancement-forge-impact-core {
+}.enhancement-forge[data-state="destroy"] .enhancement-forge-impact-core{
   animation: enhancementBlacksmithDestroyCore .36s ease-out 1;
 }
 
@@ -5206,29 +3095,19 @@ html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong 
     opacity: 0;
     transform: translate(-50%, -50%) scale(2.5);
   }
-}
-
-@media (max-width: 700px) {
-  .enhancement-forge-impact {
+}@media (max-width: 700px){.enhancement-forge-impact{
     width: 150%;
     height: 150%;
-  }
-
-  .enhancement-forge-hammer {
+  }.enhancement-forge-hammer{
     height: 58px;
-  }
-
-  .enhancement-forge-hammer::before {
+  }.enhancement-forge-hammer::before{
     width: 40px;
     height: 18px;
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .enhancement-forge-hammer,
+}@media (prefers-reduced-motion: reduce){.enhancement-forge-hammer,
   .enhancement-forge-impact-ring,
   .enhancement-forge-impact-core,
-  .enhancement-forge-sparks i {
+  .enhancement-forge-sparks i{
     animation: none !important;
     opacity: 0 !important;
   }

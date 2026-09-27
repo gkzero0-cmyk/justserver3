@@ -41,10 +41,28 @@ jobs:
       - name: Download Notion images
         run: npm run sync:notion-assets
 
+      - name: Detect Notion source changes
+        id: notion_diff
+        shell: bash
+        run: |
+          if git diff --quiet -- public/notion-assets; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No source asset changes detected."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Notion source assets changed."
+          fi
+
       - name: Optimize display images
+        if: github.event_name != 'schedule' || steps.notion_diff.outputs.changed == 'true'
         run: npm run optimize:notion-assets
 
+      - name: Skip unchanged scheduled optimization
+        if: github.event_name == 'schedule' && steps.notion_diff.outputs.changed != 'true'
+        run: echo "Scheduled sync found no Notion changes; skipping Sharp optimization and commit work."
+
       - name: Commit refreshed assets
+        if: github.event_name != 'schedule' || steps.notion_diff.outputs.changed == 'true'
         run: |
           rm -rf /tmp/notion-assets
           cp -a public/notion-assets /tmp/notion-assets

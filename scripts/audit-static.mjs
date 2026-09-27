@@ -117,6 +117,38 @@ const knownPageIds = new Set(
 )
 const loadingExamples = []
 
+const enhancementCssPath = join(
+  root,
+  'components',
+  'wiki-enhancement-lab.css'
+)
+const enhancementTsxPath = join(
+  root,
+  'components',
+  'wiki-enhancement-lab.tsx'
+)
+const enhancementCss = await readFile(enhancementCssPath, 'utf8')
+const enhancementTsx = await readFile(enhancementTsxPath, 'utf8')
+const enhancementCssClasses = new Set(
+  [...enhancementCss.matchAll(/\.([a-zA-Z][\w-]*)/g)]
+    .map((match) => match[1])
+    .filter(
+      (name) =>
+        name === 'wiki-enhancement-lab' ||
+        name.startsWith('enhancement-')
+    )
+)
+const enhancementTsxClasses = new Set(
+  [
+    ...enhancementTsx.matchAll(
+      /enhancement-[a-zA-Z0-9_-]+|wiki-enhancement-lab/g
+    )
+  ].map((match) => match[0])
+)
+const unusedEnhancementClasses = [...enhancementCssClasses]
+  .filter((name) => !enhancementTsxClasses.has(name))
+  .sort()
+
 for (const file of sourceFiles) {
   const source = await readFile(file, 'utf8')
   const tags = source.match(/<img\b[\s\S]*?>/g) || []
@@ -181,6 +213,15 @@ notes.push(`Image tags without loading attribute: ${missingLoading}`)
 notes.push(`Unsafe URL-like markup findings: ${unsafeMarkup}`)
 notes.push(`Broken static internal links: ${brokenInternalLinks}`)
 notes.push(`Sensitive-looking tracked files: ${sensitiveTracked.length}`)
+notes.push(
+  `Enhancement CSS classes without TSX references: ${unusedEnhancementClasses.length}`
+)
+
+if (unusedEnhancementClasses.length) {
+  blocking.push(
+    `enhancement CSS contains unused classes: ${unusedEnhancementClasses.join(', ')}`
+  )
+}
 
 if (brokenInternalLinks > 0) {
   blocking.push(`found ${brokenInternalLinks} invalid static internal links`)
