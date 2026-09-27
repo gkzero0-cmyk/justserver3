@@ -626,16 +626,25 @@ test.describe('desktop wiki journeys', () => {
       }
     })
     expect(hammerArt.src).toContain('blacksmith-hammer-pixel.svg')
-    expect(hammerArt.width).toBeGreaterThanOrEqual(52)
-    expect(hammerArt.height).toBeGreaterThanOrEqual(78)
-    expect(hammerArt.leftRatio).toBeGreaterThan(.68)
-    expect(hammerArt.leftRatio).toBeLessThan(.76)
-    expect(hammerArt.topRatio).toBeGreaterThan(.61)
-    expect(hammerArt.topRatio).toBeLessThan(.70)
+    expect(hammerArt.width).toBeGreaterThanOrEqual(46)
+    expect(hammerArt.height).toBeGreaterThanOrEqual(69)
+    expect(hammerArt.leftRatio).toBeGreaterThan(.76)
+    expect(hammerArt.leftRatio).toBeLessThan(.82)
+    expect(hammerArt.topRatio).toBeGreaterThan(.58)
+    expect(hammerArt.topRatio).toBeLessThan(.64)
     expect(hammerArt.transformOriginY).toBeGreaterThan(
       hammerArt.height * .85
     )
     expect(hammerArt.imageRendering).toMatch(/pixelated|crisp-edges/)
+
+    const impactTarget = await impact.evaluate((element) => {
+      const style = getComputedStyle(element)
+      return {
+        x: style.getPropertyValue('--forge-hit-x').trim(),
+        y: style.getPropertyValue('--forge-hit-y').trim()
+      }
+    })
+    expect(impactTarget).toEqual({ x: '63%', y: '31%' })
 
     await expect(lab.locator('.enhancement-run-result-slot')).toHaveCount(0)
 

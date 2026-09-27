@@ -3361,7 +3361,7 @@ html[data-text-size="small"] .wiki-enhancement-lab
   }
 }
 
-/* === 2026-09-28 canonical forge strike v15 ===
+/* === 2026-09-28 canonical forge strike v16 ===
  * Final hammer system:
  * - real transparent pixel-art asset instead of CSS pseudo-elements
  * - impact coordinates are relative to the item slot, not a 160% overlay
@@ -3371,45 +3371,45 @@ html[data-text-size="small"] .wiki-enhancement-lab
  */
 .enhancement-forge{
   --forge-strike-duration: 650ms;
-  --forge-light-windup: 43deg;
-  --forge-main-windup: 48deg;
-  --forge-main-contact: -46deg;
-  --forge-finish-windup: 38deg;
+  --forge-light-windup: 35deg;
+  --forge-main-windup: 42deg;
+  --forge-main-contact: -27deg;
+  --forge-finish-windup: 32deg;
 }
 
 .enhancement-forge[data-tier="mid"]{
-  --forge-light-windup: 44deg;
-  --forge-main-windup: 50deg;
-  --forge-main-contact: -47deg;
-  --forge-finish-windup: 39deg;
+  --forge-light-windup: 36deg;
+  --forge-main-windup: 44deg;
+  --forge-main-contact: -28deg;
+  --forge-finish-windup: 33deg;
 }
 
 .enhancement-forge[data-tier="high"]{
-  --forge-light-windup: 45deg;
-  --forge-main-windup: 53deg;
-  --forge-main-contact: -48deg;
-  --forge-finish-windup: 40deg;
+  --forge-light-windup: 37deg;
+  --forge-main-windup: 47deg;
+  --forge-main-contact: -29deg;
+  --forge-finish-windup: 34deg;
 }
 
 .enhancement-forge[data-tier="extreme"]{
-  --forge-light-windup: 46deg;
-  --forge-main-windup: 56deg;
-  --forge-main-contact: -49deg;
-  --forge-finish-windup: 41deg;
+  --forge-light-windup: 38deg;
+  --forge-main-windup: 50deg;
+  --forge-main-contact: -30deg;
+  --forge-finish-windup: 35deg;
 }
 
 .enhancement-forge[data-final-attempt="true"]{
-  --forge-light-windup: 47deg;
-  --forge-main-windup: 60deg;
-  --forge-main-contact: -50deg;
-  --forge-finish-windup: 42deg;
+  --forge-light-windup: 39deg;
+  --forge-main-windup: 54deg;
+  --forge-main-contact: -31deg;
+  --forge-finish-windup: 36deg;
 }
 
 /* The strike coordinate system now scales exactly with the item slot. */
 .enhancement-forge-impact{
   --forge-impact-rgb: 238, 164, 78;
-  --forge-hit-x: 42%;
-  --forge-hit-y: 35%;
+  --forge-hit-x: 63%;
+  --forge-hit-y: 31%;
   position: absolute;
   z-index: 24;
   inset: 0;
@@ -3445,18 +3445,18 @@ html[data-text-size="small"] .wiki-enhancement-lab
 .enhancement-forge-hammer{
   position: absolute;
   z-index: 5;
-  left: calc(var(--forge-hit-x) + 30%);
+  left: calc(var(--forge-hit-x) + 16%);
   top: calc(var(--forge-hit-y) + 30%);
-  width: clamp(54px, 4vw, 66px);
+  width: clamp(46px, 3.35vw, 56px);
   height: auto;
   border: 0;
   border-radius: 0;
   opacity: 0;
   transform-origin: 50% 92%;
-  transform: translate(-50%, -92%) rotate(34deg);
+  transform: translate(-50%, -92%) rotate(26deg);
   background: none;
   box-shadow: none;
-  filter: drop-shadow(3px 5px 3px rgba(0,0,0,.28));
+  filter: drop-shadow(2px 3px 2px rgba(0,0,0,.22));
   image-rendering: pixelated;
   user-select: none;
   pointer-events: none;
@@ -3507,7 +3507,7 @@ html[data-text-size="small"] .wiki-enhancement-lab
   position: absolute;
   left: 0;
   top: 0;
-  width: 18px;
+  width: 14px;
   height: 2px;
   border-radius: 0;
   opacity: 0;
@@ -3527,16 +3527,16 @@ html[data-text-size="small"] .wiki-enhancement-lab
   display: none;
 }
 
-.enhancement-forge-sparks i:nth-child(1){ --forge-angle: 146deg; }
-.enhancement-forge-sparks i:nth-child(2){ --forge-angle: 166deg; width: 13px; }
-.enhancement-forge-sparks i:nth-child(3){ --forge-angle: 191deg; }
-.enhancement-forge-sparks i:nth-child(4){ --forge-angle: 216deg; width: 13px; }
-.enhancement-forge-sparks i:nth-child(5){ --forge-angle: 241deg; }
-.enhancement-forge-sparks i:nth-child(6){ --forge-angle: 274deg; width: 13px; }
-.enhancement-forge-sparks i:nth-child(7){ --forge-angle: 306deg; }
-.enhancement-forge-sparks i:nth-child(8){ --forge-angle: 332deg; width: 13px; }
-.enhancement-forge-sparks i:nth-child(9){ --forge-angle: 24deg; }
-.enhancement-forge-sparks i:nth-child(10){ --forge-angle: 62deg; width: 13px; }
+.enhancement-forge-sparks i:nth-child(1){ --forge-angle: 128deg; }
+.enhancement-forge-sparks i:nth-child(2){ --forge-angle: 150deg; width: 10px; }
+.enhancement-forge-sparks i:nth-child(3){ --forge-angle: 174deg; }
+.enhancement-forge-sparks i:nth-child(4){ --forge-angle: 198deg; width: 10px; }
+.enhancement-forge-sparks i:nth-child(5){ --forge-angle: 222deg; }
+.enhancement-forge-sparks i:nth-child(6){ --forge-angle: 246deg; width: 10px; }
+.enhancement-forge-sparks i:nth-child(7){ --forge-angle: 274deg; }
+.enhancement-forge-sparks i:nth-child(8){ --forge-angle: 302deg; width: 10px; }
+.enhancement-forge-sparks i:nth-child(9){ --forge-angle: 326deg; }
+.enhancement-forge-sparks i:nth-child(10){ --forge-angle: 350deg; width: 10px; }
 
 .enhancement-forge[data-state="charging"] .enhancement-forge-hammer{
   animation:
@@ -3646,11 +3646,11 @@ html[data-text-size="small"] .wiki-enhancement-lab
 @keyframes enhancementBlacksmithHammerCombo{
   0%{
     opacity: 0;
-    transform: translate(-50%, -92%) rotate(34deg);
+    transform: translate(-50%, -92%) rotate(20deg);
   }
   7%{
     opacity: 1;
-    transform: translate(-50%, -92%) rotate(34deg);
+    transform: translate(-50%, -92%) rotate(26deg);
   }
 
   /* light setup tap */
@@ -3662,15 +3662,15 @@ html[data-text-size="small"] .wiki-enhancement-lab
   }
   24%{
     opacity: 1;
-    transform: translate(-50%, -92%) rotate(-42deg);
+    transform: translate(-50%, -92%) rotate(-24deg);
     filter:
-      drop-shadow(3px 5px 3px rgba(0,0,0,.28))
-      drop-shadow(0 0 2px rgba(244,176,84,.18));
+      drop-shadow(2px 3px 2px rgba(0,0,0,.22))
+      drop-shadow(0 0 2px rgba(244,176,84,.16));
   }
   31%{
     opacity: 1;
-    transform: translate(-50%, -92%) rotate(10deg);
-    filter: drop-shadow(3px 5px 3px rgba(0,0,0,.28));
+    transform: translate(-50%, -92%) rotate(7deg);
+    filter: drop-shadow(2px 3px 2px rgba(0,0,0,.22));
   }
 
   /* strongest main strike */
@@ -3686,13 +3686,13 @@ html[data-text-size="small"] .wiki-enhancement-lab
       translate(-50%, -92%)
       rotate(var(--forge-main-contact));
     filter:
-      drop-shadow(3px 5px 3px rgba(0,0,0,.28))
-      drop-shadow(0 0 5px rgba(255,190,96,.36));
+      drop-shadow(2px 3px 2px rgba(0,0,0,.22))
+      drop-shadow(0 0 4px rgba(255,190,96,.32));
   }
   61%{
     opacity: 1;
-    transform: translate(-50%, -92%) rotate(8deg);
-    filter: drop-shadow(3px 5px 3px rgba(0,0,0,.28));
+    transform: translate(-50%, -92%) rotate(5deg);
+    filter: drop-shadow(2px 3px 2px rgba(0,0,0,.22));
   }
 
   /* quick finishing tap */
@@ -3704,15 +3704,15 @@ html[data-text-size="small"] .wiki-enhancement-lab
   }
   80%{
     opacity: 1;
-    transform: translate(-50%, -92%) rotate(-43deg);
+    transform: translate(-50%, -92%) rotate(-25deg);
     filter:
-      drop-shadow(3px 5px 3px rgba(0,0,0,.28))
-      drop-shadow(0 0 3px rgba(244,176,84,.22));
+      drop-shadow(2px 3px 2px rgba(0,0,0,.22))
+      drop-shadow(0 0 3px rgba(244,176,84,.2));
   }
   89%{
     opacity: .94;
-    transform: translate(-50%, -92%) rotate(7deg);
-    filter: drop-shadow(3px 5px 3px rgba(0,0,0,.28));
+    transform: translate(-50%, -92%) rotate(4deg);
+    filter: drop-shadow(2px 3px 2px rgba(0,0,0,.22));
   }
   100%{
     opacity: 0;
@@ -3725,19 +3725,19 @@ html[data-text-size="small"] .wiki-enhancement-lab
     transform: translate(0,0) rotate(0deg);
   }
   24%{
-    transform: translate(-1px,2px) rotate(-.25deg);
+    transform: translate(-1px,1px) rotate(-.18deg);
   }
   29%, 49%{
     transform: translate(0,0) rotate(0deg);
   }
   52%{
-    transform: translate(-2px,3px) rotate(-.55deg);
+    transform: translate(-2px,2px) rotate(-.42deg);
   }
   58%, 77%{
     transform: translate(0,0) rotate(0deg);
   }
   80%{
-    transform: translate(-1px,2px) rotate(-.3deg);
+    transform: translate(-1px,1px) rotate(-.2deg);
   }
   86%, 100%{
     transform: translate(0,0) rotate(0deg);
@@ -3837,7 +3837,7 @@ html[data-text-size="small"] .wiki-enhancement-lab
     opacity: 0;
     transform:
       rotate(var(--forge-angle))
-      translateX(34px)
+      translateX(26px)
       scaleX(.58);
   }
   30%, 50%{
@@ -3854,7 +3854,7 @@ html[data-text-size="small"] .wiki-enhancement-lab
     opacity: 0;
     transform:
       rotate(var(--forge-angle))
-      translateX(62px)
+      translateX(46px)
       scaleX(.94);
   }
   60%, 78%{
@@ -3871,14 +3871,14 @@ html[data-text-size="small"] .wiki-enhancement-lab
     opacity: 0;
     transform:
       rotate(var(--forge-angle))
-      translateX(42px)
+      translateX(30px)
       scaleX(.7);
   }
 }
 
 @media (max-width: 700px){
   .enhancement-forge-hammer{
-    width: 52px;
+    width: 46px;
   }
 }
 
