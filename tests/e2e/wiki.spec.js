@@ -41,6 +41,34 @@ test.describe('desktop wiki journeys', () => {
     await expect(page.locator('html')).toHaveAttribute('data-text-size', 'large')
   })
 
+  test('text size control visibly scales enhancement lab copy', async ({ page }) => {
+    await page.setViewportSize({ width: 1584, height: 740 })
+    await page.goto('/')
+    await page.getByRole('button', { name: '위키 탐험 시작' }).click()
+
+    const lab = page.locator('#enhancement-lab')
+    const label = lab.locator('.enhancement-panel-title strong').first()
+
+    const defaultSize = await label.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+
+    await page.getByRole('button', { name: '글자 크게' }).click()
+    await expect(page.locator('html')).toHaveAttribute('data-text-size', 'large')
+    const largeSize = await label.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+
+    await page.getByRole('button', { name: '글자 작게' }).click()
+    await expect(page.locator('html')).toHaveAttribute('data-text-size', 'small')
+    const smallSize = await label.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+
+    expect(largeSize).toBeGreaterThan(defaultSize)
+    expect(smallSize).toBeLessThan(largeSize)
+  })
+
   test('theme selection persists after reload', async ({ page }) => {
     await page.goto('/')
 
@@ -192,6 +220,113 @@ test.describe('desktop wiki journeys', () => {
     expect(buttonBox).not.toBeNull()
     expect(buttonBox.y).toBeGreaterThanOrEqual(0)
     expect(buttonBox.y + buttonBox.height).toBeLessThanOrEqual(568)
+  })
+
+  test('enhancement lab keeps geometry stable and effects larger than the pickaxe', async ({ page }) => {
+    await page.setViewportSize({ width: 1584, height: 740 })
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'justserver3-state-v2',
+        JSON.stringify({
+          version: 2,
+          values: {
+            enhancementLab: {
+              level: 10,
+              attempts: 18,
+              successes: 11,
+              failures: 6,
+              downgrades: 1,
+              destroyed: 0,
+              best: 10,
+              maxWins: 0,
+              broken: false,
+              history: [],
+              run: {
+                attempts: 18,
+                successes: 11,
+                failures: 6,
+                downgrades: 1,
+                destroyed: 0,
+                best: 10
+              }
+            }
+          }
+        })
+      )
+    })
+
+    await page.goto('/')
+    await page.getByRole('button', { name: '위키 탐험 시작' }).click()
+
+    const lab = page.locator('#enhancement-lab')
+    const forge = lab.locator('.enhancement-forge')
+    const side = lab.locator('.enhancement-side')
+    const button = lab.locator('.enhancement-primary')
+    const pickaxe = lab.locator('.enhancement-pickaxe')
+
+    const geometry = async () => {
+      const [forgeBox, sideBox, buttonBox, labBox] = await Promise.all([
+        forge.boundingBox(),
+        side.boundingBox(),
+        button.boundingBox(),
+        lab.boundingBox()
+      ])
+      return { forgeBox, sideBox, buttonBox, labBox }
+    }
+
+    const before = await geometry()
+    expect(before.forgeBox).not.toBeNull()
+    expect(before.sideBox).not.toBeNull()
+    expect(
+      Math.abs(before.forgeBox.height - before.sideBox.height)
+    ).toBeLessThanOrEqual(2)
+
+    const effect = await pickaxe.evaluate((element) => {
+      const box = element.getBoundingClientRect()
+      const pseudo = getComputedStyle(element, '::after')
+      const style = getComputedStyle(element)
+      return {
+        pickaxeWidth: box.width,
+        flashWidth: Number.parseFloat(pseudo.width),
+        radius: Number.parseFloat(
+          style.getPropertyValue('--enhancement-effect-radius')
+        )
+      }
+    })
+
+    expect(effect.flashWidth).toBeGreaterThanOrEqual(
+      effect.pickaxeWidth * 1.35
+    )
+    expect(effect.radius).toBeGreaterThan(effect.pickaxeWidth / 2)
+
+    await button.click()
+    await expect(
+      lab.getByText('강화 중… 장비를 담금질하고 있습니다.')
+    ).toBeVisible()
+
+    const charging = await geometry()
+    expect(
+      Math.abs(charging.buttonBox.y - before.buttonBox.y)
+    ).toBeLessThanOrEqual(2)
+    expect(
+      Math.abs(charging.labBox.height - before.labBox.height)
+    ).toBeLessThanOrEqual(2)
+
+    await expect(lab.locator('.enhancement-result strong')).toHaveText(
+      /강화 성공|강화 실패|강화 하락|장비 파괴|최대강화 달성/,
+      { timeout: 3000 }
+    )
+
+    const after = await geometry()
+    expect(
+      Math.abs(after.buttonBox.y - before.buttonBox.y)
+    ).toBeLessThanOrEqual(2)
+    expect(
+      Math.abs(after.labBox.height - before.labBox.height)
+    ).toBeLessThanOrEqual(2)
+    expect(
+      Math.abs(after.forgeBox.height - after.sideBox.height)
+    ).toBeLessThanOrEqual(2)
   })
 
   test('enhancement lab scales up on wide desktop without panel imbalance', async ({ page }) => {

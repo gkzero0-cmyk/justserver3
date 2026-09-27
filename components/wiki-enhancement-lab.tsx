@@ -1081,12 +1081,21 @@ export function WikiEnhancementLab({
               </div>
             )}
 
-            {stats.level < 15 && rule.destroy > 0 && (
-              <div className="enhancement-risk-warning" role="note">
-                <strong>파괴 위험 {rule.destroy}%</strong>
-                <span>실패 판정에 따라 장비가 파괴될 수 있습니다.</span>
-              </div>
-            )}
+            <div
+              className="enhancement-risk-warning"
+              data-visible={
+                stats.level < 15 && rule.destroy > 0 ? 'true' : 'false'
+              }
+              role={
+                stats.level < 15 && rule.destroy > 0 ? 'note' : undefined
+              }
+              aria-hidden={
+                stats.level < 15 && rule.destroy > 0 ? undefined : true
+              }
+            >
+              <strong>파괴 위험 {stats.level < 15 ? rule.destroy : 0}%</strong>
+              <span>실패 판정에 따라 장비가 파괴될 수 있습니다.</span>
+            </div>
 
             <p>
               이 확률은 <strong>위키 미니게임 전용</strong>입니다. 실제 서버의

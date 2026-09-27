@@ -4259,3 +4259,331 @@ html[data-theme="light"] .enhancement-stage-tag {
     animation: none !important;
   }
 }
+
+/* === 2026-09-28 enhancement lab stable geometry + readable scaling v9 === */
+/*
+ * Keep the gameplay coordinates fixed while enhancement state changes.
+ * The right column may change content, but it always reserves the same
+ * warning/result space so the whole mini-game does not jump.
+ */
+.enhancement-risk-warning {
+  min-height: 49px;
+  box-sizing: border-box;
+}
+
+.enhancement-risk-warning[data-visible="false"] {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (min-width: 901px) {
+  .enhancement-main-grid {
+    align-items: stretch;
+  }
+
+  .enhancement-forge,
+  .enhancement-side {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .enhancement-side {
+    grid-template-rows: minmax(0, 1fr) auto auto auto;
+    align-content: stretch;
+  }
+
+  .enhancement-probability {
+    min-height: 0;
+    align-content: start;
+  }
+
+  .enhancement-forge {
+    --enhancement-result-slot-height: 46px;
+    --enhancement-odds-slot-height: 24px;
+    --enhancement-action-slot-height: 68px;
+    --enhancement-run-slot-height: 66px;
+    --enhancement-log-slot-height: 54px;
+    grid-template-rows:
+      auto
+      minmax(220px, 1fr)
+      var(--enhancement-result-slot-height)
+      var(--enhancement-odds-slot-height)
+      var(--enhancement-action-slot-height)
+      var(--enhancement-run-slot-height)
+      var(--enhancement-log-slot-height);
+    grid-auto-rows: unset;
+  }
+
+  .enhancement-result {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+  }
+
+  .enhancement-action-odds {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+  }
+
+  .enhancement-action-zone,
+  .enhancement-primary {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+  }
+
+  .enhancement-run-result-slot {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .enhancement-run-result,
+  .enhancement-run-result-placeholder {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+  }
+
+  .enhancement-run-result-placeholder {
+    display: grid;
+    visibility: hidden;
+  }
+
+  .enhancement-recent-log {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .enhancement-log-list {
+    min-height: 0;
+  }
+}
+
+/* The attached laptop-sized view needs compact but still fixed slots. */
+@media (min-width: 901px) and (max-height: 760px) {
+  .enhancement-forge {
+    --enhancement-result-slot-height: 38px;
+    --enhancement-odds-slot-height: 19px;
+    --enhancement-action-slot-height: 54px;
+    --enhancement-run-slot-height: 56px;
+    --enhancement-log-slot-height: 40px;
+    grid-template-rows:
+      auto
+      minmax(185px, 1fr)
+      var(--enhancement-result-slot-height)
+      var(--enhancement-odds-slot-height)
+      var(--enhancement-action-slot-height)
+      var(--enhancement-run-slot-height)
+      var(--enhancement-log-slot-height);
+  }
+
+  .enhancement-risk-warning {
+    min-height: 45px;
+    padding-block: 6px;
+  }
+
+  .enhancement-run-result {
+    padding: 5px 8px;
+  }
+
+  .enhancement-run-result-stats > span {
+    padding-block: 3px;
+  }
+}
+
+/*
+ * Effect radius follows the artwork instead of staying at the old 48px ring.
+ * The flash is deliberately larger, but opacity stays restrained so it reads
+ * as impact rather than a bright overlay.
+ */
+.enhancement-pickaxe {
+  --enhancement-effect-radius: 72px;
+}
+
+.enhancement-pickaxe::after {
+  width: 145%;
+  height: 145%;
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,225,164,.64) 0 6%,
+      rgba(235,160,73,.24) 20%,
+      rgba(220,126,43,.07) 45%,
+      transparent 72%
+    );
+}
+
+.enhancement-particles i {
+  transform:
+    rotate(var(--angle))
+    translateX(var(--enhancement-effect-radius))
+    rotate(calc(var(--angle) * -1));
+}
+
+.enhancement-pickaxe-runes {
+  inset: -8%;
+}
+
+.enhancement-forge[data-tier="high"] .enhancement-pickaxe::after,
+.enhancement-forge[data-tier="extreme"] .enhancement-pickaxe::after,
+.enhancement-forge[data-tier="legendary"] .enhancement-pickaxe::after {
+  width: 155%;
+  height: 155%;
+}
+
+@media (min-width: 1100px) {
+  .enhancement-pickaxe {
+    --enhancement-effect-radius: 104px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .enhancement-pickaxe {
+    --enhancement-effect-radius: 118px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .enhancement-pickaxe {
+    --enhancement-effect-radius: 138px;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 760px) {
+  .enhancement-pickaxe {
+    --enhancement-effect-radius: 86px;
+  }
+}
+
+@media (max-width: 700px) {
+  .enhancement-pickaxe {
+    --enhancement-effect-radius: 72px;
+  }
+
+  .enhancement-pickaxe::after {
+    width: 138%;
+    height: 138%;
+  }
+}
+
+/*
+ * A-/A/A+ used to affect mostly Notion body copy. These overrides extend
+ * the reader preference to the mini-game's readable labels and controls
+ * without scaling artwork, panel dimensions or the large +level display.
+ */
+html[data-text-size="small"] .wiki-enhancement-lab
+  :is(
+    .enhancement-lab-head p,
+    .enhancement-sim-badge,
+    .enhancement-head-actions button,
+    .enhancement-level-label,
+    .enhancement-stage-tag,
+    .enhancement-item-tooltip strong,
+    .enhancement-item-tooltip span,
+    .enhancement-result > strong,
+    .enhancement-action-odds,
+    .enhancement-action-odds small,
+    .enhancement-action-odds b,
+    .enhancement-primary span,
+    .enhancement-panel-title small,
+    .enhancement-panel-title > span,
+    .enhancement-panel-title > b,
+    .enhancement-odds-grid small,
+    .enhancement-record-grid small,
+    .enhancement-run-highlight small,
+    .enhancement-run-strip small,
+    .enhancement-probability > p,
+    .enhancement-risk-warning strong,
+    .enhancement-risk-warning span,
+    .enhancement-log-head,
+    .enhancement-log-list b,
+    .enhancement-log-list small
+  ) {
+  font-size: 10px;
+}
+
+html[data-text-size="small"] .wiki-enhancement-lab
+  :is(
+    .enhancement-lab-head > div:first-child > span,
+    .enhancement-item-name,
+    .enhancement-panel-title strong,
+    .enhancement-run-strip strong,
+    .enhancement-record-grid strong
+  ) {
+  font-size: 11px;
+}
+
+html[data-text-size="small"] .wiki-enhancement-lab .enhancement-primary {
+  font-size: 12px;
+}
+
+html[data-text-size="small"] .wiki-enhancement-lab
+  :is(.enhancement-odds-grid strong, .enhancement-run-highlight strong) {
+  font-size: 16px;
+}
+
+html[data-text-size="large"] .wiki-enhancement-lab
+  :is(
+    .enhancement-lab-head p,
+    .enhancement-sim-badge,
+    .enhancement-head-actions button,
+    .enhancement-level-label,
+    .enhancement-stage-tag,
+    .enhancement-item-tooltip strong,
+    .enhancement-item-tooltip span,
+    .enhancement-result > strong,
+    .enhancement-action-odds,
+    .enhancement-action-odds small,
+    .enhancement-action-odds b,
+    .enhancement-primary span,
+    .enhancement-panel-title small,
+    .enhancement-panel-title > span,
+    .enhancement-panel-title > b,
+    .enhancement-odds-grid small,
+    .enhancement-record-grid small,
+    .enhancement-run-highlight small,
+    .enhancement-run-strip small,
+    .enhancement-probability > p,
+    .enhancement-risk-warning strong,
+    .enhancement-risk-warning span,
+    .enhancement-log-head,
+    .enhancement-log-list b,
+    .enhancement-log-list small
+  ) {
+  font-size: 11px;
+}
+
+html[data-text-size="large"] .wiki-enhancement-lab
+  :is(
+    .enhancement-lab-head > div:first-child > span,
+    .enhancement-item-name,
+    .enhancement-panel-title strong,
+    .enhancement-run-strip strong,
+    .enhancement-record-grid strong
+  ) {
+  font-size: 13px;
+}
+
+html[data-text-size="large"] .wiki-enhancement-lab .enhancement-primary {
+  font-size: 15px;
+}
+
+html[data-text-size="large"] .wiki-enhancement-lab
+  :is(.enhancement-odds-grid strong, .enhancement-run-highlight strong) {
+  font-size: 20px;
+}
+
+html[data-text-size="large"] .wiki-enhancement-lab .enhancement-result > strong {
+  line-height: 1.35;
+}
+
