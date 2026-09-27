@@ -34,6 +34,10 @@ const nextConfig: NextConfig = {
               headers: [immutableAssetCacheHeader]
             },
             {
+              source: '/enhancement-lab/:path*',
+              headers: [immutableAssetCacheHeader]
+            },
+            {
               source: '/notion-assets/search-index.json',
               headers: [mutableIndexCacheHeader]
             },

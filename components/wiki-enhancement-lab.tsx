@@ -52,8 +52,10 @@ function EnhancementPickaxe({
 }) {
   const enchanted = level >= 8 && !broken
   const src = enchanted
-    ? 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/enhancement-lab/enchanted-diamond-pickaxe.webp?v=20260926b'
-    : 'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/enhancement-lab/diamond-pickaxe.png?v=20260926b'
+    ? withBasePath(
+        '/enhancement-lab/enchanted-diamond-pickaxe.webp?v=20260926b'
+      )
+    : withBasePath('/enhancement-lab/diamond-pickaxe.png?v=20260926b')
 
   return (
     <span className="enhancement-pickaxe-art">
