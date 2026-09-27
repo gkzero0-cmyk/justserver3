@@ -446,6 +446,22 @@ test.describe('desktop wiki journeys', () => {
       lab.getByText('강화 중… 장비를 담금질하고 있습니다.')
     ).toBeVisible()
 
+    const strikeMotion = await lab.locator('.enhancement-forge-hammer').evaluate(
+      (element) => {
+        const style = getComputedStyle(element)
+        return {
+          animationName: style.animationName,
+          iterationCount: style.animationIterationCount,
+          duration: Number.parseFloat(style.animationDuration)
+        }
+      }
+    )
+    expect(strikeMotion.animationName).toContain(
+      'enhancementBlacksmithHammerPhysical'
+    )
+    expect(strikeMotion.iterationCount).toBe('1')
+    expect(strikeMotion.duration).toBeGreaterThanOrEqual(.6)
+
     const charging = await geometry()
     expect(before.buttonRelativeY).not.toBeNull()
     expect(charging.buttonRelativeY).not.toBeNull()
@@ -568,10 +584,10 @@ test.describe('desktop wiki journeys', () => {
     })
     expect(hammerArt.handleHeight).toBeGreaterThanOrEqual(60)
     expect(hammerArt.headWidth).toBeGreaterThanOrEqual(48)
-    expect(hammerArt.leftRatio).toBeGreaterThan(.54)
-    expect(hammerArt.leftRatio).toBeLessThan(.64)
-    expect(hammerArt.topRatio).toBeGreaterThan(.38)
-    expect(hammerArt.topRatio).toBeLessThan(.48)
+    expect(hammerArt.leftRatio).toBeGreaterThan(.51)
+    expect(hammerArt.leftRatio).toBeLessThan(.59)
+    expect(hammerArt.topRatio).toBeGreaterThan(.39)
+    expect(hammerArt.topRatio).toBeLessThan(.46)
     expect(hammerArt.transformOrigin).toContain('100%')
 
     await expect(lab.locator('.enhancement-run-result-slot')).toHaveCount(0)

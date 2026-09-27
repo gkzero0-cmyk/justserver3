@@ -3360,3 +3360,391 @@ html[data-text-size="small"] .wiki-enhancement-lab
     height: 8px;
   }
 }
+
+
+/* === 2026-09-28 forge hammer physical strike v11 ===
+ * One heavy, readable blacksmith strike:
+ * - blockier hammer silhouette that matches the pixel-art pickaxe
+ * - contact point sits on the diamond head rather than the frame corner
+ * - one weighted swing instead of three rapid icon-like taps
+ * - compact, directional metal sparks instead of a magic-circle burst
+ */
+.enhancement-forge{
+  --forge-strike-duration: .62s;
+}
+
+.enhancement-forge[data-tier="mid"]{
+  --forge-strike-duration: .72s;
+}
+
+.enhancement-forge[data-tier="high"]{
+  --forge-strike-duration: .82s;
+}
+
+.enhancement-forge[data-tier="extreme"]{
+  --forge-strike-duration: .94s;
+}
+
+.enhancement-forge[data-tier="legendary"]{
+  --forge-strike-duration: 1.02s;
+}
+
+.enhancement-forge[data-final-attempt="true"]{
+  --forge-strike-duration: 1.08s;
+}
+
+.enhancement-forge-impact{
+  --forge-hit-x: 55%;
+  --forge-hit-y: 42%;
+  left: 50%;
+  top: 50%;
+  width: 160%;
+  height: 160%;
+  transform: translate(-50%, -50%);
+  filter: none;
+}
+
+.enhancement-forge-hammer{
+  left: var(--forge-hit-x);
+  top: var(--forge-hit-y);
+  width: clamp(10px, .72vw, 12px);
+  height: clamp(66px, 4.75vw, 78px);
+  border: 1px solid #20140c;
+  border-radius: 0;
+  opacity: 0;
+  transform-origin: 50% 100%;
+  transform:
+    translate(-50%, -100%)
+    translate(46px, -54px)
+    rotate(52deg);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,.025) 0 6px,
+      rgba(0,0,0,.08) 6px 12px
+    ),
+    linear-gradient(
+      90deg,
+      #24150c 0 16%,
+      #57331a 17% 34%,
+      #8b552a 35% 53%,
+      #5b351b 54% 78%,
+      #26170d 79% 100%
+    );
+  box-shadow:
+    inset 1px 0 rgba(255,225,180,.08),
+    inset -2px 0 rgba(0,0,0,.28),
+    2px 4px 0 rgba(0,0,0,.18);
+  filter: none;
+}
+
+.enhancement-forge-hammer::before{
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: auto;
+  bottom: -8px;
+  width: clamp(48px, 3.55vw, 60px);
+  height: clamp(21px, 1.55vw, 26px);
+  transform: translateX(-50%);
+  border: 1px solid #111617;
+  border-radius: 0;
+  clip-path: polygon(
+    0 0,
+    72% 0,
+    72% 12%,
+    100% 12%,
+    100% 88%,
+    72% 88%,
+    72% 100%,
+    0 100%
+  );
+  background:
+    linear-gradient(
+      180deg,
+      #737b7c 0 13%,
+      #4b5253 14% 34%,
+      #303637 35% 69%,
+      #181d1e 70% 100%
+    );
+  box-shadow:
+    inset 0 2px rgba(255,255,255,.11),
+    inset 0 -3px rgba(0,0,0,.38),
+    3px 4px 0 rgba(0,0,0,.24);
+}
+
+.enhancement-forge-hammer::after{
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: auto;
+  bottom: 5px;
+  width: clamp(18px, 1.25vw, 22px);
+  height: clamp(7px, .5vw, 9px);
+  transform: translateX(-50%);
+  border: 1px solid #151a1b;
+  border-radius: 0;
+  background:
+    linear-gradient(
+      180deg,
+      #555c5d 0 36%,
+      #2a3031 37% 100%
+    );
+  box-shadow: inset 0 1px rgba(255,255,255,.08);
+}
+
+.enhancement-forge-impact-ring,
+.enhancement-forge-impact-core,
+.enhancement-forge-sparks{
+  left: var(--forge-hit-x);
+  top: var(--forge-hit-y);
+}
+
+.enhancement-forge-impact-ring{
+  width: clamp(48px, 24%, 72px);
+  height: clamp(24px, 12%, 36px);
+  border: 1px solid rgba(var(--forge-impact-rgb), .62);
+  border-radius: 50%;
+  box-shadow:
+    0 0 9px rgba(var(--forge-impact-rgb), .22);
+}
+
+.enhancement-forge-impact-core{
+  width: clamp(24px, 11%, 34px);
+  height: clamp(24px, 11%, 34px);
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,250,232,.98) 0 8%,
+      rgba(255,205,121,.9) 9% 20%,
+      rgba(var(--forge-impact-rgb), .42) 21% 40%,
+      transparent 66%
+    );
+  filter: none;
+}
+
+.enhancement-forge-sparks i{
+  width: 20px;
+  height: 2px;
+  border-radius: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,249,223,.98),
+      rgba(242,171,75,.96) 40%,
+      rgba(218,111,41,.6) 68%,
+      transparent
+    );
+  box-shadow: 0 0 5px rgba(239,154,66,.38);
+}
+
+.enhancement-forge-sparks i:nth-child(n+11){
+  display: none;
+}
+
+.enhancement-forge-sparks i:nth-child(1){ --forge-angle: 146deg; }
+.enhancement-forge-sparks i:nth-child(2){ --forge-angle: 166deg; }
+.enhancement-forge-sparks i:nth-child(3){ --forge-angle: 191deg; }
+.enhancement-forge-sparks i:nth-child(4){ --forge-angle: 216deg; }
+.enhancement-forge-sparks i:nth-child(5){ --forge-angle: 241deg; }
+.enhancement-forge-sparks i:nth-child(6){ --forge-angle: 274deg; }
+.enhancement-forge-sparks i:nth-child(7){ --forge-angle: 306deg; }
+.enhancement-forge-sparks i:nth-child(8){ --forge-angle: 332deg; }
+.enhancement-forge-sparks i:nth-child(9){ --forge-angle: 24deg; }
+.enhancement-forge-sparks i:nth-child(10){ --forge-angle: 62deg; }
+
+.enhancement-forge-sparks i:nth-child(2n){
+  width: 14px;
+}
+
+.enhancement-forge[data-state="charging"] .enhancement-forge-hammer{
+  animation:
+    enhancementBlacksmithHammerPhysical
+    var(--forge-strike-duration)
+    cubic-bezier(.18,.76,.16,1)
+    1
+    both;
+}
+
+.enhancement-forge[data-state="charging"] .enhancement-forge-impact-ring{
+  animation:
+    enhancementBlacksmithImpactPhysical
+    var(--forge-strike-duration)
+    ease-out
+    1
+    both;
+}
+
+.enhancement-forge[data-state="charging"] .enhancement-forge-impact-core{
+  animation:
+    enhancementBlacksmithCorePhysical
+    var(--forge-strike-duration)
+    ease-out
+    1
+    both;
+}
+
+.enhancement-forge[data-state="charging"] .enhancement-forge-sparks i{
+  animation:
+    enhancementBlacksmithSparkPhysical
+    var(--forge-strike-duration)
+    cubic-bezier(.18,.72,.24,1)
+    1
+    both;
+  animation-delay: 0s;
+}
+
+@keyframes enhancementBlacksmithHammerPhysical{
+  0%{
+    opacity: 0;
+    transform:
+      translate(-50%, -100%)
+      translate(48px, -56px)
+      rotate(54deg);
+    filter: none;
+  }
+  14%{
+    opacity: 1;
+  }
+  30%{
+    opacity: 1;
+    transform:
+      translate(-50%, -100%)
+      translate(47px, -55px)
+      rotate(55deg);
+  }
+  48%{
+    opacity: 1;
+    transform:
+      translate(-50%, -100%)
+      translate(29px, -35px)
+      rotate(46deg);
+  }
+  58%{
+    opacity: 1;
+    transform:
+      translate(-50%, -100%)
+      translate(10px, -13px)
+      rotate(34deg);
+  }
+  62%{
+    opacity: 1;
+    transform:
+      translate(-50%, -100%)
+      translate(0, 0)
+      rotate(26deg);
+    filter: drop-shadow(0 0 4px rgba(244,176,84,.32));
+  }
+  67%{
+    opacity: 1;
+    transform:
+      translate(-50%, -100%)
+      translate(3px, -5px)
+      rotate(30deg);
+    filter: none;
+  }
+  79%{
+    opacity: .96;
+    transform:
+      translate(-50%, -100%)
+      translate(14px, -22px)
+      rotate(40deg);
+  }
+  100%{
+    opacity: 0;
+    transform:
+      translate(-50%, -100%)
+      translate(31px, -43px)
+      rotate(49deg);
+  }
+}
+
+@keyframes enhancementBlacksmithImpactPhysical{
+  0%, 57%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.35,.55);
+  }
+  62%{
+    opacity: .7;
+    transform: translate(-50%, -50%) scale(.62,.78);
+  }
+  77%{
+    opacity: .22;
+    transform: translate(-50%, -50%) scale(1.05,1);
+  }
+  100%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.32,1.08);
+  }
+}
+
+@keyframes enhancementBlacksmithCorePhysical{
+  0%, 58%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.2);
+  }
+  62%{
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(.85);
+  }
+  70%{
+    opacity: .45;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.35);
+  }
+}
+
+@keyframes enhancementBlacksmithSparkPhysical{
+  0%, 59%{
+    opacity: 0;
+    transform:
+      rotate(var(--forge-angle))
+      translateX(4px)
+      scaleX(.15);
+  }
+  62%{
+    opacity: 1;
+  }
+  100%{
+    opacity: 0;
+    transform:
+      rotate(var(--forge-angle))
+      translateX(62px)
+      scaleX(.88);
+  }
+}
+
+@media (max-width: 700px){
+  .enhancement-forge-impact{
+    width: 148%;
+    height: 148%;
+  }
+
+  .enhancement-forge-hammer{
+    width: 10px;
+    height: 60px;
+  }
+
+  .enhancement-forge-hammer::before{
+    width: 46px;
+    height: 20px;
+  }
+
+  .enhancement-forge-hammer::after{
+    width: 17px;
+    height: 7px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .enhancement-forge[data-state="charging"] .enhancement-forge-hammer,
+  .enhancement-forge[data-state="charging"] .enhancement-forge-impact-ring,
+  .enhancement-forge[data-state="charging"] .enhancement-forge-impact-core,
+  .enhancement-forge[data-state="charging"] .enhancement-forge-sparks i{
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
