@@ -29,6 +29,7 @@ import {
 import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import { buildReadingQuiz } from '@/lib/wiki-reading-game'
 import { wikiGuidePath } from '@/lib/wiki-routes'
+import { formatSeoulDateTime } from '@/lib/wiki-ux'
 
 export const dynamicParams = true
 export const revalidate = 300
@@ -63,18 +64,30 @@ const PRIMARY_NEXT_BY_TITLE: Record<string, string> = {
   채광: '장비강화'
 }
 
-function formatSyncDate(value: string | null | undefined) {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return ''
-  return new Intl.DateTimeFormat('ko-KR', {
-    timeZone: 'Asia/Seoul',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  }).format(date)
+function narrowImageManifest(
+  recordMap: unknown,
+  manifest: Record<string, string>
+) {
+  const serialized = JSON.stringify(recordMap).toLowerCase()
+  const entries = Object.entries(manifest).filter(([source]) => {
+    const normalized = source.toLowerCase()
+    if (serialized.includes(normalized)) return true
+
+    let decoded = normalized
+    try {
+      decoded = decodeURIComponent(normalized)
+    } catch {}
+
+    const attachmentId =
+      decoded.match(/attachment:([0-9a-f-]{36})/i)?.[1] ||
+      decoded.match(/\/([0-9a-f-]{36})\//i)?.[1]
+
+    return Boolean(
+      attachmentId && serialized.includes(attachmentId.toLowerCase())
+    )
+  })
+
+  return entries.length ? Object.fromEntries(entries) : manifest
 }
 
 function buildKeySummary(page: NotionIndexPage) {
@@ -225,11 +238,7 @@ export async function generateStaticParams() {
 }
 
 export async function renderWikiPage(pageId: string) {
-  const [recordMap, imageManifest, notionIndex] = await Promise.all([
-    getNotionPage(pageId),
-    readNotionAssetManifest(),
-    readNotionIndex()
-  ])
+  const notionIndex = await readNotionIndex()
   const rootId = notionIndex.rootPageId.replaceAll('-', '')
   const rootPage =
     notionIndex.pages.find(
@@ -242,11 +251,6 @@ export async function renderWikiPage(pageId: string) {
     navigationPages.find(
       (page) => page.pageId.replaceAll('-', '') === pageId.replaceAll('-', '')
     ) ?? null
-  const title = (
-    getPageTitle(recordMap) ||
-    currentPage?.title ||
-    '서버 위키'
-  ).trim()
   const readyNavigationPages = navigationPages.filter(
     (page) => !isDraftPage(page) || page.title === '많이 물어보는 것'
   )
@@ -270,14 +274,32 @@ export async function renderWikiPage(pageId: string) {
       ? 'brief'
       : rawContentStatus
   const draft = contentStatus === 'draft'
-  const isMiningBrief =
-    currentPage?.title === '채광' && contentStatus === 'brief'
-  const miningSections =
-    isMiningBrief && currentPage
+  const verifiedBriefSections =
+    contentStatus === 'brief' && currentPage && !isEnhancementGuide
       ? (currentPage.sections ?? [])
           .filter((section) => section.heading?.trim())
-          .slice(0, 6)
+          .slice(0, 8)
       : []
+  const hasVerifiedBrief = verifiedBriefSections.length > 0
+  const needsNotionDocument =
+    !currentPage ||
+    (!draft &&
+      !hasVerifiedFaq &&
+      !isEnhancementGuide &&
+      !hasVerifiedBrief)
+
+  const [recordMap, fullImageManifest] = needsNotionDocument
+    ? await Promise.all([getNotionPage(pageId), readNotionAssetManifest()])
+    : [null, {} as Record<string, string>]
+  const imageManifest = recordMap
+    ? narrowImageManifest(recordMap, fullImageManifest)
+    : {}
+  const title = (
+    currentPage?.title ||
+    (recordMap ? getPageTitle(recordMap) : '') ||
+    '서버 위키'
+  ).trim()
+
   const readingQuiz =
     currentPage && !draft && !hasVerifiedFaq && !isEnhancementGuide
       ? buildReadingQuiz(currentPage, readyNavigationPages)
@@ -401,7 +423,12 @@ export async function renderWikiPage(pageId: string) {
           </span>
           {notionIndex.generatedAt && (
             <span className="article-content-update">
-              콘텐츠 변경 <strong>{formatSyncDate(notionIndex.generatedAt)}</strong>
+              마지막 동기화 <strong>{formatSeoulDateTime(notionIndex.generatedAt)}</strong>
+            </span>
+          )}
+          {currentPage?.lastEdited && (
+            <span className="article-content-update">
+              문서 수정 <strong>{formatSeoulDateTime(currentPage.lastEdited)}</strong>
             </span>
           )}
         </div>
@@ -532,23 +559,23 @@ export async function renderWikiPage(pageId: string) {
             </section>
           ) : hasVerifiedFaq ? (
             <WikiVerifiedFaq />
-          ) : isMiningBrief ? (
+          ) : hasVerifiedBrief ? (
             <section
               className="verified-brief-guide"
-              aria-labelledby="verified-mining-flow-title"
+              aria-labelledby="verified-brief-flow-title"
             >
               <div className="verified-brief-guide-head">
-                <p>VERIFIED FLOW</p>
-                <h2 id="verified-mining-flow-title">
-                  원문에서 확인된 채광 흐름
+                <p>VERIFIED SOURCE</p>
+                <h2 id="verified-brief-flow-title">
+                  원문에서 확인된 {currentPage?.title} 핵심
                 </h2>
                 <span>
-                  현재 공식 원문에 있는 내용만 순서대로 정리했습니다.
+                  현재 공식 원문에서 확인 가능한 내용만 보기 좋게 정리했습니다.
                   세부 정보가 추가되면 같은 문서에 자동으로 보강됩니다.
                 </span>
               </div>
               <ol>
-                {miningSections.map((section, index) => (
+                {verifiedBriefSections.map((section, index) => (
                   <li
                     key={section.anchor || section.heading}
                     id={section.anchor || undefined}
@@ -560,7 +587,7 @@ export async function renderWikiPage(pageId: string) {
                 ))}
               </ol>
             </section>
-          ) : (
+          ) : recordMap ? (
             <section className="document-card">
               <NotionDocument
                 recordMap={recordMap}
@@ -577,7 +604,7 @@ export async function renderWikiPage(pageId: string) {
                   }))}
               />
             </section>
-          )}
+          ) : null}
 
           {currentPage && (
             <>
