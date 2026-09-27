@@ -9,7 +9,6 @@ import { wikiGuidePath } from '@/lib/wiki-routes'
 
 const PREFETCH_TITLES = new Set([
   '서버규칙',
-  '기초설정(뉴비필독)',
   '채광',
   '장비강화',
   '많이 물어보는 것'

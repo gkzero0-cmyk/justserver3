@@ -122,6 +122,21 @@ test.describe('desktop wiki journeys', () => {
     await expect(page.getByText(/공개 \d+ · 준비 \d+/).first()).toBeVisible()
   })
 
+  test('mining guide exposes source-backed confirmed flow', async ({ page }) => {
+    await page.goto('/guide/mining/')
+    await expect(
+      page.getByRole('heading', { name: '현재 원문에서 확인되는 채광 흐름' })
+    ).toBeVisible()
+    await expect(page.getByText('야생으로 이동', { exact: true })).toBeVisible()
+    await expect(page.getByText('광물 채광 · 판매', { exact: true })).toBeVisible()
+    await expect(page.getByText('변동 시세 확인', { exact: true })).toBeVisible()
+  })
+
+  test('home navigation avoids legacy page-id links', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.locator('a[href^="/page/"]')).toHaveCount(0)
+  })
+
   test('text size control visibly scales enhancement lab copy', async ({ page }) => {
     await page.setViewportSize({ width: 1584, height: 740 })
     await page.goto('/')

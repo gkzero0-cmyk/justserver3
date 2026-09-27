@@ -93,7 +93,7 @@ function narrowImageManifest(
     return Boolean(fileId && serialized.includes(fileId))
   })
 
-  return entries.length ? Object.fromEntries(entries) : manifest
+  return Object.fromEntries(entries)
 }
 
 function buildKeySummary(page: NotionIndexPage) {
@@ -516,6 +516,42 @@ export async function renderWikiPage(pageId: string) {
             </aside>
           )}
 
+          {currentPage?.title === '채광' && (
+            <section
+              className="source-backed-flow"
+              aria-labelledby="mining-source-flow-title"
+            >
+              <div className="source-backed-flow-head">
+                <p>CONFIRMED FLOW</p>
+                <h2 id="mining-source-flow-title">현재 원문에서 확인되는 채광 흐름</h2>
+                <span>확정된 원문 내용만 이용해 플레이 순서를 짧게 정리했습니다.</span>
+              </div>
+              <ol>
+                <li>
+                  <b>01</b>
+                  <div>
+                    <strong>야생으로 이동</strong>
+                    <small>야생에서 광물을 캘 수 있습니다.</small>
+                  </div>
+                </li>
+                <li>
+                  <b>02</b>
+                  <div>
+                    <strong>광물 채광 · 판매</strong>
+                    <small>야생에서 다양한 광물을 채광해 판매할 수 있습니다.</small>
+                  </div>
+                </li>
+                <li>
+                  <b>03</b>
+                  <div>
+                    <strong>변동 시세 확인</strong>
+                    <small>광물 시세는 불규칙적으로 변동됩니다.</small>
+                  </div>
+                </li>
+              </ol>
+            </section>
+          )}
+
           {isEnhancementGuide ? (
             <section
               className="draft-state enhancement-guide-state"
@@ -541,6 +577,17 @@ export async function renderWikiPage(pageId: string) {
                 <p>
                   체험용 시뮬레이션 규칙이며 실제 서버의 공식 강화 확률을 뜻하지 않습니다.
                 </p>
+              </div>
+              <div className="enhancement-source-waiting" aria-label="공식 강화 정보 보강 상태">
+                <strong>공식 원문 보강 후 추가될 정보</strong>
+                <div>
+                  <span>강화 재료</span>
+                  <span>단계별 확률</span>
+                  <span>실패·하락·파괴 규칙</span>
+                </div>
+                <small>
+                  확정되지 않은 수치는 임의로 채우지 않고, 원문에서 확인되는 즉시 같은 가이드에 반영합니다.
+                </small>
               </div>
               <div className="state-actions">
                 <Link
@@ -600,16 +647,10 @@ export async function renderWikiPage(pageId: string) {
               <NotionDocument
                 recordMap={recordMap}
                 imageManifest={imageManifest}
-                relatedPages={readyNavigationPages
-                  .filter(
-                    (page) =>
-                      page.pageId.replaceAll('-', '') !==
-                      currentPage?.pageId.replaceAll('-', '')
-                  )
-                  .map((page) => ({
-                    pageId: page.pageId,
-                    title: page.title
-                  }))}
+                relatedPages={related.map((page) => ({
+                  pageId: page.pageId,
+                  title: page.title
+                }))}
               />
             </section>
           ) : null}

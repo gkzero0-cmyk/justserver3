@@ -117,7 +117,7 @@ export default async function HomePage() {
 
         <div className="directory-grid">
           <Link
-            prefetch={true}
+            prefetch={false}
             href={withBasePath('/guide/newbie-guide/')}
             className="directory-card is-featured"
             data-wiki-event="wiki_home_navigate"
