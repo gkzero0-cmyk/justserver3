@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 import { WikiShell } from '@/components/wiki-shell'
-import { readNotionAssetManifest, readNotionIndex } from '@/lib/notion-index'
+import { readNotionIndex } from '@/lib/notion-index'
 import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
 import { wikiContentStatus } from '@/lib/wiki-content-status'
 import {
@@ -12,8 +12,7 @@ import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
 import verifiedFaqEntries from '@/data/wiki-verified-faq.json'
 import { buildTopicCoverage } from '@/lib/wiki-search-topics'
-import { resolveDeployableMainSha } from '@/lib/wiki-release-state'
-import { wikiGuidePath } from '@/lib/wiki-routes'
+import { resolveDeployableMainShaFromHistory } from '@/lib/wiki-release-state'
 
 export const revalidate = 300
 
@@ -109,29 +108,28 @@ async function getWorkflowStates(): Promise<
 
 async function getProductionHealth(): Promise<ProductionHealth> {
   try {
-    const [healthResponse, branchResponse] = await Promise.all([
+    const [healthResponse, commitsResponse] = await Promise.all([
       fetch('https://justserver3.vercel.app/', {
         method: 'HEAD',
         next: { revalidate: 300 }
       }),
-      fetch('https://api.github.com/repos/gkzero0-cmyk/justserver3/branches/main', {
-        headers: {
-          Accept: 'application/vnd.github+json'
-        },
-        next: { revalidate: 300 }
-      })
+      fetch(
+        'https://api.github.com/repos/gkzero0-cmyk/justserver3/commits?sha=main&per_page=12',
+        {
+          headers: {
+            Accept: 'application/vnd.github+json'
+          },
+          next: { revalidate: 300 }
+        }
+      )
     ])
 
-    const branch = branchResponse.ok
-      ? ((await branchResponse.json()) as {
-          commit?: {
-            sha?: string | null
-            commit?: { message?: string | null }
-            parents?: Array<{ sha?: string | null }>
-          }
-        })
-      : null
-    const branchCommit = branch?.commit
+    const commits = commitsResponse.ok
+      ? ((await commitsResponse.json()) as Array<{
+          sha?: string | null
+          commit?: { message?: string | null }
+        }>)
+      : []
     const deployedSha =
       process.env.VERCEL_GIT_COMMIT_SHA ||
       process.env.GITHUB_SHA ||
@@ -141,11 +139,12 @@ async function getProductionHealth(): Promise<ProductionHealth> {
       ok: healthResponse.ok,
       status: healthResponse.status,
       deployedSha,
-      mainSha: resolveDeployableMainSha({
-        sha: branchCommit?.sha || null,
-        message: branchCommit?.commit?.message || null,
-        parentSha: branchCommit?.parents?.[0]?.sha || null
-      })
+      mainSha: resolveDeployableMainShaFromHistory(
+        commits.map((commit) => ({
+          sha: commit.sha || null,
+          message: commit.commit?.message || null
+        }))
+      )
     }
   } catch {
     return {
@@ -194,13 +193,11 @@ function statusTone(state: WorkflowState | null) {
 }
 
 export default async function StatusPage() {
-  const [index, manifest, workflowStates, productionHealth] =
-    await Promise.all([
-      readNotionIndex(),
-      readNotionAssetManifest(),
-      getWorkflowStates(),
-      getProductionHealth()
-    ])
+  const [index, workflowStates, productionHealth] = await Promise.all([
+    readNotionIndex(),
+    getWorkflowStates(),
+    getProductionHealth()
+  ])
 
   const syncWorkflow = workflowStates['sync-notion-assets.yml']
   const buildWorkflow = workflowStates['build.yml']
@@ -236,7 +233,7 @@ export default async function StatusPage() {
     },
     { detailed: 0, brief: 0, draft: 0 }
   )
-  const contentBacklog = buildWikiContentBacklog(pagesWithStatus, 12)
+  const contentBacklog = buildWikiContentBacklog(pagesWithStatus, 8)
   const contentReadiness = wikiContentReadiness(pagesWithStatus)
   const brandLogo = rootPage?.logo128
     ? resolveCachedAsset(rootPage.logo128)
@@ -265,19 +262,21 @@ export default async function StatusPage() {
     !buildWorkflow ||
     buildWorkflow.status !== 'completed' ||
     buildWorkflow.conclusion === 'success'
+  const deploymentVersionKnown =
+    Boolean(productionHealth.mainSha) && Boolean(productionHealth.deployedSha)
   const deploymentCurrent =
-    Boolean(productionHealth.mainSha) &&
-    Boolean(productionHealth.deployedSha) &&
+    deploymentVersionKnown &&
     productionHealth.mainSha === productionHealth.deployedSha
   const overallHealthy =
-    syncHealthy && buildHealthy && productionHealth.ok && deploymentCurrent
+    syncHealthy &&
+    buildHealthy &&
+    productionHealth.ok &&
+    (!deploymentVersionKnown || deploymentCurrent)
   const webhookSignatureReady = Boolean(
     process.env.NOTION_WEBHOOK_VERIFICATION_TOKEN
   )
   const instantAssetSyncReady = Boolean(process.env.GITHUB_ACTIONS_TOKEN)
   const production = process.env.VERCEL_ENV === 'production'
-  const feedbackStoreReady = Boolean(process.env.GITHUB_FEEDBACK_TOKEN)
-  const discordFeedbackReady = Boolean(process.env.DISCORD_FEEDBACK_WEBHOOK_URL)
 
   return (
     <WikiShell
@@ -320,9 +319,9 @@ export default async function StatusPage() {
             </span>
           </article>
           <article>
-            <small>이미지 매핑</small>
-            <strong>{Object.keys(manifest).length}</strong>
-            <span>Notion 원본 이미지 연결 항목</span>
+            <small>검토 대기</small>
+            <strong>{reviewQueue.length}</strong>
+            <span>변경 감지 · FAQ 후보</span>
           </article>
           <article>
             <small>고유 이미지</small>
@@ -413,7 +412,7 @@ export default async function StatusPage() {
               <small>자료 검토 큐</small>
               <strong>확인되지 않은 내용은 자동 게시하지 않습니다.</strong>
               <span>
-                우선순위가 높은 문서부터 원본 Notion을 확인하고, 추가 자료가 필요하면 문서명이 미리 채워진 제보를 열 수 있습니다.
+                우선순위가 높은 문서부터 원본 Notion을 확인합니다.
               </span>
             </div>
             <div className="status-source-review-links">
@@ -427,12 +426,6 @@ export default async function StatusPage() {
                   >
                     Notion 원문 ↗
                   </a>
-                  <Link
-                    href={`${withBasePath(wikiGuidePath(item))}#document-feedback`}
-                    prefetch={false}
-                  >
-                    사이트에서 제보 →
-                  </Link>
                 </span>
               ))}
             </div>
@@ -570,11 +563,15 @@ export default async function StatusPage() {
 
           <article
             data-tone={
-              productionHealth.ok && deploymentCurrent
-                ? 'success'
-                : production
+              !productionHealth.ok
+                ? production
                   ? 'warning'
                   : 'working'
+                : !deploymentVersionKnown
+                  ? 'working'
+                  : deploymentCurrent
+                    ? 'success'
+                    : 'warning'
             }
           >
             <span className="status-service-icon">▲</span>
@@ -585,9 +582,11 @@ export default async function StatusPage() {
                   ? production
                     ? '응답 확인 필요'
                     : 'Preview / Local'
-                  : deploymentCurrent
-                    ? '최신 코드 반영됨'
-                    : '배포 확인 필요'}
+                  : !deploymentVersionKnown
+                    ? '운영 응답 정상 · 버전 확인 중'
+                    : deploymentCurrent
+                      ? '최신 코드 반영됨'
+                      : '배포 확인 필요'}
               </strong>
               <span>
                 {productionHealth.status
@@ -648,22 +647,6 @@ export default async function StatusPage() {
             </a>
           </article>
 
-          <article data-tone={feedbackStoreReady ? 'success' : 'working'}>
-            <span className="status-service-icon">✉</span>
-            <div>
-              <small>사이트 제보</small>
-              <strong>
-                {feedbackStoreReady ? '사이트 접수 준비됨' : '저장소 연결 필요'}
-              </strong>
-              <span>
-                {feedbackStoreReady
-                  ? discordFeedbackReady
-                    ? '사이트 저장 후 Discord 운영 채널에도 선택적으로 알림'
-                    : '사이트 안에서 접수 · Discord 알림은 필요할 때 연결 가능'
-                  : '일반 이용자에게 GitHub를 노출하지 않고 서버측 저장소 연결을 기다립니다.'}
-              </span>
-            </div>
-          </article>
 
           <article data-tone="success">
             <span className="status-service-icon">⌕</span>
