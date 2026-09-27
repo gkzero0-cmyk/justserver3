@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation'
 
+import '../../document.css'
+
 import {
   generateWikiPageMetadata,
   renderWikiPage

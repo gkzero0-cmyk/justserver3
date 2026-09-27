@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import process from 'node:process'
 
-const files = ['app/globals.css', 'app/wiki-reader.css', 'app/home.css', 'app/status/status.css', 'components/wiki-enhancement-lab.css']
+const files = ['app/globals.css', 'app/wiki-reader.css', 'app/home.css', 'app/document.css', 'app/status/status.css', 'components/wiki-enhancement-lab.css']
 const legacyCoolColors = new Set([
   '#e8edf4',
   '#e4ebf4',

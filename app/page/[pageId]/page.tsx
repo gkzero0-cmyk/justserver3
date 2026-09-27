@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+
+import '../../document.css'
 import Link from 'next/link'
 import { getPageTitle } from 'notion-utils'
 
