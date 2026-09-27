@@ -78,13 +78,19 @@ function narrowImageManifest(
       decoded = decodeURIComponent(normalized)
     } catch {}
 
-    const attachmentId =
-      decoded.match(/attachment:([0-9a-f-]{36})/i)?.[1] ||
-      decoded.match(/\/([0-9a-f-]{36})\//i)?.[1]
+    const attachmentId = decoded.match(/attachment:([0-9a-f-]{36})/i)?.[1]
+    if (attachmentId) {
+      return serialized.includes(attachmentId.toLowerCase())
+    }
 
-    return Boolean(
-      attachmentId && serialized.includes(attachmentId.toLowerCase())
-    )
+    // file.notion.com URLs contain a shared workspace UUID followed by
+    // the file-specific UUID. Match the last UUID so one workspace id
+    // does not accidentally keep the entire manifest on every page.
+    const ids = [...decoded.matchAll(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi)]
+      .map((match) => match[0].toLowerCase())
+    const fileId = ids.at(-1)
+
+    return Boolean(fileId && serialized.includes(fileId))
   })
 
   return entries.length ? Object.fromEntries(entries) : manifest
