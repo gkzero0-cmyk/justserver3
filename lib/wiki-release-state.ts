@@ -1,3 +1,27 @@
+export type WikiReleaseCommit = {
+  sha: string | null
+  message: string | null
+}
+
+export function isVercelSkippedCommit(message: string | null) {
+  const normalized = message?.trim().toLowerCase() || ''
+
+  return (
+    normalized.startsWith('refresh deploy bundle [skip ci]') ||
+    normalized.includes('[skip vercel]')
+  )
+}
+
+export function resolveDeployableMainShaFromHistory(
+  commits: WikiReleaseCommit[]
+) {
+  return (
+    commits.find(
+      (commit) => Boolean(commit.sha) && !isVercelSkippedCommit(commit.message)
+    )?.sha ?? null
+  )
+}
+
 export function resolveDeployableMainSha({
   sha,
   message,
@@ -9,10 +33,7 @@ export function resolveDeployableMainSha({
 }) {
   if (!sha) return null
 
-  if (
-    message?.trim().startsWith('Refresh deploy bundle [skip ci]') &&
-    parentSha
-  ) {
+  if (isVercelSkippedCommit(message) && parentSha) {
     return parentSha
   }
 
