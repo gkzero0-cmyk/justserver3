@@ -85,6 +85,7 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
   const draftPages = pages.filter(
     (page) => wikiContentStatus(page) === 'draft'
   )
+  const readyPageCount = pages.length - draftPages.length
   const grouped = GROUPS.map((group) => {
     const readyPages = pages.filter(
       (page) =>
@@ -129,7 +130,7 @@ export function WikiDirectory({ pages }: { pages: NotionIndexPage[] }) {
           <h2 id="wiki-directory-title">위키 가이드 바로가기</h2>
           <span>지금 읽을 수 있는 가이드를 먼저 보여주고, 준비 중 문서는 아래에 모았습니다.</span>
         </div>
-        <span>{pages.length}개 가이드</span>
+        <span>공개 {readyPageCount} · 준비 중 {draftPages.length}</span>
       </div>
 
       <div className="directory-groups">

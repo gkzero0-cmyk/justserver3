@@ -86,6 +86,19 @@ function calendarDayNumber(value: Date) {
   return Date.UTC(year, month - 1, day) / 86400000
 }
 
+export function formatSeoulDate(value: string | null | undefined) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+
+  return new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(date)
+}
+
 export function relativeUpdateLabel(
   value: string | null | undefined,
   now = new Date()

@@ -7,7 +7,13 @@ import { iconForTitle } from '@/lib/wiki-taxonomy'
 import { withBasePath } from '@/lib/url-utils'
 import { wikiGuidePath } from '@/lib/wiki-routes'
 
-const PREFETCH_TITLES = new Set(['서버규칙'])
+const PREFETCH_TITLES = new Set([
+  '서버규칙',
+  '기초설정(뉴비필독)',
+  '채광',
+  '장비강화',
+  '많이 물어보는 것'
+])
 const GROUPS = ['시작하기', '주요 콘텐츠', '성장 · 경제'] as const
 
 export type WikiNavigationPage = {
@@ -59,6 +65,7 @@ export function WikiNavigation({
   categoryForPage: (page: WikiNavigationPage) => string
 }) {
   const draftPages = pages.filter((page) => page.status === 'draft')
+  const readyPageCount = pages.length - draftPages.length
 
   const pageLink = (
     page: WikiNavigationPage,
@@ -74,7 +81,7 @@ export function WikiNavigation({
       <Link
         key={page.pageId}
         href={withBasePath(wikiGuidePath(page))}
-        prefetch={!draft && home && PREFETCH_TITLES.has(page.title)}
+        prefetch={!draft && PREFETCH_TITLES.has(page.title)}
         onClick={onCloseMenu}
         className={`global-page-link ${current ? 'is-current' : ''} ${draft ? 'is-draft' : ''}`}
         aria-current={current ? 'page' : undefined}
@@ -100,7 +107,7 @@ export function WikiNavigation({
       <aside className={`wiki-sidebar ${menuOpen ? 'is-open' : ''}`}>
         <div className="sidebar-head">
           <strong>문서 탐색</strong>
-          <span>{pages.length}개</span>
+          <span>공개 {readyPageCount} · 준비 {draftPages.length}</span>
         </div>
 
         {!home && (

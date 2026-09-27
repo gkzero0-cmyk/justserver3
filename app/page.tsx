@@ -11,7 +11,7 @@ import { notionPublicUrl, ROOT_PAGE_ID } from '@/lib/notion'
 import { readNotionIndex } from '@/lib/notion-index'
 import { isDraftPage, wikiContentStatus } from '@/lib/wiki-content-status'
 import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
-import { relativeUpdateLabel } from '@/lib/wiki-ux'
+import { formatSeoulDate, relativeUpdateLabel } from '@/lib/wiki-ux'
 import {
   deriveOptimizedVariant,
   resolveCachedAsset,
@@ -20,17 +20,6 @@ import {
 import { wikiGuidePath } from '@/lib/wiki-routes'
 
 export const revalidate = 300
-
-function formatDate(value: string | null) {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return ''
-  return new Intl.DateTimeFormat('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).format(date)
-}
 
 function formatSyncDate(value: string | null) {
   if (!value) return '최근 동기화 확인 중'
@@ -138,7 +127,7 @@ export default async function HomePage() {
 
         <div className="directory-grid">
           <Link
-            prefetch={false}
+            prefetch={true}
             href={withBasePath('/guide/newbie-guide/')}
             className="directory-card is-featured"
             data-wiki-event="wiki_home_navigate"
@@ -155,7 +144,7 @@ export default async function HomePage() {
           </Link>
 
           <Link
-            prefetch={false}
+            prefetch={true}
             href={withBasePath('/guide/mining/')}
             className="directory-card"
             data-wiki-event="wiki_home_navigate"
@@ -172,7 +161,7 @@ export default async function HomePage() {
           </Link>
 
           <Link
-            prefetch={false}
+            prefetch={true}
             href={withBasePath('/guide/upgrade/')}
             className="directory-card"
             data-wiki-event="wiki_home_navigate"
@@ -189,7 +178,7 @@ export default async function HomePage() {
           </Link>
 
           <Link
-            prefetch={false}
+            prefetch={true}
             href={withBasePath('/guide/faq/')}
             className="directory-card"
             data-wiki-event="wiki_home_navigate"
@@ -248,7 +237,7 @@ export default async function HomePage() {
               <strong>{latestUpdate.title}</strong>
             </span>
             <time dateTime={latestUpdate.lastEdited || undefined}>
-              {formatDate(latestUpdate.lastEdited)}
+              {formatSeoulDate(latestUpdate.lastEdited)}
             </time>
             <b aria-hidden="true">→</b>
           </Link>
@@ -267,10 +256,10 @@ export default async function HomePage() {
               >
                 <span
                   className="recent-update-date"
-                  title={formatDate(page.lastEdited)}
+                  title={formatSeoulDate(page.lastEdited)}
                 >
                   {relativeUpdateLabel(page.lastEdited)}
-                  <small>{formatDate(page.lastEdited)}</small>
+                  <small>{formatSeoulDate(page.lastEdited)}</small>
                 </span>
                 <strong>{page.title}</strong>
                 {page.changeSummary && (

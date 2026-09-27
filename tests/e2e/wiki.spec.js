@@ -41,16 +41,21 @@ test.describe('desktop wiki journeys', () => {
     await expect(page.locator('html')).toHaveAttribute('data-text-size', 'large')
   })
 
-  test('text size control visibly scales home and sidebar copy', async ({ page }) => {
+  test('text size control visibly scales home, section headings and sidebar copy', async ({ page }) => {
     await page.goto('/')
 
     const heroCopy = page.locator('.hero-copy > p:last-of-type')
+    const sectionHeading = page.locator('.directory-heading h2').first()
     const sidebarLabel = page.locator('.sidebar-category-head strong').first()
 
     await expect(heroCopy).toBeVisible()
+    await expect(sectionHeading).toBeVisible()
     await expect(sidebarLabel).toBeVisible()
 
     const defaultHero = await heroCopy.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+    const defaultHeading = await sectionHeading.evaluate((element) =>
       Number.parseFloat(getComputedStyle(element).fontSize)
     )
     const defaultSidebar = await sidebarLabel.evaluate((element) =>
@@ -62,12 +67,59 @@ test.describe('desktop wiki journeys', () => {
     const largeHero = await heroCopy.evaluate((element) =>
       Number.parseFloat(getComputedStyle(element).fontSize)
     )
+    const largeHeading = await sectionHeading.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
     const largeSidebar = await sidebarLabel.evaluate((element) =>
       Number.parseFloat(getComputedStyle(element).fontSize)
     )
 
     expect(largeHero).toBeGreaterThan(defaultHero)
+    expect(largeHeading).toBeGreaterThan(defaultHeading)
     expect(largeSidebar).toBeGreaterThan(defaultSidebar)
+  })
+
+  test('text size control visibly scales document and search result copy', async ({ page }) => {
+    await page.goto('/guide/rules/')
+
+    const documentCopy = page.locator('.notion-page-content p').first()
+    await expect(documentCopy).toBeVisible()
+    const defaultDocument = await documentCopy.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+
+    const openSearch = page.getByRole('button', { name: /문서 검색|전체 문서 검색/ }).first()
+    await openSearch.click()
+    const search = page.getByRole('textbox', { name: /검색/i })
+    await search.fill('강화')
+    const resultCopy = page.locator('.search-result-card strong').first()
+    await expect(resultCopy).toBeVisible()
+    const defaultSearch = await resultCopy.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+
+    await page.keyboard.press('Escape')
+    await page.getByRole('button', { name: '글자 크게' }).click()
+
+    const largeDocument = await documentCopy.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+
+    await openSearch.click()
+    await page.getByRole('textbox', { name: /검색/i }).fill('강화')
+    await expect(resultCopy).toBeVisible()
+    const largeSearch = await resultCopy.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    )
+
+    expect(largeDocument).toBeGreaterThan(defaultDocument)
+    expect(largeSearch).toBeGreaterThan(defaultSearch)
+  })
+
+  test('home reports readable and draft guide counts separately', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByText(/공개 \d+ · 준비 중 \d+/).first()).toBeVisible()
+    await expect(page.getByText(/공개 \d+ · 준비 \d+/).first()).toBeVisible()
   })
 
   test('text size control visibly scales enhancement lab copy', async ({ page }) => {
@@ -879,6 +931,49 @@ test.describe('mobile wiki journeys', () => {
     }))
 
     expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewport + 1)
+  })
+
+  test('large text keeps key responsive widths free of horizontal overflow', async ({ page }) => {
+    const mobileViewports = [
+      { width: 360, height: 800 },
+      { width: 390, height: 844 },
+      { width: 412, height: 915 }
+    ]
+
+    for (const viewport of mobileViewports) {
+      await page.setViewportSize(viewport)
+      await page.goto('/')
+      await page.getByRole('button', { name: /빠른정보/ }).click()
+      const dialog = page.getByRole('dialog', { name: '게임 중 빠른보기' })
+      await dialog.getByRole('button', { name: '글자 크게' }).click()
+      await dialog.getByRole('button', { name: '빠른보기 닫기' }).click()
+
+      const metrics = await page.evaluate(() => ({
+        viewport: document.documentElement.clientWidth,
+        scrollWidth: document.documentElement.scrollWidth
+      }))
+      expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewport + 1)
+    }
+
+    for (const width of [1024, 853]) {
+      await page.setViewportSize({ width, height: 900 })
+      await page.goto('/')
+      const topLarge = page.getByRole('button', { name: '글자 크게' }).first()
+      if (await topLarge.isVisible()) {
+        await topLarge.click()
+      } else {
+        await page.getByRole('button', { name: /빠른정보/ }).click()
+        const dialog = page.getByRole('dialog', { name: '게임 중 빠른보기' })
+        await dialog.getByRole('button', { name: '글자 크게' }).click()
+        await dialog.getByRole('button', { name: '빠른보기 닫기' }).click()
+      }
+
+      const metrics = await page.evaluate(() => ({
+        viewport: document.documentElement.clientWidth,
+        scrollWidth: document.documentElement.scrollWidth
+      }))
+      expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewport + 1)
+    }
   })
 
   test('primary mobile controls meet minimum touch target size', async ({ page }) => {

@@ -62,6 +62,7 @@ import {
 import {
   classifyWikiContent,
   extractKoreanInitials,
+  formatSeoulDate,
   matchesKoreanInitials,
   relativeUpdateLabel,
   suggestFallbackPages,
@@ -108,6 +109,12 @@ test('formats recent update dates relative to a supplied now', () => {
   assert.equal(relativeUpdateLabel('2026-09-25T01:00:00+09:00', now), '오늘')
   assert.equal(relativeUpdateLabel('2026-09-24T09:00:00+09:00', now), '어제')
   assert.equal(relativeUpdateLabel('2026-09-22T09:00:00+09:00', now), '3일 전')
+})
+
+
+test('formats absolute update dates on the Seoul calendar boundary', () => {
+  assert.equal(formatSeoulDate('2026-09-19T14:59:59Z'), '2026. 09. 19.')
+  assert.equal(formatSeoulDate('2026-09-19T15:00:00Z'), '2026. 09. 20.')
 })
 
 
