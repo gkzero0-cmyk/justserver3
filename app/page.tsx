@@ -129,6 +129,7 @@ export default async function HomePage() {
 
         <div className="directory-grid">
           <Link
+            prefetch={false}
             href={withBasePath('/guide/newbie-guide/')}
             className="directory-card is-featured"
             data-wiki-event="wiki_home_navigate"
@@ -145,6 +146,7 @@ export default async function HomePage() {
           </Link>
 
           <Link
+            prefetch={false}
             href={withBasePath('/guide/mining/')}
             className="directory-card"
             data-wiki-event="wiki_home_navigate"
@@ -161,6 +163,7 @@ export default async function HomePage() {
           </Link>
 
           <Link
+            prefetch={false}
             href={withBasePath('/guide/upgrade/')}
             className="directory-card"
             data-wiki-event="wiki_home_navigate"
@@ -177,6 +180,7 @@ export default async function HomePage() {
           </Link>
 
           <Link
+            prefetch={false}
             href={withBasePath('/guide/faq/')}
             className="directory-card"
             data-wiki-event="wiki_home_navigate"
@@ -214,6 +218,7 @@ export default async function HomePage() {
         <div className="recent-update-list">
           {recentPages.map((page) => (
             <Link
+              prefetch={false}
               key={page.pageId}
               href={withBasePath(wikiGuidePath(page))}
               className="recent-update-card"

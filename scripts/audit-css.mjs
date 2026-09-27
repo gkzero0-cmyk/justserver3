@@ -3,13 +3,23 @@ import process from 'node:process'
 
 const files = ['app/globals.css', 'app/wiki-reader.css', 'components/wiki-enhancement-lab.css']
 const legacyCoolColors = new Set([
-  '#718096',
-  '#627083',
+  '#e8edf4',
+  '#e4ebf4',
+  '#e5ebf3',
+  '#dce5ef',
+  '#dbe4ee',
+  '#cbd5e1',
+  '#aeb9c8',
+  '#aab6c7',
+  '#94a3b8',
   '#8795a9',
   '#7f8da2',
-  '#94a3b8',
-  '#aab6c7',
-  '#cbd5e1'
+  '#8190a3',
+  '#7d8ba0',
+  '#718096',
+  '#637083',
+  '#627083',
+  '#5f6d7e'
 ])
 
 const findings = []
@@ -53,7 +63,7 @@ const coolColors = findings.filter((item) => item.type === 'legacy-cool-color')
 
 const baseline = {
   tinyFonts: 0,
-  coolColors: 15
+  coolColors: 0
 }
 
 let regressed = false
@@ -103,7 +113,7 @@ if (process.env.GITHUB_STEP_SUMMARY) {
       `- Legacy cool-color declarations: ${coolColors.length}`,
       '',
       `Baseline: <= ${baseline.tinyFonts} sub-10px declarations and <= ${baseline.coolColors} legacy colors.`,
-      'Sub-10px text is not allowed; legacy color debt may remain but cannot regress.',
+      'Sub-10px text and retired cool-tone colors are not allowed.',
       '',
       '| Finding | Location | Value |',
       '| --- | --- | --- |',

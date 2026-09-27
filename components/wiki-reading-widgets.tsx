@@ -47,6 +47,7 @@ export function FavoritePagesSection({
         {pages.map((page) => (
           <div className="favorite-page-card" key={page.pageId}>
             <Link
+              prefetch={false}
               href={withBasePath(wikiGuidePath(page))}
               data-wiki-event="wiki_home_navigate"
               data-wiki-section="favorites"
@@ -115,6 +116,7 @@ export function RecentViewedSection({
         <div className="recent-viewed-list">
           {pages.map((page, index) => (
             <Link
+              prefetch={false}
               key={page.pageId}
               href={withBasePath(wikiGuidePath(page))}
               className={`recent-viewed-card ${index === 0 ? 'is-primary' : ''}`}

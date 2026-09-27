@@ -8,6 +8,8 @@
   --panel-2: #191617;
   --line: #30292a;
   --text: #f6f1ec;
+  --text-rgb: 246,241,236;
+  --text-secondary: #cfc4be;
   --muted: #a99c96;
   --text-subtle: #a99a93;
   --text-faint: #93857f;
@@ -193,7 +195,7 @@ input {
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   text-align: left;
   cursor: pointer;
   line-height: 1.35;
@@ -207,12 +209,12 @@ input {
 
 .toc-item.level-2 {
   padding-left: 18px;
-  color: #aab6c7;
+  color: var(--text-subtle);
 }
 
 .toc-item.level-3 {
   padding-left: 28px;
-  color: #8795a9;
+  color: var(--text-faint);
   font-size: 12px;
 }
 
@@ -256,11 +258,11 @@ input {
 }
 
 .notion {
-  --fg-color: #e8edf4 !important;
-  --fg-color-0: rgba(232,237,244,.09) !important;
-  --fg-color-1: #cbd5e1 !important;
-  --fg-color-2: #aeb9c8 !important;
-  --fg-color-3: #7f8da2 !important;
+  --fg-color: var(--text) !important;
+  --fg-color-0: rgba(var(--text-rgb),.09) !important;
+  --fg-color-1: var(--text-secondary) !important;
+  --fg-color-2: var(--text-subtle) !important;
+  --fg-color-3: var(--text-faint) !important;
   --bg-color: transparent !important;
   --bg-color-0: rgba(255,255,255,.03) !important;
   --bg-color-1: rgba(255,255,255,.06) !important;
@@ -467,7 +469,7 @@ input {
   border: 1px solid rgba(255,255,255,.06);
   border-radius: 10px;
   background: rgba(255,255,255,.025);
-  color: #dce5ef;
+  color: var(--text-secondary);
   text-decoration: none;
   font-size: 13px;
 }
@@ -539,7 +541,7 @@ input {
   border: 1px solid rgba(255,255,255,.075);
   border-radius: 999px;
   background: rgba(255,255,255,.035);
-  color: #aeb9c8;
+  color: var(--text-subtle);
   font-size: 11px;
 }
 
@@ -573,7 +575,7 @@ input {
 .hero-copy > p:last-child {
   max-width: 680px;
   margin: 16px 0 0;
-  color: #aeb9c8;
+  color: var(--text-subtle);
   line-height: 1.75;
   font-size: 14px;
 }
@@ -597,7 +599,7 @@ input {
   border: 1px solid rgba(255,255,255,.075);
   border-radius: 13px;
   background: rgba(255,255,255,.025);
-  color: #e5ebf3;
+  color: var(--text-secondary);
   text-align: left;
   cursor: pointer;
   transition:
@@ -625,7 +627,7 @@ input {
 .quick-nav-label {
   min-width: 0;
   overflow: hidden;
-  color: #dbe4ee;
+  color: var(--text-secondary);
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 12px;
@@ -633,7 +635,7 @@ input {
 }
 
 .quick-nav-arrow {
-  color: #627083;
+  color: var(--text-faint);
   font-size: 14px;
   transition: transform .18s ease, color .18s ease;
 }
@@ -748,7 +750,7 @@ input {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  color: #718096;
+  color: var(--text-faint);
   font-size: 11px;
 }
 
@@ -758,12 +760,12 @@ input {
 }
 
 .wiki-footer strong {
-  color: #aeb9c8;
+  color: var(--text-subtle);
   font-size: 12px;
 }
 
 .wiki-footer a {
-  color: #94a3b8;
+  color: var(--text-subtle);
   text-decoration: none;
 }
 
@@ -916,19 +918,19 @@ input {
 
 .directory-copy strong {
   overflow: hidden;
-  color: #e4ebf4;
+  color: var(--text-secondary);
   font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .directory-copy small {
-  color: #718096;
-  font-size: 10px;
+  color: var(--text-faint);
+  font-size: 11px;
 }
 
 .directory-arrow {
-  color: #5f6d7e;
+  color: var(--text-faint);
   transition: transform .18s ease, color .18s ease;
 }
 
@@ -1007,13 +1009,13 @@ input {
 }
 
 .directory-group-head strong {
-  color: #e4ebf4;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
 .directory-group-head small {
-  color: #718096;
-  font-size: 10px;
+  color: var(--text-faint);
+  font-size: 11px;
 }
 
 .directory-group-head em {
@@ -1024,7 +1026,7 @@ input {
   padding: 0 7px;
   border: 1px solid rgba(255,255,255,.07);
   border-radius: 999px;
-  color: #8190a3;
+  color: var(--text-faint);
   font-size: 10px;
   font-style: normal;
 }
@@ -1073,7 +1075,7 @@ input {
 .nav-section-label {
   display: block;
   padding: 8px 9px 5px;
-  color: #637083;
+  color: var(--text-faint);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: .12em;
@@ -1373,7 +1375,7 @@ input {
 
 .breadcrumbs strong {
   overflow: hidden;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   font-weight: 650;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1416,7 +1418,7 @@ input {
 
 .page-siblings strong {
   overflow: hidden;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1612,12 +1614,12 @@ input {
 
 .status-summary small {
   grid-column: 2;
-  color: #7d8ba0;
+  color: var(--text-faint);
   font-size: 11px;
 }
 
 .status-summary time {
-  color: #7d8ba0;
+  color: var(--text-faint);
   font-size: 10px;
 }
 
@@ -1659,8 +1661,8 @@ input {
 }
 
 .status-grid span {
-  color: #8795a9;
-  font-size: 10px;
+  color: var(--text-faint);
+  font-size: 11px;
 }
 
 .status-recent {
@@ -1689,9 +1691,9 @@ input {
 }
 
 .status-section-head a {
-  color: #8795a9;
+  color: var(--text-faint);
   text-decoration: none;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .status-recent-list {
@@ -1718,8 +1720,8 @@ input {
 }
 
 .status-recent-list span {
-  color: #718096;
-  font-size: 10px;
+  color: var(--text-faint);
+  font-size: 11px;
   white-space: nowrap;
 }
 
@@ -1779,6 +1781,8 @@ html[data-theme="light"] {
   --panel-2: #f6eee4;
   --line: #d9cec0;
   --text: #2e2522;
+  --text-rgb: 46,37,34;
+  --text-secondary: #584b46;
   --muted: #756863;
   --accent: #b83d34;
   --accent-strong: #c83f35;

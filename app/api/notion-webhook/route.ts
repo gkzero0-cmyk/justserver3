@@ -6,6 +6,11 @@ export const dynamic = 'force-dynamic'
 
 const SEARCH_INDEX_URL =
   'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/search-index.json'
+const ASSET_SYNC_RUNS_URL =
+  'https://api.github.com/repos/gkzero0-cmyk/justserver3/actions/workflows/sync-notion-assets.yml/runs?branch=main&per_page=5'
+const ASSET_SYNC_DISPATCH_URL =
+  'https://api.github.com/repos/gkzero0-cmyk/justserver3/actions/workflows/sync-notion-assets.yml/dispatches'
+const ASSET_SYNC_DEBOUNCE_MS = 2 * 60_000
 
 type NotionWebhookPayload = {
   verification_token?: string
@@ -34,24 +39,68 @@ function verifySignature(body: string, signature: string | null) {
   return timingSafeEqual(expectedBuffer, actualBuffer)
 }
 
+async function hasRecentAssetSync(token: string) {
+  try {
+    const response = await fetch(ASSET_SYNC_RUNS_URL, {
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28'
+      },
+      cache: 'no-store'
+    })
+
+    if (!response.ok) return false
+
+    const data = (await response.json()) as {
+      workflow_runs?: Array<{
+        status?: string
+        conclusion?: string | null
+        created_at?: string
+      }>
+    }
+
+    const now = Date.now()
+
+    return (data.workflow_runs || []).some((run) => {
+      if (run.status === 'queued' || run.status === 'in_progress') {
+        return true
+      }
+
+      const createdAt = run.created_at
+        ? new Date(run.created_at).getTime()
+        : 0
+
+      return (
+        run.conclusion === 'success' &&
+        createdAt > 0 &&
+        now - createdAt < ASSET_SYNC_DEBOUNCE_MS
+      )
+    })
+  } catch {
+    return false
+  }
+}
+
 async function triggerAssetSync() {
   const token = process.env.GITHUB_ACTIONS_TOKEN
   if (!token) return { triggered: false, reason: 'token-not-configured' }
 
-  const response = await fetch(
-    'https://api.github.com/repos/gkzero0-cmyk/justserver3/actions/workflows/sync-notion-assets.yml/dispatches',
-    {
-      method: 'POST',
-      headers: {
-        Accept: 'application/vnd.github+json',
-        Authorization: `Bearer ${token}`,
-        'X-GitHub-Api-Version': '2022-11-28',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ ref: 'main' }),
-      cache: 'no-store'
-    }
-  )
+  if (await hasRecentAssetSync(token)) {
+    return { triggered: false, reason: 'recent-sync' }
+  }
+
+  const response = await fetch(ASSET_SYNC_DISPATCH_URL, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ ref: 'main' }),
+    cache: 'no-store'
+  })
 
   return {
     triggered: response.ok,
@@ -63,7 +112,7 @@ function normalizePageId(value?: string) {
   return value?.replaceAll('-', '') || null
 }
 
-async function searchIndexResponse() {
+async function readSearchIndexText() {
   const response = await fetch(SEARCH_INDEX_URL, {
     headers: {
       'Cache-Control': 'no-cache'
@@ -75,19 +124,60 @@ async function searchIndexResponse() {
   })
 
   if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`)
+  }
+
+  return response.text()
+}
+
+function searchIndexGeneratedAt(text: string) {
+  try {
+    const payload = JSON.parse(text) as { generatedAt?: string | null }
+    return payload.generatedAt || null
+  } catch {
+    return null
+  }
+}
+
+async function searchIndexResponse() {
+  try {
+    const text = await readSearchIndexText()
+
+    return new Response(text, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control':
+          'public, max-age=60, s-maxage=300, stale-while-revalidate=900'
+      }
+    })
+  } catch {
     return Response.json(
       { pages: [], error: 'search-index-unavailable' },
       { status: 502 }
     )
   }
+}
 
-  return new Response(await response.text(), {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=900'
-    }
-  })
+async function searchIndexMetaResponse() {
+  try {
+    const text = await readSearchIndexText()
+
+    return Response.json(
+      { generatedAt: searchIndexGeneratedAt(text) },
+      {
+        headers: {
+          'Cache-Control':
+            'public, max-age=60, s-maxage=300, stale-while-revalidate=900'
+        }
+      }
+    )
+  } catch {
+    return Response.json(
+      { generatedAt: null, error: 'search-index-unavailable' },
+      { status: 502 }
+    )
+  }
 }
 
 export async function GET(request: Request) {
@@ -95,6 +185,10 @@ export async function GET(request: Request) {
 
   if (url.searchParams.get('resource') === 'search-index') {
     return searchIndexResponse()
+  }
+
+  if (url.searchParams.get('resource') === 'search-meta') {
+    return searchIndexMetaResponse()
   }
 
   return Response.json({

@@ -23,7 +23,7 @@ const blocking = []
 const notes = []
 const baseline = {
   missingDimensions: 0,
-  missingLoading: 3
+  missingLoading: 0
 }
 
 const actionMajorMinimum = {
@@ -213,7 +213,7 @@ if (process.env.GITHUB_STEP_SUMMARY) {
       `- Blocking configuration findings: ${blocking.length}`,
       '',
       `Image regression baseline: dimensions <= ${baseline.missingDimensions}, loading omissions <= ${baseline.missingLoading}.`,
-      'Existing intentional loading omissions are allowed, but increases fail the build.',
+      'All source image tags must declare loading behavior; any omission fails the build.',
       ''
     ].join('\n')
   )

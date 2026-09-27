@@ -51,6 +51,7 @@ export function WikiSinceVisit({ pages }: { pages: ChangedPage[] }) {
       <div className="since-visit-list">
         {changed.map((page) => (
           <Link
+            prefetch={false}
             key={page.pageId}
             href={withBasePath(`/page/${page.pageId}/`)}
             data-wiki-event="wiki_since_visit_open"

@@ -55,15 +55,16 @@ type WikiPageLink = WikiNavigationPage & {
 let clientSearchIndexCache: SearchIndexPayload | null = null
 let clientSearchIndexCachedAt = 0
 
-const SEARCH_INDEX_URLS = [
-  withBasePath('/notion-assets/search-index.json'),
-  withBasePath('/api/notion-webhook?resource=search-index')
-]
-const CORE_PREFETCH_TITLES = new Set([
-  '서버규칙',
-  '기초설정(뉴비필독)',
-  '채광'
-])
+const STATIC_SEARCH_INDEX_URL = withBasePath(
+  '/notion-assets/search-index.json'
+)
+const LIVE_SEARCH_INDEX_URL = withBasePath(
+  '/api/notion-webhook?resource=search-index'
+)
+const SEARCH_INDEX_META_URL = withBasePath(
+  '/api/notion-webhook?resource=search-meta'
+)
+const SEARCH_REFRESH_INTERVAL_MS = 5 * 60_000
 
 const WikiSearchDialog = dynamic(
   () =>
@@ -783,36 +784,6 @@ export function WikiShell({
   }
 
   useEffect(() => {
-    const connection = (
-      navigator as Navigator & {
-        connection?: { saveData?: boolean; effectiveType?: string }
-      }
-    ).connection
-
-    if (
-      connection?.saveData ||
-      connection?.effectiveType === 'slow-2g' ||
-      connection?.effectiveType === '2g'
-    ) {
-      return
-    }
-
-    const timer = window.setTimeout(() => {
-      for (const page of pages) {
-        if (
-          page.status !== 'draft' &&
-          CORE_PREFETCH_TITLES.has(page.title) &&
-          page.pageId.replaceAll('-', '') !== currentPageId?.replaceAll('-', '')
-        ) {
-          router.prefetch(withBasePath(`/page/${page.pageId}/`))
-        }
-      }
-    }, 500)
-
-    return () => window.clearTimeout(timer)
-  }, [currentPageId, pages, router])
-
-  useEffect(() => {
     if (!searchOpen) return
 
     let cancelled = false
@@ -834,10 +805,10 @@ export function WikiShell({
         : []
     }
 
-    const generatedTime = (data: SearchIndexPayload | null) => {
-      if (!data?.generatedAt) return 0
-      const value = new Date(data.generatedAt).getTime()
-      return Number.isNaN(value) ? 0 : value
+    const generatedTime = (value?: string | null) => {
+      if (!value) return 0
+      const timestamp = new Date(value).getTime()
+      return Number.isNaN(timestamp) ? 0 : timestamp
     }
 
     if (!searchPages && clientSearchIndexCache) {
@@ -852,7 +823,7 @@ export function WikiShell({
 
     if (
       (searchPages || clientSearchIndexCache) &&
-      now - lastRefresh < 45_000
+      now - lastRefresh < SEARCH_REFRESH_INTERVAL_MS
     ) {
       return
     }
@@ -861,57 +832,83 @@ export function WikiShell({
       if (!searchPages && !clientSearchIndexCache) setSearchLoading(true)
       setSearchFailed(false)
 
-      let staticData: SearchIndexPayload | null = null
+      let baselineData = clientSearchIndexCache
       let liveData: SearchIndexPayload | null = null
 
       try {
-        if (!searchPages && !clientSearchIndexCache) {
+        if (!baselineData && !searchPages) {
           try {
-            const staticResponse = await fetch(SEARCH_INDEX_URLS[0], {
-              cache: 'no-store'
+            const staticResponse = await fetch(STATIC_SEARCH_INDEX_URL, {
+              cache: 'force-cache'
             })
             if (staticResponse.ok) {
-              staticData = (await staticResponse.json()) as SearchIndexPayload
-              clientSearchIndexCache = staticData
+              baselineData =
+                (await staticResponse.json()) as SearchIndexPayload
+              clientSearchIndexCache = baselineData
               clientSearchIndexCachedAt = Date.now()
-              if (!cancelled) setSearchPages(withPageMeta(staticData))
+              if (!cancelled) {
+                setSearchPages(withPageMeta(baselineData))
+              }
             }
           } catch {
-            // The live search index below remains available as a fallback.
+            // The live index remains available as a fallback.
           }
         }
 
-        try {
-          const liveResponse = await fetch(SEARCH_INDEX_URLS[1], {
-            cache: 'no-store'
-          })
-          if (liveResponse.ok) {
-            liveData = (await liveResponse.json()) as SearchIndexPayload
+        if (baselineData) {
+          try {
+            const metaResponse = await fetch(SEARCH_INDEX_META_URL)
+            if (metaResponse.ok) {
+              const meta = (await metaResponse.json()) as {
+                generatedAt?: string | null
+              }
+
+              if (
+                generatedTime(meta.generatedAt) >
+                generatedTime(baselineData.generatedAt)
+              ) {
+                const liveResponse = await fetch(LIVE_SEARCH_INDEX_URL, {
+                  cache: 'no-store'
+                })
+                if (liveResponse.ok) {
+                  liveData =
+                    (await liveResponse.json()) as SearchIndexPayload
+                }
+              }
+            }
+          } catch {
+            // Keep the cached/static result when the freshness probe fails.
           }
-        } catch {
-          // Keep the instant static result when the live refresh is unavailable.
+        } else {
+          try {
+            const liveResponse = await fetch(LIVE_SEARCH_INDEX_URL, {
+              cache: 'no-store'
+            })
+            if (liveResponse.ok) {
+              liveData =
+                (await liveResponse.json()) as SearchIndexPayload
+            }
+          } catch {
+            // The error state below handles a complete search-index outage.
+          }
         }
 
-        if (!staticData && !liveData && !searchPages) {
+        const resolvedData = liveData || baselineData
+
+        if (!resolvedData && !searchPages) {
           throw new Error('search-index-unavailable')
         }
 
-        const shouldApplyLive =
-          Boolean(liveData) &&
-          (
-            !staticData ||
-            generatedTime(liveData) >= generatedTime(staticData)
-          )
-
-        if (!cancelled && liveData && shouldApplyLive) {
+        if (liveData) {
           clientSearchIndexCache = liveData
           clientSearchIndexCachedAt = Date.now()
-          setSearchPages(withPageMeta(liveData))
+          if (!cancelled) {
+            setSearchPages(withPageMeta(liveData))
+          }
         }
 
         if (!cancelled) {
-          searchRefreshAtRef.current =
-            clientSearchIndexCachedAt || Date.now()
+          searchRefreshAtRef.current = Date.now()
         }
       } catch {
         if (!cancelled) setSearchFailed(true)
