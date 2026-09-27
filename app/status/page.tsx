@@ -47,10 +47,24 @@ function shortSha(value: string | null) {
   return value.slice(0, 7)
 }
 
-async function getWorkflowState(workflow: string): Promise<WorkflowState | null> {
+const STATUS_WORKFLOWS = [
+  'sync-notion-assets.yml',
+  'build.yml',
+  'verify-production.yml'
+] as const
+
+type StatusWorkflow = (typeof STATUS_WORKFLOWS)[number]
+
+async function getWorkflowStates(): Promise<
+  Record<StatusWorkflow, WorkflowState | null>
+> {
+  const empty = Object.fromEntries(
+    STATUS_WORKFLOWS.map((workflow) => [workflow, null])
+  ) as Record<StatusWorkflow, WorkflowState | null>
+
   try {
     const response = await fetch(
-      `https://api.github.com/repos/gkzero0-cmyk/justserver3/actions/workflows/${workflow}/runs?branch=main&per_page=1`,
+      'https://api.github.com/repos/gkzero0-cmyk/justserver3/actions/runs?branch=main&per_page=30',
       {
         headers: {
           Accept: 'application/vnd.github+json'
@@ -59,10 +73,11 @@ async function getWorkflowState(workflow: string): Promise<WorkflowState | null>
       }
     )
 
-    if (!response.ok) return null
+    if (!response.ok) return empty
 
     const data = (await response.json()) as {
       workflow_runs?: Array<{
+        path?: string | null
         status?: string
         conclusion?: string | null
         updated_at?: string | null
@@ -70,18 +85,25 @@ async function getWorkflowState(workflow: string): Promise<WorkflowState | null>
         html_url?: string | null
       }>
     }
-    const run = data.workflow_runs?.[0]
-    if (!run) return null
 
-    return {
-      status: run.status || 'unknown',
-      conclusion: run.conclusion ?? null,
-      updatedAt: run.updated_at ?? null,
-      title: run.display_title ?? null,
-      url: run.html_url ?? null
+    for (const workflow of STATUS_WORKFLOWS) {
+      const run = data.workflow_runs?.find((item) =>
+        item.path?.endsWith(`/${workflow}`)
+      )
+      if (!run) continue
+
+      empty[workflow] = {
+        status: run.status || 'unknown',
+        conclusion: run.conclusion ?? null,
+        updatedAt: run.updated_at ?? null,
+        title: run.display_title ?? null,
+        url: run.html_url ?? null
+      }
     }
+
+    return empty
   } catch {
-    return null
+    return empty
   }
 }
 
@@ -171,21 +193,17 @@ function statusTone(state: WorkflowState | null) {
 }
 
 export default async function StatusPage() {
-  const [
-    index,
-    manifest,
-    syncWorkflow,
-    buildWorkflow,
-    productionVerifyWorkflow,
-    productionHealth
-  ] = await Promise.all([
-    readNotionIndex(),
-    readNotionAssetManifest(),
-    getWorkflowState('sync-notion-assets.yml'),
-    getWorkflowState('build.yml'),
-    getWorkflowState('verify-production.yml'),
-    getProductionHealth()
-  ])
+  const [index, manifest, workflowStates, productionHealth] =
+    await Promise.all([
+      readNotionIndex(),
+      readNotionAssetManifest(),
+      getWorkflowStates(),
+      getProductionHealth()
+    ])
+
+  const syncWorkflow = workflowStates['sync-notion-assets.yml']
+  const buildWorkflow = workflowStates['build.yml']
+  const productionVerifyWorkflow = workflowStates['verify-production.yml']
 
   const rootId = index.rootPageId.replaceAll('-', '')
   const rootPage =

@@ -13365,3 +13365,39 @@ html[data-theme="light"] .enhancement-guide-preview p {
 @media (prefers-reduced-motion: reduce) {
   .feedback-modal-backdrop { backdrop-filter: none; }
 }
+
+
+/* === Feedback/status final polish 2026-09-27 === */
+.status-content-backlog,
+.status-intelligence,
+.status-review-queue,
+.status-services,
+.status-asset-metrics,
+.status-recent {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+
+.status-services small,
+.status-services a,
+.status-asset-metrics small,
+.status-recent-list small {
+  font-size: 10px;
+}
+
+@media (min-width: 1320px) {
+  .starter-steps {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .status-content-backlog,
+  .status-intelligence,
+  .status-review-queue,
+  .status-services,
+  .status-asset-metrics,
+  .status-recent {
+    contain-intrinsic-size: auto 520px;
+  }
+}

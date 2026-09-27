@@ -281,6 +281,10 @@ test.describe('desktop wiki journeys', () => {
     await expect(dialog).toBeVisible()
     await expect(dialog.getByRole('combobox')).toBeVisible()
     await expect(dialog.getByRole('textbox').first()).toBeVisible()
+    await expect(dialog.getByRole('button', { name: '제보 창 닫기' })).toBeFocused()
+
+    await page.keyboard.press('Escape')
+    await expect(dialog).toBeHidden()
   })
 
   test('verified FAQ exposes source-backed answers', async ({ page }) => {

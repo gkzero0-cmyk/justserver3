@@ -54,6 +54,7 @@ export function WikiDocumentFeedback({
   const [submitting, setSubmitting] = useState(false)
   const [status, setStatus] = useState('')
   const closeRef = useRef<HTMLButtonElement>(null)
+  const modalRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     if (!open) return
@@ -66,6 +67,31 @@ export function WikiDocumentFeedback({
       if (event.key === 'Escape') {
         event.preventDefault()
         setOpen(false)
+        return
+      }
+
+      if (event.key !== 'Tab' || !modalRef.current) return
+
+      const focusable = Array.from(
+        modalRef.current.querySelectorAll<HTMLElement>(
+          'button, select, textarea, input:not([tabindex="-1"]), a[href]'
+        )
+      ).filter(
+        (element) =>
+          !element.hasAttribute('disabled') &&
+          element.getAttribute('aria-hidden') !== 'true'
+      )
+
+      if (!focusable.length) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
       }
     }
 
@@ -232,6 +258,7 @@ export function WikiDocumentFeedback({
           }}
         >
           <section
+            ref={modalRef}
             className="feedback-modal"
             role="dialog"
             aria-modal="true"
