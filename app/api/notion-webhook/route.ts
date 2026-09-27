@@ -69,7 +69,7 @@ async function searchIndexResponse() {
       'Cache-Control': 'no-cache'
     },
     next: {
-      revalidate: 60,
+      revalidate: 300,
       tags: ['notion-search']
     }
   })
@@ -85,7 +85,7 @@ async function searchIndexResponse() {
     status: 200,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+      'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=900'
     }
   })
 }
@@ -104,7 +104,7 @@ export async function GET(request: Request) {
       Boolean(process.env.NOTION_WEBHOOK_VERIFICATION_TOKEN),
     instantAssetSync: Boolean(process.env.GITHUB_ACTIONS_TOKEN),
     fallbackSyncMinutes: 5,
-    liveContentCacheSeconds: 3600
+    liveContentCacheSeconds: 300
   })
 }
 
@@ -119,10 +119,7 @@ export async function POST(request: Request) {
   }
 
   if (payload.verification_token) {
-    console.info(
-      '[notion-webhook] verification-token',
-      payload.verification_token
-    )
+    console.info('[notion-webhook] verification received')
 
     return Response.json({
       ok: true,

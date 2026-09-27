@@ -13141,3 +13141,227 @@ html[data-theme="light"] .enhancement-guide-preview small,
 html[data-theme="light"] .enhancement-guide-preview p {
   color: #6b5d57;
 }
+
+
+/* === Feedback, status rendering and responsive balance === */
+.document-feedback-actions button {
+  min-width: 0;
+  min-height: 66px;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 16px;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  align-content: center;
+  padding: 10px 12px;
+  border: 1px solid rgba(var(--gold-rgb),.12);
+  border-radius: 11px;
+  background: rgba(var(--gold-rgb),.025);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.document-feedback-actions button:hover,
+.document-feedback-actions button:focus-visible {
+  border-color: rgba(var(--gold-rgb),.24);
+  background: rgba(var(--gold-rgb),.05);
+}
+.document-feedback-actions button strong { grid-column: 1; font-size: 12px; }
+.document-feedback-actions button small {
+  grid-column: 1;
+  color: var(--text-subtle);
+  font-size: 11px;
+  line-height: 1.45;
+}
+.document-feedback-actions button b {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+  color: var(--gold);
+  font-size: 13px;
+}
+.document-feedback > div:first-child > span { font-size: 12px; }
+.document-action-status {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--text-subtle);
+  font-size: 11px;
+}
+.feedback-modal-backdrop {
+  position: fixed;
+  z-index: 1200;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0,0,0,.66);
+  backdrop-filter: blur(8px);
+}
+.feedback-modal {
+  width: min(100%, 560px);
+  max-height: min(760px, calc(100dvh - 40px));
+  overflow: auto;
+  border: 1px solid rgba(var(--gold-rgb),.18);
+  border-radius: 20px;
+  background: var(--panel);
+  box-shadow: 0 28px 90px rgba(0,0,0,.42);
+}
+.feedback-modal header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 20px 14px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.feedback-modal header > div { display: grid; gap: 4px; }
+.feedback-modal header small {
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .12em;
+}
+.feedback-modal header h2 { margin: 0; font-size: 22px; }
+.feedback-modal header span { color: var(--text-subtle); font-size: 12px; }
+.feedback-modal header > button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  background: var(--surface-soft);
+  color: var(--text);
+  font-size: 23px;
+  cursor: pointer;
+}
+.feedback-modal form { display: grid; gap: 14px; padding: 18px 20px 20px; }
+.feedback-modal label { display: grid; gap: 7px; }
+.feedback-modal label > span {
+  color: var(--text-subtle);
+  font-size: 12px;
+  font-weight: 750;
+}
+.feedback-modal label > span em {
+  color: var(--text-faint);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 650;
+}
+.feedback-modal select,
+.feedback-modal textarea,
+.feedback-modal input {
+  width: 100%;
+  border: 1px solid var(--border-soft);
+  border-radius: 11px;
+  background: var(--panel-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+.feedback-modal select,
+.feedback-modal input { min-height: 46px; padding: 0 12px; }
+.feedback-modal textarea {
+  min-height: 150px;
+  resize: vertical;
+  padding: 12px;
+  line-height: 1.55;
+}
+.feedback-modal label > small {
+  justify-self: end;
+  color: var(--text-faint);
+  font-size: 10px;
+}
+.feedback-honeypot {
+  position: fixed !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+.feedback-privacy-note {
+  display: grid;
+  gap: 3px;
+  padding: 11px 12px;
+  border-radius: 11px;
+  background: var(--surface-soft);
+}
+.feedback-privacy-note strong { font-size: 11px; }
+.feedback-privacy-note span,
+.feedback-submit-status,
+.feedback-setup-note {
+  margin: 0;
+  color: var(--text-subtle);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.feedback-submit-actions {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 8px;
+}
+.feedback-submit-actions button,
+.feedback-submit-actions a {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 15px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.feedback-submit-actions button {
+  border: 1px solid rgba(var(--accent-rgb),.28);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+.feedback-submit-actions button:disabled { opacity: .52; cursor: not-allowed; }
+.feedback-submit-actions a {
+  border: 1px solid var(--border-soft);
+  background: var(--surface-soft);
+  color: var(--text);
+}
+.status-content-backlog,
+.status-intelligence,
+.status-asset-metrics,
+.status-recent { content-visibility: auto; }
+.status-content-backlog { contain-intrinsic-size: auto 980px; }
+.status-intelligence { contain-intrinsic-size: auto 520px; }
+.status-asset-metrics,
+.status-recent { contain-intrinsic-size: auto 260px; }
+.status-asset-metrics small,
+.status-recent-list small,
+.status-intelligence-note { font-size: 11px; }
+.quick-goals .directory-grid {
+  grid-template-columns: repeat(4, minmax(0,1fr));
+}
+.starter-steps {
+  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+}
+@media (max-width: 1180px) {
+  .quick-goals .directory-grid {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+}
+@media (max-width: 760px) {
+  .feedback-modal-backdrop { align-items: end; padding: 0; }
+  .feedback-modal {
+    width: 100%;
+    max-height: min(88dvh, 760px);
+    border-radius: 20px 20px 0 0;
+    border-bottom: 0;
+  }
+  .feedback-submit-actions { grid-template-columns: 1fr; }
+  .quick-goals .directory-grid {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+}
+@media (max-width: 520px) {
+  .quick-goals .directory-grid,
+  .starter-steps { grid-template-columns: 1fr; }
+  .feedback-modal header,
+  .feedback-modal form { padding-inline: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .feedback-modal-backdrop { backdrop-filter: none; }
+}

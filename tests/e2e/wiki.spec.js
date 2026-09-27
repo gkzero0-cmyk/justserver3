@@ -268,6 +268,21 @@ test.describe('desktop wiki journeys', () => {
     }
   })
 
+  test('document share and site feedback controls stay inside the wiki', async ({ page }) => {
+    await page.goto('/guide/rules/')
+
+    const actions = page.locator('#document-feedback')
+    await expect(actions.getByRole('button', { name: /공유하기/ })).toBeVisible()
+    await expect(actions.getByRole('button', { name: /제보하기/ })).toBeVisible()
+    await expect(actions.locator('a[href*="github.com"]')).toHaveCount(0)
+
+    await actions.getByRole('button', { name: /제보하기/ }).click()
+    const dialog = page.getByRole('dialog', { name: '제보하기' })
+    await expect(dialog).toBeVisible()
+    await expect(dialog.getByRole('combobox')).toBeVisible()
+    await expect(dialog.getByRole('textbox').first()).toBeVisible()
+  })
+
   test('verified FAQ exposes source-backed answers', async ({ page }) => {
     await page.goto('/guide/faq')
 
@@ -454,6 +469,21 @@ test.describe('mobile wiki journeys', () => {
       await page.screenshot({
         path: `test-results/visual/${viewport.name}.png`,
         fullPage: true
+      })
+    }
+
+    const mobileViewports = [
+      { width: 360, height: 800, name: 'mobile-360' },
+      { width: 390, height: 844, name: 'mobile-390' },
+      { width: 412, height: 915, name: 'mobile-412' }
+    ]
+
+    for (const viewport of mobileViewports) {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height })
+      await page.goto('/')
+      await page.screenshot({
+        path: `test-results/visual/${viewport.name}.png`,
+        fullPage: false
       })
     }
   })

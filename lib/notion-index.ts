@@ -101,7 +101,7 @@ async function readNotionIndexUncached(): Promise<NotionIndex> {
         'Cache-Control': 'no-cache'
       },
       next: {
-        revalidate: 60,
+        revalidate: 300,
         tags: ['notion-index']
       }
     })
@@ -143,7 +143,7 @@ async function readNotionAssetManifestUncached(): Promise<NotionAssetManifest> {
         'Cache-Control': 'no-cache'
       },
       next: {
-        revalidate: 60,
+        revalidate: 300,
         tags: ['notion-assets']
       }
     })
@@ -157,7 +157,7 @@ async function readNotionAssetManifestUncached(): Promise<NotionAssetManifest> {
         'Cache-Control': 'no-cache'
       },
       next: {
-        revalidate: 60,
+        revalidate: 300,
         tags: ['notion-assets']
       }
     })

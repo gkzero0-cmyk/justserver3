@@ -17,7 +17,7 @@ import {
 } from '@/lib/url-utils'
 import { wikiGuidePath } from '@/lib/wiki-routes'
 
-export const revalidate = 60
+export const revalidate = 300
 
 function formatDate(value: string | null) {
   if (!value) return ''
@@ -117,7 +117,7 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
-      <section className="wiki-directory" aria-labelledby="quick-goals-title">
+      <section className="wiki-directory quick-goals" aria-labelledby="quick-goals-title">
         <div className="directory-heading">
           <div>
             <p>QUICK START</p>

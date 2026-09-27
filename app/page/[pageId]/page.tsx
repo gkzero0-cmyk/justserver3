@@ -29,7 +29,7 @@ import { buildReadingQuiz } from '@/lib/wiki-reading-game'
 import { wikiGuidePath } from '@/lib/wiki-routes'
 
 export const dynamicParams = true
-export const revalidate = 60
+export const revalidate = 300
 
 const RELATED_BY_TITLE: Record<string, string[]> = {
   스토리: ['서버규칙', '기초설정(뉴비필독)', '빚 갚기'],
@@ -274,6 +274,9 @@ export async function renderWikiPage(pageId: string) {
   const canonical = currentPage
     ? `${siteUrl}${wikiGuidePath(currentPage)}`
     : `${siteUrl}/page/${pageId.replaceAll('-', '')}`
+  const siteFeedbackEnabled = Boolean(process.env.GITHUB_FEEDBACK_TOKEN)
+  const discordFeedbackUrl =
+    process.env.NEXT_PUBLIC_DISCORD_FEEDBACK_URL || null
   const jsonLd = currentPage
     ? {
         '@context': 'https://schema.org',
@@ -498,13 +501,19 @@ export async function renderWikiPage(pageId: string) {
                 title={currentPage.title}
                 quiz={readingQuiz}
               />
-              <WikiDocumentFeedback
-                pageId={currentPage.pageId}
-                title={currentPage.title}
-              />
             </>
           )}
         </>
+      )}
+
+      {currentPage && (
+        <WikiDocumentFeedback
+          pageId={currentPage.pageId}
+          title={currentPage.title}
+          canonicalUrl={canonical}
+          siteSubmissionEnabled={siteFeedbackEnabled}
+          discordUrl={discordFeedbackUrl}
+        />
       )}
 
       {currentPage && related.length > 0 && (

@@ -10,9 +10,10 @@ import {
 } from '@/lib/wiki-content-health'
 import { categoryTitleForPage } from '@/lib/wiki-taxonomy'
 import { resolveCachedAsset, withBasePath } from '@/lib/url-utils'
-import { buildWikiFeedbackUrl } from '@/lib/wiki-ux'
 import verifiedFaqEntries from '@/data/wiki-verified-faq.json'
 import { buildTopicCoverage } from '@/lib/wiki-search-topics'
+import { resolveDeployableMainSha } from '@/lib/wiki-release-state'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 
 export const revalidate = 300
 
@@ -106,14 +107,25 @@ async function getProductionHealth(): Promise<ProductionHealth> {
       ? ((await versionResponse.json()) as { commit?: string | null })
       : null
     const branch = branchResponse.ok
-      ? ((await branchResponse.json()) as { commit?: { sha?: string | null } })
+      ? ((await branchResponse.json()) as {
+          commit?: {
+            sha?: string | null
+            commit?: { message?: string | null }
+            parents?: Array<{ sha?: string | null }>
+          }
+        })
       : null
+    const branchCommit = branch?.commit
 
     return {
       ok: healthResponse.ok,
       status: healthResponse.status,
       deployedSha: version?.commit || null,
-      mainSha: branch?.commit?.sha || null
+      mainSha: resolveDeployableMainSha({
+        sha: branchCommit?.sha || null,
+        message: branchCommit?.commit?.message || null,
+        parentSha: branchCommit?.parents?.[0]?.sha || null
+      })
     }
   } catch {
     return {
@@ -245,6 +257,8 @@ export default async function StatusPage() {
   )
   const instantAssetSyncReady = Boolean(process.env.GITHUB_ACTIONS_TOKEN)
   const production = process.env.VERCEL_ENV === 'production'
+  const feedbackStoreReady = Boolean(process.env.GITHUB_FEEDBACK_TOKEN)
+  const discordFeedbackReady = Boolean(process.env.DISCORD_FEEDBACK_WEBHOOK_URL)
 
   return (
     <WikiShell
@@ -394,17 +408,12 @@ export default async function StatusPage() {
                   >
                     Notion 원문 ↗
                   </a>
-                  <a
-                    href={buildWikiFeedbackUrl({
-                      pageId: item.pageId,
-                      title: item.title,
-                      kind: 'improve'
-                    })}
-                    target="_blank"
-                    rel="noreferrer noopener"
+                  <Link
+                    href={`${withBasePath(wikiGuidePath(item))}#document-feedback`}
+                    prefetch={false}
                   >
-                    자료 후보 제보 ↗
-                  </a>
+                    사이트에서 제보 →
+                  </Link>
                 </span>
               ))}
             </div>
@@ -558,12 +567,12 @@ export default async function StatusPage() {
                     ? '응답 확인 필요'
                     : 'Preview / Local'
                   : deploymentCurrent
-                    ? '최신 main 반영됨'
-                    : '배포 대기 중'}
+                    ? '최신 코드 반영됨'
+                    : '배포 확인 필요'}
               </strong>
               <span>
                 {productionHealth.status
-                  ? `HTTP ${productionHealth.status} · main ${shortSha(productionHealth.mainSha)} · prod ${shortSha(productionHealth.deployedSha)}`
+                  ? `HTTP ${productionHealth.status} · source ${shortSha(productionHealth.mainSha)} · prod ${shortSha(productionHealth.deployedSha)}`
                   : '운영 URL 응답을 확인하지 못했습니다.'}
               </span>
             </div>
@@ -618,6 +627,23 @@ export default async function StatusPage() {
             <a href="/api/notion-webhook" target="_blank" rel="noreferrer">
               수신기 상태 ↗
             </a>
+          </article>
+
+          <article data-tone={feedbackStoreReady ? 'success' : 'working'}>
+            <span className="status-service-icon">✉</span>
+            <div>
+              <small>사이트 제보</small>
+              <strong>
+                {feedbackStoreReady ? '사이트 접수 준비됨' : '저장소 연결 필요'}
+              </strong>
+              <span>
+                {feedbackStoreReady
+                  ? discordFeedbackReady
+                    ? '사이트 저장 후 Discord 운영 채널에도 선택적으로 알림'
+                    : '사이트 안에서 접수 · Discord 알림은 필요할 때 연결 가능'
+                  : '일반 이용자에게 GitHub를 노출하지 않고 서버측 저장소 연결을 기다립니다.'}
+              </span>
+            </div>
           </article>
 
           <article data-tone="success">

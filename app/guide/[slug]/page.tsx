@@ -10,7 +10,7 @@ import {
 } from '@/lib/wiki-routes'
 
 export const dynamicParams = false
-export const revalidate = 60
+export const revalidate = 300
 
 export function generateStaticParams() {
   return WIKI_GUIDE_ROUTES.map(({ slug }) => ({ slug }))
