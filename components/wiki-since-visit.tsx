@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 
 import { withBasePath } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 
 type ChangedPage = {
   pageId: string
@@ -53,7 +54,7 @@ export function WikiSinceVisit({ pages }: { pages: ChangedPage[] }) {
           <Link
             prefetch={false}
             key={page.pageId}
-            href={withBasePath(`/page/${page.pageId}/`)}
+            href={withBasePath(wikiGuidePath(page))}
             data-wiki-event="wiki_since_visit_open"
             data-wiki-section="since-visit"
             data-wiki-target={page.title}

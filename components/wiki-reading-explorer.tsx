@@ -12,6 +12,7 @@ import {
 import { iconForTitle } from '@/lib/wiki-taxonomy'
 import type { WikiContentStatus } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 import { readWikiStringArray } from '@/lib/wiki-client-state'
 
 type ExplorerPage = {
@@ -112,7 +113,7 @@ export function WikiReadingExplorer({
               return (
                 <Link
                   key={page.pageId}
-                  href={withBasePath(`/page/${page.pageId}/`)}
+                  href={withBasePath(wikiGuidePath(page))}
                   className={complete ? 'is-complete' : ''}
                   onClick={() =>
                     track('wiki_exploration_quest_navigate', {
@@ -147,7 +148,7 @@ export function WikiReadingExplorer({
               {recommendations.map((page) => (
                 <Link
                   key={page.pageId}
-                  href={withBasePath(`/page/${page.pageId}/`)}
+                  href={withBasePath(wikiGuidePath(page))}
                   onClick={() =>
                     track('wiki_unread_recommendation_navigate', {
                       category: page.category || 'unknown'
@@ -222,7 +223,7 @@ export function WikiReadingExplorer({
                     return (
                       <Link
                         key={page.pageId}
-                        href={withBasePath(`/page/${page.pageId}/`)}
+                        href={withBasePath(wikiGuidePath(page))}
                         className={complete ? 'is-complete' : ''}
                         title={complete ? `${page.title} · 완독` : `${page.title} · 미완독`}
                       >

@@ -34,6 +34,7 @@ import {
   type WikiContentStatus
 } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 
 type TocItem = ReadingTocItem
 
@@ -983,9 +984,7 @@ export function WikiShell({
                   data-wiki-section="hero"
                   data-wiki-target="newbie-guide"
                   data-wiki-status="ready"
-                  href={withBasePath(
-                    `/page/${pages.find((page) => page.title === '기초설정(뉴비필독)')!.pageId}/`
-                  )}
+                  href={withBasePath(wikiGuidePath(pages.find((page) => page.title === '기초설정(뉴비필독)')!))}
                 >
                   🧭 뉴비 필독
                 </Link>

@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react'
 import { iconForTitle } from '@/lib/wiki-taxonomy'
 import type { WikiContentStatus } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 import faqEntries from '@/data/wiki-verified-faq.json'
 
 type QuickPage = {
@@ -219,7 +220,7 @@ export function WikiMobileQuickView({
           {readyPages.map((page) => (
             <Link
               key={page.pageId}
-              href={withBasePath(`/page/${page.pageId}/`)}
+              href={withBasePath(wikiGuidePath(page))}
               onClick={onClose}
               data-wiki-event="wiki_mobile_quick_navigate"
               data-wiki-section="mobile-quick-view"

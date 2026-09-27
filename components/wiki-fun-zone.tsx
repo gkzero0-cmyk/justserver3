@@ -21,6 +21,7 @@ import {
 } from '@/lib/wiki-survival'
 import type { WikiContentStatus } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 import {
   readWikiStateValue,
   readWikiStringArray,
@@ -965,9 +966,7 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
 
                     <div className="fun-result-actions">
                       <Link
-                        href={withBasePath(
-                          `/page/${recommendedPage.pageId}/`
-                        )}
+                        href={withBasePath(wikiGuidePath(recommendedPage))}
                         onClick={() => {
                           track('wiki_fun_random_navigate', {
                             category:
@@ -1032,7 +1031,7 @@ export function WikiFunZone({ pages }: { pages: FunPage[] }) {
                     return (
                       <Link
                         key={page.pageId}
-                        href={withBasePath(`/page/${page.pageId}/`)}
+                        href={withBasePath(wikiGuidePath(page))}
                         className={visited ? 'is-visited' : ''}
                         onClick={() => {
                           track('wiki_fun_exploration_navigate', {

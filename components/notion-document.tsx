@@ -6,6 +6,7 @@ import type { ExtendedRecordMap } from 'notion-types'
 
 import { withBasePath } from '@/lib/url-utils'
 import { resolveCachedAsset } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 
 type ImageManifest = Record<string, string>
 
@@ -134,7 +135,7 @@ export function NotionDocument({
 
         const link = document.createElement('a')
         link.className = 'wiki-auto-link'
-        link.href = withBasePath(`/page/${page.pageId.replaceAll('-', '')}/`)
+        link.href = withBasePath(wikiGuidePath(page))
         link.textContent = page.title
         link.dataset.wikiEvent = 'wiki_auto_related_link'
         link.dataset.wikiSection = 'document-body'
@@ -158,7 +159,7 @@ export function NotionDocument({
       darkMode={darkMode}
       disableHeader
       mapPageUrl={(pageId) =>
-        withBasePath(`/page/${pageId.replaceAll('-', '')}/`)
+        withBasePath(wikiGuidePath({ pageId }))
       }
       mapImageUrl={(url) => {
         if (!url) return ''

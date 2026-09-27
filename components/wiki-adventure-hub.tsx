@@ -26,6 +26,7 @@ import {
 import { iconForTitle } from '@/lib/wiki-taxonomy'
 import type { WikiContentStatus } from '@/lib/wiki-ux'
 import { withBasePath } from '@/lib/url-utils'
+import { wikiGuidePath } from '@/lib/wiki-routes'
 import {
   readWikiStateValue,
   readWikiStringArray,
@@ -284,7 +285,7 @@ export function WikiAdventureHub({
       {nextAction && (
         <Link
           className="adventure-continue-card"
-          href={withBasePath('/page/' + nextAction.page.pageId + '/')}
+          href={withBasePath(wikiGuidePath(nextAction.page))}
           onClick={() =>
             track('wiki_adventure_continue', {
               kind: nextAction.kind,
@@ -408,7 +409,7 @@ export function WikiAdventureHub({
                           return (
                             <Link
                               key={page.pageId}
-                              href={withBasePath('/page/' + page.pageId + '/')}
+                              href={withBasePath(wikiGuidePath(page))}
                               className={complete ? 'is-complete' : ''}
                               onClick={() =>
                                 track('wiki_story_choice', {
@@ -487,7 +488,7 @@ export function WikiAdventureHub({
                     {group.pages.map((page) => (
                       <Link
                         key={page.pageId}
-                        href={withBasePath('/page/' + page.pageId + '/')}
+                        href={withBasePath(wikiGuidePath(page))}
                         className={page.complete ? 'is-stamped' : ''}
                         title={
                           page.title +
@@ -542,7 +543,7 @@ export function WikiAdventureHub({
                 return (
                   <Link
                     key={page.pageId}
-                    href={withBasePath('/page/' + page.pageId + '/')}
+                    href={withBasePath(wikiGuidePath(page))}
                     className={complete ? 'is-complete' : ''}
                     onClick={() =>
                       track('wiki_survival_build_navigate', {
@@ -677,7 +678,7 @@ export function WikiAdventureHub({
                     </strong>
                   </div>
                   {!boss.defeated && nextAction && (
-                    <Link href={withBasePath('/page/' + nextAction.page.pageId + '/')}>
+                    <Link href={withBasePath(wikiGuidePath(nextAction.page))}>
                       공격하러 가기 →
                     </Link>
                   )}
