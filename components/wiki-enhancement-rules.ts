@@ -183,12 +183,18 @@ export function enhancementOutcomeLabel(outcome: EnhancementOutcome) {
   return '실패'
 }
 
-export function enhancementAttemptDelay(level: number) {
-  if (level >= 14) return 1450
-  if (level >= 12) return 1200
-  if (level >= 8) return 980
-  if (level >= 5) return 800
+export function enhancementStrikeDuration(level: number) {
+  if (level >= 14) return 1000
+  if (level >= 12) return 880
+  if (level >= 8) return 800
+  if (level >= 5) return 720
   return 650
+}
+
+export function enhancementAttemptDelay(level: number) {
+  // Leave a short visual breath after the last hammer contact before the
+  // success/fail/down/destroy verdict begins.
+  return enhancementStrikeDuration(level) + 100
 }
 
 export function resolveEnhancementOutcome(

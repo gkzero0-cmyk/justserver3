@@ -4272,3 +4272,285 @@ html[data-text-size="small"] .wiki-enhancement-lab
     bottom: auto;
   }
 }
+
+
+/* === 2026-09-28 forge pacing + impact polish v14 ===
+ * Higher enhancement levels stay tense without turning into slow motion.
+ * Tension now comes from a larger main-hit backswing, not a much longer clip.
+ * The pickaxe reacts physically to each contact and the verdict starts only
+ * after the hammer sequence has visually cleared.
+ */
+.enhancement-forge{
+  --forge-strike-duration: .65s;
+  --forge-backswing-boost: 0deg;
+  --forge-main-contact-boost: 0deg;
+}
+
+.enhancement-forge[data-tier="mid"]{
+  --forge-strike-duration: .72s;
+  --forge-backswing-boost: 2deg;
+  --forge-main-contact-boost: 1deg;
+}
+
+.enhancement-forge[data-tier="high"]{
+  --forge-strike-duration: .8s;
+  --forge-backswing-boost: 5deg;
+  --forge-main-contact-boost: 2deg;
+}
+
+.enhancement-forge[data-tier="extreme"]{
+  --forge-strike-duration: .88s;
+  --forge-backswing-boost: 8deg;
+  --forge-main-contact-boost: 3deg;
+}
+
+.enhancement-forge[data-final-attempt="true"]{
+  --forge-strike-duration: 1s;
+  --forge-backswing-boost: 12deg;
+  --forge-main-contact-boost: 4deg;
+}
+
+/* Three contacts remain quick; the middle strike is the dramatic one. */
+@keyframes enhancementBlacksmithHammerCombo{
+  0%{
+    opacity: 0;
+    transform: translate(-50%, -94%) rotate(35deg);
+  }
+  7%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(35deg);
+  }
+
+  /* 1: light setup tap */
+  17%{
+    opacity: 1;
+    transform:
+      translate(-50%, -94%)
+      rotate(calc(45deg + var(--forge-backswing-boost) * .28));
+  }
+  24%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(-39deg);
+    filter: drop-shadow(0 0 2px rgba(244,176,84,.2));
+  }
+  31%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(12deg);
+    filter: none;
+  }
+
+  /* 2: main strike — larger wind-up at higher enhancement, not slower pacing */
+  42%{
+    opacity: 1;
+    transform:
+      translate(-50%, -94%)
+      rotate(calc(49deg + var(--forge-backswing-boost)));
+  }
+  52%{
+    opacity: 1;
+    transform:
+      translate(-50%, -94%)
+      rotate(calc(-44deg - var(--forge-main-contact-boost)));
+    filter: drop-shadow(0 0 5px rgba(255,190,96,.38));
+  }
+  61%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(10deg);
+    filter: none;
+  }
+
+  /* 3: short finishing tap */
+  71%{
+    opacity: 1;
+    transform:
+      translate(-50%, -94%)
+      rotate(calc(39deg + var(--forge-backswing-boost) * .36));
+  }
+  80%{
+    opacity: 1;
+    transform: translate(-50%, -94%) rotate(-40deg);
+    filter: drop-shadow(0 0 3px rgba(244,176,84,.24));
+  }
+  89%{
+    opacity: .94;
+    transform: translate(-50%, -94%) rotate(8deg);
+    filter: none;
+  }
+  100%{
+    opacity: 0;
+    transform: translate(-50%, -94%) rotate(28deg);
+  }
+}
+
+/* The item is struck, not independently "charging". Keep the response tiny. */
+.enhancement-forge[data-state="charging"] .enhancement-pickaxe{
+  animation:
+    enhancementPickaxeHammerRecoil
+    var(--forge-strike-duration)
+    linear
+    1
+    both !important;
+}
+
+@keyframes enhancementPickaxeHammerRecoil{
+  0%, 21%{
+    transform: translate(0,0) rotate(0deg);
+  }
+  24%{
+    transform: translate(-1px,2px) rotate(-.25deg);
+  }
+  29%, 49%{
+    transform: translate(0,0) rotate(0deg);
+  }
+  52%{
+    transform: translate(-2px,3px) rotate(-.55deg);
+  }
+  58%, 77%{
+    transform: translate(0,0) rotate(0deg);
+  }
+  80%{
+    transform: translate(-1px,2px) rotate(-.3deg);
+  }
+  86%, 100%{
+    transform: translate(0,0) rotate(0deg);
+  }
+}
+
+/* Hit FX strength: small → strong → medium. No sustained magic halo. */
+@keyframes enhancementBlacksmithImpactCombo{
+  0%, 21%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.28,.42);
+  }
+  24%{
+    opacity: .4;
+    transform: translate(-50%, -50%) scale(.54,.64);
+  }
+  29%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.86,.78);
+  }
+
+  30%, 49%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.3,.44);
+  }
+  52%{
+    opacity: .9;
+    transform: translate(-50%, -50%) scale(.82,.92);
+  }
+  58%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.28,1.08);
+  }
+
+  59%, 77%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.28,.42);
+  }
+  80%{
+    opacity: .58;
+    transform: translate(-50%, -50%) scale(.64,.72);
+  }
+  86%, 100%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1,.9);
+  }
+}
+
+@keyframes enhancementBlacksmithCoreCombo{
+  0%, 22%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.16);
+  }
+  24%{
+    opacity: .68;
+    transform: translate(-50%, -50%) scale(.62);
+  }
+  29%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.98);
+  }
+
+  30%, 50%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.16);
+  }
+  52%{
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  58%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.38);
+  }
+
+  59%, 78%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.16);
+  }
+  80%{
+    opacity: .76;
+    transform: translate(-50%, -50%) scale(.72);
+  }
+  86%, 100%{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+@keyframes enhancementBlacksmithSparkCombo{
+  0%, 22%{
+    opacity: 0;
+    transform:
+      rotate(var(--forge-angle))
+      translateX(4px)
+      scaleX(.12);
+  }
+  24%{
+    opacity: .62;
+  }
+  29%{
+    opacity: 0;
+    transform:
+      rotate(var(--forge-angle))
+      translateX(34px)
+      scaleX(.58);
+  }
+
+  30%, 50%{
+    opacity: 0;
+    transform:
+      rotate(var(--forge-angle))
+      translateX(4px)
+      scaleX(.12);
+  }
+  52%{
+    opacity: 1;
+  }
+  59%{
+    opacity: 0;
+    transform:
+      rotate(var(--forge-angle))
+      translateX(70px)
+      scaleX(1);
+  }
+
+  60%, 78%{
+    opacity: 0;
+    transform:
+      rotate(var(--forge-angle))
+      translateX(4px)
+      scaleX(.12);
+  }
+  80%{
+    opacity: .72;
+  }
+  87%, 100%{
+    opacity: 0;
+    transform:
+      rotate(var(--forge-angle))
+      translateX(46px)
+      scaleX(.72);
+  }
+}

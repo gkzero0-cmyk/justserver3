@@ -6,6 +6,7 @@ import {
   ENHANCEMENT_RULES,
   enhancementAttemptDelay,
   enhancementDanger,
+  enhancementStrikeDuration,
   enhancementStageLabel,
   normalizeEnhancementStats,
   resolveEnhancementOutcome
@@ -84,9 +85,22 @@ test('enhancement labels and timing preserve risk progression', () => {
   assert.equal(enhancementStageLabel(15), '최대강화')
   assert.equal(enhancementStageLabel(11, true), '파괴')
 
-  assert.equal(enhancementAttemptDelay(0), 650)
-  assert.equal(enhancementAttemptDelay(5), 800)
-  assert.equal(enhancementAttemptDelay(8), 980)
-  assert.equal(enhancementAttemptDelay(12), 1200)
-  assert.equal(enhancementAttemptDelay(14), 1450)
+  assert.equal(enhancementStrikeDuration(0), 650)
+  assert.equal(enhancementStrikeDuration(5), 720)
+  assert.equal(enhancementStrikeDuration(8), 800)
+  assert.equal(enhancementStrikeDuration(12), 880)
+  assert.equal(enhancementStrikeDuration(14), 1000)
+
+  assert.equal(enhancementAttemptDelay(0), 750)
+  assert.equal(enhancementAttemptDelay(5), 820)
+  assert.equal(enhancementAttemptDelay(8), 900)
+  assert.equal(enhancementAttemptDelay(12), 980)
+  assert.equal(enhancementAttemptDelay(14), 1100)
+
+  for (const level of [0, 5, 8, 12, 14]) {
+    assert.equal(
+      enhancementAttemptDelay(level) - enhancementStrikeDuration(level),
+      100
+    )
+  }
 })

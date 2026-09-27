@@ -461,6 +461,12 @@ test.describe('desktop wiki journeys', () => {
     )
     expect(strikeMotion.iterationCount).toBe('1')
     expect(strikeMotion.duration).toBeGreaterThanOrEqual(.65)
+    expect(strikeMotion.duration).toBeLessThanOrEqual(.82)
+
+    const pickaxeStrike = await lab.locator('.enhancement-pickaxe').evaluate(
+      (element) => getComputedStyle(element).animationName
+    )
+    expect(pickaxeStrike).toContain('enhancementPickaxeHammerRecoil')
 
     const separatedChargingFx = await lab.evaluate((root) => {
       const pickaxe = root.querySelector('.enhancement-pickaxe')

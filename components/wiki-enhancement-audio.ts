@@ -1,3 +1,5 @@
+import { enhancementStrikeDuration } from './wiki-enhancement-rules'
+
 export type EnhancementSoundKind =
   | 'charge'
   | 'success'
@@ -150,16 +152,7 @@ export function playEnhancementTone(
     }
 
     if (kind === 'charge') {
-      const strikeDuration =
-        intensity >= 14
-          ? 1.45
-          : intensity >= 12
-            ? 1.2
-            : intensity >= 8
-              ? 0.98
-              : intensity >= 5
-                ? 0.8
-                : 0.65
+      const strikeDuration = enhancementStrikeDuration(intensity) / 1000
       const firstHit = strikeDuration * 0.24
       const mainHit = strikeDuration * 0.52
       const finalHit = strikeDuration * 0.8
