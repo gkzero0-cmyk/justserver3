@@ -66,6 +66,25 @@ export function NotionDocument({
 
 
   useEffect(() => {
+    const notionPage = document.querySelector<HTMLElement>(
+      'main.notion.notion-page'
+    )
+    if (!notionPage) return
+
+    // react-notion-x renders its embedded page root as <main> even with
+    // fullPage={false}. WikiShell already owns the page-level main landmark,
+    // so demote only the nested renderer landmark while keeping its contents
+    // fully available to assistive technology.
+    notionPage.setAttribute('role', 'presentation')
+
+    return () => {
+      if (notionPage.getAttribute('role') === 'presentation') {
+        notionPage.removeAttribute('role')
+      }
+    }
+  }, [recordMap])
+
+  useEffect(() => {
     if (!relatedPages.length) return
 
     const timer = window.setTimeout(() => {
