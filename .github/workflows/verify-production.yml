@@ -48,9 +48,12 @@ jobs:
         run: |
           LOCAL_SHA="$(git rev-parse HEAD)"
 
-          VERCEL_STATUS_URL="$(
-            curl --fail --silent --show-error               -H "authorization: Bearer $GH_TOKEN"               -H "accept: application/vnd.github+json"               "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$LOCAL_SHA/status"             | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{const j=JSON.parse(d);const s=(j.statuses||[]).find(x=>x.context==='Vercel');process.stdout.write(s?.target_url||'')}catch{}})"
-          )" || true
+          STATUS_JSON="$(
+            curl --fail --silent --show-error               -H "authorization: Bearer $GH_TOKEN"               -H "accept: application/vnd.github+json"               "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$LOCAL_SHA/status"
+          )" || STATUS_JSON='{}'
+
+          VERCEL_STATE="$(printf '%s' "$STATUS_JSON" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{const j=JSON.parse(d);const s=(j.statuses||[]).find(x=>x.context==='Vercel');process.stdout.write(s?.state||'')}catch{}})")"
+          VERCEL_STATUS_URL="$(printf '%s' "$STATUS_JSON" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{const j=JSON.parse(d);const s=(j.statuses||[]).find(x=>x.context==='Vercel');process.stdout.write(s?.target_url||'')}catch{}})")"
 
           if [[ "$VERCEL_STATUS_URL" == *"build-rate-limit"* ]]; then
             echo "::warning::Vercel build-rate-limit is active. Code build passed, but Production is not verified yet."
@@ -61,19 +64,20 @@ jobs:
             curl --fail --silent --show-error               -H 'cache-control: no-cache'               "https://justserver3.vercel.app/api/version?ts=$(date +%s)"             | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{process.stdout.write(JSON.parse(d).commit||'')}catch{}})"
           )" || true
 
-          if [ "$DEPLOYED_SHA" != "$LOCAL_SHA" ] && [ -n "$VERCEL_DEPLOY_HOOK" ]; then
+          if [ "$DEPLOYED_SHA" != "$LOCAL_SHA" ] && [ -n "$VERCEL_DEPLOY_HOOK" ] && [[ -z "$VERCEL_STATE" || "$VERCEL_STATE" == "error" || "$VERCEL_STATE" == "failure" ]]; then
             if [[ "$VERCEL_DEPLOY_HOOK" == *"?"* ]]; then
               VERCEL_HOOK_URL="$VERCEL_DEPLOY_HOOK&buildCache=false"
             else
               VERCEL_HOOK_URL="$VERCEL_DEPLOY_HOOK?buildCache=false"
             fi
             curl --fail --silent --show-error -X POST "$VERCEL_HOOK_URL" || true
-            echo "Production was stale, so a single deploy-hook recovery was requested."
+            echo "Automatic Vercel status was unavailable/failed, so one recovery deploy was requested."
+          elif [ "$VERCEL_STATE" == "pending" ]; then
+            echo "Vercel deployment is already pending; no duplicate deploy hook will be sent."
           fi
 
-          DEPLOYED_SHA=""
-
-          for attempt in $(seq 1 90); do
+          delays=(10 10 20 20 30 30 45 45 60 60 60 60)
+          for delay in "${delays[@]}"; do
             DEPLOYED_SHA="$(
               curl --fail --silent --show-error                 -H 'cache-control: no-cache'                 "https://justserver3.vercel.app/api/version?ts=$(date +%s)"               | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{process.stdout.write(JSON.parse(d).commit||'')}catch{}})"
             )" || true
@@ -83,12 +87,12 @@ jobs:
               break
             fi
 
-            echo "Production is still on ${DEPLOYED_SHA:-unknown}; checking again."
-            sleep 10
+            echo "Production is still on ${DEPLOYED_SHA:-unknown}; next check in ${delay}s."
+            sleep "$delay"
           done
 
           if [ "$DEPLOYED_SHA" != "$LOCAL_SHA" ]; then
-            echo "::error::Production did not advance to commit $LOCAL_SHA."
+            echo "::error::Production did not advance to commit $LOCAL_SHA within the bounded verification window."
             exit 1
           fi
 
