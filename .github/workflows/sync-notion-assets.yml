@@ -3,7 +3,9 @@ name: Sync Notion assets
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/15 * * * *'
+    # Webhook handles normal updates immediately. This is only a low-cost
+    # recovery path for missed webhook deliveries.
+    - cron: '17 */3 * * *'
   push:
     branches: [main]
     paths:
@@ -108,4 +110,3 @@ jobs:
 
           echo "Unable to push refreshed Notion assets after 3 attempts."
           exit 1
-
