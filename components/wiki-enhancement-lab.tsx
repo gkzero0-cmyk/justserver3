@@ -519,6 +519,8 @@ export function WikiEnhancementLab({
                   draggable={false}
                   width={64}
                   height={96}
+                  loading="eager"
+                  decoding="async"
                 />
                 <span className="enhancement-forge-impact-ring" />
                 <span className="enhancement-forge-impact-core" />
