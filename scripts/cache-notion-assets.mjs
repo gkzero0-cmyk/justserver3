@@ -10,7 +10,7 @@ const ROOT_PAGE_ID = (
 ).replaceAll('-', '')
 const CHANGED_PAGE_ID = String(process.env.NOTION_CHANGED_PAGE_ID || '').replaceAll('-', '').trim()
 const PARTIAL_SYNC = /^[0-9a-f]{32}$/i.test(CHANGED_PAGE_ID)
-const PARTIAL_MODE = PARTIAL_SYNC ? (String(process.env.NOTION_PARTIAL_MODE||'subtree').trim()==='page'?'page':'subtree') : 'full'
+const PARTIAL_MODE = PARTIAL_SYNC ? (['page','subtree','delete'].includes(String(process.env.NOTION_PARTIAL_MODE||'subtree').trim())?String(process.env.NOTION_PARTIAL_MODE||'subtree').trim():'subtree') : 'full'
 
 const SOFT_FAIL = process.argv.includes('--soft-fail')
 const MAX_PAGES = Number(process.env.NOTION_ASSET_MAX_PAGES || 250)
@@ -433,10 +433,10 @@ async function downloadImage(sourceUrl, canonical) {
 }
 
 async function crawlPages() {
-  const queue = [PARTIAL_SYNC ? CHANGED_PAGE_ID : ROOT_PAGE_ID]
+  const queue = PARTIAL_MODE==='delete' ? [] : [PARTIAL_SYNC ? CHANGED_PAGE_ID : ROOT_PAGE_ID]
   const visited = new Set()
   const results = []
-  const pageLimit = PARTIAL_SYNC ? (PARTIAL_MODE==='page'?1:Math.min(16, MAX_PAGES)) : MAX_PAGES
+  const pageLimit = PARTIAL_SYNC ? (PARTIAL_MODE==='page'?1:PARTIAL_MODE==='delete'?0:Math.min(16, MAX_PAGES)) : MAX_PAGES
 
   while (queue.length && visited.size < pageLimit) {
     const pageId = queue.shift()
@@ -775,7 +775,7 @@ async function main() {
   const previousById = new Map((existingIndex.pages || []).map((page) => [page.pageId, page]))
   const pages = await crawlPages()
 
-  if (!pages.length) {
+  if (!pages.length && PARTIAL_MODE!=='delete') {
     throw new Error(
       'The public Notion page could not be read. Check its public sharing setting.'
     )
@@ -863,12 +863,27 @@ async function main() {
     }
   })
   const refreshedById = new Map(refreshedPages.map((page) => [page.pageId, page]))
-  const pageIndex = PARTIAL_SYNC
-    ? [
-        ...(existingIndex.pages || []).map((page) => refreshedById.get(page.pageId) || page),
-        ...refreshedPages.filter((page) => !previousById.has(page.pageId))
-      ]
-    : refreshedPages
+  const deletedIds=new Set()
+  if(PARTIAL_MODE==='delete'){
+    deletedIds.add(CHANGED_PAGE_ID)
+    let changed=true
+    while(changed){
+      changed=false
+      for(const page of existingIndex.pages||[]){
+        if(page?.parentId&&deletedIds.has(page.parentId)&&!deletedIds.has(page.pageId)){
+          deletedIds.add(page.pageId);changed=true
+        }
+      }
+    }
+  }
+  const pageIndex = PARTIAL_MODE==='delete'
+    ? (existingIndex.pages||[]).filter(page=>!deletedIds.has(page.pageId))
+    : PARTIAL_SYNC
+      ? [
+          ...(existingIndex.pages || []).map((page) => refreshedById.get(page.pageId) || page),
+          ...refreshedPages.filter((page) => !previousById.has(page.pageId))
+        ]
+      : refreshedPages
 
   const faqCandidates = buildFaqCandidates(pageIndex, verifiedFaq)
   const reviewQueue = buildReviewQueue(pageIndex, faqCandidates)
