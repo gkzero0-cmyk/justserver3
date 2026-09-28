@@ -190,7 +190,7 @@ export default async function HomePage() {
 
       <div className="wiki-sync-strip" role="status" aria-label="위키 데이터 갱신 상태">
         <span aria-hidden="true">●</span>
-        <strong>원본 문서 · 5분 주기 자동 확인</strong>
+        <strong>원본 문서 · 변경 알림 우선 / 15분 안전 확인</strong>
         <small>
           마지막 동기화 {formatSeoulDateTime(notionIndex.generatedAt) || '확인 중'}
         </small>
