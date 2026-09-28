@@ -634,14 +634,14 @@ export default async function StatusPage() {
                   ? instantAssetSyncReady
                     ? '즉시 동기화 연결됨'
                     : '본문 실시간 연결됨'
-                  : '5분 동기화 사용 중'}
+                  : '15분 안전 동기화 사용 중'}
               </strong>
               <span>
                 {webhookSignatureReady
                   ? instantAssetSyncReady
                     ? 'Notion 이벤트 수신 후 캐시 무효화와 자산 동기화를 즉시 실행'
-                    : 'Notion 이벤트 수신 후 본문 갱신 · 이미지는 5분 안전망 사용'
-                  : 'Webhook 인증 전에는 GitHub Actions 5분 안전망으로 최신 내용을 확인'}
+                    : 'Notion 이벤트 수신 후 본문 갱신 · 이미지는 15분 안전망 사용'
+                  : 'Webhook 인증 전에는 GitHub Actions 15분 안전망으로 최신 내용을 확인'}
               </span>
             </div>
             <a href="/api/notion-webhook" target="_blank" rel="noreferrer">
@@ -691,7 +691,7 @@ export default async function StatusPage() {
             <span className="status-service-icon">◷</span>
             <div>
               <small>자동 동기화 안전망</small>
-              <strong>약 5분 주기</strong>
+              <strong>약 15분 주기</strong>
               <span>
                 {syncWorkflow?.updatedAt
                   ? `최근 확인 ${formatDate(syncWorkflow.updatedAt)}`
