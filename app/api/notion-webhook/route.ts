@@ -84,7 +84,8 @@ async function hasRecentAssetSync(token: string) {
 
 function partialModeForEvent(type?: string | null) {
   const value=String(type||'').toLowerCase()
-  if(/created|deleted|moved|parent|child/.test(value))return 'subtree'
+  if(/deleted|archived/.test(value))return 'delete'
+  if(/created|moved|parent|child/.test(value))return 'subtree'
   return 'page'
 }
 
