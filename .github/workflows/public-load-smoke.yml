@@ -1,10 +1,6 @@
 name: Public load smoke
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/public-load-smoke.yml'
   workflow_dispatch:
     inputs:
       concurrency:
