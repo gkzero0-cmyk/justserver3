@@ -102,13 +102,16 @@ function readLocalIndex(): NotionIndex {
 }
 
 async function readNotionIndexUncached(): Promise<NotionIndex> {
+  const local = readLocalIndex()
+  if (local.pages.length) return local
+
   try {
     const response = await fetch(REMOTE_INDEX, {
       headers: {
         'Cache-Control': 'no-cache'
       },
       next: {
-        revalidate: 300,
+        revalidate: 900,
         tags: ['notion-index']
       }
     })
@@ -144,13 +147,16 @@ function readLocalManifest(): NotionAssetManifest {
 }
 
 async function readNotionAssetManifestUncached(): Promise<NotionAssetManifest> {
+  const local = readLocalManifest()
+  if (Object.keys(local).length) return local
+
   try {
     const response = await fetch(REMOTE_MANIFEST, {
       headers: {
         'Cache-Control': 'no-cache'
       },
       next: {
-        revalidate: 300,
+        revalidate: 900,
         tags: ['notion-assets']
       }
     })
@@ -164,7 +170,7 @@ async function readNotionAssetManifestUncached(): Promise<NotionAssetManifest> {
         'Cache-Control': 'no-cache'
       },
       next: {
-        revalidate: 300,
+        revalidate: 900,
         tags: ['notion-assets']
       }
     })
