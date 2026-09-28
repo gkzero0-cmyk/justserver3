@@ -46,40 +46,35 @@ const WikiSearchController = dynamic(
   () =>
     import('@/components/wiki-search-controller').then(
       (mod) => mod.WikiSearchController
-    ),
-  { ssr: false }
+    )
 )
 
 const MobileTocSheet = dynamic(
   () =>
     import('@/components/wiki-reading-widgets').then(
       (mod) => mod.MobileTocSheet
-    ),
-  { ssr: false }
+    )
 )
 
 const WikiMobileQuickView = dynamic(
   () =>
     import('@/components/wiki-mobile-quick-view').then(
       (mod) => mod.WikiMobileQuickView
-    ),
-  { ssr: false }
+    )
 )
 
 const WikiTreasureFind = dynamic(
   () =>
     import('@/components/wiki-survival-widgets').then(
       (mod) => mod.WikiTreasureFind
-    ),
-  { ssr: false }
+    )
 )
 
 const WikiAchievementNotifier = dynamic(
   () =>
     import('@/components/wiki-survival-widgets').then(
       (mod) => mod.WikiAchievementNotifier
-    ),
-  { ssr: false }
+    )
 )
 
 function categoryLabel(title: string) {
