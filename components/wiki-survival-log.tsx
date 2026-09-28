@@ -30,7 +30,7 @@ import {
   type SurvivalRecord,
   type WeeklyChallengeId
 } from '@/lib/wiki-survival'
-import type { WikiContentStatus } from '@/lib/wiki-ux'
+import type { WikiContentStatus } from '@/lib/wiki-ux'\nimport { WikiCompletionCertificate } from '@/components/wiki-completion-certificate'
 import {
   readWikiStateValue,
   readWikiStringArray
@@ -238,37 +238,6 @@ export function WikiSurvivalLog({
     ? QUIZ_LABELS[stats.lastQuizResult] || stats.lastQuizResult
     : '아직 미측정'
 
-  const shareProfile = async () => {
-    const text = [
-      '그냥서버 : 적자생존 · 내 생존 기록',
-      `칭호: ${title}`,
-      `생존일수: ${streak}일 연속`,
-      `생존형: ${quizLabel}`,
-      `위키 탐험도: ${exploration.percent}% (${exploration.count}/${exploration.total})`,
-      `위키 보물: ${treasureCount}/${treasureTargets.length}`,
-      `업적: ${achievements.length}/9`
-    ].join('\n')
-
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: '내 적자생존 기록',
-          text,
-          url: window.location.href
-        })
-      } else {
-        await navigator.clipboard.writeText(
-          `${text}\n${window.location.href}`
-        )
-        setShareState('기록을 복사했습니다.')
-        window.setTimeout(() => setShareState(''), 1800)
-      }
-      track('wiki_survival_profile_share')
-    } catch {
-      setShareState('')
-    }
-  }
-
   return (
     <section
       className="wiki-survival-log"
@@ -313,10 +282,17 @@ export function WikiSurvivalLog({
             <small>위키 보물</small>
           </div>
         </div>
-        <button type="button" onClick={() => void shareProfile()}>
-          내 기록 공유
-        </button>
-        {shareState && <span className="survival-share-state">{shareState}</span>}
+        <WikiCompletionCertificate
+          title={title}
+          quizLabel={quizLabel}
+          streak={streak}
+          readCount={exploration.count}
+          totalCount={exploration.total}
+          percent={exploration.percent}
+          achievementCount={achievements.length}
+          treasureCount={treasureCount}
+          treasureTotal={treasureTargets.length}
+        />
       </div>
 
       <div className="survival-dashboard-grid">
