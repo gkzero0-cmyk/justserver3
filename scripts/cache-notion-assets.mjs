@@ -8,6 +8,8 @@ const notion = new NotionAPI()
 const ROOT_PAGE_ID = (
   process.env.NOTION_PAGE_ID || '3dad57d6a55c80469f3de9730cb88975'
 ).replaceAll('-', '')
+const CHANGED_PAGE_ID = String(process.env.NOTION_CHANGED_PAGE_ID || '').replaceAll('-', '').trim()
+const PARTIAL_SYNC = /^[0-9a-f]{32}$/i.test(CHANGED_PAGE_ID)
 
 const SOFT_FAIL = process.argv.includes('--soft-fail')
 const MAX_PAGES = Number(process.env.NOTION_ASSET_MAX_PAGES || 250)
@@ -430,11 +432,12 @@ async function downloadImage(sourceUrl, canonical) {
 }
 
 async function crawlPages() {
-  const queue = [ROOT_PAGE_ID]
+  const queue = [PARTIAL_SYNC ? CHANGED_PAGE_ID : ROOT_PAGE_ID]
   const visited = new Set()
   const results = []
+  const pageLimit = PARTIAL_SYNC ? Math.min(16, MAX_PAGES) : MAX_PAGES
 
-  while (queue.length && visited.size < MAX_PAGES) {
+  while (queue.length && visited.size < pageLimit) {
     const pageId = queue.shift()
     if (!pageId || visited.has(pageId)) continue
 
@@ -786,7 +789,7 @@ async function main() {
 
   const existingManifest = await readJsonObject(MANIFEST_PATH)
   const existingDisplayManifest = await readJsonObject(DISPLAY_MANIFEST_PATH)
-  const manifest = {}
+  const manifest = PARTIAL_SYNC ? { ...existingManifest } : {}
   const activeFilenames = new Set()
   let downloaded = 0
   let reused = 0
@@ -831,7 +834,7 @@ async function main() {
   const verifiedFaq = await readVerifiedFaq()
   const faqSearch = verifiedFaqSearchPayload(verifiedFaq)
 
-  const pageIndex = pages.map(({ meta }) => {
+  const refreshedPages = pages.map(({ meta }) => {
     const current = {
       ...meta,
       searchText:
@@ -856,6 +859,13 @@ async function main() {
       history: nextPageHistory(previous, current)
     }
   })
+  const refreshedById = new Map(refreshedPages.map((page) => [page.pageId, page]))
+  const pageIndex = PARTIAL_SYNC
+    ? [
+        ...(existingIndex.pages || []).map((page) => refreshedById.get(page.pageId) || page),
+        ...refreshedPages.filter((page) => !previousById.has(page.pageId))
+      ]
+    : refreshedPages
 
   const faqCandidates = buildFaqCandidates(pageIndex, verifiedFaq)
   const reviewQueue = buildReviewQueue(pageIndex, faqCandidates)
@@ -905,10 +915,10 @@ async function main() {
     'utf8'
   )
 
-  await removeStaleFiles(activeFilenames)
+  if (!PARTIAL_SYNC) await removeStaleFiles(activeFilenames)
 
   console.log(
-    `[assets] complete: ${pages.length} pages, ${downloaded} downloaded, ${reused} reused, ${failed} skipped`
+    `[assets] complete: ${pages.length} pages, ${downloaded} downloaded, ${reused} reused, ${failed} skipped, mode=${PARTIAL_SYNC ? 'partial' : 'full'}`
   )
 }
 
