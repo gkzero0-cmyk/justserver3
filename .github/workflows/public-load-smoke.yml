@@ -1,0 +1,38 @@
+name: Public load smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      concurrency:
+        description: Concurrent requests per small batch (1-5)
+        required: false
+        default: '3'
+      rounds:
+        description: Number of rounds (1-5)
+        required: false
+        default: '2'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: light-public-load-smoke
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Run lightweight public load smoke
+        env:
+          LOAD_BASE_URL: https://justserver3.vercel.app
+          LOAD_PATHS: '/,/api/version,/api/notion-webhook?resource=search-meta'
+          LOAD_CONCURRENCY: ${{ inputs.concurrency || '3' }}
+          LOAD_ROUNDS: ${{ inputs.rounds || '2' }}
+          LOAD_MAX_P95_MS: '5000'
+        run: node scripts/public-load-smoke.mjs
