@@ -82,7 +82,13 @@ async function hasRecentAssetSync(token: string) {
   }
 }
 
-async function triggerAssetSync(pageId?: string | null) {
+function partialModeForEvent(type?: string | null) {
+  const value=String(type||'').toLowerCase()
+  if(/created|deleted|moved|parent|child/.test(value))return 'subtree'
+  return 'page'
+}
+
+async function triggerAssetSync(pageId?: string | null, eventType?: string | null) {
   const token = process.env.GITHUB_ACTIONS_TOKEN
   if (!token) return { triggered: false, reason: 'token-not-configured' }
 
@@ -98,7 +104,7 @@ async function triggerAssetSync(pageId?: string | null) {
       'X-GitHub-Api-Version': '2022-11-28',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ ref: 'main', inputs: pageId ? { page_id: pageId } : {} }),
+    body: JSON.stringify({ ref: 'main', inputs: pageId ? { page_id: pageId, partial_mode: partialModeForEvent(eventType) } : {} }),
     cache: 'no-store'
   })
 
@@ -248,7 +254,7 @@ export async function POST(request: Request) {
     revalidatePath(`/page/${pageId}`)
   }
 
-  const assetSync = await triggerAssetSync(pageId).catch(() => ({
+  const assetSync = await triggerAssetSync(pageId,payload.type).catch(() => ({
     triggered: false,
     reason: 'dispatch-failed'
   }))
