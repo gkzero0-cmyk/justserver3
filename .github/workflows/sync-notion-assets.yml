@@ -8,7 +8,7 @@ on:
         required: false
         type: string
       partial_mode:
-        description: Partial sync mode (page or subtree)
+        description: Partial sync mode (page, subtree or delete)
         required: false
         default: subtree
         type: string
