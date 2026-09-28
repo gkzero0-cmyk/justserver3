@@ -3,5 +3,26 @@
   "cleanUrls": true,
   "installCommand": "npm ci",
   "ignoreCommand": "node .github/scripts/vercel-ignore-build.mjs",
-  "$schema": "https://openapi.vercel.sh/vercel.json"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build:app",
+  "headers": [
+    {
+      "source": "/notion-assets/optimized/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/notion-assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=2592000"
+        }
+      ]
+    }
+  ]
 }
