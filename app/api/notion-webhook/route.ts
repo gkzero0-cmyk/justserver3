@@ -82,7 +82,7 @@ async function hasRecentAssetSync(token: string) {
   }
 }
 
-async function triggerAssetSync() {
+async function triggerAssetSync(pageId?: string | null) {
   const token = process.env.GITHUB_ACTIONS_TOKEN
   if (!token) return { triggered: false, reason: 'token-not-configured' }
 
@@ -98,7 +98,7 @@ async function triggerAssetSync() {
       'X-GitHub-Api-Version': '2022-11-28',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ ref: 'main' }),
+    body: JSON.stringify({ ref: 'main', inputs: pageId ? { page_id: pageId } : {} }),
     cache: 'no-store'
   })
 
@@ -248,7 +248,7 @@ export async function POST(request: Request) {
     revalidatePath(`/page/${pageId}`)
   }
 
-  const assetSync = await triggerAssetSync().catch(() => ({
+  const assetSync = await triggerAssetSync(pageId).catch(() => ({
     triggered: false,
     reason: 'dispatch-failed'
   }))
