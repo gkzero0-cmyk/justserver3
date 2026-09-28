@@ -10,6 +10,7 @@ const ROOT_PAGE_ID = (
 ).replaceAll('-', '')
 const CHANGED_PAGE_ID = String(process.env.NOTION_CHANGED_PAGE_ID || '').replaceAll('-', '').trim()
 const PARTIAL_SYNC = /^[0-9a-f]{32}$/i.test(CHANGED_PAGE_ID)
+const PARTIAL_MODE = PARTIAL_SYNC ? (String(process.env.NOTION_PARTIAL_MODE||'subtree').trim()==='page'?'page':'subtree') : 'full'
 
 const SOFT_FAIL = process.argv.includes('--soft-fail')
 const MAX_PAGES = Number(process.env.NOTION_ASSET_MAX_PAGES || 250)
@@ -435,7 +436,7 @@ async function crawlPages() {
   const queue = [PARTIAL_SYNC ? CHANGED_PAGE_ID : ROOT_PAGE_ID]
   const visited = new Set()
   const results = []
-  const pageLimit = PARTIAL_SYNC ? Math.min(16, MAX_PAGES) : MAX_PAGES
+  const pageLimit = PARTIAL_SYNC ? (PARTIAL_MODE==='page'?1:Math.min(16, MAX_PAGES)) : MAX_PAGES
 
   while (queue.length && visited.size < pageLimit) {
     const pageId = queue.shift()
@@ -451,8 +452,10 @@ async function crawlPages() {
         meta: getPageMeta(recordMap, pageId)
       })
 
-      for (const childPageId of collectPageIds(recordMap, pageId)) {
-        if (!visited.has(childPageId)) queue.push(childPageId)
+      if (PARTIAL_MODE!=='page') {
+        for (const childPageId of collectPageIds(recordMap, pageId)) {
+          if (!visited.has(childPageId)) queue.push(childPageId)
+        }
       }
 
       console.log(
@@ -918,7 +921,7 @@ async function main() {
   if (!PARTIAL_SYNC) await removeStaleFiles(activeFilenames)
 
   console.log(
-    `[assets] complete: ${pages.length} pages, ${downloaded} downloaded, ${reused} reused, ${failed} skipped, mode=${PARTIAL_SYNC ? 'partial' : 'full'}`
+    `[assets] complete: ${pages.length} pages, ${downloaded} downloaded, ${reused} reused, ${failed} skipped, mode=${PARTIAL_SYNC ? 'partial-'+PARTIAL_MODE : 'full'}`
   )
 }
 
