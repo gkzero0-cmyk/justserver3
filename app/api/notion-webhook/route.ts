@@ -220,12 +220,6 @@ export async function POST(request: Request) {
   }
 
   if (payload.verification_token) {
-    // TEMPORARY bootstrap aid: Vercel Runtime Logs are private to project members.
-    // Remove immediately after NOTION_WEBHOOK_VERIFICATION_TOKEN is configured.
-    console.info('[notion-webhook] verification-token-bootstrap', {
-      token: payload.verification_token
-    })
-
     return Response.json({
       ok: true,
       verificationReceived: true
