@@ -129,7 +129,7 @@ export function WikiShell({
   const [activeTocId, setActiveTocId] = useState('')
   const [readingProgress, setReadingProgress] = useState(0)
   const handledHashRef = useRef('')
-  const readingProgressRef = useRef(0)
+  const readingProgressRef = useRef(0)\n  const activeReadingSecondsRef = useRef(0)
 
   useEffect(() => {
     const saved = window.localStorage.getItem('justserver3-theme')
@@ -713,19 +713,21 @@ export function WikiShell({
   )
 
   useEffect(() => {
+    const requiredSeconds = contentStatus === 'brief' ? 6 : 12
     if (
-      readingProgress >= 55 &&
-      readingProgressRef.current >= 55
+      readingProgress >= 70 &&
+      readingProgressRef.current >= 70 &&
+      activeReadingSecondsRef.current >= requiredSeconds
     ) {
       markCurrentPageRead('scroll')
     }
-  }, [markCurrentPageRead, readingProgress])
+  }, [contentStatus, markCurrentPageRead, readingProgress])
 
   useEffect(() => {
     if (!currentPageId || home || contentStatus === 'draft') return
 
-    let activeSeconds = 0
-    const requiredSeconds = contentStatus === 'brief' ? 8 : 20
+    activeReadingSecondsRef.current = 0
+    const requiredSeconds = contentStatus === 'brief' ? 6 : 12
     const timer = window.setInterval(() => {
       if (
         document.visibilityState !== 'visible' ||
@@ -734,8 +736,11 @@ export function WikiShell({
         return
       }
 
-      activeSeconds += 1
-      if (activeSeconds >= requiredSeconds) {
+      activeReadingSecondsRef.current += 1
+      if (
+        activeReadingSecondsRef.current >= requiredSeconds &&
+        readingProgressRef.current >= 70
+      ) {
         markCurrentPageRead('active-time')
         window.clearInterval(timer)
       }
