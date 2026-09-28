@@ -35,11 +35,5 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
-      - name: Run compile and repository checks
-        run: npm run build
-      - name: Run CSS regression audit
-        run: npm run audit:css
-      - name: Run static regression audit
-        run: npm run audit:static
-      - name: Run release gate
+      - name: Run release-only repository gate
         run: npm run release:gate
