@@ -197,7 +197,7 @@ export async function GET(request: Request) {
     signatureValidation:
       Boolean(process.env.NOTION_WEBHOOK_VERIFICATION_TOKEN),
     instantAssetSync: Boolean(process.env.GITHUB_ACTIONS_TOKEN),
-    fallbackSyncMinutes: 5,
+    fallbackSyncMinutes: 180,
     liveContentCacheSeconds: 300
   })
 }
