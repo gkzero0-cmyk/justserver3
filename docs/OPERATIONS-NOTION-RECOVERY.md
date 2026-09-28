@@ -52,6 +52,16 @@ GitHub Actions의 Public load smoke는 수동 실행 전용입니다.
 
 자동 스케줄은 없으므로 평소 GitHub Actions 사용량을 소비하지 않습니다.
 
+### 기준값 · 2026-09-29 KST
+
+기본 동시 요청 3개 × 2라운드로 측정한 첫 기준값입니다.
+
+- / : p95 391ms · 오류 0
+- /api/version : p95 995ms · 오류 0
+- /api/notion-webhook?resource=search-meta : p95 262ms · 오류 0
+
+이후 테스트는 이 값을 절대 기준으로 보지 말고 같은 경로의 추세 비교용으로 사용합니다.
+
 ## 5. 장애 확인 순서
 
 1. 메인 페이지가 HTTP 200인지 확인
