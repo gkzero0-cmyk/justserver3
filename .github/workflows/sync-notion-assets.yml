@@ -84,13 +84,17 @@ jobs:
 
       - name: Skip unchanged scheduled optimization
         if: github.event_name == 'schedule' && steps.notion_diff.outputs.changed != 'true'
-        run: echo "Scheduled sync found no Notion changes; skipping Sharp optimization and commit work."
+        run: echo "Scheduled sync found no Notion changes; skipping Sharp optimization."
+
+      - name: Refresh last-known-good manifests
+        run: node scripts/update-last-known-good.mjs
 
       - name: Commit refreshed assets
         if: github.event_name != 'schedule' || steps.notion_diff.outputs.changed == 'true'
         run: |
-          rm -rf /tmp/notion-assets
+          rm -rf /tmp/notion-assets /tmp/last-known-good
           cp -a public/notion-assets /tmp/notion-assets
+          cp -a public/last-known-good /tmp/last-known-good
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -101,11 +105,12 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
-            rm -rf public/notion-assets
+            rm -rf public/notion-assets public/last-known-good
             mkdir -p public
             cp -a /tmp/notion-assets public/notion-assets
+            cp -a /tmp/last-known-good public/last-known-good
 
-            git add public/notion-assets
+            git add public/notion-assets public/last-known-good
             if git diff --cached --quiet; then
               echo "No Notion asset changes."
               exit 0
