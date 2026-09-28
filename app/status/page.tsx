@@ -703,7 +703,7 @@ export default async function StatusPage() {
 
         <div className="status-asset-metrics">
           <div>
-            <small>원본 이미지 보존량</small>
+            <small>수집 원본 · Production 제외</small>
             <strong>{formatBytes(index.assetStats?.originalBytes)}</strong>
           </div>
           <div>

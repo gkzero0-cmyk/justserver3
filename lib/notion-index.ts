@@ -130,20 +130,24 @@ const FALLBACK_MANIFEST =
   'https://raw.githubusercontent.com/gkzero0-cmyk/justserver3/main/public/notion-assets/manifest.json?v=20260925-4'
 
 function readLocalManifest(): NotionAssetManifest {
-  try {
-    const manifestPath = path.join(
-      process.cwd(),
-      'public',
-      'notion-assets',
-      'manifest.json'
-    )
+  for (const filename of ['display-manifest.json', 'manifest.json']) {
+    try {
+      const manifestPath = path.join(
+        process.cwd(),
+        'public',
+        'notion-assets',
+        filename
+      )
 
-    return JSON.parse(
-      fs.readFileSync(manifestPath, 'utf8')
-    ) as NotionAssetManifest
-  } catch {
-    return {}
+      const manifest = JSON.parse(
+        fs.readFileSync(manifestPath, 'utf8')
+      ) as NotionAssetManifest
+
+      if (Object.keys(manifest).length) return manifest
+    } catch {}
   }
+
+  return {}
 }
 
 async function readNotionAssetManifestUncached(): Promise<NotionAssetManifest> {

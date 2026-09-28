@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "sync:notion-assets": "node scripts/cache-notion-assets.mjs",
-    "build": "npm test && npm run test:integrity && next build",
+    "build": "npm test && npm run test:integrity && npm run prepare:runtime-assets && next build",
     "start": "next start",
     "optimize:notion-assets": "node scripts/optimize-notion-assets.mjs",
     "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/*.test.ts",
@@ -15,7 +15,8 @@
     "audit:static": "node scripts/audit-static.mjs",
     "test:deploy-bundle": "node scripts/build-deploy-bundle.mjs && node scripts/verify-deploy-bundle.mjs",
     "preflight": "npm test && npm run test:integrity && npm run audit:css && npm run audit:static && npm run test:deploy-bundle",
-    "release:gate": "node scripts/release-gate.mjs"
+    "release:gate": "node scripts/release-gate.mjs",
+    "prepare:runtime-assets": "node scripts/prepare-runtime-assets.mjs"
   },
   "dependencies": {
     "next": "16.3.6",
