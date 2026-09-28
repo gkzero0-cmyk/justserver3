@@ -21,6 +21,54 @@ async function readJson(filePath, fallback) {
   }
 }
 
+async function existingVariant(relative) {
+  const diskPath = path.join(OPTIMIZED_DIR, relative)
+  try {
+    const stats = await fs.stat(diskPath)
+    return {
+      publicPath: `/notion-assets/optimized/${relative.replaceAll('\\\\', '/')}`,
+      bytes: stats.size,
+      relative: relative.replaceAll('\\\\', '/')
+    }
+  } catch {
+    return null
+  }
+}
+
+async function reuseOptimizedAsset(publicPath, { makeHero = false, makeLogo = false } = {}) {
+  const match = String(publicPath || '').match(/^\/notion-assets\/optimized\/([0-9a-f]{24})\.webp$/i)
+  if (!match) return null
+  const hash = match[1]
+  const display = await existingVariant(`${hash}.webp`)
+  if (!display) return null
+  const thumbnail = await existingVariant(`thumb/${hash}.webp`)
+  const thumbnailSmall = await existingVariant(`thumb256/${hash}.webp`)
+  const hero768 = makeHero ? await existingVariant(`hero768/${hash}.webp`) : null
+  const hero1280 = makeHero ? await existingVariant(`hero1280/${hash}.webp`) : null
+  const hero1600 = makeHero ? await existingVariant(`hero1600/${hash}.webp`) : null
+  const logo64 = makeLogo ? await existingVariant(`logo64/${hash}.webp`) : null
+  const logo128 = makeLogo ? await existingVariant(`logo128/${hash}.webp`) : null
+  const logo = makeLogo ? await existingVariant(`logo/${hash}.webp`) : null
+  const variants=[display,thumbnail,thumbnailSmall,hero768,hero1280,hero1600,logo64,logo128,logo].filter(Boolean)
+  return {
+    contentHash: hash,
+    display: display.publicPath,
+    thumbnail: thumbnail?.publicPath || display.publicPath,
+    thumbnailSmall: thumbnailSmall?.publicPath || thumbnail?.publicPath || display.publicPath,
+    hero: hero1600?.publicPath || null,
+    hero768: hero768?.publicPath || hero1600?.publicPath || null,
+    hero1280: hero1280?.publicPath || hero1600?.publicPath || null,
+    hero1600: hero1600?.publicPath || null,
+    logo64: logo64?.publicPath || null,
+    logo128: logo128?.publicPath || null,
+    logo: logo?.publicPath || null,
+    sourceBytes: display.bytes,
+    displayBytes: display.bytes,
+    thumbnailBytes: thumbnail?.bytes || display.bytes,
+    active: variants.map(item=>item.relative)
+  }
+}
+
 async function ensureVariant({
   sourceBytes,
   hash,
@@ -95,6 +143,9 @@ async function ensureVariant({
 }
 
 async function optimizeAsset(publicPath, { makeHero = false, makeLogo = false } = {}) {
+  const reused = await reuseOptimizedAsset(publicPath, { makeHero, makeLogo })
+  if (reused) return reused
+
   if (!publicPath?.startsWith('/notion-assets/')) {
     return {
       contentHash: null,
@@ -393,10 +444,25 @@ async function main() {
     JSON.stringify(displayManifest, null, 2) + '\n',
     'utf8'
   )
+  await fs.writeFile(
+    MANIFEST_PATH,
+    JSON.stringify(displayManifest, null, 2) + '\n',
+    'utf8'
+  )
 
   for (const relative of await listFilesRecursive(OPTIMIZED_DIR)) {
     if (activeOptimized.has(relative)) continue
     await fs.unlink(path.join(OPTIMIZED_DIR, relative))
+  }
+
+  const displayPaths = new Set(Object.values(displayManifest))
+  for (const entry of await fs.readdir(OUT_DIR, { withFileTypes: true })) {
+    if (!entry.isFile()) continue
+    if (['manifest.json','display-manifest.json','index.json','search-index.json'].includes(entry.name)) continue
+    const publicPath = `/notion-assets/${entry.name}`
+    if (displayPaths.has(publicPath)) continue
+    await fs.unlink(path.join(OUT_DIR, entry.name))
+    console.log(`[optimize] removed source original ${entry.name}`)
   }
 
   const saved = Math.max(0, originalBytes - displayBytes)
