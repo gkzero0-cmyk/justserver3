@@ -61,10 +61,8 @@ jobs:
         id: notion_diff
         shell: bash
         run: |
-          # cache-notion-assets rewrites index.json without the derived
-          # thumbnail/hero fields that optimize-notion-assets restores later.
-          # Ignore that transient index-only diff; manifest/search-index/image
-          # changes still trigger the full optimization path.
+          # index.json can be transiently rewritten before optimization.
+          # Only real asset/manifest/search changes should continue the job.
           if git diff --quiet -- \
             public/notion-assets \
             ':(exclude)public/notion-assets/index.json'; then
@@ -79,18 +77,15 @@ jobs:
           fi
 
       - name: Optimize display images
-        if: github.event_name != 'schedule' || steps.notion_diff.outputs.changed == 'true'
+        if: steps.notion_diff.outputs.changed == 'true'
         run: npm run optimize:notion-assets
 
-      - name: Skip unchanged scheduled optimization
-        if: github.event_name == 'schedule' && steps.notion_diff.outputs.changed != 'true'
-        run: echo "Scheduled sync found no Notion changes; skipping Sharp optimization."
-
       - name: Refresh last-known-good manifests
+        if: steps.notion_diff.outputs.changed == 'true'
         run: node scripts/update-last-known-good.mjs
 
       - name: Commit refreshed assets
-        if: github.event_name != 'schedule' || steps.notion_diff.outputs.changed == 'true'
+        if: steps.notion_diff.outputs.changed == 'true'
         run: |
           rm -rf /tmp/notion-assets /tmp/last-known-good
           cp -a public/notion-assets /tmp/notion-assets
@@ -112,7 +107,7 @@ jobs:
 
             git add public/notion-assets public/last-known-good
             if git diff --cached --quiet; then
-              echo "No Notion asset changes."
+              echo "No Notion asset changes; no commit and no Vercel deployment."
               exit 0
             fi
 
@@ -129,3 +124,7 @@ jobs:
 
           echo "Unable to push refreshed Notion assets after 3 attempts."
           exit 1
+
+      - name: Report unchanged sync
+        if: steps.notion_diff.outputs.changed != 'true'
+        run: echo "No meaningful Notion asset changes; skipped optimization, manifest refresh, commit, and Vercel deployment."
