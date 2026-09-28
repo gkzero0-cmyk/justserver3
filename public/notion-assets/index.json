@@ -1,6 +1,6 @@
 {
   "rootPageId": "3dad57d6a55c80469f3de9730cb88975",
-  "generatedAt": "2026-09-28T18:44:49.280Z",
+  "generatedAt": "2026-09-28T18:50:27.209Z",
   "pages": [
     {
       "pageId": "3dad57d6a55c80469f3de9730cb88975",
@@ -1396,17 +1396,24 @@
       "parentId": "3dad57d6a55c803eafacfe55e2da2c55",
       "icon": null,
       "cover": null,
-      "lastEdited": "2026-09-19T21:22:36.142Z",
-      "searchText": "장비강화 그냥서버 : 적자생존 공식 위키 위키 업데이트 예정입니다.",
+      "lastEdited": "2026-09-28T18:49:00.317Z",
+      "searchText": "장비강화 그냥서버 : 적자생존 공식 위키 테스트 위키 업데이트 예정입니다.",
       "sections": [
         {
           "heading": "",
           "anchor": "",
-          "text": "위키 업데이트 예정입니다."
+          "text": "위키 업데이트 예정입니다. 테스트 화면 캡처 2026-09-29"
         }
       ],
-      "changeSummary": null,
+      "changeSummary": "내용 추가 · 테스트",
       "history": [
+        {
+          "at": "2026-09-28T18:49:00.317Z",
+          "type": "added-text",
+          "summary": "내용 추가 · 테스트",
+          "added": "테스트",
+          "removed": null
+        },
         {
           "at": "2026-09-19T21:22:36.142Z",
           "type": "baseline",
@@ -1695,6 +1702,14 @@
   ],
   "reviewQueue": [
     {
+      "id": "change:3e0d57d6a55c80fc99eef96b991ea5df:2026-09-28T18:49:00.317Z",
+      "kind": "change",
+      "title": "장비강화",
+      "pageId": "3e0d57d6a55c80fc99eef96b991ea5df",
+      "summary": "내용 추가 · 테스트",
+      "at": "2026-09-28T18:49:00.317Z"
+    },
+    {
       "id": "change:3e0d57d6a55c80f4bd26e6c22516eb8a:2026-09-28T18:42:34.270Z",
       "kind": "change",
       "title": "빚 갚기",
@@ -1776,10 +1791,10 @@
     }
   ],
   "assetStats": {
-    "originalBytes": 14066552,
-    "displayBytes": 14066552,
-    "thumbnailBytes": 2704152,
-    "uniqueSourceImages": 67,
+    "originalBytes": 14229938,
+    "displayBytes": 14099782,
+    "thumbnailBytes": 2711174,
+    "uniqueSourceImages": 68,
     "duplicateMappings": 0
   }
 }
