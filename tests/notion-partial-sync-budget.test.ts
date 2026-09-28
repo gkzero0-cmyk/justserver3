@@ -6,6 +6,7 @@ const cache = fs.readFileSync(new URL('../scripts/cache-notion-assets.mjs', impo
 const workflow = fs.readFileSync(new URL('../.github/workflows/sync-notion-assets.yml', import.meta.url), 'utf8')
 const webhook = fs.readFileSync(new URL('../app/api/notion-webhook/route.ts', import.meta.url), 'utf8')
 
+// delete mode must not crawl Notion; it only removes cached index entries until the next full recovery crawl.
 test('Notion webhook uses changed-page partial sync with full fallback intact', () => {
   assert.match(cache, /NOTION_CHANGED_PAGE_ID/)
   assert.match(cache, /PARTIAL_SYNC/)
