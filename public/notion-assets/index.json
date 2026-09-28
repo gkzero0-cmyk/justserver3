@@ -1,6 +1,6 @@
 {
   "rootPageId": "3dad57d6a55c80469f3de9730cb88975",
-  "generatedAt": "2026-09-28T18:43:48.673Z",
+  "generatedAt": "2026-09-28T18:44:49.280Z",
   "pages": [
     {
       "pageId": "3dad57d6a55c80469f3de9730cb88975",
@@ -1284,7 +1284,7 @@
       "parentId": "3dad57d6a55c803eafacfe55e2da2c55",
       "icon": null,
       "cover": null,
-      "lastEdited": "2026-09-19T21:22:28.617Z",
+      "lastEdited": "2026-09-28T18:42:34.270Z",
       "searchText": "빚 갚기 그냥서버 : 적자생존 공식 위키 위키 업데이트 예정입니다.",
       "sections": [
         {
@@ -1293,8 +1293,15 @@
           "text": "위키 업데이트 예정입니다."
         }
       ],
-      "changeSummary": null,
+      "changeSummary": "표시 정보 업데이트 · 레이아웃·이미지 또는 문서 설정 변경",
       "history": [
+        {
+          "at": "2026-09-28T18:42:34.270Z",
+          "type": "meta",
+          "summary": "표시 정보 업데이트 · 레이아웃·이미지 또는 문서 설정 변경",
+          "added": null,
+          "removed": null
+        },
         {
           "at": "2026-09-19T21:22:28.617Z",
           "type": "baseline",
@@ -1688,6 +1695,14 @@
   ],
   "reviewQueue": [
     {
+      "id": "change:3e0d57d6a55c80f4bd26e6c22516eb8a:2026-09-28T18:42:34.270Z",
+      "kind": "change",
+      "title": "빚 갚기",
+      "pageId": "3e0d57d6a55c80f4bd26e6c22516eb8a",
+      "summary": "표시 정보 업데이트 · 레이아웃·이미지 또는 문서 설정 변경",
+      "at": "2026-09-28T18:42:34.270Z"
+    },
+    {
       "id": "change:3dad57d6a55c80469f3de9730cb88975:2026-09-28T18:37:49.334Z",
       "kind": "change",
       "title": "그냥서버 : 적자생존 공식 위키",
@@ -1761,10 +1776,10 @@
     }
   ],
   "assetStats": {
-    "originalBytes": 14096758,
-    "displayBytes": 14073090,
-    "thumbnailBytes": 2706770,
-    "uniqueSourceImages": 68,
+    "originalBytes": 14066552,
+    "displayBytes": 14066552,
+    "thumbnailBytes": 2704152,
+    "uniqueSourceImages": 67,
     "duplicateMappings": 0
   }
 }
