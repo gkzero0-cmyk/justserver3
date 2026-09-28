@@ -1,6 +1,6 @@
 {
   "rootPageId": "3dad57d6a55c80469f3de9730cb88975",
-  "generatedAt": "2026-09-28T18:56:07.445Z",
+  "generatedAt": "2026-09-28T23:14:54.559Z",
   "pages": [
     {
       "pageId": "3dad57d6a55c80469f3de9730cb88975",
@@ -8,7 +8,7 @@
       "parentId": "50ed57d6a55c81caa4c70003467685a7",
       "icon": "/notion-assets/optimized/da97a92ed58d144e4aacf9ec.webp",
       "cover": "/notion-assets/optimized/b09673e524a534b5aa016381.webp",
-      "lastEdited": "2026-09-28T18:37:49.334Z",
+      "lastEdited": "2026-09-28T22:43:00.096Z",
       "searchText": "그냥서버 : 적자생존 공식 위키 위키는 수시로 업데이트됩니다. 서버 내 모든 컨텐츠는 “그냥” 만들어지거나 “그냥” 바뀌거나, 심지어 “그냥” 사라질 수도 있습니다. 위키를 읽지 않아 발생하는 모든 불이익에 대해서는 책임지지 않습니다. 💎 공지사항 b 스토리 서버규칙 패치노트 API 기초설정(뉴비필독) 💎 생산 가이드 채광 낚시 도축 사냥 요리 💎 컨텐츠 도감 파쿠르 즉석복권 경마장 카지노 💎 기타 가이드 땅 구매 빚 갚기 신용등급 장비수리 장비강화 많이 물어보는 것",
       "sections": [
         {
@@ -37,8 +37,15 @@
           "text": ""
         }
       ],
-      "changeSummary": "내용 정리 · - 테스트",
+      "changeSummary": "표시 정보 업데이트 · 레이아웃·이미지 또는 문서 설정 변경",
       "history": [
+        {
+          "at": "2026-09-28T22:43:00.096Z",
+          "type": "meta",
+          "summary": "표시 정보 업데이트 · 레이아웃·이미지 또는 문서 설정 변경",
+          "added": null,
+          "removed": null
+        },
         {
           "at": "2026-09-28T18:37:49.334Z",
           "type": "removed-text",
@@ -1709,6 +1716,14 @@
   ],
   "reviewQueue": [
     {
+      "id": "change:3dad57d6a55c80469f3de9730cb88975:2026-09-28T22:43:00.096Z",
+      "kind": "change",
+      "title": "그냥서버 : 적자생존 공식 위키",
+      "pageId": "3dad57d6a55c80469f3de9730cb88975",
+      "summary": "표시 정보 업데이트 · 레이아웃·이미지 또는 문서 설정 변경",
+      "at": "2026-09-28T22:43:00.096Z"
+    },
+    {
       "id": "change:3e0d57d6a55c80fc99eef96b991ea5df:2026-09-28T18:54:40.223Z",
       "kind": "change",
       "title": "장비강화",
@@ -1723,14 +1738,6 @@
       "pageId": "3e0d57d6a55c80f4bd26e6c22516eb8a",
       "summary": "표시 정보 업데이트 · 레이아웃·이미지 또는 문서 설정 변경",
       "at": "2026-09-28T18:42:34.270Z"
-    },
-    {
-      "id": "change:3dad57d6a55c80469f3de9730cb88975:2026-09-28T18:37:49.334Z",
-      "kind": "change",
-      "title": "그냥서버 : 적자생존 공식 위키",
-      "pageId": "3dad57d6a55c80469f3de9730cb88975",
-      "summary": "내용 정리 · - 테스트",
-      "at": "2026-09-28T18:37:49.334Z"
     },
     {
       "id": "faq:3dad57d6a55c80c0b4adc2aa5676076b:또한-낮은-확률로-강화재료를-얻을-수-있습니다",
@@ -1798,10 +1805,10 @@
     }
   ],
   "assetStats": {
-    "originalBytes": 14099782,
-    "displayBytes": 14099782,
-    "thumbnailBytes": 2711174,
-    "uniqueSourceImages": 68,
+    "originalBytes": 14066552,
+    "displayBytes": 14066552,
+    "thumbnailBytes": 2704152,
+    "uniqueSourceImages": 67,
     "duplicateMappings": 0
   }
 }
