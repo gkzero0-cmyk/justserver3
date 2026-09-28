@@ -2,6 +2,11 @@ name: Sync Notion assets
 
 on:
   workflow_dispatch:
+    inputs:
+      page_id:
+        description: Changed Notion page ID for partial sync
+        required: false
+        type: string
   schedule:
     # Webhook handles normal updates immediately. This is only a low-cost
     # recovery path for missed webhook deliveries. Six-hour fallback keeps
@@ -42,6 +47,8 @@ jobs:
         run: npm ci
 
       - name: Download Notion images
+        env:
+          NOTION_CHANGED_PAGE_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.page_id || '' }}
         run: npm run sync:notion-assets
 
       - name: Detect Notion source changes
