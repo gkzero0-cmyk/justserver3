@@ -10,7 +10,7 @@ const ASSET_SYNC_RUNS_URL =
   'https://api.github.com/repos/gkzero0-cmyk/justserver3/actions/workflows/sync-notion-assets.yml/runs?branch=main&per_page=5'
 const ASSET_SYNC_DISPATCH_URL =
   'https://api.github.com/repos/gkzero0-cmyk/justserver3/actions/workflows/sync-notion-assets.yml/dispatches'
-const ASSET_SYNC_DEBOUNCE_MS = 2 * 60_000
+const ASSET_SYNC_DEBOUNCE_MS = 5 * 60_000
 
 type NotionWebhookPayload = {
   verification_token?: string
@@ -83,15 +83,26 @@ async function hasRecentAssetSync(token: string) {
 }
 
 function partialModeForEvent(type?: string | null) {
-  const value=String(type||'').toLowerCase()
-  if(/deleted|archived/.test(value))return 'delete'
-  if(/created|moved|parent|child/.test(value))return 'subtree'
+  const value = String(type || '').toLowerCase()
+  if (/deleted|archived/.test(value)) return 'delete'
+  if (/created|moved|parent|child/.test(value)) return 'subtree'
   return 'page'
+}
+
+function eventNeedsAssetSync(type?: string | null) {
+  const value = String(type || '').toLowerCase()
+  // Lock state only affects editing in Notion; it cannot change rendered wiki assets.
+  if (value === 'page.locked' || value === 'page.unlocked') return false
+  return true
 }
 
 async function triggerAssetSync(pageId?: string | null, eventType?: string | null) {
   const token = process.env.GITHUB_ACTIONS_TOKEN
   if (!token) return { triggered: false, reason: 'token-not-configured' }
+
+  if (!eventNeedsAssetSync(eventType)) {
+    return { triggered: false, reason: 'event-does-not-affect-assets' }
+  }
 
   if (await hasRecentAssetSync(token)) {
     return { triggered: false, reason: 'recent-sync' }
@@ -105,7 +116,15 @@ async function triggerAssetSync(pageId?: string | null, eventType?: string | nul
       'X-GitHub-Api-Version': '2022-11-28',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ ref: 'main', inputs: pageId ? { page_id: pageId, partial_mode: partialModeForEvent(eventType) } : {} }),
+    body: JSON.stringify({
+      ref: 'main',
+      inputs: pageId
+        ? {
+            page_id: pageId,
+            partial_mode: partialModeForEvent(eventType)
+          }
+        : {}
+    }),
     cache: 'no-store'
   })
 
@@ -205,7 +224,8 @@ export async function GET(request: Request) {
       Boolean(process.env.NOTION_WEBHOOK_VERIFICATION_TOKEN),
     instantAssetSync: Boolean(process.env.GITHUB_ACTIONS_TOKEN),
     fallbackSyncMinutes: 360,
-    liveContentCacheSeconds: 300
+    liveContentCacheSeconds: 300,
+    assetSyncDebounceSeconds: ASSET_SYNC_DEBOUNCE_MS / 1000
   })
 }
 
@@ -255,7 +275,7 @@ export async function POST(request: Request) {
     revalidatePath(`/page/${pageId}`)
   }
 
-  const assetSync = await triggerAssetSync(pageId,payload.type).catch(() => ({
+  const assetSync = await triggerAssetSync(pageId, payload.type).catch(() => ({
     triggered: false,
     reason: 'dispatch-failed'
   }))
