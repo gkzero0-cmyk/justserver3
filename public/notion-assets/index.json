@@ -1740,10 +1740,10 @@
     }
   ],
   "assetStats": {
-    "originalBytes": 122790098,
-    "displayBytes": 17756778,
-    "thumbnailBytes": 3400174,
+    "originalBytes": 14061340,
+    "displayBytes": 14061340,
+    "thumbnailBytes": 2702262,
     "uniqueSourceImages": 66,
-    "duplicateMappings": 9
+    "duplicateMappings": 0
   }
 }
