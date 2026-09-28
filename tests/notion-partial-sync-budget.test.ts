@@ -10,7 +10,7 @@ test('Notion webhook uses changed-page partial sync with full fallback intact', 
   assert.match(cache, /NOTION_CHANGED_PAGE_ID/)
   assert.match(cache, /PARTIAL_SYNC/)
   assert.match(cache, /PARTIAL_MODE/)
-  assert.match(cache, /pageLimit = PARTIAL_SYNC \? \(PARTIAL_MODE==='page'\?1:Math\.min\(16, MAX_PAGES\)\) : MAX_PAGES/)
+  assert.match(cache, /pageLimit = PARTIAL_SYNC \? \(PARTIAL_MODE==='page'\?1:PARTIAL_MODE==='delete'\?0:Math\.min\(16, MAX_PAGES\)\) : MAX_PAGES/)
   assert.match(cache, /const manifest = PARTIAL_SYNC \? \{ \.\.\.existingManifest \} : \{\}/)
   assert.match(cache, /if \(!PARTIAL_SYNC\) await removeStaleFiles/)
   assert.match(workflow, /page_id:/)
