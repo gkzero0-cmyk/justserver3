@@ -4,8 +4,9 @@ on:
   workflow_dispatch:
   schedule:
     # Webhook handles normal updates immediately. This is only a low-cost
-    # recovery path for missed webhook deliveries.
-    - cron: '17 */3 * * *'
+    # recovery path for missed webhook deliveries. Six-hour fallback keeps
+    # full Notion crawls rare while webhook updates remain near-real-time.
+    - cron: '17 */6 * * *'
   push:
     branches: [main]
     paths:
