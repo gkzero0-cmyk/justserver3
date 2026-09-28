@@ -309,7 +309,7 @@ export default async function StatusPage() {
               Notion 수집, 이미지 최적화, GitHub 빌드 상태를 함께 확인합니다.
             </small>
           </div>
-          <time>마지막 데이터 동기화 {formatDate(index.generatedAt)}</time>
+          <time>마지막 변경 반영 {formatDate(index.generatedAt)}</time>
         </div>
 
         <div className="status-grid status-grid-primary">
