@@ -22,6 +22,6 @@ test('Notion webhook uses changed-page partial sync with full fallback intact', 
   assert.match(cache, /PARTIAL_MODE==='delete'/)
   assert.match(cache, /deletedIds=new Set\(\)/)
   assert.match(cache, /filter\(page=>!deletedIds\.has\(page\.pageId\)\)/)
-  assert.match(webhook, /triggerAssetSync\(pageId,payload\.type\)/)
+  assert.match(webhook, /triggerAssetSync\(pageId,\s*payload\.type\)/)
   assert.match(webhook, /partial_mode: partialModeForEvent\(eventType\)/)
 })
