@@ -13,6 +13,7 @@ const SOFT_FAIL = process.argv.includes('--soft-fail')
 const MAX_PAGES = Number(process.env.NOTION_ASSET_MAX_PAGES || 250)
 const OUT_DIR = path.join(process.cwd(), 'public', 'notion-assets')
 const MANIFEST_PATH = path.join(OUT_DIR, 'manifest.json')
+const DISPLAY_MANIFEST_PATH = path.join(OUT_DIR, 'display-manifest.json')
 const INDEX_PATH = path.join(OUT_DIR, 'index.json')
 const SEARCH_INDEX_PATH = path.join(OUT_DIR, 'search-index.json')
 const VERIFIED_FAQ_PATH = path.join(
@@ -704,11 +705,25 @@ function buildReviewQueue(pageIndex, faqCandidates) {
   return [...changes, ...faq].slice(0, 14)
 }
 
-async function readExistingManifest() {
+async function readJsonObject(filePath) {
   try {
-    return JSON.parse(await fs.readFile(MANIFEST_PATH, 'utf8'))
+    const parsed = JSON.parse(await fs.readFile(filePath, 'utf8'))
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {}
   } catch {
     return {}
+  }
+}
+
+async function existingAssetPath(publicPath) {
+  if (typeof publicPath !== 'string' || !publicPath.startsWith('/notion-assets/')) {
+    return null
+  }
+  const diskPath = path.join(process.cwd(), 'public', publicPath.replace(/^\//, ''))
+  try {
+    await fs.access(diskPath)
+    return publicPath
+  } catch {
+    return null
   }
 }
 
@@ -769,7 +784,8 @@ async function main() {
     }
   }
 
-  const existingManifest = await readExistingManifest()
+  const existingManifest = await readJsonObject(MANIFEST_PATH)
+  const existingDisplayManifest = await readJsonObject(DISPLAY_MANIFEST_PATH)
   const manifest = {}
   const activeFilenames = new Set()
   let downloaded = 0
@@ -778,22 +794,18 @@ async function main() {
 
   for (const [key, sourceUrl] of sourceUrls) {
     const existingPublicPath = existingManifest[key]
+    const existingDisplayPath = existingDisplayManifest[key]
+    const reusablePath =
+      (await existingAssetPath(existingPublicPath)) ||
+      (await existingAssetPath(existingDisplayPath))
 
-    if (
-      typeof existingPublicPath === 'string' &&
-      existingPublicPath.startsWith('/notion-assets/')
-    ) {
-      const existingFilename = path.basename(existingPublicPath)
-
-      try {
-        await fs.access(path.join(OUT_DIR, existingFilename))
-        manifest[key] = existingPublicPath
-        activeFilenames.add(existingFilename)
-        reused += 1
-        continue
-      } catch {
-        // Missing local file: fall through and download it again.
+    if (reusablePath) {
+      manifest[key] = reusablePath
+      if (!reusablePath.startsWith('/notion-assets/optimized/')) {
+        activeFilenames.add(path.basename(reusablePath))
       }
+      reused += 1
+      continue
     }
 
     try {
@@ -851,7 +863,7 @@ async function main() {
   const previousStablePages = (existingIndex.pages || []).map(stablePageSnapshot)
   const nextStablePages = pageIndex.map(stablePageSnapshot)
   const contentChanged = !sameJson(previousStablePages, nextStablePages)
-  const manifestChanged = !sameJson(existingManifest, manifest)
+  const manifestChanged = !sameJson(existingManifest, manifest) || !sameJson(existingDisplayManifest, manifest)
   const generatedAt =
     contentChanged || manifestChanged || !existingIndex.generatedAt
       ? new Date().toISOString()
