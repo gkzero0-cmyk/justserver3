@@ -30,147 +30,187 @@ function certificateId() {
   return next
 }
 
-function loadCertificateLogo() {
-  return new Promise<HTMLImageElement>((resolve, reject) => {
+let certificateTemplatePromise: Promise<HTMLImageElement> | null = null
+
+function loadCertificateTemplate() {
+  if (certificateTemplatePromise) return certificateTemplatePromise
+
+  certificateTemplatePromise = new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image()
     image.onload = () => resolve(image)
     image.onerror = reject
-    image.src = '/survival-certificate-logo.webp'
+    image.src = '/certificate-template/master.png'
   })
+  return certificateTemplatePromise
 }
 
 async function drawCertificate(canvas: HTMLCanvasElement, props: CertificateProps, id: string, issuedAt: string) {
   const ctx = canvas.getContext('2d')
   if (!ctx) return
-  const width = 1200, height = 675, scale = 2
+
+  const width = 1200
+  const height = 675
+  const scale = 2
   canvas.width = width * scale
   canvas.height = height * scale
   ctx.setTransform(scale, 0, 0, scale, 0, 0)
   ctx.imageSmoothingEnabled = true
   ctx.imageSmoothingQuality = 'high'
+
   const complete = props.totalCount > 0 && props.readCount >= props.totalCount
+  const template = await loadCertificateTemplate()
 
-  const panel = (x: number, y: number, w: number, h: number, radius = 14, strong = false) => {
-    ctx.fillStyle = strong ? 'rgba(24,8,6,.94)' : 'rgba(12,8,7,.9)'
-    ctx.strokeStyle = strong ? (complete ? '#d8a84d' : '#9f4b2d') : '#7b3829'
-    ctx.lineWidth = strong ? 1.8 : 1.25
-    ctx.beginPath(); ctx.roundRect(x, y, w, h, radius); ctx.fill(); ctx.stroke()
+  // The master image owns the high-resolution bear, throne, frame, panels and icons.
+  // Every user-specific value is drawn below at runtime.
+  ctx.drawImage(template, 0, 0, width, height)
+
+  const textShadow = (blur = 8) => {
+    ctx.shadowColor = 'rgba(0,0,0,.88)'
+    ctx.shadowBlur = blur
+    ctx.shadowOffsetY = 2
   }
-  const icon = (kind: string, x: number, y: number) => {
-    ctx.save(); ctx.strokeStyle = '#c56e43'; ctx.fillStyle = '#c56e43'; ctx.lineWidth = 2
-    if (kind === 'calendar') { ctx.strokeRect(x, y + 3, 20, 17); ctx.beginPath(); ctx.moveTo(x, y + 8); ctx.lineTo(x + 20, y + 8); ctx.stroke() }
-    if (kind === 'award') { ctx.strokeRect(x + 3, y + 1, 14, 18); ctx.beginPath(); ctx.moveTo(x + 7, y + 6); ctx.lineTo(x + 14, y + 6); ctx.moveTo(x + 7, y + 10); ctx.lineTo(x + 14, y + 10); ctx.stroke() }
-    if (kind === 'treasure') { ctx.strokeRect(x, y + 8, 21, 12); ctx.beginPath(); ctx.arc(x + 10.5, y + 8, 10, Math.PI, 0); ctx.stroke() }
-    if (kind === 'pickaxe') { ctx.beginPath(); ctx.moveTo(x + 4, y + 20); ctx.lineTo(x + 16, y + 4); ctx.moveTo(x + 8, y + 4); ctx.quadraticCurveTo(x + 16, y - 1, x + 22, y + 5); ctx.stroke() }
-    ctx.restore()
+  const clearShadow = () => {
+    ctx.shadowColor = 'transparent'
+    ctx.shadowBlur = 0
+    ctx.shadowOffsetX = 0
+    ctx.shadowOffsetY = 0
+  }
+  const fitText = (
+    value: string,
+    x: number,
+    y: number,
+    maxWidth: number,
+    maxSize: number,
+    minSize: number,
+    weight = 800,
+    family = 'system-ui, sans-serif'
+  ) => {
+    let size = maxSize
+    ctx.font = `${weight} ${size}px ${family}`
+    while (size > minSize && ctx.measureText(value).width > maxWidth) {
+      size -= 1
+      ctx.font = `${weight} ${size}px ${family}`
+    }
+    ctx.fillText(value, x, y)
   }
 
-  const bg = ctx.createLinearGradient(0, 0, width, height)
-  bg.addColorStop(0, '#080403'); bg.addColorStop(.38, '#220907'); bg.addColorStop(1, '#090504')
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, width, height)
-  const leftGlow = ctx.createRadialGradient(218, 270, 12, 218, 270, 330)
-  leftGlow.addColorStop(0, complete ? 'rgba(235,56,21,.48)' : 'rgba(187,27,18,.43)')
-  leftGlow.addColorStop(.52, 'rgba(106,12,9,.18)'); leftGlow.addColorStop(1, 'rgba(0,0,0,0)')
-  ctx.fillStyle = leftGlow; ctx.fillRect(0, 0, 455, height)
-
-  // Regal double frame with small corner accents.
-  // Layered royal frame: all decoration is Canvas-drawn so no user data is baked into an image.
-  const frameGlow = ctx.createLinearGradient(0, 0, width, height)
-  frameGlow.addColorStop(0, '#8e4a2b'); frameGlow.addColorStop(.45, '#f0bd63'); frameGlow.addColorStop(.55, '#8e4a2b'); frameGlow.addColorStop(1, '#d99048')
-  ctx.save(); ctx.shadowColor = 'rgba(231,71,31,.42)'; ctx.shadowBlur = 18
-  ctx.strokeStyle = frameGlow; ctx.lineWidth = 6; ctx.strokeRect(15, 15, 1170, 645); ctx.restore()
-  ctx.strokeStyle = '#3b160f'; ctx.lineWidth = 5; ctx.strokeRect(24, 24, 1152, 627)
-  ctx.strokeStyle = complete ? '#f1c66d' : '#bd7543'; ctx.lineWidth = 1.5; ctx.strokeRect(31, 31, 1138, 613)
-
-  // Subtle diagonal metal facets add depth without affecting dynamic text.
-  ctx.save(); ctx.globalAlpha = .16; ctx.strokeStyle = '#d27a45'; ctx.lineWidth = 1
-  for (let fx = 480; fx < 1150; fx += 78) {
-    ctx.beginPath(); ctx.moveTo(fx, 35); ctx.lineTo(fx + 150, 640); ctx.stroke()
-  }
-  ctx.restore()
-  ctx.strokeStyle = '#e0a252'; ctx.lineWidth = 2.5
-  ;[[31,31,1,1],[1169,31,-1,1],[31,644,1,-1],[1169,644,-1,-1]].forEach(([cx,cy,sx,sy]) => {
-    ctx.beginPath(); ctx.moveTo(cx, cy + sy * 34); ctx.lineTo(cx, cy); ctx.lineTo(cx + sx * 34, cy); ctx.stroke()
-    ctx.beginPath(); ctx.moveTo(cx + sx * 8, cy + sy * 8); ctx.lineTo(cx + sx * 23, cy + sy * 8); ctx.moveTo(cx + sx * 8, cy + sy * 8); ctx.lineTo(cx + sx * 8, cy + sy * 23); ctx.stroke()
-  })
-  // Crown jewel at the top center.
-  ctx.save(); ctx.translate(600, 27); ctx.rotate(Math.PI / 4)
-  ctx.fillStyle = '#8f160f'; ctx.strokeStyle = '#f1bd61'; ctx.lineWidth = 2
-  ctx.fillRect(-8, -8, 16, 16); ctx.strokeRect(-8, -8, 16, 16); ctx.restore()
-
-  // Large mascot emblem. Source is same-origin so the export canvas stays untainted.
-  try {
-    const logo = await loadCertificateLogo()
-    ctx.save()
-    ctx.shadowColor = 'rgba(255,53,25,.58)'; ctx.shadowBlur = 38
-    ctx.drawImage(logo, 14, 18, 446, 446)
-    ctx.restore()
-  } catch {
-    ctx.fillStyle = '#7d1712'; ctx.beginPath(); ctx.arc(218, 235, 142, 0, Math.PI * 2); ctx.fill()
-  }
+  // Left identity plate.
+  ctx.save()
+  textShadow(10)
   ctx.textAlign = 'center'
-  // Dark nameplate behind the fixed project title; values elsewhere remain fully dynamic.
-  const nameplate = ctx.createLinearGradient(64, 0, 406, 0)
-  nameplate.addColorStop(0, 'rgba(18,7,5,.35)'); nameplate.addColorStop(.5, 'rgba(5,3,3,.96)'); nameplate.addColorStop(1, 'rgba(18,7,5,.35)')
-  ctx.fillStyle = nameplate; ctx.beginPath(); ctx.roundRect(60, 445, 350, 105, 18); ctx.fill()
-  ctx.strokeStyle = '#a95b31'; ctx.lineWidth = 1.3; ctx.stroke()
-  ctx.fillStyle = '#f4d9aa'; ctx.font = '900 34px system-ui, sans-serif'; ctx.fillText('그냥서버 적자생존', 235, 487)
-  ctx.fillStyle = '#bd7d49'; ctx.font = '800 16px system-ui, sans-serif'; ctx.letterSpacing = '3px'; ctx.fillText('SURVIVAL WIKI', 235, 518)
-  ctx.letterSpacing = '0px'
-  ctx.strokeStyle = '#a75b35'; ctx.lineWidth = 1
-  ctx.beginPath(); ctx.moveTo(88, 538); ctx.lineTo(382, 538); ctx.stroke()
-
-  const x = 455, w = 700
-  ctx.textAlign = 'left'
-  panel(x, 46, w, 112, 17, true)
-  ctx.save(); ctx.strokeStyle = 'rgba(226,160,79,.5)'; ctx.lineWidth = 1
-  ctx.strokeRect(x + 9, 55, w - 18, 94); ctx.restore()
-  ctx.fillStyle = '#f7e8cc'; ctx.font = '900 45px system-ui, sans-serif'
-  ctx.fillText(complete ? '위키 완전정복 인증서' : '위키 완독 인증서', x + 34, 106)
-  ctx.fillStyle = '#c38a59'; ctx.font = '800 14px system-ui, sans-serif'; ctx.letterSpacing = '2px'
-  ctx.fillText('WIKI COMPLETION CERTIFICATE', x + 36, 137); ctx.letterSpacing = '0px'
-
-  panel(x, 174, w, 183, 17, true)
-  // Compass watermark is decorative Canvas geometry, not a baked image.
-  ctx.save(); ctx.translate(x + 505, 262); ctx.globalAlpha = .12; ctx.strokeStyle = '#c55b37'; ctx.lineWidth = 2
-  ctx.beginPath(); ctx.arc(0, 0, 72, 0, Math.PI * 2); ctx.arc(0, 0, 49, 0, Math.PI * 2); ctx.stroke()
-  for (let a = 0; a < 8; a++) { ctx.rotate(Math.PI / 4); ctx.beginPath(); ctx.moveTo(0, -66); ctx.lineTo(0, -35); ctx.stroke() }
+  ctx.fillStyle = '#fff0c8'
+  fitText('그냥서버 적자생존', 256, 556, 310, 36, 28, 900)
+  ctx.fillStyle = '#e9b86b'
+  ctx.font = '800 17px Georgia, serif'
+  ctx.fillText('S U R V I V A L   W I K I', 256, 590)
   ctx.restore()
-  ctx.fillStyle = '#d5a66d'; ctx.font = '800 19px system-ui, sans-serif'; ctx.fillText('위키 탐험도', x + 32, 214)
-  ctx.save(); ctx.shadowColor = 'rgba(231,60,30,.55)'; ctx.shadowBlur = 13
-  ctx.fillStyle = '#fff0d6'; ctx.font = '900 78px system-ui, sans-serif'; ctx.fillText(`${props.percent}%`, x + 30, 294); ctx.restore()
-  ctx.fillStyle = '#f1dec0'; ctx.font = '900 31px system-ui, sans-serif'; ctx.fillText(`${props.readCount} / ${props.totalCount}`, x + 545, 259)
-  ctx.fillStyle = '#b9a087'; ctx.font = '700 16px system-ui, sans-serif'; ctx.fillText('문서 완독', x + 563, 289)
-  ctx.fillStyle = '#2b1713'; ctx.beginPath(); ctx.roundRect(x + 30, 321, w - 60, 13, 7); ctx.fill()
-  const bw = (w - 60) * Math.min(100, props.percent) / 100
-  const bar = ctx.createLinearGradient(x + 30, 0, x + w - 30, 0)
-  bar.addColorStop(0, '#a71814'); bar.addColorStop(.72, '#ed3c25'); bar.addColorStop(1, complete ? '#f1c56b' : '#ffb66b')
-  ctx.save(); ctx.shadowColor = 'rgba(238,52,30,.65)'; ctx.shadowBlur = 9
-  ctx.fillStyle = bar; ctx.beginPath(); ctx.roundRect(x + 30, 321, bw, 13, 7); ctx.fill(); ctx.restore()
 
-  const gap = 10, metricWidth = (w - gap * 3) / 4
+  // Header: this changes to complete-conquest wording at 100%.
+  ctx.save()
+  textShadow(10)
+  ctx.textAlign = 'center'
+  ctx.fillStyle = complete ? '#fff4ca' : '#fff0d6'
+  fitText(complete ? '위키 완전정복 인증서' : '위키 완독 인증서', 820, 127, 520, 46, 33, 900)
+  ctx.fillStyle = '#e8bd78'
+  ctx.font = '800 17px Georgia, serif'
+  ctx.fillText('W I K I   C O M P L E T I O N   C E R T I F I C A T E', 820, 162)
+  ctx.restore()
+
+  // Exploration panel.
+  ctx.save()
+  ctx.textAlign = 'left'
+  textShadow(8)
+  ctx.fillStyle = '#f1cf91'
+  ctx.font = '800 21px system-ui, sans-serif'
+  ctx.fillText('위키 탐험도', 536, 241)
+
+  ctx.save()
+  ctx.shadowColor = 'rgba(255,51,29,.72)'
+  ctx.shadowBlur = 18
+  ctx.fillStyle = '#fff0cf'
+  ctx.font = '900 72px system-ui, sans-serif'
+  ctx.fillText(`${props.percent}%`, 536, 321)
+  ctx.restore()
+
+  ctx.textAlign = 'right'
+  ctx.fillStyle = '#fff2d7'
+  ctx.font = '900 31px system-ui, sans-serif'
+  ctx.fillText(`${props.readCount} / ${props.totalCount}`, 1084, 285)
+  ctx.fillStyle = '#e1c59d'
+  ctx.font = '700 16px system-ui, sans-serif'
+  ctx.fillText('문서 완독', 1084, 315)
+  ctx.restore()
+
+  // The generated template has a decorative example bar. Cover its inner lane so
+  // the fill always represents the current user, not a baked percentage.
+  const barX = 527
+  const barY = 341
+  const barW = 582
+  const barH = 17
+  ctx.save()
+  clearShadow()
+  ctx.fillStyle = '#160d0b'
+  ctx.beginPath()
+  ctx.roundRect(barX, barY, barW, barH, 9)
+  ctx.fill()
+  ctx.strokeStyle = '#7e452d'
+  ctx.lineWidth = 1.5
+  ctx.stroke()
+
+  const ratio = Math.max(0, Math.min(100, props.percent)) / 100
+  const fillW = Math.max(0, (barW - 6) * ratio)
+  if (fillW > 0) {
+    const bar = ctx.createLinearGradient(barX + 3, 0, barX + barW - 3, 0)
+    bar.addColorStop(0, '#b71412')
+    bar.addColorStop(.68, '#ef3926')
+    bar.addColorStop(1, complete ? '#ffd575' : '#ffbf75')
+    ctx.shadowColor = 'rgba(255,55,31,.8)'
+    ctx.shadowBlur = 10
+    ctx.fillStyle = bar
+    ctx.beginPath()
+    ctx.roundRect(barX + 3, barY + 3, fillW, barH - 6, 6)
+    ctx.fill()
+  }
+  ctx.restore()
+
+  // Four runtime metric cards. Their icons and ornate frames live in the template.
   const metrics = [
-    ['calendar', '연속 생존일', `${props.streak}일`],
-    ['award', '업적 달성', `${props.achievementCount}/9`],
-    ['treasure', '위키 보물', `${props.treasureCount}/${props.treasureTotal}`],
-    ['pickaxe', '생존형', props.quizLabel]
+    { x: 502, label: '연속 생존일', value: `${props.streak}일` },
+    { x: 657, label: '업적 달성', value: `${props.achievementCount}/9` },
+    { x: 812, label: '위키 보물', value: `${props.treasureCount}/${props.treasureTotal}` },
+    { x: 967, label: '생존형', value: props.quizLabel }
   ]
-  metrics.forEach(([kind, label, value], i) => {
-    const mx = x + i * (metricWidth + gap)
-    panel(mx, 374, metricWidth, 108, 13)
-    icon(kind, mx + 15, 391)
-    ctx.fillStyle = '#c69a73'; ctx.font = '700 13px system-ui, sans-serif'; ctx.fillText(label, mx + 45, 407)
-    ctx.fillStyle = '#f5e3c8'; ctx.font = value.length > 8 ? '800 17px system-ui, sans-serif' : '900 27px system-ui, sans-serif'
-    ctx.fillText(value, mx + 16, 454)
-  })
 
-  const footerY = 497, footerH = 82, serialW = 420
-  panel(x, footerY, serialW, footerH, 13, true)
-  ctx.fillStyle = '#b98b68'; ctx.font = '700 13px system-ui, sans-serif'; ctx.fillText('인증번호', x + 24, footerY + 26)
-  ctx.fillStyle = '#f6dfbd'; ctx.font = '900 29px ui-monospace, monospace'; ctx.fillText(id, x + 24, footerY + 61)
-  panel(x + serialW + 12, footerY, w - serialW - 12, footerH, 13)
-  ctx.fillStyle = '#b98b68'; ctx.font = '700 13px system-ui, sans-serif'; ctx.fillText('발급일', x + serialW + 34, footerY + 26)
-  ctx.fillStyle = '#ead9c4'; ctx.font = '800 20px system-ui, sans-serif'; ctx.fillText(issuedAt, x + serialW + 34, footerY + 59)
+  ctx.save()
+  textShadow(7)
+  for (const metric of metrics) {
+    ctx.textAlign = 'left'
+    ctx.fillStyle = '#e2ad6b'
+    ctx.font = '700 14px system-ui, sans-serif'
+    ctx.fillText(metric.label, metric.x + 57, 420)
+
+    ctx.textAlign = 'center'
+    ctx.fillStyle = '#fff0d4'
+    fitText(metric.value, metric.x + 75, 470, 132, 28, 17, 900)
+  }
+  ctx.restore()
+
+  // Certificate serial and issue date.
+  ctx.save()
+  textShadow(7)
+  ctx.textAlign = 'left'
+  ctx.fillStyle = '#cf9365'
+  ctx.font = '700 13px system-ui, sans-serif'
+  ctx.fillText('인증번호', 583, 548)
+  ctx.fillStyle = '#fff0d6'
+  fitText(id, 583, 584, 250, 27, 20, 900, 'ui-monospace, monospace')
+
+  ctx.fillStyle = '#cf9365'
+  ctx.font = '700 13px system-ui, sans-serif'
+  ctx.fillText('발급일', 954, 548)
+  ctx.fillStyle = '#fff0d6'
+  fitText(issuedAt, 954, 584, 150, 20, 15, 800)
+  ctx.restore()
 }
 
 function canvasBlob(canvas: HTMLCanvasElement) {
@@ -297,7 +337,3 @@ export function WikiCompletionCertificate(props: CertificateProps) {
     </>
   )
 }
-
-// Compact royal certificate production release
-
-// Royal canvas certificate production release
