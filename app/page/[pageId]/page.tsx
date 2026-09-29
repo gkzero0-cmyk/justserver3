@@ -647,6 +647,11 @@ export async function renderWikiPage(pageId: string) {
                 </section>
               )}
               {recordMap && (
+                <nav className="source-detail-jump" aria-label="상세 가이드 바로가기">
+                  <a href="#source-detail-title">상세 가이드 바로 보기 ↓</a>
+                </nav>
+              )}
+              {recordMap && (
                 <section className="document-card source-detail-card" aria-labelledby="source-detail-title">
                   <header className="source-detail-head">
                     <p>FULL GUIDE</p>
