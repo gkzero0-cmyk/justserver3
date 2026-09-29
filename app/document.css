@@ -1653,3 +1653,61 @@ html[data-theme="light"] .enhancement-source-waiting {
     padding-bottom: 12px;
   }
 }
+
+
+.source-detail-jump {
+  width: min(100%, var(--content-max));
+  margin: -4px auto 0;
+  display: flex;
+  justify-content: flex-end;
+}
+.source-detail-jump a {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid rgba(var(--gold-rgb), .14);
+  border-radius: 10px;
+  background: rgba(var(--gold-rgb), .035);
+  color: var(--gold);
+  font-size: var(--font-meta);
+  font-weight: 800;
+  text-decoration: none;
+}
+.source-detail-jump a:hover,
+.source-detail-jump a:focus-visible {
+  border-color: rgba(var(--gold-rgb), .28);
+  background: rgba(var(--gold-rgb), .065);
+  outline: none;
+}
+
+/* Keep source screenshots readable without letting large Notion images
+   dominate the page or overflow on mobile. */
+.source-detail-card .notion-image,
+.source-detail-card .notion-asset-wrapper {
+  max-width: 100%;
+}
+.source-detail-card .notion-image img,
+.source-detail-card .notion-asset-wrapper img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+.source-detail-card .notion-asset-caption {
+  color: var(--text-subtle);
+  font-size: var(--font-meta);
+  line-height: 1.5;
+}
+
+@media (max-width: 620px) {
+  .source-detail-jump {
+    justify-content: stretch;
+  }
+  .source-detail-jump a {
+    width: 100%;
+    justify-content: center;
+  }
+  .source-detail-card .notion-image {
+    margin-inline: 0;
+  }
+}
