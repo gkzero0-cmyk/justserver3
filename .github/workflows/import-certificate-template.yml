@@ -87,6 +87,14 @@ jobs:
             if (!best || best.bytes.length < 200000) {
               console.error('No direct image candidate found; trying Firestorage download API.')
               const shareId = new URL(shareUrl).pathname.split('/').filter(Boolean).at(-1)
+              const cookie = page.headers.get('set-cookie') || ''
+              const apiHeaders = {
+                ...headers,
+                'accept':'application/json, text/plain, */*',
+                'origin':'https://firestorage.ai',
+                'referer':page.url,
+                ...(cookie ? { 'cookie': cookie.split(';')[0] } : {})
+              }
               const bases = [
                 'https://firestorage.ai',
                 'https://firestorage.ai/api',
@@ -98,15 +106,18 @@ jobs:
               for (const base of bases) {
                 try {
                   const listUrl = `${base}/shares/${shareId}/files?maxResults=1000`
-                  const listResponse = await fetch(listUrl, { headers, redirect: 'follow' })
+                  const listResponse = await fetch(listUrl, { headers:apiHeaders, redirect: 'follow' })
                   console.error('API probe', listUrl, listResponse.status, listResponse.headers.get('content-type'))
-                  if (!listResponse.ok) continue
+                  if (!listResponse.ok) {
+                    console.error('API probe body', (await listResponse.text()).slice(0, 800))
+                    continue
+                  }
                   const data = await listResponse.json()
                   const files = Array.isArray(data?.files) ? data.files : []
                   console.error('API files', JSON.stringify(files.map(file => ({ fileId:file.fileId, name:file.fileName || file.name, size:file.sizeBytes || file.size }))))
                   for (const file of files) {
                     if (!file?.fileId) continue
-                    const downloadResponse = await fetch(`${base}/shares/${shareId}/files/${file.fileId}/download`, { method:'POST', headers, redirect:'follow' })
+                    const downloadResponse = await fetch(`${base}/shares/${shareId}/files/${file.fileId}/download`, { method:'POST', headers:apiHeaders, redirect:'follow' })
                     console.error('download probe', downloadResponse.url, downloadResponse.status, downloadResponse.headers.get('content-type'))
                     if (!downloadResponse.ok) continue
                     const downloadJson = await downloadResponse.json()
