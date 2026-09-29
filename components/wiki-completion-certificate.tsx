@@ -86,38 +86,38 @@ async function drawCertificate(canvas: HTMLCanvasElement, props: CertificateProp
     const logo = await loadCertificateLogo()
     ctx.save()
     ctx.shadowColor = 'rgba(235,45,24,.38)'; ctx.shadowBlur = 28
-    ctx.drawImage(logo, 38, 53, 360, 360)
+    ctx.drawImage(logo, 20, 30, 430, 430)
     ctx.restore()
   } catch {
     ctx.fillStyle = '#7d1712'; ctx.beginPath(); ctx.arc(218, 235, 142, 0, Math.PI * 2); ctx.fill()
   }
   ctx.textAlign = 'center'
-  ctx.fillStyle = '#f4d9aa'; ctx.font = '900 34px system-ui, sans-serif'; ctx.fillText('그냥서버 적자생존', 218, 463)
-  ctx.fillStyle = '#bd7d49'; ctx.font = '800 16px system-ui, sans-serif'; ctx.letterSpacing = '3px'; ctx.fillText('SURVIVAL WIKI', 218, 495)
+  ctx.fillStyle = '#f4d9aa'; ctx.font = '900 34px system-ui, sans-serif'; ctx.fillText('그냥서버 적자생존', 235, 487)
+  ctx.fillStyle = '#bd7d49'; ctx.font = '800 16px system-ui, sans-serif'; ctx.letterSpacing = '3px'; ctx.fillText('SURVIVAL WIKI', 235, 518)
   ctx.letterSpacing = '0px'
   ctx.strokeStyle = '#a75b35'; ctx.lineWidth = 1
-  ctx.beginPath(); ctx.moveTo(90, 516); ctx.lineTo(346, 516); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(88, 538); ctx.lineTo(382, 538); ctx.stroke()
 
-  const x = 420, w = 735
+  const x = 455, w = 700
   ctx.textAlign = 'left'
-  panel(x, 62, w, 114, 17, true)
+  panel(x, 46, w, 112, 17, true)
   ctx.fillStyle = '#f7e8cc'; ctx.font = '900 45px system-ui, sans-serif'
-  ctx.fillText(complete ? '위키 완전정복 인증서' : '위키 완독 인증서', x + 34, 124)
+  ctx.fillText(complete ? '위키 완전정복 인증서' : '위키 완독 인증서', x + 34, 106)
   ctx.fillStyle = '#c38a59'; ctx.font = '800 14px system-ui, sans-serif'; ctx.letterSpacing = '2px'
-  ctx.fillText('WIKI COMPLETION CERTIFICATE', x + 36, 153); ctx.letterSpacing = '0px'
+  ctx.fillText('WIKI COMPLETION CERTIFICATE', x + 36, 137); ctx.letterSpacing = '0px'
 
-  panel(x, 194, w, 187, 17, true)
-  ctx.fillStyle = '#d5a66d'; ctx.font = '800 19px system-ui, sans-serif'; ctx.fillText('위키 탐험도', x + 32, 236)
+  panel(x, 174, w, 183, 17, true)
+  ctx.fillStyle = '#d5a66d'; ctx.font = '800 19px system-ui, sans-serif'; ctx.fillText('위키 탐험도', x + 32, 214)
   ctx.save(); ctx.shadowColor = 'rgba(231,60,30,.55)'; ctx.shadowBlur = 13
-  ctx.fillStyle = '#fff0d6'; ctx.font = '900 78px system-ui, sans-serif'; ctx.fillText(`${props.percent}%`, x + 30, 321); ctx.restore()
-  ctx.fillStyle = '#f1dec0'; ctx.font = '900 31px system-ui, sans-serif'; ctx.fillText(`${props.readCount} / ${props.totalCount}`, x + 573, 282)
-  ctx.fillStyle = '#b9a087'; ctx.font = '700 16px system-ui, sans-serif'; ctx.fillText('문서 완독', x + 590, 313)
-  ctx.fillStyle = '#2b1713'; ctx.beginPath(); ctx.roundRect(x + 30, 346, w - 60, 13, 7); ctx.fill()
+  ctx.fillStyle = '#fff0d6'; ctx.font = '900 78px system-ui, sans-serif'; ctx.fillText(`${props.percent}%`, x + 30, 294); ctx.restore()
+  ctx.fillStyle = '#f1dec0'; ctx.font = '900 31px system-ui, sans-serif'; ctx.fillText(`${props.readCount} / ${props.totalCount}`, x + 545, 259)
+  ctx.fillStyle = '#b9a087'; ctx.font = '700 16px system-ui, sans-serif'; ctx.fillText('문서 완독', x + 563, 289)
+  ctx.fillStyle = '#2b1713'; ctx.beginPath(); ctx.roundRect(x + 30, 321, w - 60, 13, 7); ctx.fill()
   const bw = (w - 60) * Math.min(100, props.percent) / 100
   const bar = ctx.createLinearGradient(x + 30, 0, x + w - 30, 0)
   bar.addColorStop(0, '#a71814'); bar.addColorStop(.72, '#ed3c25'); bar.addColorStop(1, complete ? '#f1c56b' : '#ffb66b')
   ctx.save(); ctx.shadowColor = 'rgba(238,52,30,.65)'; ctx.shadowBlur = 9
-  ctx.fillStyle = bar; ctx.beginPath(); ctx.roundRect(x + 30, 346, bw, 13, 7); ctx.fill(); ctx.restore()
+  ctx.fillStyle = bar; ctx.beginPath(); ctx.roundRect(x + 30, 321, bw, 13, 7); ctx.fill(); ctx.restore()
 
   const gap = 10, metricWidth = (w - gap * 3) / 4
   const metrics = [
@@ -128,14 +128,14 @@ async function drawCertificate(canvas: HTMLCanvasElement, props: CertificateProp
   ]
   metrics.forEach(([kind, label, value], i) => {
     const mx = x + i * (metricWidth + gap)
-    panel(mx, 398, metricWidth, 111, 13)
-    icon(kind, mx + 15, 416)
-    ctx.fillStyle = '#c69a73'; ctx.font = '700 13px system-ui, sans-serif'; ctx.fillText(label, mx + 45, 432)
+    panel(mx, 374, metricWidth, 108, 13)
+    icon(kind, mx + 15, 391)
+    ctx.fillStyle = '#c69a73'; ctx.font = '700 13px system-ui, sans-serif'; ctx.fillText(label, mx + 45, 407)
     ctx.fillStyle = '#f5e3c8'; ctx.font = value.length > 8 ? '800 17px system-ui, sans-serif' : '900 27px system-ui, sans-serif'
-    ctx.fillText(value, mx + 16, 479)
+    ctx.fillText(value, mx + 16, 454)
   })
 
-  const footerY = 527, footerH = 79, serialW = 440
+  const footerY = 497, footerH = 82, serialW = 420
   panel(x, footerY, serialW, footerH, 13, true)
   ctx.fillStyle = '#b98b68'; ctx.font = '700 13px system-ui, sans-serif'; ctx.fillText('인증번호', x + 24, footerY + 26)
   ctx.fillStyle = '#f6dfbd'; ctx.font = '900 29px ui-monospace, monospace'; ctx.fillText(id, x + 24, footerY + 61)
