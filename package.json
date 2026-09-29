@@ -17,7 +17,8 @@
     "preflight": "npm test && npm run test:integrity && npm run audit:css && npm run audit:static && npm run test:deploy-bundle",
     "release:gate": "node scripts/release-gate.mjs",
     "prepare:runtime-assets": "node scripts/prepare-runtime-assets.mjs",
-    "build:app": "npm run prepare:runtime-assets && next build"
+    "build:app": "npm run prepare:runtime-assets && next build",
+    "predeploy": "npm run preflight && npm run build:app && npm run release:gate"
   },
   "dependencies": {
     "next": "16.3.6",
