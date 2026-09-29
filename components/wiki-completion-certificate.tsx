@@ -268,3 +268,5 @@ export function WikiCompletionCertificate(props: CertificateProps) {
     </>
   )
 }
+
+// Compact royal certificate production release
