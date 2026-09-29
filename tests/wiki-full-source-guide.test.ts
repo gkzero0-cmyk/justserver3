@@ -37,7 +37,7 @@ test('document sharing is a simple canonical link copy action', () => {
 
 
 test('completion certificate exports at high resolution with balanced layout', () => {
-  assert.match(certificateSource, /const scale = 2/)
+  assert.match(certificateSource, /scale = 2/)
   assert.match(certificateSource, /canvas\.width = width \* scale/)
   assert.match(certificateSource, /imageSmoothingQuality = 'high'/)
   assert.match(certificateSource, /const x = 420/)
