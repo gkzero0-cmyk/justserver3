@@ -287,12 +287,14 @@ export async function renderWikiPage(pageId: string) {
           .slice(0, 8)
       : []
   const hasVerifiedBrief = verifiedBriefSections.length > 0
+  // Keep the compact verified summary as an overview, but always fetch and
+  // render the linked Notion source for normal published guides. This keeps
+  // screenshots, detailed explanations, lists and other source blocks intact.
   const needsNotionDocument =
     !currentPage ||
     (!draft &&
       !hasVerifiedFaq &&
-      !isEnhancementGuide &&
-      !hasVerifiedBrief)
+      !isEnhancementGuide)
 
   const notionPayload = needsNotionDocument
     ? await Promise.all([getNotionPage(pageId), readNotionAssetManifest()])
@@ -614,46 +616,55 @@ export async function renderWikiPage(pageId: string) {
             </section>
           ) : hasVerifiedFaq ? (
             <WikiVerifiedFaq />
-          ) : hasVerifiedBrief ? (
-            <section
-              className="verified-brief-guide"
-              aria-labelledby="verified-brief-flow-title"
-            >
-              <div className="verified-brief-guide-head">
-                <p>VERIFIED SOURCE</p>
-                <h2 id="verified-brief-flow-title">
-                  원문에서 확인된 {currentPage?.title} 핵심
-                </h2>
-                <span>
-                  현재 공식 원문에서 확인 가능한 내용만 보기 좋게 정리했습니다.
-                  세부 정보가 추가되면 같은 문서에 자동으로 보강됩니다.
-                </span>
-              </div>
-              <ol>
-                {verifiedBriefSections.map((section, index) => (
-                  <li
-                    key={section.anchor || section.heading}
-                    id={section.anchor || undefined}
-                  >
-                    <b>{String(index + 1).padStart(2, '0')}</b>
-                    <strong>{section.heading}</strong>
-                    {section.text?.trim() && <small>{section.text}</small>}
-                  </li>
-                ))}
-              </ol>
-            </section>
-          ) : recordMap ? (
-            <section className="document-card">
-              <NotionDocument
-                recordMap={recordMap}
-                imageManifest={imageManifest}
-                relatedPages={related.map((page) => ({
-                  pageId: page.pageId,
-                  title: page.title
-                }))}
-              />
-            </section>
-          ) : null}
+          ) : (
+            <>
+              {hasVerifiedBrief && (
+                <section
+                  className="verified-brief-guide"
+                  aria-labelledby="verified-brief-flow-title"
+                >
+                  <div className="verified-brief-guide-head">
+                    <p>VERIFIED SOURCE</p>
+                    <h2 id="verified-brief-flow-title">
+                      원문에서 확인된 {currentPage?.title} 핵심
+                    </h2>
+                    <span>
+                      먼저 핵심 흐름을 확인한 뒤 아래 상세 가이드에서 원문의 설명과 이미지를 이어서 볼 수 있습니다.
+                    </span>
+                  </div>
+                  <ol>
+                    {verifiedBriefSections.map((section, index) => (
+                      <li
+                        key={section.anchor || section.heading}
+                        id={section.anchor || undefined}
+                      >
+                        <b>{String(index + 1).padStart(2, '0')}</b>
+                        <strong>{section.heading}</strong>
+                        {section.text?.trim() && <small>{section.text}</small>}
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              )}
+              {recordMap && (
+                <section className="document-card source-detail-card" aria-labelledby="source-detail-title">
+                  <header className="source-detail-head">
+                    <p>FULL GUIDE</p>
+                    <h2 id="source-detail-title">{currentPage?.title} 상세 가이드</h2>
+                    <span>Notion 원문의 설명과 이미지를 생략하지 않고 이어서 보여드립니다.</span>
+                  </header>
+                  <NotionDocument
+                    recordMap={recordMap}
+                    imageManifest={imageManifest}
+                    relatedPages={related.map((page) => ({
+                      pageId: page.pageId,
+                      title: page.title
+                    }))}
+                  />
+                </section>
+              )}
+            </>
+          )}
 
           {currentPage && (
             <>
