@@ -153,6 +153,29 @@ for (const route of WIKI_GUIDE_ROUTES) {
 
 if (!failed) pass('guide routes match the cached Notion index')
 
+
+// Full-source guides must keep the verified overview and the complete Notion body
+// connected. These checks guard the release against accidentally reverting to
+// summary-only pages.
+const pageRouteSource = await readFile(join(root, 'app/page/[pageId]/page.tsx'), 'utf8')
+const shellSource = await readFile(join(root, 'components/wiki-shell.tsx'), 'utf8')
+const notionDocumentSource = await readFile(join(root, 'components/notion-document.tsx'), 'utf8')
+const feedbackSource = await readFile(join(root, 'components/wiki-document-feedback.tsx'), 'utf8')
+
+const releaseContracts = [
+  ['full Notion source rendering', /source-detail-card[\s\S]*?<NotionDocument/, pageRouteSource],
+  ['full guide jump link', /상세 가이드 바로 보기/, pageRouteSource],
+  ['full-source 80 percent threshold', /hasFullSource \? 80 : 70/, shellSource],
+  ['full-source 15 second threshold', /hasFullSource \? 15/, shellSource],
+  ['Notion image lazy loading', /image\.loading = 'lazy'/, notionDocumentSource],
+  ['canonical document link copy', /copyDocumentLink/, feedbackSource]
+]
+
+for (const [label, pattern, source] of releaseContracts) {
+  if (!pattern.test(source)) fail(`release contract missing: ${label}`)
+}
+if (!failed) pass(`${releaseContracts.length} wiki release contracts are intact`)
+
 const referencedAssets = new Set(Object.values(manifest))
 const assetFields = [
   'icon',
