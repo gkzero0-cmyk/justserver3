@@ -160,6 +160,25 @@ jobs:
                   }
                 } catch {}
               }
+              const httpStrings = new Set()
+              for (const scriptUrl of scriptUrls.slice(0, 40)) {
+                try {
+                  const js = await (await fetch(scriptUrl, { headers })).text()
+                  if (!js.includes('/files?maxResults=1000')) continue
+                  for (const match of js.matchAll(/https?:\\?\/\\?\/[^"'\x60\\s)]+/g)) {
+                    httpStrings.add(match[0].replaceAll('\\\\/','/'))
+                  }
+                  const marker = js.indexOf('/files?maxResults=1000')
+                  if (marker >= 0) {
+                    console.error('FILE_API_CONTEXT_BEGIN', scriptUrl)
+                    console.error(js.slice(Math.max(0, marker - 6000), Math.min(js.length, marker + 2000)))
+                    console.error('FILE_API_CONTEXT_END')
+                  }
+                } catch {}
+              }
+              console.error('HTTP_STRINGS_BEGIN')
+              console.error([...httpStrings].sort().join('\n'))
+              console.error('HTTP_STRINGS_END')
               console.error('ROUTES_BEGIN')
               console.error([...routes].sort().join('\n'))
               console.error('ROUTES_END')
