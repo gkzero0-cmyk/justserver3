@@ -129,7 +129,8 @@ export function WikiShell({
   const [activeTocId, setActiveTocId] = useState('')
   const [readingProgress, setReadingProgress] = useState(0)
   const handledHashRef = useRef('')
-  const readingProgressRef = useRef(0)\n  const activeReadingSecondsRef = useRef(0)
+  const readingProgressRef = useRef(0)
+  const activeReadingSecondsRef = useRef(0)
 
   useEffect(() => {
     const saved = window.localStorage.getItem('justserver3-theme')
