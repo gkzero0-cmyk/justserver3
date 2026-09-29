@@ -1,0 +1,115 @@
+name: Import certificate template
+
+on:
+  push:
+    paths:
+      - '.github/workflows/import-certificate-template.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  import-template:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Fetch high-resolution certificate template
+        env:
+          SHARE_URL: https://firestorage.ai/ja/f/ub6vf1MnN--V
+        run: |
+          node <<'NODE'
+          const fs = require('fs')
+          const { URL } = require('url')
+
+          const shareUrl = process.env.SHARE_URL
+          const headers = { 'user-agent': 'Mozilla/5.0 certificate-template-import/1.0' }
+
+          function addCandidate(set, raw, base) {
+            if (!raw) return
+            raw = raw.replaceAll('\\/','/').replaceAll('&amp;','&')
+            if (/^(data:|javascript:|mailto:|#)/i.test(raw)) return
+            try { set.add(new URL(raw, base).href) } catch {}
+          }
+
+          function sniff(bytes, type = '') {
+            if (type.startsWith('image/')) return true
+            if (bytes.length > 12 && bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) return true
+            if (bytes.length > 12 && bytes[0] === 0xff && bytes[1] === 0xd8) return true
+            if (bytes.length > 12 && bytes.subarray(0,4).toString() === 'RIFF' && bytes.subarray(8,12).toString() === 'WEBP') return true
+            return false
+          }
+
+          async function fetchBuffer(url) {
+            const response = await fetch(url, { headers, redirect: 'follow' })
+            const type = (response.headers.get('content-type') || '').toLowerCase()
+            const bytes = Buffer.from(await response.arrayBuffer())
+            return { response, type, bytes }
+          }
+
+          ;(async () => {
+            const page = await fetch(shareUrl, { headers, redirect: 'follow' })
+            if (!page.ok) throw new Error(`share page HTTP ${page.status}`)
+            const html = await page.text()
+            const candidates = new Set()
+
+            for (const match of html.matchAll(/(?:href|src|content|downloadUrl|download_url|fileUrl|file_url)\s*[:=]\s*["']([^"']+)["']/gi)) {
+              addCandidate(candidates, match[1], page.url)
+            }
+            for (const match of html.matchAll(/https?:\\?\/\\?\/[^"'<>\\s]+/gi)) {
+              addCandidate(candidates, match[0], page.url)
+            }
+
+            // Also inspect likely JSON/API links embedded in the page.
+            const apiCandidates = [...candidates].filter(u => /api|share|file|download|object|asset/i.test(u))
+            for (const url of apiCandidates.slice(0, 80)) {
+              try {
+                const r = await fetch(url, { headers, redirect: 'follow' })
+                const type = (r.headers.get('content-type') || '').toLowerCase()
+                if (type.includes('json')) {
+                  const text = await r.text()
+                  for (const m of text.matchAll(/https?:\\?\/\\?\/[^"'<>s]+/gi)) addCandidate(candidates, m[0], url)
+                }
+              } catch {}
+            }
+
+            let best = null
+            for (const url of [...candidates].slice(0, 180)) {
+              try {
+                const { response, type, bytes } = await fetchBuffer(url)
+                if (!response.ok || !sniff(bytes, type)) continue
+                if (!best || bytes.length > best.bytes.length) best = { url: response.url, type, bytes }
+              } catch {}
+            }
+
+            if (!best || best.bytes.length < 200000) {
+              fs.writeFileSync('/tmp/firestorage-share.html', html)
+              console.error('No sufficiently large image candidate found.')
+              console.error('candidate count:', candidates.size)
+              console.error([...candidates].slice(0, 80).join('\n'))
+              process.exit(2)
+            }
+
+            const ext = best.type.includes('webp') || best.bytes.subarray(8,12).toString() === 'WEBP' ? 'webp'
+              : best.type.includes('jpeg') || best.bytes[0] === 0xff ? 'jpg'
+              : 'png'
+            fs.mkdirSync('public/certificate-template', { recursive: true })
+            fs.writeFileSync(`public/certificate-template/master.${ext}`, best.bytes)
+            fs.writeFileSync('public/certificate-template/source.txt', best.url + '\n')
+            console.log('Imported', best.url, best.type, best.bytes.length, 'bytes')
+          })().catch(error => { console.error(error); process.exit(1) })
+          NODE
+
+      - name: Commit template asset
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/certificate-template
+          if git diff --cached --quiet; then
+            echo "Template already current"
+            exit 0
+          fi
+          git commit -m "assets: import high-resolution certificate template [skip vercel]"
+          git push origin HEAD:main
