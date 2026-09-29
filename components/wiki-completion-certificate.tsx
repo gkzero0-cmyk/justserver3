@@ -74,24 +74,46 @@ async function drawCertificate(canvas: HTMLCanvasElement, props: CertificateProp
   ctx.fillStyle = leftGlow; ctx.fillRect(0, 0, 455, height)
 
   // Regal double frame with small corner accents.
-  ctx.strokeStyle = complete ? '#e1b35d' : '#b46e3e'; ctx.lineWidth = 4; ctx.strokeRect(18, 18, 1164, 639)
-  ctx.strokeStyle = '#7e3021'; ctx.lineWidth = 1.5; ctx.strokeRect(30, 30, 1140, 615)
-  ctx.strokeStyle = '#b46e3e'; ctx.lineWidth = 2
-  ;[[30,30,1,1],[1170,30,-1,1],[30,645,1,-1],[1170,645,-1,-1]].forEach(([cx,cy,sx,sy]) => {
-    ctx.beginPath(); ctx.moveTo(cx, cy + sy * 25); ctx.lineTo(cx, cy); ctx.lineTo(cx + sx * 25, cy); ctx.stroke()
+  // Layered royal frame: all decoration is Canvas-drawn so no user data is baked into an image.
+  const frameGlow = ctx.createLinearGradient(0, 0, width, height)
+  frameGlow.addColorStop(0, '#8e4a2b'); frameGlow.addColorStop(.45, '#f0bd63'); frameGlow.addColorStop(.55, '#8e4a2b'); frameGlow.addColorStop(1, '#d99048')
+  ctx.save(); ctx.shadowColor = 'rgba(231,71,31,.42)'; ctx.shadowBlur = 18
+  ctx.strokeStyle = frameGlow; ctx.lineWidth = 6; ctx.strokeRect(15, 15, 1170, 645); ctx.restore()
+  ctx.strokeStyle = '#3b160f'; ctx.lineWidth = 5; ctx.strokeRect(24, 24, 1152, 627)
+  ctx.strokeStyle = complete ? '#f1c66d' : '#bd7543'; ctx.lineWidth = 1.5; ctx.strokeRect(31, 31, 1138, 613)
+
+  // Subtle diagonal metal facets add depth without affecting dynamic text.
+  ctx.save(); ctx.globalAlpha = .16; ctx.strokeStyle = '#d27a45'; ctx.lineWidth = 1
+  for (let fx = 480; fx < 1150; fx += 78) {
+    ctx.beginPath(); ctx.moveTo(fx, 35); ctx.lineTo(fx + 150, 640); ctx.stroke()
+  }
+  ctx.restore()
+  ctx.strokeStyle = '#e0a252'; ctx.lineWidth = 2.5
+  ;[[31,31,1,1],[1169,31,-1,1],[31,644,1,-1],[1169,644,-1,-1]].forEach(([cx,cy,sx,sy]) => {
+    ctx.beginPath(); ctx.moveTo(cx, cy + sy * 34); ctx.lineTo(cx, cy); ctx.lineTo(cx + sx * 34, cy); ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(cx + sx * 8, cy + sy * 8); ctx.lineTo(cx + sx * 23, cy + sy * 8); ctx.moveTo(cx + sx * 8, cy + sy * 8); ctx.lineTo(cx + sx * 8, cy + sy * 23); ctx.stroke()
   })
+  // Crown jewel at the top center.
+  ctx.save(); ctx.translate(600, 27); ctx.rotate(Math.PI / 4)
+  ctx.fillStyle = '#8f160f'; ctx.strokeStyle = '#f1bd61'; ctx.lineWidth = 2
+  ctx.fillRect(-8, -8, 16, 16); ctx.strokeRect(-8, -8, 16, 16); ctx.restore()
 
   // Large mascot emblem. Source is same-origin so the export canvas stays untainted.
   try {
     const logo = await loadCertificateLogo()
     ctx.save()
-    ctx.shadowColor = 'rgba(235,45,24,.38)'; ctx.shadowBlur = 28
-    ctx.drawImage(logo, 20, 30, 430, 430)
+    ctx.shadowColor = 'rgba(255,53,25,.58)'; ctx.shadowBlur = 38
+    ctx.drawImage(logo, 14, 18, 446, 446)
     ctx.restore()
   } catch {
     ctx.fillStyle = '#7d1712'; ctx.beginPath(); ctx.arc(218, 235, 142, 0, Math.PI * 2); ctx.fill()
   }
   ctx.textAlign = 'center'
+  // Dark nameplate behind the fixed project title; values elsewhere remain fully dynamic.
+  const nameplate = ctx.createLinearGradient(64, 0, 406, 0)
+  nameplate.addColorStop(0, 'rgba(18,7,5,.35)'); nameplate.addColorStop(.5, 'rgba(5,3,3,.96)'); nameplate.addColorStop(1, 'rgba(18,7,5,.35)')
+  ctx.fillStyle = nameplate; ctx.beginPath(); ctx.roundRect(60, 445, 350, 105, 18); ctx.fill()
+  ctx.strokeStyle = '#a95b31'; ctx.lineWidth = 1.3; ctx.stroke()
   ctx.fillStyle = '#f4d9aa'; ctx.font = '900 34px system-ui, sans-serif'; ctx.fillText('그냥서버 적자생존', 235, 487)
   ctx.fillStyle = '#bd7d49'; ctx.font = '800 16px system-ui, sans-serif'; ctx.letterSpacing = '3px'; ctx.fillText('SURVIVAL WIKI', 235, 518)
   ctx.letterSpacing = '0px'
@@ -101,12 +123,19 @@ async function drawCertificate(canvas: HTMLCanvasElement, props: CertificateProp
   const x = 455, w = 700
   ctx.textAlign = 'left'
   panel(x, 46, w, 112, 17, true)
+  ctx.save(); ctx.strokeStyle = 'rgba(226,160,79,.5)'; ctx.lineWidth = 1
+  ctx.strokeRect(x + 9, 55, w - 18, 94); ctx.restore()
   ctx.fillStyle = '#f7e8cc'; ctx.font = '900 45px system-ui, sans-serif'
   ctx.fillText(complete ? '위키 완전정복 인증서' : '위키 완독 인증서', x + 34, 106)
   ctx.fillStyle = '#c38a59'; ctx.font = '800 14px system-ui, sans-serif'; ctx.letterSpacing = '2px'
   ctx.fillText('WIKI COMPLETION CERTIFICATE', x + 36, 137); ctx.letterSpacing = '0px'
 
   panel(x, 174, w, 183, 17, true)
+  // Compass watermark is decorative Canvas geometry, not a baked image.
+  ctx.save(); ctx.translate(x + 505, 262); ctx.globalAlpha = .12; ctx.strokeStyle = '#c55b37'; ctx.lineWidth = 2
+  ctx.beginPath(); ctx.arc(0, 0, 72, 0, Math.PI * 2); ctx.arc(0, 0, 49, 0, Math.PI * 2); ctx.stroke()
+  for (let a = 0; a < 8; a++) { ctx.rotate(Math.PI / 4); ctx.beginPath(); ctx.moveTo(0, -66); ctx.lineTo(0, -35); ctx.stroke() }
+  ctx.restore()
   ctx.fillStyle = '#d5a66d'; ctx.font = '800 19px system-ui, sans-serif'; ctx.fillText('위키 탐험도', x + 32, 214)
   ctx.save(); ctx.shadowColor = 'rgba(231,60,30,.55)'; ctx.shadowBlur = 13
   ctx.fillStyle = '#fff0d6'; ctx.font = '900 78px system-ui, sans-serif'; ctx.fillText(`${props.percent}%`, x + 30, 294); ctx.restore()
