@@ -1616,7 +1616,23 @@ html[data-theme="light"] .enhancement-source-waiting {
 
 /* Full Notion source follows the compact verified overview. */
 .source-detail-card {
-  overflow: hidden;
+  /* Notion blocks can use their own inline offsets. Clipping the whole card
+     cuts headings and media at the left edge, so constrain only wide children. */
+  overflow: visible;
+  min-width: 0;
+}
+
+.source-detail-card .notion-page-content {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.source-detail-card .notion-table,
+.source-detail-card .notion-simple-table {
+  max-width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .source-detail-head {
