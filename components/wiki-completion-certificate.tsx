@@ -299,3 +299,5 @@ export function WikiCompletionCertificate(props: CertificateProps) {
 }
 
 // Compact royal certificate production release
+
+// Royal canvas certificate production release
