@@ -30,6 +30,7 @@ export function WikiDocumentFeedback({
   canonicalUrl: string
 }) {
   const [status, setStatus] = useState('')
+  const [copied, setCopied] = useState(false)
 
   async function copyDocumentLink() {
     const copied = await copyText(canonicalUrl)
@@ -38,6 +39,12 @@ export function WikiDocumentFeedback({
         ? `${title} 문서 링크를 복사했습니다.`
         : '링크를 복사하지 못했습니다. 주소창의 링크를 복사해주세요.'
     )
+
+    setCopied(copied)
+    window.setTimeout(() => {
+      setCopied(false)
+      setStatus('')
+    }, 2200)
 
     if (copied) {
       track('wiki_document_link_copy', {
@@ -61,10 +68,10 @@ export function WikiDocumentFeedback({
       </div>
 
       <div className="document-feedback-actions">
-        <button type="button" onClick={copyDocumentLink}>
-          <strong>링크 복사</strong>
+        <button type="button" onClick={copyDocumentLink} className={copied ? 'is-copied' : undefined}>
+          <strong>{copied ? '복사 완료' : '링크 복사'}</strong>
           <small>현재 문서 주소를 클립보드에 복사</small>
-          <b aria-hidden="true">⧉</b>
+          <b aria-hidden="true">{copied ? '✓' : '⧉'}</b>
         </button>
       </div>
 
