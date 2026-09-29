@@ -637,7 +637,8 @@ export function WikiShell({
     const updateProgress = () => {
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(() => {
-        const article = document.querySelector<HTMLElement>('.source-detail-card') ??\n          document.querySelector<HTMLElement>('.document-card')
+        const article = document.querySelector<HTMLElement>('.source-detail-card') ??
+          document.querySelector<HTMLElement>('.document-card')
         if (!article) return
 
         const rect = article.getBoundingClientRect()
@@ -714,10 +715,12 @@ export function WikiShell({
   )
 
   useEffect(() => {
-    const hasFullSource = Boolean(document.querySelector('.source-detail-card'))\n    const requiredSeconds = hasFullSource ? 15 : contentStatus === 'brief' ? 6 : 12\n    const requiredProgress = hasFullSource ? 80 : 70
+    const hasFullSource = Boolean(document.querySelector('.source-detail-card'))
+    const requiredSeconds = hasFullSource ? 15 : contentStatus === 'brief' ? 6 : 12
+    const requiredProgress = hasFullSource ? 80 : 70
     if (
-      readingProgress >= 70 &&
-      readingProgressRef.current >= 70 &&
+      readingProgress >= requiredProgress &&
+      readingProgressRef.current >= requiredProgress &&
       activeReadingSecondsRef.current >= requiredSeconds
     ) {
       markCurrentPageRead('scroll')
@@ -728,7 +731,9 @@ export function WikiShell({
     if (!currentPageId || home || contentStatus === 'draft') return
 
     activeReadingSecondsRef.current = 0
-    const hasFullSource = Boolean(document.querySelector('.source-detail-card'))\n    const requiredSeconds = hasFullSource ? 15 : contentStatus === 'brief' ? 6 : 12\n    const requiredProgress = hasFullSource ? 80 : 70
+    const hasFullSource = Boolean(document.querySelector('.source-detail-card'))
+    const requiredSeconds = hasFullSource ? 15 : contentStatus === 'brief' ? 6 : 12
+    const requiredProgress = hasFullSource ? 80 : 70
     const timer = window.setInterval(() => {
       if (
         document.visibilityState !== 'visible' ||
