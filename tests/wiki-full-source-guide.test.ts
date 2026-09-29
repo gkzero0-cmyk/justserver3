@@ -40,6 +40,6 @@ test('completion certificate exports at high resolution with balanced layout', (
   assert.match(certificateSource, /const scale = 2/)
   assert.match(certificateSource, /canvas\.width = width \* scale/)
   assert.match(certificateSource, /imageSmoothingQuality = 'high'/)
-  assert.match(certificateSource, /const x = 405/)
+  assert.match(certificateSource, /const x = 420/)
   assert.match(certificateSource, /drawImage\(logo, 48, 76, 326, 326\)/)
 })
