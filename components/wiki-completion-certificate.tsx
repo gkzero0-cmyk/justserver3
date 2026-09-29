@@ -42,67 +42,162 @@ function loadCertificateLogo() {
 async function drawCertificate(canvas: HTMLCanvasElement, props: CertificateProps, id: string, issuedAt: string) {
   const ctx = canvas.getContext('2d')
   if (!ctx) return
-  const width = 1200, height = 675
-  canvas.width = width; canvas.height = height
+
+  // Keep the 16:9 layout in logical pixels, but export at 2x resolution so
+  // Discord/SOOP uploads and downloaded PNGs stay crisp on high-DPI screens.
+  const width = 1200
+  const height = 675
+  const scale = 2
+  canvas.width = width * scale
+  canvas.height = height * scale
+  ctx.setTransform(scale, 0, 0, scale, 0, 0)
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
+
   const complete = props.totalCount > 0 && props.readCount >= props.totalCount
-
   const bg = ctx.createLinearGradient(0, 0, width, height)
-  bg.addColorStop(0, '#070505'); bg.addColorStop(.48, '#1b0908'); bg.addColorStop(1, '#080606')
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, width, height)
-  const glow = ctx.createRadialGradient(220, 300, 10, 220, 300, 340)
-  glow.addColorStop(0, complete ? 'rgba(215,63,28,.44)' : 'rgba(157,29,20,.38)')
+  bg.addColorStop(0, '#070505')
+  bg.addColorStop(.46, '#180807')
+  bg.addColorStop(1, '#080606')
+  ctx.fillStyle = bg
+  ctx.fillRect(0, 0, width, height)
+
+  const glow = ctx.createRadialGradient(205, 278, 18, 205, 278, 310)
+  glow.addColorStop(0, complete ? 'rgba(215,63,28,.46)' : 'rgba(157,29,20,.36)')
   glow.addColorStop(1, 'rgba(0,0,0,0)')
-  ctx.fillStyle = glow; ctx.fillRect(0, 0, 520, height)
+  ctx.fillStyle = glow
+  ctx.fillRect(0, 0, 410, height)
 
-  ctx.strokeStyle = complete ? '#d9aa50' : '#9b6037'; ctx.lineWidth = 4; ctx.strokeRect(22, 22, 1156, 631)
-  ctx.strokeStyle = '#5d211a'; ctx.lineWidth = 2; ctx.strokeRect(34, 34, 1132, 607)
+  ctx.strokeStyle = complete ? '#d9aa50' : '#9b6037'
+  ctx.lineWidth = 3
+  ctx.strokeRect(22, 22, 1156, 631)
+  ctx.strokeStyle = '#5d211a'
+  ctx.lineWidth = 1.5
+  ctx.strokeRect(34, 34, 1132, 607)
 
+  // Left identity rail: slightly narrower, with a larger logo and tighter
+  // typography so the mascot reads as the primary emblem instead of floating.
   try {
     const logo = await loadCertificateLogo()
-    ctx.drawImage(logo, 86, 105, 288, 288)
+    ctx.drawImage(logo, 48, 76, 326, 326)
   } catch {
-    ctx.fillStyle = '#7d1712'; ctx.beginPath(); ctx.arc(230, 245, 120, 0, Math.PI * 2); ctx.fill()
+    ctx.fillStyle = '#7d1712'
+    ctx.beginPath()
+    ctx.arc(211, 239, 132, 0, Math.PI * 2)
+    ctx.fill()
   }
 
   ctx.textAlign = 'center'
-  ctx.fillStyle = '#f0d4a7'; ctx.font = '900 39px system-ui, sans-serif'; ctx.fillText('그냥서버 적자생존', 230, 452)
-  ctx.fillStyle = '#aa7149'; ctx.font = '700 18px system-ui, sans-serif'; ctx.fillText('SURVIVAL WIKI', 230, 486)
+  ctx.fillStyle = '#f0d4a7'
+  ctx.font = '900 34px system-ui, sans-serif'
+  ctx.fillText('그냥서버 적자생존', 211, 450)
+  ctx.fillStyle = '#aa7149'
+  ctx.font = '700 17px system-ui, sans-serif'
+  ctx.fillText('SURVIVAL WIKI', 211, 482)
 
-  const x = 445, w = 710
+  // Give the information side more breathing room than the previous 35:65 split.
+  const x = 405
+  const w = 750
   ctx.textAlign = 'left'
-  ctx.fillStyle = '#100b0a'; ctx.strokeStyle = complete ? '#d2a04a' : '#8d5533'; ctx.lineWidth = 2
-  ctx.beginPath(); ctx.roundRect(x, 65, w, 120, 18); ctx.fill(); ctx.stroke()
-  ctx.fillStyle = '#f5e5cc'; ctx.font = '900 47px system-ui, sans-serif'
-  ctx.fillText(complete ? '위키 완전정복 인증서' : '위키 완독 인증서', x + 34, 130)
-  ctx.fillStyle = '#a97850'; ctx.font = '700 16px system-ui, sans-serif'; ctx.fillText('WIKI COMPLETION CERTIFICATE', x + 36, 160)
 
-  ctx.fillStyle = '#0e0b0a'; ctx.strokeStyle = '#633127'
-  ctx.beginPath(); ctx.roundRect(x, 207, w, 174, 18); ctx.fill(); ctx.stroke()
-  ctx.fillStyle = '#c89a69'; ctx.font = '800 21px system-ui, sans-serif'; ctx.fillText('위키 탐험도', x + 32, 252)
-  ctx.fillStyle = '#fff1dc'; ctx.font = '900 76px system-ui, sans-serif'; ctx.fillText(`${props.percent}%`, x + 30, 332)
-  ctx.fillStyle = '#f1ddc1'; ctx.font = '800 30px system-ui, sans-serif'; ctx.fillText(`${props.readCount} / ${props.totalCount}`, x + 515, 296)
-  ctx.fillStyle = '#a99078'; ctx.font = '700 17px system-ui, sans-serif'; ctx.fillText('문서 완독', x + 530, 326)
-  ctx.fillStyle = '#241714'; ctx.beginPath(); ctx.roundRect(x + 30, 348, w - 60, 13, 7); ctx.fill()
+  ctx.fillStyle = '#100b0a'
+  ctx.strokeStyle = complete ? '#d2a04a' : '#8d5533'
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.roundRect(x, 64, w, 112, 17)
+  ctx.fill()
+  ctx.stroke()
+  ctx.fillStyle = '#f5e5cc'
+  ctx.font = '900 45px system-ui, sans-serif'
+  ctx.fillText(complete ? '위키 완전정복 인증서' : '위키 완독 인증서', x + 32, 124)
+  ctx.fillStyle = '#a97850'
+  ctx.font = '700 15px system-ui, sans-serif'
+  ctx.fillText('WIKI COMPLETION CERTIFICATE', x + 34, 153)
+
+  ctx.fillStyle = '#0e0b0a'
+  ctx.strokeStyle = '#633127'
+  ctx.beginPath()
+  ctx.roundRect(x, 197, w, 181, 17)
+  ctx.fill()
+  ctx.stroke()
+  ctx.fillStyle = '#c89a69'
+  ctx.font = '800 20px system-ui, sans-serif'
+  ctx.fillText('위키 탐험도', x + 32, 240)
+  ctx.fillStyle = '#fff1dc'
+  ctx.font = '900 78px system-ui, sans-serif'
+  ctx.fillText(`${props.percent}%`, x + 30, 324)
+  ctx.fillStyle = '#f1ddc1'
+  ctx.font = '800 31px system-ui, sans-serif'
+  ctx.fillText(`${props.readCount} / ${props.totalCount}`, x + 568, 288)
+  ctx.fillStyle = '#a99078'
+  ctx.font = '700 16px system-ui, sans-serif'
+  ctx.fillText('문서 완독', x + 584, 318)
+
+  ctx.fillStyle = '#241714'
+  ctx.beginPath()
+  ctx.roundRect(x + 30, 344, w - 60, 12, 6)
+  ctx.fill()
   const bw = (w - 60) * Math.min(100, props.percent) / 100
-  const bar = ctx.createLinearGradient(x + 30, 0, x + w - 30, 0); bar.addColorStop(0, '#821b16'); bar.addColorStop(1, complete ? '#e0ad55' : '#e34a2f')
-  ctx.fillStyle = bar; ctx.beginPath(); ctx.roundRect(x + 30, 348, bw, 13, 7); ctx.fill()
+  const bar = ctx.createLinearGradient(x + 30, 0, x + w - 30, 0)
+  bar.addColorStop(0, '#821b16')
+  bar.addColorStop(1, complete ? '#e0ad55' : '#e34a2f')
+  ctx.fillStyle = bar
+  ctx.beginPath()
+  ctx.roundRect(x + 30, 344, bw, 12, 6)
+  ctx.fill()
 
-  const metrics = [['연속 생존일', `${props.streak}일`], ['업적 달성', `${props.achievementCount}/9`], ['위키 보물', `${props.treasureCount}/${props.treasureTotal}`], ['생존형', props.quizLabel]]
+  const gap = 12
+  const metricWidth = (w - gap * 3) / 4
+  const metrics = [
+    ['연속 생존일', `${props.streak}일`],
+    ['업적 달성', `${props.achievementCount}/9`],
+    ['위키 보물', `${props.treasureCount}/${props.treasureTotal}`],
+    ['생존형', props.quizLabel]
+  ]
   metrics.forEach(([label, value], i) => {
-    const mx = x + i * 177.5
-    ctx.fillStyle = '#100c0b'; ctx.strokeStyle = '#5e3025'; ctx.beginPath(); ctx.roundRect(mx, 401, 164, 111, 14); ctx.fill(); ctx.stroke()
-    ctx.fillStyle = '#a98466'; ctx.font = '700 15px system-ui, sans-serif'; ctx.fillText(label, mx + 15, 432)
-    ctx.fillStyle = '#f4e3ca'; ctx.font = value.length > 9 ? '800 18px system-ui, sans-serif' : '900 27px system-ui, sans-serif'; ctx.fillText(value, mx + 15, 477)
+    const mx = x + i * (metricWidth + gap)
+    ctx.fillStyle = '#100c0b'
+    ctx.strokeStyle = '#5e3025'
+    ctx.beginPath()
+    ctx.roundRect(mx, 398, metricWidth, 108, 13)
+    ctx.fill()
+    ctx.stroke()
+    ctx.fillStyle = '#a98466'
+    ctx.font = '700 14px system-ui, sans-serif'
+    ctx.fillText(label, mx + 15, 428)
+    ctx.fillStyle = '#f4e3ca'
+    ctx.font = value.length > 8 ? '800 17px system-ui, sans-serif' : '900 27px system-ui, sans-serif'
+    ctx.fillText(value, mx + 15, 473)
   })
 
-  ctx.fillStyle = '#160908'; ctx.strokeStyle = complete ? '#d0a04b' : '#79392c'
-  ctx.beginPath(); ctx.roundRect(x, 535, 405, 86, 14); ctx.fill(); ctx.stroke()
-  ctx.fillStyle = '#b78b68'; ctx.font = '700 15px system-ui, sans-serif'; ctx.fillText('인증번호', x + 22, 563)
-  ctx.fillStyle = '#f6dfbd'; ctx.font = '900 32px ui-monospace, monospace'; ctx.fillText(id, x + 22, 601)
+  const footerY = 528
+  const footerH = 78
+  const serialW = 438
+  ctx.fillStyle = '#160908'
+  ctx.strokeStyle = complete ? '#d0a04b' : '#79392c'
+  ctx.beginPath()
+  ctx.roundRect(x, footerY, serialW, footerH, 13)
+  ctx.fill()
+  ctx.stroke()
+  ctx.fillStyle = '#b78b68'
+  ctx.font = '700 14px system-ui, sans-serif'
+  ctx.fillText('인증번호', x + 22, footerY + 26)
+  ctx.fillStyle = '#f6dfbd'
+  ctx.font = '900 29px ui-monospace, monospace'
+  ctx.fillText(id, x + 22, footerY + 61)
 
-  ctx.fillStyle = '#0f0c0b'; ctx.strokeStyle = '#573029'; ctx.beginPath(); ctx.roundRect(x + 425, 535, 285, 86, 14); ctx.fill(); ctx.stroke()
-  ctx.fillStyle = '#a98466'; ctx.font = '700 15px system-ui, sans-serif'; ctx.fillText('발급일', x + 445, 563)
-  ctx.fillStyle = '#ead9c4'; ctx.font = '800 22px system-ui, sans-serif'; ctx.fillText(issuedAt, x + 445, 598)
+  ctx.fillStyle = '#0f0c0b'
+  ctx.strokeStyle = '#573029'
+  ctx.beginPath()
+  ctx.roundRect(x + serialW + 14, footerY, w - serialW - 14, footerH, 13)
+  ctx.fill()
+  ctx.stroke()
+  ctx.fillStyle = '#a98466'
+  ctx.font = '700 14px system-ui, sans-serif'
+  ctx.fillText('발급일', x + serialW + 36, footerY + 26)
+  ctx.fillStyle = '#ead9c4'
+  ctx.font = '800 20px system-ui, sans-serif'
+  ctx.fillText(issuedAt, x + serialW + 36, footerY + 59)
 }
 
 function canvasBlob(canvas: HTMLCanvasElement) {
