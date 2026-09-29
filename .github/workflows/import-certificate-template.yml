@@ -85,26 +85,36 @@ jobs:
             }
 
             if (!best || best.bytes.length < 200000) {
-              console.error('No direct image candidate found; inspecting app JavaScript for the download API.')
+              console.error('No direct image candidate found; extracting Firestorage network routes.')
               const scriptUrls = [...candidates].filter(u => u.includes('/_next/static/chunks/') && u.endsWith('.js'))
+              const routes = new Set()
+              const snippets = []
               for (const scriptUrl of scriptUrls.slice(0, 40)) {
                 try {
                   const js = await (await fetch(scriptUrl, { headers })).text()
-                  const hits = []
-                  for (const keyword of ['download','shareId','share_id','publicId','public_id','/api/','presign','signed']) {
-                    let from = 0
-                    while ((from = js.indexOf(keyword, from)) >= 0 && hits.length < 40) {
-                      hits.push(js.slice(Math.max(0, from - 220), Math.min(js.length, from + 420)))
-                      from += keyword.length
-                    }
+                  for (const m of js.matchAll(/["'`](\\?\/api\\?\/[^"'\x60\\s]{1,220})["'`]/g)) {
+                    routes.add(m[1].replaceAll('\\\\/','/'))
                   }
-                  if (hits.length) {
-                    console.error('\n--- SCRIPT', scriptUrl, '---')
-                    console.error(hits.join('\n...\n'))
+                  for (const m of js.matchAll(/["'`](\/[^"'\x60\\s]{0,100}(?:download|share|file|object|presign|signed)[^"'\x60\\s]{0,120})["'`]/gi)) {
+                    const route = m[1]
+                    if (!route.includes('_next/') && !route.includes('.css')) routes.add(route)
+                  }
+                  for (const needle of ['fetch(','axios','shareId','publicId','downloadUrl','signedUrl','presign']) {
+                    let at = 0
+                    while ((at = js.indexOf(needle, at)) >= 0 && snippets.length < 120) {
+                      const snippet = js.slice(Math.max(0, at - 180), Math.min(js.length, at + 360))
+                      if (!/file-download-preparing_[A-Za-z0-9_]/.test(snippet) || needle !== 'download') snippets.push(snippet)
+                      at += needle.length
+                    }
                   }
                 } catch {}
               }
-              console.error('\ncandidate count:', candidates.size)
+              console.error('ROUTES_BEGIN')
+              console.error([...routes].sort().join('\n'))
+              console.error('ROUTES_END')
+              console.error('NETWORK_SNIPPETS_BEGIN')
+              console.error(snippets.slice(0, 120).join('\n---\n'))
+              console.error('NETWORK_SNIPPETS_END')
               process.exit(2)
             }
 
