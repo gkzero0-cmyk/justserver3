@@ -30,7 +30,8 @@ import {
   type SurvivalRecord,
   type WeeklyChallengeId
 } from '@/lib/wiki-survival'
-import type { WikiContentStatus } from '@/lib/wiki-ux'\nimport { WikiCompletionCertificate } from '@/components/wiki-completion-certificate'
+import type { WikiContentStatus } from '@/lib/wiki-ux'
+import { WikiCompletionCertificate } from '@/components/wiki-completion-certificate'
 import {
   readWikiStateValue,
   readWikiStringArray
