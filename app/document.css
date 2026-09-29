@@ -1612,3 +1612,44 @@ html[data-theme="light"] .enhancement-source-waiting {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Full Notion source follows the compact verified overview. */
+.source-detail-card {
+  overflow: hidden;
+}
+
+.source-detail-head {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 18px;
+  padding: 0 0 16px;
+  border-bottom: 1px solid rgba(var(--gold-rgb), .11);
+}
+
+.source-detail-head p {
+  margin: 0;
+  color: var(--gold);
+  font-size: var(--font-micro);
+  font-weight: 900;
+  letter-spacing: .11em;
+}
+
+.source-detail-head h2 {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: clamp(19px, 2vw, 25px);
+}
+
+.source-detail-head span {
+  color: var(--text-subtle);
+  font-size: var(--font-meta);
+  line-height: 1.55;
+}
+
+@media (max-width: 620px) {
+  .source-detail-head {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
+}
