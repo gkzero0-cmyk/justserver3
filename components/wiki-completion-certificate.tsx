@@ -30,81 +30,79 @@ function certificateId() {
   return next
 }
 
-function drawCertificate(
-  canvas: HTMLCanvasElement,
-  props: CertificateProps,
-  id: string,
-  issuedAt: string
-) {
+function loadCertificateLogo() {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image()
+    image.onload = () => resolve(image)
+    image.onerror = reject
+    image.src = '/survival-certificate-logo.webp'
+  })
+}
+
+async function drawCertificate(canvas: HTMLCanvasElement, props: CertificateProps, id: string, issuedAt: string) {
   const ctx = canvas.getContext('2d')
   if (!ctx) return
-  const width = 1200
-  const height = 675
-  canvas.width = width
-  canvas.height = height
-
+  const width = 1200, height = 675
+  canvas.width = width; canvas.height = height
   const complete = props.totalCount > 0 && props.readCount >= props.totalCount
-  const gradient = ctx.createLinearGradient(0, 0, width, height)
-  gradient.addColorStop(0, complete ? '#171b16' : '#15191d')
-  gradient.addColorStop(1, complete ? '#29301d' : '#202a31')
-  ctx.fillStyle = gradient
-  ctx.fillRect(0, 0, width, height)
 
-  ctx.strokeStyle = complete ? '#d9c96d' : '#768c99'
-  ctx.lineWidth = 3
-  ctx.strokeRect(32, 32, width - 64, height - 64)
-  ctx.strokeStyle = 'rgba(255,255,255,.10)'
-  ctx.lineWidth = 1
-  ctx.strokeRect(46, 46, width - 92, height - 92)
+  const bg = ctx.createLinearGradient(0, 0, width, height)
+  bg.addColorStop(0, '#070505'); bg.addColorStop(.48, '#1b0908'); bg.addColorStop(1, '#080606')
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, width, height)
+  const glow = ctx.createRadialGradient(220, 300, 10, 220, 300, 340)
+  glow.addColorStop(0, complete ? 'rgba(215,63,28,.44)' : 'rgba(157,29,20,.38)')
+  glow.addColorStop(1, 'rgba(0,0,0,0)')
+  ctx.fillStyle = glow; ctx.fillRect(0, 0, 520, height)
 
-  ctx.fillStyle = complete ? '#d9c96d' : '#9eb2bd'
-  ctx.font = '600 24px system-ui, sans-serif'
-  ctx.fillText('JUST SERVER · OFFICIAL WIKI', 82, 102)
+  ctx.strokeStyle = complete ? '#d9aa50' : '#9b6037'; ctx.lineWidth = 4; ctx.strokeRect(22, 22, 1156, 631)
+  ctx.strokeStyle = '#5d211a'; ctx.lineWidth = 2; ctx.strokeRect(34, 34, 1132, 607)
 
-  ctx.fillStyle = '#f4f6f7'
-  ctx.font = '800 52px system-ui, sans-serif'
-  ctx.fillText(complete ? '위키 완전정복 인증' : '위키 완독 인증', 82, 172)
+  try {
+    const logo = await loadCertificateLogo()
+    ctx.drawImage(logo, 86, 105, 288, 288)
+  } catch {
+    ctx.fillStyle = '#7d1712'; ctx.beginPath(); ctx.arc(230, 245, 120, 0, Math.PI * 2); ctx.fill()
+  }
 
-  ctx.fillStyle = '#aeb9bf'
-  ctx.font = '500 22px system-ui, sans-serif'
-  ctx.fillText('그냥서버 : 적자생존', 82, 210)
+  ctx.textAlign = 'center'
+  ctx.fillStyle = '#f0d4a7'; ctx.font = '900 39px system-ui, sans-serif'; ctx.fillText('그냥서버 적자생존', 230, 452)
+  ctx.fillStyle = '#aa7149'; ctx.font = '700 18px system-ui, sans-serif'; ctx.fillText('SURVIVAL WIKI', 230, 486)
 
-  ctx.fillStyle = '#ffffff'
-  ctx.font = '900 88px system-ui, sans-serif'
-  ctx.fillText(`${props.percent}%`, 82, 330)
-  ctx.fillStyle = '#c9d2d7'
-  ctx.font = '700 27px system-ui, sans-serif'
-  ctx.fillText(`${props.readCount} / ${props.totalCount} 준비된 가이드 완독`, 82, 374)
+  const x = 445, w = 710
+  ctx.textAlign = 'left'
+  ctx.fillStyle = '#100b0a'; ctx.strokeStyle = complete ? '#d2a04a' : '#8d5533'; ctx.lineWidth = 2
+  ctx.beginPath(); ctx.roundRect(x, 65, w, 120, 18); ctx.fill(); ctx.stroke()
+  ctx.fillStyle = '#f5e5cc'; ctx.font = '900 47px system-ui, sans-serif'
+  ctx.fillText(complete ? '위키 완전정복 인증서' : '위키 완독 인증서', x + 34, 130)
+  ctx.fillStyle = '#a97850'; ctx.font = '700 16px system-ui, sans-serif'; ctx.fillText('WIKI COMPLETION CERTIFICATE', x + 36, 160)
 
-  const metrics = [
-    ['대표 칭호', props.title],
-    ['연속 생존', `${props.streak}일`],
-    ['업적', `${props.achievementCount}/9`],
-    ['위키 보물', `${props.treasureCount}/${props.treasureTotal}`]
-  ]
-  metrics.forEach(([label, value], index) => {
-    const x = 82 + index * 255
-    ctx.fillStyle = '#8e9ba3'
-    ctx.font = '600 18px system-ui, sans-serif'
-    ctx.fillText(label, x, 466)
-    ctx.fillStyle = '#f4f6f7'
-    ctx.font = '800 25px system-ui, sans-serif'
-    ctx.fillText(value, x, 501)
+  ctx.fillStyle = '#0e0b0a'; ctx.strokeStyle = '#633127'
+  ctx.beginPath(); ctx.roundRect(x, 207, w, 174, 18); ctx.fill(); ctx.stroke()
+  ctx.fillStyle = '#c89a69'; ctx.font = '800 21px system-ui, sans-serif'; ctx.fillText('위키 탐험도', x + 32, 252)
+  ctx.fillStyle = '#fff1dc'; ctx.font = '900 76px system-ui, sans-serif'; ctx.fillText(`${props.percent}%`, x + 30, 332)
+  ctx.fillStyle = '#f1ddc1'; ctx.font = '800 30px system-ui, sans-serif'; ctx.fillText(`${props.readCount} / ${props.totalCount}`, x + 515, 296)
+  ctx.fillStyle = '#a99078'; ctx.font = '700 17px system-ui, sans-serif'; ctx.fillText('문서 완독', x + 530, 326)
+  ctx.fillStyle = '#241714'; ctx.beginPath(); ctx.roundRect(x + 30, 348, w - 60, 13, 7); ctx.fill()
+  const bw = (w - 60) * Math.min(100, props.percent) / 100
+  const bar = ctx.createLinearGradient(x + 30, 0, x + w - 30, 0); bar.addColorStop(0, '#821b16'); bar.addColorStop(1, complete ? '#e0ad55' : '#e34a2f')
+  ctx.fillStyle = bar; ctx.beginPath(); ctx.roundRect(x + 30, 348, bw, 13, 7); ctx.fill()
+
+  const metrics = [['연속 생존일', `${props.streak}일`], ['업적 달성', `${props.achievementCount}/9`], ['위키 보물', `${props.treasureCount}/${props.treasureTotal}`], ['생존형', props.quizLabel]]
+  metrics.forEach(([label, value], i) => {
+    const mx = x + i * 177.5
+    ctx.fillStyle = '#100c0b'; ctx.strokeStyle = '#5e3025'; ctx.beginPath(); ctx.roundRect(mx, 401, 164, 111, 14); ctx.fill(); ctx.stroke()
+    ctx.fillStyle = '#a98466'; ctx.font = '700 15px system-ui, sans-serif'; ctx.fillText(label, mx + 15, 432)
+    ctx.fillStyle = '#f4e3ca'; ctx.font = value.length > 9 ? '800 18px system-ui, sans-serif' : '900 27px system-ui, sans-serif'; ctx.fillText(value, mx + 15, 477)
   })
 
-  ctx.fillStyle = '#87949b'
-  ctx.font = '500 18px system-ui, sans-serif'
-  ctx.fillText(`생존형 · ${props.quizLabel}`, 82, 558)
-  ctx.fillText(`발급일 · ${issuedAt}`, 82, 591)
+  ctx.fillStyle = '#160908'; ctx.strokeStyle = complete ? '#d0a04b' : '#79392c'
+  ctx.beginPath(); ctx.roundRect(x, 535, 405, 86, 14); ctx.fill(); ctx.stroke()
+  ctx.fillStyle = '#b78b68'; ctx.font = '700 15px system-ui, sans-serif'; ctx.fillText('인증번호', x + 22, 563)
+  ctx.fillStyle = '#f6dfbd'; ctx.font = '900 32px ui-monospace, monospace'; ctx.fillText(id, x + 22, 601)
 
-  ctx.textAlign = 'right'
-  ctx.fillStyle = complete ? '#d9c96d' : '#b7c6ce'
-  ctx.font = '800 28px ui-monospace, SFMono-Regular, Menlo, monospace'
-  ctx.fillText(id, 1118, 570)
-  ctx.fillStyle = '#75838b'
-  ctx.font = '500 15px system-ui, sans-serif'
-  ctx.fillText('이 번호는 이 브라우저의 공유 카드 식별번호입니다.', 1118, 596)
-  ctx.textAlign = 'left'
+  ctx.fillStyle = '#0f0c0b'; ctx.strokeStyle = '#573029'; ctx.beginPath(); ctx.roundRect(x + 425, 535, 285, 86, 14); ctx.fill(); ctx.stroke()
+  ctx.fillStyle = '#a98466'; ctx.font = '700 15px system-ui, sans-serif'; ctx.fillText('발급일', x + 445, 563)
+  ctx.fillStyle = '#ead9c4'; ctx.font = '800 22px system-ui, sans-serif'; ctx.fillText(issuedAt, x + 445, 598)
 }
 
 function canvasBlob(canvas: HTMLCanvasElement) {
@@ -127,7 +125,7 @@ export function WikiCompletionCertificate(props: CertificateProps) {
   useEffect(() => setId(certificateId()), [])
 
   useEffect(() => {
-    if (open && canvasRef.current) drawCertificate(canvasRef.current, props, id, issuedAt)
+    if (open && canvasRef.current) void drawCertificate(canvasRef.current, props, id, issuedAt)
   }, [id, issuedAt, open, props])
 
   const getFile = async () => {
