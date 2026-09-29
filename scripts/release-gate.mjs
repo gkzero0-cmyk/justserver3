@@ -70,6 +70,7 @@ try {
 
 const requiredFiles = [
   'vercel.json',
+  'tests/wiki-full-source-guide.test.ts',
   'public/notion-assets/index.json',
   'public/notion-assets/search-index.json',
   'app/sitemap.ts',
@@ -80,6 +81,17 @@ for (const file of requiredFiles) {
   if (!fs.existsSync(path.join(root, file))) {
     fail(`required release file is missing: ${file}`)
   }
+}
+
+try {
+  execFileSync('npm', ['run', 'test:integrity'], {
+    cwd: root,
+    stdio: 'inherit',
+    shell: process.platform === 'win32'
+  })
+  pass('content, asset, link, and wiki release integrity checks passed')
+} catch {
+  fail('repository integrity checks failed')
 }
 
 if (!failed) {
