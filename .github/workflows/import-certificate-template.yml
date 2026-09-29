@@ -85,10 +85,26 @@ jobs:
             }
 
             if (!best || best.bytes.length < 200000) {
-              fs.writeFileSync('/tmp/firestorage-share.html', html)
-              console.error('No sufficiently large image candidate found.')
-              console.error('candidate count:', candidates.size)
-              console.error([...candidates].slice(0, 80).join('\n'))
+              console.error('No direct image candidate found; inspecting app JavaScript for the download API.')
+              const scriptUrls = [...candidates].filter(u => u.includes('/_next/static/chunks/') && u.endsWith('.js'))
+              for (const scriptUrl of scriptUrls.slice(0, 40)) {
+                try {
+                  const js = await (await fetch(scriptUrl, { headers })).text()
+                  const hits = []
+                  for (const keyword of ['download','shareId','share_id','publicId','public_id','/api/','presign','signed']) {
+                    let from = 0
+                    while ((from = js.indexOf(keyword, from)) >= 0 && hits.length < 40) {
+                      hits.push(js.slice(Math.max(0, from - 220), Math.min(js.length, from + 420)))
+                      from += keyword.length
+                    }
+                  }
+                  if (hits.length) {
+                    console.error('\n--- SCRIPT', scriptUrl, '---')
+                    console.error(hits.join('\n...\n'))
+                  }
+                } catch {}
+              }
+              console.error('\ncandidate count:', candidates.size)
               process.exit(2)
             }
 
