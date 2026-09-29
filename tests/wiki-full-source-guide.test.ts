@@ -43,3 +43,12 @@ test('completion certificate exports at high resolution with balanced layout', (
   assert.match(certificateSource, /const x = 420/)
   assert.match(certificateSource, /drawImage\(logo, 38, 53, 360, 360\)/)
 })
+
+
+test('full source guide does not clip Notion content at card edges', () => {
+  const documentCss = fs.readFileSync('app/document.css', 'utf8')
+  assert.match(documentCss, /\.source-detail-card\s*\{[\s\S]*?overflow:\s*visible/)
+  assert.match(documentCss, /\.source-detail-card \.notion-page-content\s*\{[\s\S]*?max-width:\s*100%/)
+  assert.match(documentCss, /\.source-detail-card \.notion-table,[\s\S]*?overflow-x:\s*auto/)
+  assert.doesNotMatch(documentCss, /\.source-detail-card\s*\{[^}]*overflow:\s*hidden/)
+})
