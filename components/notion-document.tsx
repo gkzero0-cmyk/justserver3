@@ -86,6 +86,18 @@ export function NotionDocument({
   }, [recordMap])
 
   useEffect(() => {
+    const root = document.querySelector<HTMLElement>('.source-detail-card .notion-page-content')
+    if (!root) return
+
+    const images = root.querySelectorAll<HTMLImageElement>('img')
+    images.forEach((image, index) => {
+      image.decoding = 'async'
+      if (index > 0) image.loading = 'lazy'
+      image.setAttribute('fetchpriority', index === 0 ? 'auto' : 'low')
+    })
+  }, [recordMap])
+
+  useEffect(() => {
     if (!relatedPages.length) return
 
     const timer = window.setTimeout(() => {
