@@ -6,6 +6,7 @@ const pageSource = fs.readFileSync('app/page/[pageId]/page.tsx', 'utf8')
 const shellSource = fs.readFileSync('components/wiki-shell.tsx', 'utf8')
 const feedbackSource = fs.readFileSync('components/wiki-document-feedback.tsx', 'utf8')
 const notionSource = fs.readFileSync('components/notion-document.tsx', 'utf8')
+const certificateSource = fs.readFileSync('components/wiki-completion-certificate.tsx', 'utf8')
 
 test('brief guides keep the full Notion source below the verified overview', () => {
   assert.match(pageSource, /hasVerifiedBrief &&/)
@@ -32,4 +33,13 @@ test('document sharing is a simple canonical link copy action', () => {
   assert.match(feedbackSource, /navigator\.clipboard\.writeText/)
   assert.match(feedbackSource, /복사 완료/)
   assert.doesNotMatch(feedbackSource, /navigator\.share/)
+})
+
+
+test('completion certificate exports at high resolution with balanced layout', () => {
+  assert.match(certificateSource, /const scale = 2/)
+  assert.match(certificateSource, /canvas\.width = width \* scale/)
+  assert.match(certificateSource, /imageSmoothingQuality = 'high'/)
+  assert.match(certificateSource, /const x = 405/)
+  assert.match(certificateSource, /drawImage\(logo, 48, 76, 326, 326\)/)
 })
