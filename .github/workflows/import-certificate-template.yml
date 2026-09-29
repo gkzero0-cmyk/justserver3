@@ -171,8 +171,14 @@ jobs:
                   const marker = js.indexOf('/files?maxResults=1000')
                   if (marker >= 0) {
                     console.error('FILE_API_CONTEXT_BEGIN', scriptUrl)
-                    console.error(js.slice(Math.max(0, marker - 6000), Math.min(js.length, marker + 2000)))
+                    console.error(js.slice(Math.max(0, marker - 18000), Math.min(js.length, marker + 2000)))
                     console.error('FILE_API_CONTEXT_END')
+                  }
+                  const apiMarker = js.indexOf('https://api.fire')
+                  if (apiMarker >= 0) {
+                    console.error('API_BASE_CONTEXT_BEGIN', scriptUrl)
+                    console.error(js.slice(Math.max(0, apiMarker - 1200), Math.min(js.length, apiMarker + 2200)))
+                    console.error('API_BASE_CONTEXT_END')
                   }
                 } catch {}
               }
