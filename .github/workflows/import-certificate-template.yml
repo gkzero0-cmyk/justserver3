@@ -96,6 +96,7 @@ jobs:
                 ...(cookie ? { 'cookie': cookie.split(';')[0] } : {})
               }
               const bases = [
+                'https://api.firestorage.ai/dev/file',
                 'https://firestorage.ai',
                 'https://firestorage.ai/api',
                 'https://firestorage.ai/api/v1',
