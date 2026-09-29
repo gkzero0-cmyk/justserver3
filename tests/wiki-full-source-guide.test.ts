@@ -36,12 +36,14 @@ test('document sharing is a simple canonical link copy action', () => {
 })
 
 
-test('completion certificate exports at high resolution with balanced layout', () => {
+test('completion certificate uses the high-resolution master template with dynamic overlays', () => {
   assert.match(certificateSource, /scale = 2/)
   assert.match(certificateSource, /canvas\.width = width \* scale/)
   assert.match(certificateSource, /imageSmoothingQuality = 'high'/)
-  assert.match(certificateSource, /const x = 455/)
-  assert.match(certificateSource, /drawImage\(logo, 14, 18, 446, 446\)/)
+  assert.match(certificateSource, /\/certificate-template\/master\.png/)
+  assert.match(certificateSource, /drawImage\(template, 0, 0, width, height\)/)
+  assert.doesNotMatch(certificateSource, /survival-certificate-logo\.webp/)
+  assert.doesNotMatch(certificateSource, /loadCertificateLogo/)
 })
 
 
