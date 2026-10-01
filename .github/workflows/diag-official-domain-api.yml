@@ -1,0 +1,28 @@
+name: Diagnose official wiki API domain
+
+on:
+  push:
+    branches: [diag/official-domain-api-20261001]
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Resolve and fetch official API
+        shell: bash
+        run: |
+          set -uo pipefail
+          HOST='server1.wiki.xn--9i1bk7xhlfi8hzzf.com'
+          URL="https://${HOST}/api/fansite-guide"
+          echo '=== DNS ==='
+          getent ahosts "$HOST" || true
+          echo '=== HEADERS/BODY ==='
+          curl -sS -L --connect-timeout 8 --max-time 20 -D /tmp/headers.txt -o /tmp/body.txt -w '\nHTTP=%{http_code}\nREMOTE_IP=%{remote_ip}\nURL_EFFECTIVE=%{url_effective}\n' "$URL" || true
+          cat /tmp/headers.txt 2>/dev/null || true
+          echo '=== BODY PREFIX ==='
+          head -c 1500 /tmp/body.txt 2>/dev/null || true
+          echo
