@@ -12,29 +12,28 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Inspect embedded official wiki data
+      - name: Inspect official content API
         shell: bash
         run: |
           set -euo pipefail
-          BASE='https://server1.wiki.xn--9i1bk7xhlfi8hzzf.com'
-          curl -sS -L --connect-timeout 8 --max-time 20 -o /tmp/root.html "$BASE/"
+          URL='https://server1.wiki.xn--9i1bk7xhlfi8hzzf.com/api/content'
+          curl -sS -L --connect-timeout 8 --max-time 20 -D /tmp/headers.txt -o /tmp/content.json -w 'HTTP=%{http_code} URL=%{url_effective}\n' "$URL"
+          cat /tmp/headers.txt | head -n 30
           python - <<'PY'
+          import json
           from pathlib import Path
-          text=Path('/tmp/root.html').read_text(errors='replace')
-          print('HTML_BYTES',len(text))
-          for needle in ['채광','낚시','서버규칙','많이 물어보는 것','const docs','let docs','docs=','pages=','sections','searchText','doc-1']:
-              print('\n===',needle,'===')
-              start=0; shown=0
-              while shown<3:
-                  i=text.find(needle,start)
-                  if i<0: break
-                  lo=max(0,i-450); hi=min(len(text),i+950)
-                  print(text[lo:hi].replace('\n',' ')[:1400])
-                  start=i+len(needle); shown+=1
-          print('\n=== INLINE SCRIPT PREFIXES ===')
-          import re
-          scripts=re.findall(r'<script[^>]*>([\s\S]*?)</script>',text,re.I)
-          for idx,s in enumerate(scripts):
-              if any(k in s for k in ['채광','서버규칙','doc-1','searchText']):
-                  print('SCRIPT',idx,'LEN',len(s),s[:3000].replace('\n',' '))
+          raw=Path('/tmp/content.json').read_text(errors='replace')
+          print('BYTES',len(raw))
+          data=json.loads(raw)
+          print('TOP_KEYS',sorted(data.keys()))
+          wiki=data.get('wiki') or {}
+          print('WIKI_KEYS',sorted(wiki.keys()))
+          pages=wiki.get('pages') or []
+          print('PAGE_COUNT',len(pages))
+          for p in pages[:12]:
+              print('PAGE',p.get('title'),p.get('category'),'blocks',len(p.get('blocks') or []),'deleted',p.get('deleted'))
+              if p.get('title') in {'채광','낚시','서버규칙','사냥','요리'}:
+                  print(json.dumps(p,ensure_ascii=False)[:3500])
+          print('HAS_NOTION_URL', 'notion.so' in raw or 'app.notion.com' in raw)
+          print('HAS_JUSTSERVER3_VERCEL', 'justserver3.vercel.app' in raw)
           PY
