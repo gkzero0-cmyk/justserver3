@@ -1,5 +1,5 @@
-import { readNotionIndex } from '../../../lib/notion-index.ts'
-import { buildFansiteGuideFeed } from '../../../lib/fansite-guide-feed.ts'
+import { readNotionIndex } from '../../../lib/notion-index'
+import { buildFansiteGuideFeed } from '../../../lib/fansite-guide-feed'
 
 export async function GET() {
   const index = await readNotionIndex()
