@@ -4,6 +4,12 @@ export const OFFICIAL_WIKI_ORIGIN = 'https://server1.wiki.xn--9i1bk7xhlfi8hzzf.c
 
 const HIDDEN_CATEGORIES = new Set(['ADMIN', 'INTERNAL', 'DEV', 'DEVELOPER', 'SYSTEM', 'PRIVATE'])
 
+type FansiteGuideGroup = {
+  id: string
+  title: string
+  pages: NotionIndexPage[]
+}
+
 export const OFFICIAL_GUIDE_GROUPS = [
   { id: 'notice', title: '공지사항', pages: ['스토리', '서버규칙', '패치노트', 'API', '기초설정(뉴비필독)'] },
   { id: 'production', title: '생산 가이드', pages: ['채광', '낚시', '도축', '사냥', '요리'] },
@@ -36,7 +42,7 @@ export function buildFansiteGuideFeed(index: NotionIndex) {
   const pages = publicPages(index)
   const byTitle = new Map(pages.map((page) => [page.title, page]))
   const used = new Set<string>()
-  const groups = OFFICIAL_GUIDE_GROUPS.map((group) => ({
+  const groups: FansiteGuideGroup[] = OFFICIAL_GUIDE_GROUPS.map((group) => ({
     id: group.id,
     title: group.title,
     pages: group.pages
