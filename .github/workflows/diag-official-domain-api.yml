@@ -12,17 +12,26 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Resolve and fetch official API
+      - name: Resolve and inspect official site
         shell: bash
         run: |
           set -uo pipefail
           HOST='server1.wiki.xn--9i1bk7xhlfi8hzzf.com'
-          URL="https://${HOST}/api/fansite-guide"
+          BASE="https://${HOST}"
           echo '=== DNS ==='
           getent ahosts "$HOST" || true
-          echo '=== HEADERS/BODY ==='
-          curl -sS -L --connect-timeout 8 --max-time 20 -D /tmp/headers.txt -o /tmp/body.txt -w '\nHTTP=%{http_code}\nREMOTE_IP=%{remote_ip}\nURL_EFFECTIVE=%{url_effective}\n' "$URL" || true
-          cat /tmp/headers.txt 2>/dev/null || true
-          echo '=== BODY PREFIX ==='
-          head -c 1500 /tmp/body.txt 2>/dev/null || true
-          echo
+          echo '=== ROOT STATUS ==='
+          curl -sS -L --connect-timeout 8 --max-time 20 -D /tmp/root-headers.txt -o /tmp/root.html -w 'HTTP=%{http_code} URL=%{url_effective}\n' "$BASE/" || true
+          cat /tmp/root-headers.txt 2>/dev/null | head -n 30 || true
+          echo '=== ROOT LINKS ==='
+          grep -oE 'href="[^"]+"' /tmp/root.html 2>/dev/null | sed 's/^href="//;s/"$//' | sort -u | head -n 120 || true
+          echo '=== API/PATH TOKENS ==='
+          grep -oE '(/api/[A-Za-z0-9_?=&./-]+|/[A-Za-z0-9가-힣_%.-]+)' /tmp/root.html 2>/dev/null | sort -u | grep -E 'api|wiki|guide|page|notion|search|docs|문서|가이드' | head -n 160 || true
+          echo '=== SCRIPT SOURCES ==='
+          grep -oE 'src="[^"]+"' /tmp/root.html 2>/dev/null | sed 's/^src="//;s/"$//' | sort -u | head -n 80 || true
+          echo '=== KNOWN PATH PROBES ==='
+          for path in '/api/fansite-guide' '/notion-assets/index.json' '/api/search' '/api/pages' '/api/wiki' '/guide' '/wiki'; do
+            code=$(curl -sS -L --connect-timeout 5 --max-time 10 -o /tmp/probe -w '%{http_code}' "$BASE$path" || true)
+            ctype=$(curl -sSI -L --connect-timeout 5 --max-time 10 "$BASE$path" 2>/dev/null | awk -F': ' 'tolower($1)=="content-type"{print $2}' | tail -1 | tr -d '\r')
+            printf '%s -> %s %s\n' "$path" "$code" "$ctype"
+          done
