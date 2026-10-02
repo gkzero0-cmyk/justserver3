@@ -1,5 +1,5 @@
 import type { NotionIndex, NotionIndexPage } from './notion-index.ts'
-import { WIKI_CATEGORIES, categoryForTitle, type WikiCategoryKey } from './wiki-taxonomy.ts'
+import { WIKI_CATEGORIES, categoryForTitle, type WikiCategoryKey } from './wiki-taxonomy'
 
 export const OFFICIAL_WIKI_ORIGIN = 'https://server1.wiki.xn--9i1bk7xhlfi8hzzf.com/'
 
